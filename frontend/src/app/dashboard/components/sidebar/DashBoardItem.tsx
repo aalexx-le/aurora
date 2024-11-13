@@ -1,8 +1,7 @@
-import { cn } from "@/lib/utils";
-import { LucideProps } from "lucide-react";
+import {cn} from "@/lib/utils";
+import {LucideProps} from "lucide-react";
 import Link from "next/link";
-import React from "react";
-import * as react from "react";
+import React, * as react from "react";
 
 interface IProps {
     isActive?: boolean;

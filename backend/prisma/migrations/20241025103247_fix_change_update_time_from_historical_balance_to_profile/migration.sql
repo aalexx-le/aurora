@@ -1,7 +1,7 @@
 /*
   Warnings:
 
-  - You are about to drop the column `updateTime` on the `HistoricalCryptoBalance` table. All the data in the column will be lost.
+  - You are about to drop the column `updateTime` on the `HistoricalCryptoBalance` table. All the details in the column will be lost.
 
 */
 -- AlterTable

@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import Providers from "../components/providers";
-import AuthGuard from "@/app/AuthGuard";
+import {Toaster} from "@/components/ui/toaster";
 // import Header from "@/app/home/components/header";
 
 const geistSans = localFont({
@@ -36,6 +36,7 @@ export default function RootLayout({
                     <>
                         {/*<Header/>*/}
                         {children}
+                        <Toaster />
                     </>
                 </Providers>
             </body>

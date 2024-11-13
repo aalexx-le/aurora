@@ -1,11 +1,15 @@
 model User {
-  id             Int                 @id @default(autoincrement())
-  email          String              @unique
-  name           String?
-  password       String
-  otp            String?
-  otpPurpose     OtpPurpose?
-  cryptoProfiles UserCryptoProfile[]
+  id               Int               @id @default(autoincrement())
+  email            String            @unique
+  name             String?
+  password         String
+  otp              String?
+  otpPurpose       OtpPurpose?
+  cryptoPortfolios CryptoPortfolio[]
+  bankManager      BankManager[]
+
+  expenseCategories ExpenseCategory[]
+  expenses          Expense[]
 }
 
 enum OtpPurpose {

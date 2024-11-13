@@ -1,24 +1,13 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-    InputOTP,
-    InputOTPGroup,
-    InputOTPSeparator,
-    InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { useEffect, useState } from "react";
-import { OtpPurpose } from "@/gql/graphql";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot,} from "@/components/ui/input-otp";
+import {useEffect, useState} from "react";
+import {OtpPurpose} from "@/gql/graphql";
 import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { authActions } from "@/state/slices/auth.slice";
-import { cn } from "@/lib/utils";
+import {useAppDispatch, useAppSelector} from "@/state/hooks";
+import {authActions} from "@/state/slices/auth.slice";
+import {cn} from "@/lib/utils";
 
 export function VerifyForm() {
     const [otp, setOTP] = useState<string>("");
@@ -89,9 +78,13 @@ export function VerifyForm() {
                             <div className="h-2 w-2 bg-black rounded-full animate-bounce"></div>
                         </CardDescription>
                     ) : (
-                        <Button variant="link" className="text-gray-500">
-                            resend
-                        </Button>
+                        <div>
+                            <span>Haven&apos;t received it?</span>
+                            <Button variant="link" className="text-gray-500">
+                                Resend a new code.
+                            </Button>
+                        </div>
+
                     )}
                 </CardContent>
             ) : (

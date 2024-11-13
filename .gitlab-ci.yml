@@ -4,30 +4,62 @@ services:
   - docker:27.3-dind
 
 variables:
-  FRONTEND_IMAGE: frontend
+  FRONTEND_IMAGE: web
   SERVER_IMAGE: server
 
 stages:
-    - build
+  - test
+  - build
 
 before_script:
   - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY_IMAGE -u $CI_REGISTRY_USER --password-stdin
 
-build-backend:
+test:
+  stage: test
+  script:
+    - echo "Running tests"
+
+build-backend-dev:
   stage: build
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - export VERSION=$(docker run --rm -v "$PWD":/app:ro -w /app node:slim node -p "require('./backend/package.json').version")
     - docker build -t $CI_REGISTRY_IMAGE/$SERVER_IMAGE:$VERSION ./backend
     - docker push $CI_REGISTRY_IMAGE/$SERVER_IMAGE:$VERSION
 
-
-build-frontend:
+build-frontend-dev:
   stage: build
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - export VERSION=$(docker run --rm -v "$PWD":/app:ro -w /app node:slim node -p "require('./frontend/package.json').version")
     - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:$VERSION ./frontend
     - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:$VERSION
+
+build-backend-prod:
+  stage: build
+  rules:
+      - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./backend
+    - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
+
+build-frontend-prod:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
+
+#tagging:
+#  stage: tagging
+#  script:
+#      - echo $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 1)
+#      - echo $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 2)
+#      - export VERSION=$(docker run --rm -v "$PWD":/app:ro -w /app node:slim node -p "require('./package.json').version")
+#      - git config --global user.email $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 1)
+#      - git config --global user.name $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 2)
+#      - git tag -a $VERSION -m "Version $VERSION"
+#      - git push origin $VERSION

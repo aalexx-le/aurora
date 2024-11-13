@@ -1,6 +1,6 @@
 "use client";
 
-import { VerifyForm } from "@/app/auth/components/verifyForm";
+import {VerifyForm} from "@/app/auth/components/verifyForm";
 
 export default function VerifyPage() {
     return (

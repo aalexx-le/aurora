@@ -1,0 +1,68 @@
+mutation CreateCryptoPortfolio($data: CreateCryptoPortfolioInput!) {
+    createCryptoPortfolio(data: $data) {
+        userId
+    }
+}
+
+query GetCryptoPortfolio($data: GetCryptoPortfolioInput!) {
+    getCryptoPortfolios(data: $data) {
+        id
+        exchanges
+        tradingType
+        historicalBalances {
+            time
+            estimatedBalance
+            changePercent
+            changeBalance
+        }
+        balances {
+            balance
+            assetInfo {
+                id
+                logo
+                lastPrice
+                symbol
+            }
+        }
+    }
+}
+
+query GetAsset($pagination: PaginationInput!, $getAssetPriceData: GetAssetPriceInput!, , $getAssetInfoData: GetAssetInfoInput!) {
+    getAssetPrices(data: $getAssetPriceData, pagination: $pagination) {
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+    getAssetInfo(data: $getAssetInfoData) {
+        logo
+        desc
+        category
+        symbol
+        name
+    }
+}
+
+
+subscription NewAssetPrice1m($data: GetAssetPriceInput!) {
+    newAssetPrice1m (data: $data) {
+        assetInfoId
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+}
+
+subscription NewAssetPrice5m($data: GetAssetPriceInput!) {
+    newAssetPrice5m (data: $data) {
+        assetInfoId
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+}

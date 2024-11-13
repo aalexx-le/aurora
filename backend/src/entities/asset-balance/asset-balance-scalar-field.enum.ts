@@ -1,14 +1,12 @@
-import { registerEnumType } from "@nestjs/graphql";
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum AssetBalanceScalarFieldEnum {
     id = "id",
-    cryptoProfileId = "cryptoProfileId",
     assetInfoId = "assetInfoId",
     balance = "balance",
     locked = "locked",
+    cryptoPortfolioId = "cryptoPortfolioId"
 }
 
-registerEnumType(AssetBalanceScalarFieldEnum, {
-    name: "AssetBalanceScalarFieldEnum",
-    description: undefined,
-});
+
+registerEnumType(AssetBalanceScalarFieldEnum, { name: 'AssetBalanceScalarFieldEnum', description: undefined })

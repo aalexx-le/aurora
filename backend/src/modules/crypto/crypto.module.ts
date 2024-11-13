@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { CryptoProfileService } from "./profile/profile.service";
-import { ProfileResolver } from "./profile/profile.resolver";
+import { CryptoPortfolioService } from "./profile/portfolio.service";
+import { CryptoPortfolioResolver } from "./profile/portfolio.resolver";
 import { ConfigService } from "@nestjs/config";
 import { PubSub } from "graphql-subscriptions";
 import { CryptoBalanceResolver } from "./profile/balance.resolver";
-import { ProfileEventListener } from "./profile/profile.event-listener";
+import { PortfolioEventListener } from "./profile/portfolio-event-listener.service";
 import { CryptoAssetPriceResolver } from "./asset/asset-price.resolver";
 import { CryptoAssetService } from "./asset/asset.service";
 import { CryptoAssetInfoResolver } from "./asset/asset-info.resolver";
@@ -57,7 +57,7 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
                             clientId: "nestjs-kafka",
                         },
                         consumer: {
-                            groupId: "crypto-profile",
+                            groupId: "crypto",
                             allowAutoTopicCreation: true,
                         },
                         producer: {
@@ -105,18 +105,18 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
     ],
     providers: [
         SUBSCRIPTION_PUB_SUB_PROVIDER,
-        ProfileResolver,
+        CryptoPortfolioResolver,
         CryptoBalanceResolver,
         CryptoAssetInfoResolver,
         CryptoAssetPriceResolver,
 
-        CryptoProfileService,
+        CryptoPortfolioService,
         CryptoAssetService,
-        ProfileEventListener,
+        PortfolioEventListener,
         AssetPriceEventListener,
     ],
     exports: [
-        CryptoProfileService,
+        CryptoPortfolioService,
         CryptoAssetService,
         SUBSCRIPTION_PUB_SUB_PROVIDER,
     ],

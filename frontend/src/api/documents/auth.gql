@@ -1,0 +1,18 @@
+mutation Signup($data: UserCreateInput!) {
+    signup(data: $data) {
+        accessToken
+        refreshToken
+    }
+}
+
+mutation Login($data: LoginReqDto!) {
+    login(data: $data) {
+        accessToken
+    }
+}
+
+mutation VerifyAccount($data: VerifyDto!) {
+    verifyAccount(data: $data) {
+        accessToken
+    }
+}

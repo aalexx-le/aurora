@@ -1,0 +1,35 @@
+# queries and mutations for the expense category
+query GetExpenseCategories($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
+    getExpenseCategories(userId: $userId) {
+        color
+        description
+        name
+        id
+        countExpenses
+        totalAmount(startDate: $startDate, endDate: $endDate)
+    }
+}
+
+mutation CreateExpenseCategory($data: CreateExpenseCategoryInput!) {
+    createExpenseCategory(data: $data) {
+        color
+        description
+        name
+        id
+    }
+}
+
+mutation UpdateExpenseCategory($id: String!, $data: UpdateExpenseCategoryInput!) {
+    updateExpenseCategory(id: $id, data: $data) {
+        color
+        description
+        name
+        id
+    }
+}
+
+mutation RemoveExpenseCategory($id: String!) {
+    removeExpenseCategory(id: $id) {
+        id
+    }
+}

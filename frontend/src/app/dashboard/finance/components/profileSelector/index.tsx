@@ -1,29 +1,18 @@
-import { Check, ChevronsUpDown } from "lucide-react";
+import {Check, ChevronsUpDown} from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Dispatch, SetStateAction, useState } from "react";
-import { GetCryptoProfileQuery } from "@/gql/graphql";
+import {cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command";
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
+import {Dispatch, SetStateAction, useState} from "react";
+import {GetCryptoPortfolioQuery} from "@/gql/graphql";
 
 interface IProps {
-    profiles: GetCryptoProfileQuery["getCryptoProfiles"];
+    profiles: GetCryptoPortfolioQuery["getCryptoPortfolios"];
     setSelectedCryptoProfile: Dispatch<
-        SetStateAction<GetCryptoProfileQuery["getCryptoProfiles"][number]>
+        SetStateAction<GetCryptoPortfolioQuery["getCryptoPortfolios"][number]>
     >;
-    selectedCryptoProfile: GetCryptoProfileQuery["getCryptoProfiles"][number];
+    selectedCryptoProfile: GetCryptoPortfolioQuery["getCryptoPortfolios"][number];
 }
 
 export default function ProfileSelector({
@@ -34,7 +23,7 @@ export default function ProfileSelector({
     const [open, setOpen] = useState(false);
 
     const onSelectCryptoProfile = (id: string) => {
-        const selected = profiles.find((profile) => profile.profileId === id);
+        const selected = profiles.find((profile) => profile.id === id);
         if (!selected) return;
         setSelectedCryptoProfile(selected);
     };
@@ -51,8 +40,8 @@ export default function ProfileSelector({
                     {selectedCryptoProfile
                         ? profiles.find(
                               (p) =>
-                                  p.profileId ===
-                                  selectedCryptoProfile.profileId,
+                                  p.id ===
+                                  selectedCryptoProfile.id,
                           )?.exchanges
                         : "Select profile..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -60,21 +49,21 @@ export default function ProfileSelector({
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                    <CommandInput placeholder="Search framework..." />
+                    <CommandInput placeholder="Search portfolio..." />
                     <CommandList>
                         <CommandEmpty>No profile found.</CommandEmpty>
                         <CommandGroup>
                             {profiles.map((profile) => (
                                 <CommandItem
-                                    key={profile.profileId}
+                                    key={profile.id}
                                     value={profile.exchanges}
                                     onSelect={onSelectCryptoProfile}
                                 >
                                     <Check
                                         className={cn(
                                             "mr-2 h-4 w-4",
-                                            selectedCryptoProfile.profileId ===
-                                                profile.profileId
+                                            selectedCryptoProfile.id ===
+                                                profile.id
                                                 ? "opacity-100"
                                                 : "opacity-0",
                                         )}

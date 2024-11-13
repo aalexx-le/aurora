@@ -4,10 +4,11 @@ import { LoginArgs, LoginResDto } from "./dto/login.dto";
 import { UseGuards } from "@nestjs/common";
 import { LocalGuard } from "./guards/local.guard";
 import { AuthUser } from "src/shared/decorators/auth-user.decorator";
-import { CreateOneUserArgs, User } from "src/entities/user";
+import { User } from "src/entities/user";
 import { SignupResDto } from "./dto/signup.dto";
 import { VerifyArgs } from "./dto/verify.dto";
 import { JwtGuard } from "./guards/jwt.guard";
+import { CreateUserArgs } from "../user/dto/create-user.input";
 
 @Resolver(() => LoginResDto)
 export class AuthResolver {
@@ -28,7 +29,7 @@ export class AuthResolver {
     }
 
     @Mutation(() => SignupResDto)
-    async signup(@Args() signupArgs: CreateOneUserArgs) {
+    async signup(@Args() signupArgs: CreateUserArgs) {
         const user = await this.authService.createAuthUser(signupArgs.data);
         return this.login(signupArgs, user);
     }

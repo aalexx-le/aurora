@@ -1,18 +1,18 @@
 "use client";
 
-import { Menu, Package2, Search } from "lucide-react";
+import {Menu, Package2, Search} from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ThemeSwitcher } from "@/app/home/components/header/ThemeSwitcher";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet";
+import {ThemeSwitcher} from "@/app/home/components/header/ThemeSwitcher";
 import Logo from "@/components/ui/logo";
 import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
-import { useAppSelector } from "@/state/hooks";
-import { ProfileDropdownMenu } from "@/app/home/components/header/ProfileDropdownMenu";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import {useAppSelector} from "@/state/hooks";
+import {ProfileDropdownMenu} from "@/app/home/components/header/ProfileDropdownMenu";
+import {usePathname} from "next/navigation";
+import {cn} from "@/lib/utils";
 import LoginButton from "@/app/home/components/header/LoginButton";
 
 const TABS = [

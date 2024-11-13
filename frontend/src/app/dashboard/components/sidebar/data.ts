@@ -20,13 +20,17 @@ export const SideBarData = {
     navMain: [
         {
             title: "Finance",
-            url: "#",
+            url: DASHBOARD_ROUTE.finance.value,
             icon: Wallet,
             isActive: true,
             items: [
                 {
                     title: "Investment",
                     url: DASHBOARD_ROUTE.finance.investment.value,
+                },
+                {
+                    title: "Bank Management",
+                    url: DASHBOARD_ROUTE.finance.bankManagement.value,
                 },
                 {
                     title: "Asset Price",

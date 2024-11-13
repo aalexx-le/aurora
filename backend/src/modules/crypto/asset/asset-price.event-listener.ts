@@ -6,7 +6,7 @@ import {
     OnModuleInit,
 } from "@nestjs/common";
 import { InjectPgSubscriber, PgSubscriber } from "nestjs-pg-pubsub";
-import { ProfileEventListener } from "../profile/profile.event-listener";
+import { PortfolioEventListener } from "../profile/portfolio-event-listener.service";
 import { DatabaseEvent } from "../../../shared/constants/database.event";
 import { AssetPrice } from "src/entities/asset-price";
 import { PubSub } from "graphql-subscriptions";
@@ -17,7 +17,7 @@ import { CryptoAssetService } from "./asset.service";
 export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
     public static readonly NEW_ASSET_PRICE_1m_PAYLOAD_NAME = "newAssetPrice1m";
     public static readonly NEW_ASSET_PRICE_5m_PAYLOAD_NAME = "newAssetPrice5m";
-    private readonly logger = new Logger(ProfileEventListener.name);
+    private readonly logger = new Logger(PortfolioEventListener.name);
 
     constructor(
         @InjectPgSubscriber() private readonly pgSubscriber: PgSubscriber,

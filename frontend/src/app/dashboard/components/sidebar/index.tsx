@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Command } from "lucide-react";
+import {Command} from "lucide-react";
 
 import {
     Sidebar,
@@ -12,11 +12,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { SideBarData } from "@/app/dashboard/components/sidebar/data";
-import { NavMain } from "@/app/dashboard/components/sidebar/nav-main";
-import { NavProjects } from "@/app/dashboard/components/sidebar/nav-projects";
-import { NavSecondary } from "@/app/dashboard/components/sidebar/nav-secondary";
-import { NavUser } from "@/app/dashboard/components/sidebar/nav-user";
+import {SideBarData} from "@/app/dashboard/components/sidebar/data";
+import {NavMain} from "@/app/dashboard/components/sidebar/nav-main";
+import {NavProjects} from "@/app/dashboard/components/sidebar/nav-projects";
+import {NavSecondary} from "@/app/dashboard/components/sidebar/nav-secondary";
+import {NavUser} from "@/app/dashboard/components/sidebar/nav-user";
 
 export default function DashBoardSidebar({
     ...props

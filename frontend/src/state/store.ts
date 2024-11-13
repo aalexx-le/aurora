@@ -1,8 +1,8 @@
 import {
     Action,
+    combineSlices,
     configureStore,
     ThunkAction,
-    combineSlices,
 } from "@reduxjs/toolkit";
 import authReducer from "@/state/slices/auth.slice";
 

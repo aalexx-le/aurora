@@ -2,8 +2,44 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
-Table UserCryptoProfile {
-  profileId String [pk]
+Table BankManager {
+  id String [pk]
+  userId Int [not null]
+  name String [not null]
+  apiKey String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user User [not null]
+  banks BankAccount [not null]
+}
+
+Table BankAccount {
+  id String [pk]
+  name String [not null]
+  fullName String [not null]
+  bankManagerId String [not null]
+  accountName String [not null]
+  accountNumber String [not null]
+  balance Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  bankManager BankManager [not null]
+  transactions BankTransaction [not null]
+}
+
+Table BankTransaction {
+  id String [pk]
+  bankId String [not null]
+  amount Float [not null]
+  description String [not null]
+  spentAmount Float [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  expense Expense [not null]
+  bank BankAccount [not null]
+}
+
+Table CryptoPortfolio {
+  id String [pk]
   userId Int [not null]
   exchanges String [not null, default: 'binance']
   tradingType TradingType [not null]
@@ -11,18 +47,18 @@ Table UserCryptoProfile {
   secretKey String [not null]
   updateTime DateTime
   balances AssetBalance [not null]
-  historicalBalances HistoricalCryptoBalance [not null]
   user User [not null]
+  historicalBalances HistoricalCryptoBalance [not null]
 }
 
 Table AssetBalance {
   id String [pk]
-  cryptoProfileId String [not null]
   assetInfoId String [not null]
   balance Float [not null]
   locked Float [not null]
+  cryptoPortfolioId String [not null]
   assetInfo AssetInfo [not null]
-  cryptoProfile UserCryptoProfile [not null]
+  cryptoPortfolio CryptoPortfolio [not null]
 }
 
 Table AssetInfo {
@@ -54,16 +90,40 @@ Table AssetPrice {
 }
 
 Table HistoricalCryptoBalance {
-  cryptoProfileId String [not null]
   time DateTime [not null]
   estimatedBalance Float [not null]
   changePercent Float [not null]
   changeBalance Float [not null]
-  cryptoProfile UserCryptoProfile [not null]
+  cryptoPortfolioId String [not null]
+  cryptoPortfolio CryptoPortfolio [not null]
 
   indexes {
-    (cryptoProfileId, time) [unique]
+    (cryptoPortfolioId, time) [unique]
   }
+}
+
+Table ExpenseCategory {
+  id String [pk]
+  userId Int [not null]
+  name String [not null]
+  color String [not null]
+  description String
+  expenses Expense [not null]
+  user User [not null]
+}
+
+Table Expense {
+  id String [pk]
+  userId Int [not null]
+  categoryId String [not null]
+  bankTransactionId String [not null]
+  name String [not null]
+  description String
+  amount Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  category ExpenseCategory [not null]
+  user User [not null]
+  bankTransaction BankTransaction [not null]
 }
 
 Table User {
@@ -73,7 +133,10 @@ Table User {
   password String [not null]
   otp String
   otpPurpose OtpPurpose
-  cryptoProfiles UserCryptoProfile [not null]
+  cryptoPortfolios CryptoPortfolio [not null]
+  bankManager BankManager [not null]
+  expenseCategories ExpenseCategory [not null]
+  expenses Expense [not null]
 }
 
 Table asset_price_5m {
@@ -132,6 +195,30 @@ Table asset_price_1M {
   }
 }
 
+Table historical_crypto_balance_1h {
+  time DateTime [not null]
+  estimatedBalance Float
+  changeBalance Float
+  changePercent Float
+  cryptoPortfolioId String [not null]
+
+  indexes {
+    (cryptoPortfolioId, time) [unique]
+  }
+}
+
+Table historical_crypto_balance_1d {
+  time DateTime [not null]
+  estimatedBalance Float
+  changeBalance Float
+  changePercent Float
+  cryptoPortfolioId String [not null]
+
+  indexes {
+    (cryptoPortfolioId, time) [unique]
+  }
+}
+
 Enum TradingType {
   FUTURES
   SPOT
@@ -142,12 +229,26 @@ Enum OtpPurpose {
   RESET_PASSWORD
 }
 
-Ref: UserCryptoProfile.userId > User.id
+Ref: BankManager.userId > User.id
+
+Ref: BankAccount.bankManagerId > BankManager.id
+
+Ref: BankTransaction.bankId > BankAccount.id
+
+Ref: CryptoPortfolio.userId > User.id
 
 Ref: AssetBalance.assetInfoId > AssetInfo.id
 
-Ref: AssetBalance.cryptoProfileId > UserCryptoProfile.profileId
+Ref: AssetBalance.cryptoPortfolioId > CryptoPortfolio.id
 
 Ref: AssetPrice.assetInfoId > AssetInfo.id
 
-Ref: HistoricalCryptoBalance.cryptoProfileId > UserCryptoProfile.profileId
+Ref: HistoricalCryptoBalance.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: ExpenseCategory.userId > User.id
+
+Ref: Expense.categoryId > ExpenseCategory.id
+
+Ref: Expense.userId > User.id
+
+Ref: Expense.bankTransactionId > BankTransaction.id

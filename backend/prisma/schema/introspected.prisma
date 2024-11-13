@@ -45,3 +45,23 @@ view asset_price_1M {
 
   @@unique([assetInfoId, open_time])
 }
+
+view historical_crypto_balance_1h {
+  time              DateTime @db.Timestamp(6)
+  estimatedBalance  Float?
+  changeBalance     Float?
+  changePercent     Float?
+  cryptoPortfolioId String
+
+  @@unique([cryptoPortfolioId, time])
+}
+
+view historical_crypto_balance_1d {
+  time              DateTime @db.Timestamp(6)
+  estimatedBalance  Float?
+  changeBalance     Float?
+  changePercent     Float?
+  cryptoPortfolioId String
+
+  @@unique([cryptoPortfolioId, time])
+}

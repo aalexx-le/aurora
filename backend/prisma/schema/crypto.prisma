@@ -1,5 +1,5 @@
-model UserCryptoProfile {
-  profileId          String                    @id @default(uuid())
+model CryptoPortfolio {
+  id                 String                    @id @default(uuid())
   userId             Int
   exchanges          String                    @default("binance")
   tradingType        TradingType
@@ -7,18 +7,18 @@ model UserCryptoProfile {
   secretKey          String
   updateTime         DateTime?
   balances           AssetBalance[]
-  historicalBalances HistoricalCryptoBalance[]
   user               User                      @relation(fields: [userId], references: [id])
+  historicalBalances HistoricalCryptoBalance[]
 }
 
 model AssetBalance {
-  id              String            @id @default(uuid())
-  cryptoProfileId String
-  assetInfoId     String
-  balance         Float
-  locked          Float
-  assetInfo       AssetInfo         @relation(fields: [assetInfoId], references: [id])
-  cryptoProfile   UserCryptoProfile @relation(fields: [cryptoProfileId], references: [profileId])
+  id                String          @id @default(uuid())
+  assetInfoId       String
+  balance           Float
+  locked            Float
+  cryptoPortfolioId String
+  assetInfo         AssetInfo       @relation(fields: [assetInfoId], references: [id])
+  cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
 }
 
 model AssetInfo {
@@ -48,14 +48,14 @@ model AssetPrice {
 }
 
 model HistoricalCryptoBalance {
-  cryptoProfileId  String
-  time             DateTime
-  estimatedBalance Float
-  changePercent    Float
-  changeBalance    Float
-  cryptoProfile    UserCryptoProfile @relation(fields: [cryptoProfileId], references: [profileId])
+  time              DateTime
+  estimatedBalance  Float
+  changePercent     Float
+  changeBalance     Float
+  cryptoPortfolioId String
+  cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
 
-  @@unique([cryptoProfileId, time])
+  @@unique([cryptoPortfolioId, time])
 }
 
 enum TradingType {

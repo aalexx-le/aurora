@@ -5,9 +5,12 @@ generator client {
 }
 
 generator nestgraphql {
-  provider = "node node_modules/prisma-nestjs-graphql"
-  output   = "../../src/entities"
-  reExport = "Directories"
+  provider        = "node node_modules/prisma-nestjs-graphql"
+  output          = "../../src/entities"
+  reExport        = "Directories"
+  omitModelsCount = true
+  noTypeId        = true
+  emitBlocks      = ["models", "enums"]
 }
 
 generator dbml {

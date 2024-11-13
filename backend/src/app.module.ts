@@ -8,6 +8,9 @@ import { join } from "path";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UserModule } from "./modules/user/user.module";
 import { CryptoModule } from "./modules/crypto/crypto.module";
+import { BankModule } from "./modules/bank/bank.module";
+import { ExpenseModule } from "./modules/expense/expense.module";
+import { ExpenseCategoryModule } from "./modules/expense-category/expense-category.module";
 
 @Module({
     imports: [
@@ -66,6 +69,9 @@ import { CryptoModule } from "./modules/crypto/crypto.module";
         UserModule,
         AuthModule,
         CryptoModule,
+        BankModule,
+        ExpenseModule,
+        ExpenseCategoryModule,
     ],
     controllers: [],
     providers: [],
