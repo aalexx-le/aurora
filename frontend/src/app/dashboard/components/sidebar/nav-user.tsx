@@ -1,15 +1,8 @@
 "use client";
 
-import {
-    BadgeCheck,
-    Bell,
-    ChevronsUpDown,
-    CreditCard,
-    LogOut,
-    Sparkles,
-} from "lucide-react";
+import {BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles,} from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,16 +12,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from "@/components/ui/sidebar";
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { authActions } from "@/state/slices/auth.slice";
+import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar";
+import {useAppDispatch, useAppSelector} from "@/state/hooks";
+import {authActions} from "@/state/slices/auth.slice";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 
 export function NavUser() {
     const { isMobile } = useSidebar();

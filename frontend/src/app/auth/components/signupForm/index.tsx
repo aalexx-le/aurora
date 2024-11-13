@@ -1,66 +1,24 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import {
-    SignupMutation,
-    SignupMutationVariables,
-    UserCreateInput,
-} from "@/gql/graphql";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { useRouter } from "next/navigation";
-import { authActions } from "@/state/slices/auth.slice";
-import { z } from "zod";
-import { useMutation } from "@apollo/client";
-import { SIGNUP_MUTATION } from "@/api/auth";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {useForm} from "react-hook-form";
+import {SignupMutation, SignupMutationVariables,} from "@/gql/graphql";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useAppDispatch, useAppSelector} from "@/state/hooks";
+import {useRouter} from "next/navigation";
+import {authActions} from "@/state/slices/auth.slice";
+import {useMutation} from "@apollo/client";
+import {SIGNUP_MUTATION} from "@/api/auth";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
-import { GraphQLError } from "graphql/error";
+import {GraphQLError} from "graphql/error";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
-
-interface ISignupForm extends UserCreateInput {
-    name: string;
-    confirmPassword: string;
-}
-
-const signupSchema = z
-    .object({
-        name: z.string().default(""),
-        email: z
-            .string()
-            .min(1, "please enter a valid email")
-            .email("Email is not valid")
-            .default(""),
-        password: z
-            .string()
-            .min(8, "Password must have more than 8 character")
-            .default(""),
-        confirmPassword: z.string().default(""),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: "Password doesn't match",
-        path: ["confirmPassword"],
-    });
+import {signupSchema, SignupSchemaType} from "@/lib/schema/signup";
 
 export function SignupForm() {
-    const form = useForm<ISignupForm>({
+    const form = useForm<SignupSchemaType>({
         resolver: zodResolver(signupSchema),
         defaultValues: {
             name: "",
@@ -80,7 +38,7 @@ export function SignupForm() {
     const dispatch = useAppDispatch();
     const router = useRouter();
 
-    async function onSubmit(signupFormData: ISignupForm) {
+    async function onSubmit(signupFormData: SignupSchemaType) {
         try {
             const { confirmPassword, ...signupDto } = signupFormData;
             await signup({ variables: { data: signupDto } });

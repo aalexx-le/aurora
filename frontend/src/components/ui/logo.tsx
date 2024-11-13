@@ -1,7 +1,7 @@
-import { BrainCircuit } from "lucide-react";
+import {BrainCircuit} from "lucide-react";
 import Link from "next/link";
 import HOME_ROUTE from "@/lib/routes/home.route";
-import { cn } from "@/lib/utils";
+import {cn} from "@/lib/utils";
 
 interface IProps {
     className?: string;

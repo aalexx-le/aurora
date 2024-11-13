@@ -1,41 +1,15 @@
 "use client";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-} from "@/components/ui/card";
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-    ComposedChart,
-    Line,
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-} from "recharts";
-import React, {
-    Dispatch,
-    SetStateAction,
-    useCallback,
-    useMemo,
-    useState,
-} from "react";
-import moment from "moment/moment";
-import { GetAssetQuery } from "@/gql/graphql";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { useAssetPrice } from "@/app/dashboard/finance/asset-price/[assetId]/useAssetPrice";
+import {Card, CardContent, CardDescription, CardHeader,} from "@/components/ui/card";
+import {ChartContainer, ChartTooltip, ChartTooltipContent,} from "@/components/ui/chart";
+import {ComposedChart, Line, ResponsiveContainer, XAxis, YAxis,} from "recharts";
+import React, {Dispatch, SetStateAction, useState,} from "react";
+import {GetAssetQuery} from "@/gql/graphql";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select";
+import {useAssetPrice} from "@/app/dashboard/finance/asset-price/[assetId]/useAssetPrice";
+import {useChartConfig} from "@/app/dashboard/finance/asset-price/[assetId]/useChartConfig";
+import {useChartFormatter} from "@/app/dashboard/finance/asset-price/[assetId]/useChartFormatter";
 
 interface IProps {
     historicalPrice: GetAssetQuery["getAssetPrices"];
@@ -73,32 +47,8 @@ function AssetPricePage({
     setTimeFrame,
     timeFrame,
 }: IProps) {
-    const timeFormatterForTooltip = useCallback(
-        (time: string) =>
-            moment(time).utcOffset("+00:00").format("MMMM Do YYYY, h:mm a"),
-        [],
-    );
-    const balanceFormatter = useCallback(
-        (balance: number) => `$${balance}`,
-        [],
-    );
-
-    const chartConfig = useMemo(
-        () => ({
-            trend:
-                historicalPrice[historicalPrice.length - 1]?.openPrice >=
-                historicalPrice[0]?.openPrice
-                    ? {
-                          label: "Up",
-                          color: "hsl(var(--chart-2))",
-                      }
-                    : {
-                          label: "Down",
-                          color: "hsl(var(--chart-5))",
-                      },
-        }),
-        [historicalPrice],
-    );
+    const { balanceFormatter, timeFormatterForTooltip } = useChartFormatter();
+    const chartConfig = useChartConfig(historicalPrice);
 
     return (
         <Card className="flex-1">
@@ -164,7 +114,6 @@ function AssetPricePage({
                                 axisLine={false}
                             />
                             {/*<Bar dataKey="volume" fill="var(--color-trend)" radius={4} barSize={20}/>*/}
-
                             <Line
                                 label={false}
                                 dataKey="closePrice"

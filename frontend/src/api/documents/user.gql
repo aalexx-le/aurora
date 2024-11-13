@@ -1,0 +1,9 @@
+query GetMe {
+    getMe {
+        email
+        id
+        name
+        otp
+        otpPurpose
+    }
+}

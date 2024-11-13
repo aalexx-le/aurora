@@ -1,0 +1,25 @@
+model ExpenseCategory {
+  id          String  @id @default(uuid())
+  userId      Int
+  name        String
+  color       String
+  description String?
+
+  expenses Expense[]
+  user     User      @relation(fields: [userId], references: [id])
+}
+
+model Expense {
+  id                String   @id @default(uuid())
+  userId            Int
+  categoryId        String
+  bankTransactionId String
+  name              String
+  description       String?
+  amount            Float
+  createdAt         DateTime @default(now())
+
+  category        ExpenseCategory @relation(fields: [categoryId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+  bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id])
+}

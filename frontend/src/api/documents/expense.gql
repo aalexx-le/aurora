@@ -1,0 +1,61 @@
+# queries and mutations for the expense
+query GetExpenses($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
+    getExpenses(userId: $userId, startDate: $startDate, endDate: $endDate) {
+        id
+        category {
+            id
+            color
+            name
+        }
+        transaction {
+            id
+            amount
+            spentAmount
+            description
+        }
+        createdAt
+        description
+        amount
+        name
+    }
+}
+
+mutation CreateExpense($data: CreateExpenseInput!) {
+    createExpense(data: $data) {
+        id
+        description
+        amount
+        name
+    }
+}
+
+mutation UpdateExpense($id: String!, $data: UpdateExpenseInput!) {
+    updateExpense(id: $id, data: $data) {
+        id
+        description
+        amount
+        name
+    }
+}
+
+mutation RemoveExpense($id: String!) {
+    removeExpense(id: $id) {
+        id
+        description
+        amount
+        name
+    }
+}
+
+mutation RemoveExpenses($ids: [String!]!) {
+    removeExpenses(ids: $ids)
+}
+
+
+
+
+
+
+
+
+

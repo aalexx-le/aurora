@@ -2,43 +2,21 @@
 
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { LoginReqDto } from "@/gql/graphql";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { authActions } from "@/state/slices/auth.slice";
+import {Button} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useAppDispatch, useAppSelector} from "@/state/hooks";
+import {authActions} from "@/state/slices/auth.slice";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
-import { useSubmitError } from "@/app/auth/components/signupForm/useSubmitError";
+import {useSubmitError} from "@/app/auth/components/signupForm/useSubmitError";
+import {loginSchema, LoginSchemaType} from "@/lib/schema/login";
 
-const loginSchema = z.object({
-    email: z
-        .string()
-        .min(1, "please enter a valid email")
-        .email("Email is not valid"),
-    password: z.string().min(8, "Password must have more than 8 character"),
-});
 
 export function LoginForm() {
-    const form = useForm<LoginReqDto>({
+    const form = useForm<LoginSchemaType>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "",
@@ -53,7 +31,7 @@ export function LoginForm() {
     const dispatch = useAppDispatch();
 
     useSubmitError(setError);
-    async function onSubmit(loginDto: LoginReqDto) {
+    async function onSubmit(loginDto: LoginSchemaType) {
         await dispatch(authActions.loginWithPassword(loginDto));
         await dispatch(authActions.loginWithToken());
     }

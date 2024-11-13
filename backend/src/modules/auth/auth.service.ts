@@ -4,13 +4,14 @@ import {
     UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User, UserCreateInput } from "src/entities/user";
+import { User } from "src/entities/user";
 import { UserService } from "../user/user.service";
 import * as Bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
 import { VerifyDto } from "./dto/verify.dto";
 import { OtpPurpose } from "../../entities/prisma";
 import { TOTP as otpGenerator } from "totp-generator";
+import { CreateUserInput } from "../user/dto/create-user.input";
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
         private userService: UserService,
         private configService: ConfigService,
     ) {}
+
     async getAccessToken(user: User): Promise<string> {
         return this.jwtService.sign(
             {
@@ -27,6 +29,7 @@ export class AuthService {
             { expiresIn: this.configService.get("JWT_AT_EXP_TIME") },
         );
     }
+
     async getRefreshToken(user: User): Promise<string> {
         return this.jwtService.sign(
             {
@@ -36,7 +39,7 @@ export class AuthService {
         );
     }
 
-    async createAuthUser(signupDto: UserCreateInput) {
+    async createAuthUser(signupDto: CreateUserInput) {
         const existingUser = await this.userService.findByAccount(
             signupDto.email,
         );
@@ -49,11 +52,9 @@ export class AuthService {
         );
 
         const newUser = await this.userService.create({
-            data: {
-                ...signupDto,
-                otp,
-                otpPurpose: OtpPurpose.VERIFY_ACCOUNT,
-            },
+            ...signupDto,
+            otp,
+            otpPurpose: OtpPurpose.VERIFY_ACCOUNT,
         });
         return newUser;
     }
@@ -70,10 +71,7 @@ export class AuthService {
         const accessToken = await this.getAccessToken(user);
         const refreshToken = await this.getRefreshToken(user);
 
-        await this.userService.update({
-            where: { id: user.id },
-            data: { otp: null, otpPurpose: null },
-        });
+        await this.userService.update(user.id, { otp: null, otpPurpose: null });
 
         return {
             accessToken,

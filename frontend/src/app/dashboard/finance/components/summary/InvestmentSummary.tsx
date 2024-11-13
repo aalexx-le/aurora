@@ -1,11 +1,15 @@
-import { GetCryptoProfileQuery } from "@/gql/graphql";
+'use client';
+
+import {cn} from "@/lib/utils";
+import {GetCryptoPortfolioQuery} from "@/gql/graphql";
+import MoneyWithCurrency from "@/components/ui/money-with-currency";
 
 interface IProps {
-    profile: GetCryptoProfileQuery["getCryptoProfiles"][number];
+    profile: GetCryptoPortfolioQuery["getCryptoPortfolios"][number];
 }
 
-export default function InvestmentSummary({ profile }: IProps) {
-    const { historicalBalances } = profile;
+export default function InvestmentSummary({profile}: IProps) {
+    const {historicalBalances} = profile;
     const latestHistory = historicalBalances[historicalBalances.length - 1];
 
     return (
@@ -13,17 +17,24 @@ export default function InvestmentSummary({ profile }: IProps) {
             <h2 className="text-xl font-bold text-muted-foreground tracking-wide">
                 Estimated Balance
             </h2>
-            <p className="text-3xl font-bold">
-                {profile.historicalBalances[0]?.estimatedBalance ?? 0}
-                <span className="text-sm font-medium text-muted-foreground ml-2">
+            <div>
+                <p className="text-3xl font-bold flex items-center gap-4">
+                    <MoneyWithCurrency amount={latestHistory.estimatedBalance} />
+                </p>
+                <p className="text-sm font-bold text-muted-foreground">
+                    <span>&#8776; </span>
+                    {latestHistory.estimatedBalance.toFixed(2)}
+                    <span className="text-xs font-medium ml-2">
                     USDT
                 </span>
-            </p>
+                </p>
+            </div>
             <p className="text-sm text-muted-foreground">
                 Today&#39;s PnL
-                <span className="font-bold ml-2 text-chart-2">
-                    +${latestHistory.changeBalance.toFixed(2)} (
-                    {latestHistory.changePercent.toFixed(2)}%)
+                <span
+                    className={cn("font-bold ml-2", latestHistory.changeBalance > 0 ? "text-chart-2" : "text-chart-5")}>
+                    {latestHistory.changeBalance > 0 ? "+" : ""}<MoneyWithCurrency amount={latestHistory.changeBalance} />
+                    ({latestHistory.changePercent.toFixed(2)}%)
                 </span>
             </p>
         </div>

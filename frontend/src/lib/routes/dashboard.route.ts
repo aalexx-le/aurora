@@ -5,6 +5,9 @@ const DASHBOARD_ROUTE = {
         investment: {
             value: "/dashboard/finance/investment",
         },
+        bankManagement: {
+            value: "/dashboard/finance/bank-management",
+        },
         assetPrice: {
             value: (assetInfoId: string) =>
                 `/dashboard/finance/asset-price/${assetInfoId}`,

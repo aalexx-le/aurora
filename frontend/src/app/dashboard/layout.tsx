@@ -1,11 +1,7 @@
 "use client";
 
 import DashBoardSidebar from "@/app/dashboard/components/sidebar";
-import {
-    SidebarInset,
-    SidebarProvider,
-    SidebarTrigger,
-} from "@/components/ui/sidebar";
+import {SidebarInset, SidebarProvider, SidebarTrigger,} from "@/components/ui/sidebar";
 import AuthGuard from "@/app/AuthGuard";
 
 export default function RootLayout({

@@ -7,18 +7,18 @@ import {
     NewAssetPrice5mSubscriptionVariables,
 } from "@/gql/graphql";
 
-export const CREATE_CRYPTO_PROFILE = gql`
-    mutation CreateCryptoProfile($data: CreateCryptoProfileInput!) {
-        createCryptoProfile(data: $data) {
+export const CREATE_CRYPTO_PORTFOLIO = gql`
+    mutation CreateCryptoProfile($data: CreateCryptoPortfolioInput!) {
+        createCryptoPortfolio(data: $data) {
             userId
         }
     }
 `;
 
-export const GET_CRYPTO_PROFILES = gql`
-    query GetCryptoProfile($data: GetCryptoProfileInput!) {
-        getCryptoProfiles(data: $data) {
-            profileId
+export const GET_CRYPTO_PORTFOLIOS = gql`
+    query GetCryptoProfile($data: GetCryptoPortfolioInput!) {
+        getCryptoPortfolios(data: $data) {
+            id
             exchanges
             tradingType
             historicalBalances {
@@ -42,10 +42,11 @@ export const GET_CRYPTO_PROFILES = gql`
 
 export const GET_ASSET = gql`
     query GetAsset(
+        $pagination: PaginationInput!
         $getAssetPriceData: GetAssetPriceInput!
         $getAssetInfoData: GetAssetInfoInput!
     ) {
-        getAssetPrices(data: $getAssetPriceData) {
+        getAssetPrices(data: $getAssetPriceData, pagination: $pagination) {
             open_time
             openPrice
             closePrice

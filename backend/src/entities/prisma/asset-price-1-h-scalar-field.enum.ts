@@ -1,4 +1,4 @@
-import { registerEnumType } from "@nestjs/graphql";
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum Asset_price_1hScalarFieldEnum {
     open_time = "open_time",
@@ -7,10 +7,8 @@ export enum Asset_price_1hScalarFieldEnum {
     closePrice = "closePrice",
     highPrice = "highPrice",
     lowPrice = "lowPrice",
-    volume = "volume",
+    volume = "volume"
 }
 
-registerEnumType(Asset_price_1hScalarFieldEnum, {
-    name: "Asset_price_1hScalarFieldEnum",
-    description: undefined,
-});
+
+registerEnumType(Asset_price_1hScalarFieldEnum, { name: 'Asset_price_1hScalarFieldEnum', description: undefined })

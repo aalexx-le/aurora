@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
-import { cn } from "@/lib/utils";
+import {cn} from "@/lib/utils";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -253,7 +253,7 @@ const ChartTooltipContent = React.forwardRef<
                                         )}
                                         <div
                                             className={cn(
-                                                "flex flex-1 justify-between leading-none",
+                                                "flex flex-1 gap-2 justify-between leading-none",
                                                 nestLabel
                                                     ? "items-end"
                                                     : "items-center",
@@ -356,7 +356,7 @@ const ChartLegendContent = React.forwardRef<
 );
 ChartLegendContent.displayName = "ChartLegend";
 
-// Helper to extract item config from a payload.
+// Helper to extract item config from income-expense-ratio-bar-chart payload.
 function getPayloadConfigFromPayload(
     config: ChartConfig,
     payload: unknown,

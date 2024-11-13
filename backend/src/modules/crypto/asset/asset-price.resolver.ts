@@ -1,13 +1,17 @@
 import { Args, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { AssetPrice } from "../../../entities/asset-price";
-import { GetAssetPriceArgs } from "./dto/get-asset-price.input";
 import { CryptoAssetService } from "./asset.service";
-import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
 import { Inject } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
+import {
+    GetAssetPriceArgs,
+    GetAssetPriceInput,
+} from "./dto/get-asset-price.input";
 import { AssetPriceEventListener } from "./asset-price.event-listener";
-import { AssetPriceInterval } from "./enum/asset-price-interval";
+import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
+import { PaginationInput } from "../../../shared/pagination/pagination.args";
 
+// @UseGuards(JwtGuard)
 @Resolver(() => AssetPrice)
 export class CryptoAssetPriceResolver {
     constructor(
@@ -16,12 +20,11 @@ export class CryptoAssetPriceResolver {
     ) {}
 
     @Query(() => [AssetPrice], { name: "getAssetPrices" })
-    async get(@Args() args: GetAssetPriceArgs) {
-        const { assetInfoId, timeFrame } = args.data;
-        return this.cryptoAssetService.findManyPrices(
-            assetInfoId,
-            timeFrame as AssetPriceInterval,
-        );
+    async get(
+        @Args("data") args: GetAssetPriceInput,
+        @Args("pagination") pagination: PaginationInput,
+    ) {
+        return this.cryptoAssetService.findManyPrices(args, pagination);
     }
 
     @Subscription(() => AssetPrice, {

@@ -1,33 +1,42 @@
-import { Field } from "@nestjs/graphql";
-import { ObjectType } from "@nestjs/graphql";
-import { ID } from "@nestjs/graphql";
-import { OtpPurpose } from "../prisma/otp-purpose.enum";
-import { UserCryptoProfile } from "../user-crypto-profile/user-crypto-profile.model";
-import { UserCount } from "./user-count.output";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Int } from '@nestjs/graphql';
+import { OtpPurpose } from '../prisma/otp-purpose.enum';
+import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
+import { BankManager } from '../bank-manager/bank-manager.model';
+import { ExpenseCategory } from '../expense-category/expense-category.model';
+import { Expense } from '../expense/expense.model';
 
 @ObjectType()
 export class User {
-    @Field(() => ID, { nullable: false })
+
+    @Field(() => Int, {nullable:false})
     id!: number;
 
-    @Field(() => String, { nullable: false })
+    @Field(() => String, {nullable:false})
     email!: string;
 
-    @Field(() => String, { nullable: true })
+    @Field(() => String, {nullable:true})
     name!: string | null;
 
-    @Field(() => String, { nullable: false })
+    @Field(() => String, {nullable:false})
     password!: string;
 
-    @Field(() => String, { nullable: true })
+    @Field(() => String, {nullable:true})
     otp!: string | null;
 
-    @Field(() => OtpPurpose, { nullable: true })
+    @Field(() => OtpPurpose, {nullable:true})
     otpPurpose!: keyof typeof OtpPurpose | null;
 
-    @Field(() => [UserCryptoProfile], { nullable: true })
-    cryptoProfiles?: Array<UserCryptoProfile>;
+    @Field(() => [CryptoPortfolio], {nullable:true})
+    cryptoPortfolios?: Array<CryptoPortfolio>;
 
-    @Field(() => UserCount, { nullable: false })
-    _count?: UserCount;
+    @Field(() => [BankManager], {nullable:true})
+    bankManager?: Array<BankManager>;
+
+    @Field(() => [ExpenseCategory], {nullable:true})
+    expenseCategories?: Array<ExpenseCategory>;
+
+    @Field(() => [Expense], {nullable:true})
+    expenses?: Array<Expense>;
 }

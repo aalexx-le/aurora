@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
-import { useAppSelector } from "@/state/hooks";
+import {useAppSelector} from "@/state/hooks";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -9,8 +9,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CircleUser } from "lucide-react";
-import { authActions } from "@/state/slices/auth.slice";
+import {CircleUser} from "lucide-react";
+import {authActions} from "@/state/slices/auth.slice";
 
 export function ProfileDropdownMenu() {
     const {

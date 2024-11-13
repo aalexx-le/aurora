@@ -1,9 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/state/hooks";
-import { useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
-import { authActions } from "@/state/slices/auth.slice";
-import { getCookie } from "cookies-next";
-import { AuthParams } from "@/lib/constants/params";
+import {useAppDispatch, useAppSelector} from "@/state/hooks";
+import {useRouter} from "next/navigation";
+import {useLayoutEffect} from "react";
+import {authActions} from "@/state/slices/auth.slice";
+import {getCookie} from "cookies-next";
+import {AuthParams} from "@/lib/constants/params";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const {

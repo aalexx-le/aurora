@@ -19,15 +19,31 @@ export const useAssetPrice = (assetInfoId: string, timeFrame: string) => {
         variables: { data: { assetInfoId, timeFrame } },
     });
 
-    const { data, loading } = useQuery<GetAssetQuery, GetAssetQueryVariables>(
-        GET_ASSET,
-        {
-            variables: {
-                getAssetPriceData: { assetInfoId, timeFrame },
-                getAssetInfoData: { id: assetInfoId },
-            },
+    const { data, loading, fetchMore } = useQuery<
+        GetAssetQuery,
+        GetAssetQueryVariables
+    >(GET_ASSET, {
+        variables: {
+            getAssetPriceData: { assetInfoId, timeFrame },
+            getAssetInfoData: { id: assetInfoId },
+            pagination: { take: 500 },
         },
-    );
+    });
+
+    const fetchMoreData = async () => {
+        if (!data || loading) {
+            return;
+        }
+
+        await fetchMore({
+            variables: {
+                pagination: {
+                    take: 10,
+                    after: data.getAssetPrices[0].open_time,
+                },
+            },
+        });
+    };
 
     const newPrice = getSubscriptNewAssetPriceResult(newData);
 
@@ -41,5 +57,10 @@ export const useAssetPrice = (assetInfoId: string, timeFrame: string) => {
             : data.getAssetPrices;
     }, [data, newPrice, loading]);
 
-    return { data: historicalData, assetInfo: data?.getAssetInfo, loading };
+    return {
+        data: historicalData,
+        fetchMore: fetchMoreData,
+        assetInfo: data?.getAssetInfo,
+        loading,
+    };
 };

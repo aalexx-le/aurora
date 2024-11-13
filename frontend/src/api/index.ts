@@ -15,11 +15,12 @@ import { getMainDefinition } from "@apollo/client/utilities";
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors)
-        graphQLErrors.map(({ message, locations, path }) =>
+        graphQLErrors.map(({ message, locations, path }) => {
             console.log(
                 `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-            ),
-        );
+            );
+            console.log(locations?.[0].toString());
+        });
 
     if (networkError) console.log(`[Network error]: ${networkError}`);
 });

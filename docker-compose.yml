@@ -1,59 +1,64 @@
 services:
-  timescaledb:
-    container_name: time_series_db
+  database:
+    container_name: database
     image: timescale/timescaledb-ha:pg16
     environment:
-      POSTGRES_USER: postgre
-      POSTGRES_PASSWORD: 'abcd1234'
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - timeseries-data:/home/postgres/pgdata/data
+      - timeseries-details:/home/postgres/pgdata/details
     restart: unless-stopped
 
-  server:
-    container_name: api-server
-    image: xela_server:latest
+  asset-price-fetcher:
+    container_name: asset-price-fetcher
+    image: registry.gitlab.com/nnaaaa/xela/asset-price-fetcher
     environment:
-      DATABASE_URL: "postgresql://postgre:abcd1234@time_series_db:5432/xela?schema=public"
-      MESSAGE_BROKER_URL: "broker:9092"
-      OTP_KEY: "JBSWY3DPEHPK3PXP"
-      JWT_SECRET: "xelaqdtjlz"
-      JWT_AT_EXP_TIME: "1d"
-      JWT_RT_EXP_TIME: "360d"
-    ports:
-      - "5001:5001"
-    depends_on:
-      - timescaledb
-      - broker
+      DATABASE_URL: ${DATABASE_URL}
+    restart: unless-stopped
+#  server:
+#    container_name: api-server
+#    image: xela_server:latest
+#    environment:
+#      DATABASE_URL: "postgresql://postgre:abcd1234@time_series_db:5432/xela?schema=public"
+#      MESSAGE_BROKER_URL: "broker:9092"
+#      OTP_KEY: "JBSWY3DPEHPK3PXP"
+#      JWT_SECRET: "xelaqdtjlz"
+#      JWT_AT_EXP_TIME: "1d"
+#      JWT_RT_EXP_TIME: "360d"
+#    ports:
+#      - "5001:5001"
+#    depends_on:
+#      - timescaledb
+#      - broker
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_DOCKER_PORT}
+      ZOOKEEPER_CLIENT_PORT: 22181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:${ZOOKEEPER_DOCKER_PORT}
+      - "22181:22181"
+    restart: unless-stopped
 
   broker:
     image: confluentinc/cp-kafka:7.3.0
     container_name: broker
     ports:
-    # To learn about configuring Kafka for access across networks see
-    # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
-      - "${KAFKA_DOCKER_PORT}:${KAFKA_DOCKER_PORT}"
       - "29092:29092"
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:${ZOOKEEPER_DOCKER_PORT}'
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:22181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_INTERNAL://broker:${KAFKA_DOCKER_PORT}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_INTERNAL://broker:${MESSAGE_BROKER_PORT}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    restart: unless-stopped
 
   kafka_ui:
     image: provectuslabs/kafka-ui
@@ -64,14 +69,13 @@ services:
       - '8000:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: kafka
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:${KAFKA_DOCKER_PORT}
-      KAFKA_BROKERCONNECT: broker:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:${MESSAGE_BROKER_PORT}
+      KAFKA_BROKERCONNECT: broker:${MESSAGE_BROKER_PORT}
     depends_on:
       - broker
       - zookeeper
 
 volumes:
-  postgres:
   mongodb:
   mongoconfig:
   timeseries-data:

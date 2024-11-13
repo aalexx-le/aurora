@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { type DialogProps } from "@radix-ui/react-dialog";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Command as CommandPrimitive } from "cmdk";
+import {type DialogProps} from "@radix-ui/react-dialog";
+import {MagnifyingGlassIcon} from "@radix-ui/react-icons";
+import {Command as CommandPrimitive} from "cmdk";
 
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {cn} from "@/lib/utils";
+import {Dialog, DialogContent} from "@/components/ui/dialog";
 
 const Command = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive>,
@@ -120,7 +120,7 @@ const CommandItem = React.forwardRef<
     <CommandPrimitive.Item
         ref={ref}
         className={cn(
-            "relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-zinc-100 data-[selected=true]:text-zinc-900 data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:data-[selected=true]:bg-zinc-800 dark:data-[selected=true]:text-zinc-50",
+            "relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none details-[disabled=true]:pointer-events-none details-[selected=true]:bg-zinc-100 details-[selected=true]:text-zinc-900 details-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:details-[selected=true]:bg-zinc-800 dark:details-[selected=true]:text-zinc-50",
             className,
         )}
         {...props}

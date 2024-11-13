@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Plus} from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -9,37 +9,21 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import {
-    CreateCryptoProfileInput,
-    CreateCryptoProfileMutation,
-    MutationCreateCryptoProfileArgs,
-} from "@/gql/graphql";
-import { useMutation } from "@apollo/client";
-import { CREATE_CRYPTO_PROFILE } from "@/api/crypto";
-import { useAppSelector } from "@/state/hooks";
+import {Input} from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useState} from "react";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
+import {CreateCryptoPortfolioMutation, MutationCreateCryptoPortfolioArgs,} from "@/gql/graphql";
+import {useMutation} from "@apollo/client";
+import {CREATE_CRYPTO_PORTFOLIO} from "@/api/crypto";
+import {useAppSelector} from "@/state/hooks";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
+import {CreateCryptoPortfolioInput, createCryptoPortfolioSchema} from "@/lib/schema/cryptoPortfolio";
 
 interface IProps {
     refresh: () => void;
 }
-
-const createCryptoProfileSchema = z.object({
-    apiKey: z.string().min(1, "Please enter your API key"),
-    secretKey: z.string().min(1, "Please enter your Secret key"),
-});
 
 export default function ProfileCreator({ refresh }: IProps) {
     const {
@@ -47,33 +31,33 @@ export default function ProfileCreator({ refresh }: IProps) {
     } = useAppSelector((state) => state.auth);
     const [openDialog, setOpenDialog] = useState(false);
     const [loading, setLoading] = useState(false);
-    const form = useForm<CreateCryptoProfileInput>({
-        resolver: zodResolver(createCryptoProfileSchema),
+    const form = useForm<CreateCryptoPortfolioInput>({
+        resolver: zodResolver(createCryptoPortfolioSchema),
     });
     const { setError } = form;
     const [createProfile] = useMutation<
-        CreateCryptoProfileMutation,
-        MutationCreateCryptoProfileArgs
-    >(CREATE_CRYPTO_PROFILE);
+        CreateCryptoPortfolioMutation,
+        MutationCreateCryptoPortfolioArgs
+    >(CREATE_CRYPTO_PORTFOLIO);
 
-    async function onSubmit(createProfileDto: CreateCryptoProfileInput) {
+    async function onSubmit(createPortfolioDto: CreateCryptoPortfolioInput) {
         try {
             if (!user) return;
             setLoading(true);
 
             // TODO: check to connect to binance successfully
             // const client = new MainClient({
-            //     api_key: createProfileDto.apiKey,
-            //     api_secret: createProfileDto.secretKey
+            //     api_key: createPortfolioDto.apiKey,
+            //     api_secret: createPortfolioDto.secretKey
             // })
             // // const client = Binance({
-            // //     apiKey: createProfileDto.apiKey,
-            // //     apiSecret: createProfileDto.secretKey
+            // //     apiKey: createPortfolioDto.apiKey,
+            // //     apiSecret: createPortfolioDto.secretKey
             // // })
-            // const data = await client.getAccountTradeList()
-            // console.log({data})
-            // const res = await login({ variables: { data: loginDto }});
-            // if (!res.data) throw new Error("Login failed.");
+            // const details = await client.getAccountTradeList()
+            // console.log({details})
+            // const res = await login({ variables: { details: loginDto }});
+            // if (!res.details) throw new Error("Login failed.");
             //
             // dispatch(authActions.loginWithPassword(loginDto));
             //
@@ -81,7 +65,7 @@ export default function ProfileCreator({ refresh }: IProps) {
             await createProfile({
                 variables: {
                     data: {
-                        ...createProfileDto,
+                        ...createPortfolioDto,
                         userId: Number(user.id),
                     },
                 },
@@ -127,13 +111,17 @@ export default function ProfileCreator({ refresh }: IProps) {
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-4"
+                        autoComplete="off"
                     >
                         <FormField
                             control={form.control}
                             name="apiKey"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>API Key</FormLabel>
+                                    <FormLabel>
+                                        API Key
+                                        <span className="text-destructive"> (require)</span>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -146,7 +134,10 @@ export default function ProfileCreator({ refresh }: IProps) {
                             name="secretKey"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Secret Key</FormLabel>
+                                    <FormLabel>
+                                        Secret Key
+                                        <span className="text-destructive"> (require)</span>
+                                    </FormLabel>
                                     <FormControl>
                                         <Input {...field} type="password" />
                                     </FormControl>

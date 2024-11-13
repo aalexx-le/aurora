@@ -1,42 +1,54 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { AssetPriceInterval } from "./enum/asset-price-interval";
+import { GetAssetPriceInput } from "./dto/get-asset-price.input";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
+import { PaginationInput } from "../../../shared/pagination/pagination.args";
 
 @Injectable()
 export class CryptoAssetService {
     private readonly logger = new Logger(CryptoAssetService.name);
     constructor(private prisma: PrismaService) {}
 
-    async findLatestPrice(assetInfoId: string, timeFrame?: AssetPriceInterval) {
-        return this.prisma[
-            this.getAssetPriceMaterializedViewName(timeFrame)
-        ].findMany({
-            where: {
-                assetInfoId,
-            },
-        });
-    }
+    async findManyPrices(
+        getAssetPriceArgs: GetAssetPriceInput,
+        pagination: PaginationInput,
+    ) {
+        const { assetInfoId, timeFrame } = getAssetPriceArgs;
+        const { take, after } = pagination;
 
-    async findManyPrices(assetInfoId: string, timeFrame?: AssetPriceInterval) {
         this.logger.log(
             `Finding asset prices for asset ${assetInfoId} with interval ${timeFrame}`,
         );
         let assetPrices = [];
+        const args: Prisma.AssetPriceFindManyArgs<DefaultArgs> = {
+            where: {
+                assetInfoId,
+            },
+            take: -1 * take,
+            orderBy: {
+                open_time: "asc",
+            },
+        };
+        if (after) {
+            args.skip = 1;
+            args.cursor = {
+                assetInfoId_open_time: {
+                    assetInfoId,
+                    open_time: after,
+                },
+            };
+        }
 
         if (timeFrame === AssetPriceInterval.MINUTE_1) {
-            assetPrices = await this.prisma.assetPrice.findMany({
-                where: {
-                    assetInfoId,
-                },
-            });
+            assetPrices = await this.prisma.assetPrice.findMany(args);
+            console.log({ assetPrices });
         } else {
-            assetPrices = this.prisma[
-                this.getAssetPriceMaterializedViewName(timeFrame)
-            ].findMany({
-                where: {
-                    assetInfoId,
-                },
-            });
+            assetPrices =
+                this.prisma[
+                    this.getAssetPriceMaterializedViewName(timeFrame)
+                ].findMany(args);
         }
 
         return assetPrices;
@@ -46,9 +58,7 @@ export class CryptoAssetService {
         return this.prisma.assetInfo.findUnique({ where: { id } });
     }
 
-    private getAssetPriceMaterializedViewName(
-        timeFrame?: AssetPriceInterval,
-    ): string {
+    private getAssetPriceMaterializedViewName(timeFrame?: string): string {
         const [time, unit] = timeFrame.split(" ");
         let formattedTimeFrame = time + unit.charAt(0);
 
