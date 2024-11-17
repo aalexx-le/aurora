@@ -4,10 +4,7 @@ import { Type } from "class-transformer";
 import { AssetInfo } from "src/entities/asset-info";
 
 @InputType()
-export class GetAssetInfoInput extends PickType(AssetInfo, ["id"]) {
-    @Field(() => String, { nullable: false })
-    id: string;
-}
+export class GetAssetInfoInput extends PickType(AssetInfo, ["id"], InputType) {}
 
 @ArgsType()
 export class GetAssetInfoArgs {

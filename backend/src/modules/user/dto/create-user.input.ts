@@ -1,14 +1,8 @@
-import {
-    ArgsType,
-    Field,
-    InputType,
-    OmitType,
-    PartialType,
-} from "@nestjs/graphql";
+import { ArgsType, Field, InputType, OmitType } from "@nestjs/graphql";
 import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { GetAssetInfoInput } from "../../crypto/asset/dto/get-asset-info.input";
-import { User } from "../../../entities/user";
+import { User } from "src/entities/user";
 
 @InputType()
 export class CreateUserInput extends OmitType(

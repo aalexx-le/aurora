@@ -9,6 +9,7 @@ import {Button} from "@/components/ui/button";
 import React, {Dispatch, SetStateAction} from "react";
 import {DotsHorizontalIcon, Pencil1Icon, TrashIcon} from "@radix-ui/react-icons";
 import {DataTableRowActionType} from "@/types";
+import {ChartSplineIcon} from "lucide-react";
 
 interface IProps<RData> {
     row: RData,
@@ -35,6 +36,13 @@ export function ActionButton<RData>({row, setAction}: IProps<RData>) {
                 >
                     <Pencil1Icon/>
                     Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    className="flex gap-2"
+                    onSelect={() => setAction(DataTableRowActionType.CREATE)}
+                >
+                    <ChartSplineIcon size="16"/>
+                    Add Monthly Target
                 </DropdownMenuItem>
                 <DropdownMenuSeparator/>
                 <DropdownMenuItem

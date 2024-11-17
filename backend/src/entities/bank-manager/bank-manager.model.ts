@@ -1,8 +1,6 @@
-import { Field } from '@nestjs/graphql';
-import { ObjectType } from '@nestjs/graphql';
-import { Int } from '@nestjs/graphql';
-import { User } from '../user/user.model';
-import { BankAccount } from '../bank-account/bank-account.model';
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { BankAccount } from "../bank-account/bank-account.model";
+import { User } from "../user/user.model";
 
 @ObjectType()
 export class BankManager {
@@ -10,14 +8,8 @@ export class BankManager {
     @Field(() => String, {nullable:false})
     id!: string;
 
-    @Field(() => Int, {nullable:false})
-    userId!: number;
-
     @Field(() => String, {nullable:false})
     name!: string;
-
-    @Field(() => String, {nullable:false})
-    apiKey!: string;
 
     @Field(() => Date, {nullable:false})
     createdAt!: Date;
@@ -25,9 +17,15 @@ export class BankManager {
     @Field(() => Date, {nullable:false})
     updatedAt!: Date;
 
-    @Field(() => User, {nullable:false})
-    user?: User;
+    @Field(() => String, {nullable:false})
+    apiKey!: string;
+
+    @Field(() => Int, {nullable:false})
+    userId!: number;
 
     @Field(() => [BankAccount], {nullable:true})
     banks?: Array<BankAccount>;
+
+    @Field(() => User, {nullable:false})
+    user?: User;
 }

@@ -37,6 +37,11 @@ export interface PaginationInput {
     before?: Nullable<string>;
 }
 
+export interface GetHistoricalBalanceInput {
+    cryptoPortfolioId: string;
+    timeFrame: string;
+}
+
 export interface CreateCryptoPortfolioInput {
     userId: number;
     apiKey: string;
@@ -70,31 +75,117 @@ export interface CreateBankManagerInput {
 export interface CreateExpenseInput {
     userId: number;
     categoryId: string;
-    bankTransactionId: string;
     name: string;
     description?: Nullable<string>;
     amount: number;
+    bankTransactionId: string;
 }
 
 export interface UpdateExpenseInput {
     categoryId?: Nullable<string>;
-    bankTransactionId?: Nullable<string>;
     name?: Nullable<string>;
     description?: Nullable<string>;
     amount?: Nullable<number>;
+    bankTransactionId?: Nullable<string>;
 }
 
 export interface CreateExpenseCategoryInput {
     userId: number;
     name: string;
-    color: string;
     description?: Nullable<string>;
+    color: string;
 }
 
 export interface UpdateExpenseCategoryInput {
     name?: Nullable<string>;
-    color?: Nullable<string>;
     description?: Nullable<string>;
+    color?: Nullable<string>;
+}
+
+export interface CreateMonthlyTargetInput {
+    categoryId: string;
+    month: number;
+    year: number;
+    target: number;
+}
+
+export interface UpdateMonthlyTargetInput {
+    month?: Nullable<number>;
+    year?: Nullable<number>;
+    target?: Nullable<number>;
+}
+
+export interface MonthlyTarget {
+    id: string;
+    categoryId: string;
+    month: number;
+    year: number;
+    target: number;
+    category: ExpenseCategory;
+}
+
+export interface ExpenseCategory {
+    id: string;
+    userId: number;
+    name: string;
+    description?: Nullable<string>;
+    color: string;
+    expenses?: Nullable<Expense[]>;
+    user: User;
+    monthlyTargets?: Nullable<MonthlyTarget[]>;
+    countExpenses: number;
+    totalAmount?: number;
+}
+
+export interface Expense {
+    id: string;
+    userId: number;
+    categoryId: string;
+    name: string;
+    description?: Nullable<string>;
+    amount: number;
+    bankTransactionId: string;
+    createdAt: DateTime;
+    bankTransaction: BankTransaction;
+    category: ExpenseCategory;
+    user: User;
+    transaction: BankTransaction;
+}
+
+export interface BankTransaction {
+    id: string;
+    bankId: string;
+    amount: number;
+    description: string;
+    createdAt: DateTime;
+    spentAmount: number;
+    bank: BankAccount;
+    expense?: Nullable<Expense[]>;
+}
+
+export interface BankAccount {
+    id: string;
+    name: string;
+    bankManagerId: string;
+    accountName: string;
+    accountNumber: string;
+    balance: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    fullName: string;
+    bankManager: BankManager;
+    transactions: BankTransaction[];
+}
+
+export interface BankManager {
+    id: string;
+    name: string;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    apiKey: string;
+    userId: number;
+    banks: BankAccount[];
+    user: User;
 }
 
 export interface AssetPrice {
@@ -141,79 +232,18 @@ export interface HistoricalCryptoBalance {
 }
 
 export interface CryptoPortfolio {
-    id: string;
     userId: number;
     exchanges: string;
     tradingType: TradingType;
     apiKey: string;
     secretKey: string;
     updateTime?: Nullable<DateTime>;
+    id: string;
+    investmentCategoryName?: Nullable<string>;
     balances: AssetBalance[];
     user: User;
-    historicalBalances: HistoricalCryptoBalance[];
-}
-
-export interface ExpenseCategory {
-    id: string;
-    userId: number;
-    name: string;
-    color: string;
-    description?: Nullable<string>;
-    expenses?: Nullable<Expense[]>;
-    user: User;
-    countExpenses: number;
-    totalAmount?: number;
-}
-
-export interface Expense {
-    id: string;
-    userId: number;
-    categoryId: string;
-    bankTransactionId: string;
-    name: string;
-    description?: Nullable<string>;
-    amount: number;
-    createdAt: DateTime;
-    category: ExpenseCategory;
-    user: User;
-    bankTransaction: BankTransaction;
-    transaction: BankTransaction;
-}
-
-export interface BankTransaction {
-    id: string;
-    bankId: string;
-    amount: number;
-    description: string;
-    spentAmount: number;
-    createdAt: DateTime;
-    expense?: Nullable<Expense[]>;
-    bank: BankAccount;
-}
-
-export interface BankAccount {
-    id: string;
-    name: string;
-    fullName: string;
-    bankManagerId: string;
-    accountName: string;
-    accountNumber: string;
-    balance: number;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    bankManager: BankManager;
-    transactions: BankTransaction[];
-}
-
-export interface BankManager {
-    id: string;
-    userId: number;
-    name: string;
-    apiKey: string;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-    user: User;
-    banks: BankAccount[];
+    historicalBalances?: Nullable<HistoricalCryptoBalance[]>;
+    latestHistoricalBalances?: HistoricalCryptoBalance;
 }
 
 export interface User {
@@ -223,10 +253,10 @@ export interface User {
     password: string;
     otp?: Nullable<string>;
     otpPurpose?: Nullable<OtpPurpose>;
-    cryptoPortfolios?: Nullable<CryptoPortfolio[]>;
     bankManager?: Nullable<BankManager[]>;
-    expenseCategories?: Nullable<ExpenseCategory[]>;
+    cryptoPortfolios?: Nullable<CryptoPortfolio[]>;
     expenses?: Nullable<Expense[]>;
+    expenseCategories?: Nullable<ExpenseCategory[]>;
     cryptoProfiles: CryptoPortfolio;
 }
 
@@ -245,14 +275,12 @@ export interface CreateCryptoRes {
 }
 
 export interface AssetInfoOutput {
-    id?: Nullable<string>;
-    name?: Nullable<string>;
-    symbol?: Nullable<string>;
-    category?: Nullable<string>;
-    desc?: Nullable<string>;
-    logo?: Nullable<string>;
-    assetBalances?: Nullable<AssetBalance[]>;
-    assetPrices?: Nullable<AssetPrice[]>;
+    id: string;
+    name: string;
+    symbol: string;
+    category: string;
+    desc: string;
+    logo: string;
     lastPrice: number;
 }
 
@@ -261,10 +289,12 @@ export interface IQuery {
     getCryptoPortfolios(data: GetCryptoPortfolioInput): CryptoPortfolio[] | Promise<CryptoPortfolio[]>;
     getAssetInfo(data: GetAssetInfoInput): AssetInfo | Promise<AssetInfo>;
     getAssetPrices(data: GetAssetPriceInput, pagination: PaginationInput): AssetPrice[] | Promise<AssetPrice[]>;
+    getHistoricalBalances(data: GetHistoricalBalanceInput, pagination: PaginationInput): HistoricalCryptoBalance[] | Promise<HistoricalCryptoBalance[]>;
     getBankManagers(userId: number): BankManager[] | Promise<BankManager[]>;
     getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(userId: number, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
-    getExpenseCategories(userId: number): ExpenseCategory[] | Promise<ExpenseCategory[]>;
+    getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
+    getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;
 }
 
 export interface IMutation {
@@ -280,6 +310,8 @@ export interface IMutation {
     createExpenseCategory(data: CreateExpenseCategoryInput): ExpenseCategory | Promise<ExpenseCategory>;
     updateExpenseCategory(id: string, data: UpdateExpenseCategoryInput): ExpenseCategory | Promise<ExpenseCategory>;
     removeExpenseCategory(id: string): ExpenseCategory | Promise<ExpenseCategory>;
+    createMonthlyTarget(data: CreateMonthlyTargetInput): MonthlyTarget | Promise<MonthlyTarget>;
+    updateMonthlyTarget(id: string, data: UpdateMonthlyTargetInput): MonthlyTarget | Promise<MonthlyTarget>;
 }
 
 export interface ISubscription {

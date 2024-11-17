@@ -17,20 +17,20 @@ import { SubscriptionEvent } from "../../../shared/constants/subscription.event"
 import { Inject } from "@nestjs/common";
 import { PortfolioEventListener } from "./portfolio-event-listener.service";
 import { GetCryptoPortfolioArgs } from "./dto/get-crypto-portfolio.input";
-import { HistoricalCryptoBalance } from "../../../entities/historical-crypto-balance";
-import { AssetBalance } from "../../../entities/asset-balance";
-import { CryptoPortfolio } from "../../../entities/crypto-portfolio";
+import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
+import { AssetBalance } from "src/entities/asset-balance";
+import { CryptoPortfolio } from "src/entities/crypto-portfolio";
 
 @Resolver(() => CryptoPortfolio)
 export class CryptoPortfolioResolver {
     constructor(
-        private readonly cryptoProfileService: CryptoPortfolioService,
+        private readonly cryptoPortfolioService: CryptoPortfolioService,
         @Inject("SUBSCRIPTION_PUB_SUB") private readonly pubSub: PubSub,
     ) {}
 
     @Mutation(() => CreateCryptoRes, { name: "createCryptoPortfolio" })
     create(@Args() args: CreateCryptoPortfolioArgs) {
-        this.cryptoProfileService.createPortfolio(args.data);
+        this.cryptoPortfolioService.createPortfolio(args.data);
         return {
             userId: args.data.userId,
         };
@@ -38,7 +38,7 @@ export class CryptoPortfolioResolver {
 
     @Query(() => [CryptoPortfolio], { name: "getCryptoPortfolios" })
     async get(@Args() args: GetCryptoPortfolioArgs) {
-        return this.cryptoProfileService.findPortfolios(args.data.userId);
+        return this.cryptoPortfolioService.findPortfolios(args.data.userId);
     }
 
     @Subscription(() => CryptoPortfolio, {
@@ -55,14 +55,23 @@ export class CryptoPortfolioResolver {
 
     @ResolveField("balances", () => [AssetBalance])
     getBalances(@Parent() cryptoPortfolio: CryptoPortfolio) {
-        return this.cryptoProfileService.findBalances(cryptoPortfolio.id);
+        return this.cryptoPortfolioService.findBalances(cryptoPortfolio.id);
     }
 
-    @ResolveField("historicalBalances", () => [HistoricalCryptoBalance])
-    getEstimatedBalance(@Parent() userCryptoProfile: CryptoPortfolio) {
-        return this.cryptoProfileService.findHistoricalBalance(
-            userCryptoProfile.id,
-        );
+    @ResolveField("latestHistoricalBalances", () => HistoricalCryptoBalance)
+    async getEstimatedBalance(
+        @Parent() portfolio: CryptoPortfolio,
+        @Args("timeFrame") timeFrame: string,
+    ) {
+        const historicalBalance =
+            await this.cryptoPortfolioService.findHistoricalBalances(
+                { cryptoPortfolioId: portfolio.id, timeFrame },
+                {
+                    take: 1,
+                },
+            );
+
+        return historicalBalance[0];
     }
     // @Mutation(() => Crypto)
     // updateCrypto(

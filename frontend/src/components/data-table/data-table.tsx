@@ -11,24 +11,24 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
 export function DataTable<TData>({table, children, ...props}: DataTableProps<TData>) {
     return (
         <div
-            className="flex flex-col gap-2"
+            className="flex-1 flex flex-col gap-2"
             {...props}
         >
             {children}
-            <div className="overflow-hidden rounded-md border">
-                <Table>
+            <div className="rounded-md border">
+                <Table className="border-collapse">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
-                                    const styles: CSSProperties =
-                                        header.getSize() !== 150 ? { width: `${header.getSize()}px` } : {};
+                                    const styles: CSSProperties = { width: header.getSize() }
+                                        // header.getSize() !== 150 ? { width: `${header.getSize()}px` } : {};
 
                                     return (
                                         <TableHead
                                             key={header.id}
                                             colSpan={header.colSpan}
-                                            className="p-4"
+                                            className="p-2 md:p-4"
                                             style={{
                                                 // ...getCommonPinningStyles({ column: header.column }),
                                                 ...styles,
@@ -56,10 +56,13 @@ export function DataTable<TData>({table, children, ...props}: DataTableProps<TDa
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell
                                             key={cell.id}
-                                            className="p-4"
+                                            className="p-2 md:p-4"
                                             style={{
-                                                // ...getCommonPinningStyles({ column: cell.column }),
+                                                width: cell.column.getSize(),
                                             }}
+                                            // style={{
+                                            //     // ...getCommonPinningStyles({ column: cell.column }),
+                                            // }}
                                         >
                                             {flexRender(
                                                 cell.column.columnDef.cell,

@@ -1,13 +1,13 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum ExpenseScalarFieldEnum {
     id = "id",
     userId = "userId",
     categoryId = "categoryId",
-    bankTransactionId = "bankTransactionId",
     name = "name",
     description = "description",
     amount = "amount",
+    bankTransactionId = "bankTransactionId",
     createdAt = "createdAt"
 }
 

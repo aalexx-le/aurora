@@ -10,7 +10,7 @@ import type { SortDirection, Table } from "@tanstack/react-table"
 import { ArrowDownUp, GripVertical, Trash2 } from "lucide-react"
 import { useQueryState } from "nuqs"
 
-import { dataTableConfig } from "@/config/details-table"
+import { dataTableConfig } from "@/config/transaction-table"
 import { getSortingStateParser } from "@/lib/parsers"
 import { cn, toSentenceCase } from "@/lib/utils"
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback"

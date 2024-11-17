@@ -1,8 +1,8 @@
 import { ArgsType, Field, InputType, PickType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
-import { User } from "../../../entities/user";
+import { User } from "src/entities/user";
 import { Length, ValidateNested } from "class-validator";
-import { OtpPurpose } from "../../../entities/prisma";
+import { OtpPurpose } from "src/entities/prisma";
 
 @InputType()
 export class VerifyDto extends PickType(User, ["otp", "otpPurpose"]) {

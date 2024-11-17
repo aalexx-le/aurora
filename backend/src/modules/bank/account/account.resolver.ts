@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { BankAccount } from "../../../entities/bank-account";
-import { BankTransaction } from "../../../entities/bank-transaction";
+import { BankAccount } from "src/entities/bank-account";
+import { BankTransaction } from "src/entities/bank-transaction";
 import { BankTransactionService } from "../transaction/transaction.service";
 
 @Resolver(() => BankAccount)

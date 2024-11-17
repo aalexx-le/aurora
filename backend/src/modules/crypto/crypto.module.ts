@@ -12,6 +12,7 @@ import { PgPubSubModule } from "nestjs-pg-pubsub";
 import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
 import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
 import { ConnectionStringParser } from "connection-string-parser";
+import { HistoricalBalanceResolver } from "./profile/historical-balance.resolver";
 
 const SUBSCRIPTION_PUB_SUB_PROVIDER = {
     provide: "SUBSCRIPTION_PUB_SUB",
@@ -104,16 +105,18 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
         // }),
     ],
     providers: [
-        SUBSCRIPTION_PUB_SUB_PROVIDER,
         CryptoPortfolioResolver,
         CryptoBalanceResolver,
         CryptoAssetInfoResolver,
         CryptoAssetPriceResolver,
+        HistoricalBalanceResolver,
 
         CryptoPortfolioService,
         CryptoAssetService,
         PortfolioEventListener,
         AssetPriceEventListener,
+
+        SUBSCRIPTION_PUB_SUB_PROVIDER,
     ],
     exports: [
         CryptoPortfolioService,

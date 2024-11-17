@@ -5,6 +5,8 @@ import { GetAssetPriceInput } from "./dto/get-asset-price.input";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
 import { PaginationInput } from "../../../shared/pagination/pagination.args";
+import { AssetPrice } from "src/entities/asset-price";
+import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
 
 @Injectable()
 export class CryptoAssetService {
@@ -21,7 +23,7 @@ export class CryptoAssetService {
         this.logger.log(
             `Finding asset prices for asset ${assetInfoId} with interval ${timeFrame}`,
         );
-        let assetPrices = [];
+        let assetPrices: AssetPrice[] = [];
         const args: Prisma.AssetPriceFindManyArgs<DefaultArgs> = {
             where: {
                 assetInfoId,
@@ -43,11 +45,10 @@ export class CryptoAssetService {
 
         if (timeFrame === AssetPriceInterval.MINUTE_1) {
             assetPrices = await this.prisma.assetPrice.findMany(args);
-            console.log({ assetPrices });
         } else {
             assetPrices =
                 this.prisma[
-                    this.getAssetPriceMaterializedViewName(timeFrame)
+                    getTimeframeMaterializedViewName(timeFrame, "asset_price")
                 ].findMany(args);
         }
 
@@ -56,16 +57,5 @@ export class CryptoAssetService {
 
     async findOneInfo(id: string) {
         return this.prisma.assetInfo.findUnique({ where: { id } });
-    }
-
-    private getAssetPriceMaterializedViewName(timeFrame?: string): string {
-        const [time, unit] = timeFrame.split(" ");
-        let formattedTimeFrame = time + unit.charAt(0);
-
-        if (unit === "month") {
-            formattedTimeFrame = time + "M";
-        }
-        console.log("formattedTimeFrame", formattedTimeFrame);
-        return `asset_price_${formattedTimeFrame}`;
     }
 }

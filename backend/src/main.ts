@@ -15,7 +15,7 @@ async function bootstrap() {
                 directives: {
                     imgSrc: [
                         `'self'`,
-                        "details:",
+                        "transaction:",
                         "apollo-server-landing-page.cdn.apollographql.com",
                     ],
                     scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
@@ -39,7 +39,6 @@ async function bootstrap() {
     app.useGlobalFilters(new PrismaClientExceptionFilter());
 
     const configService = app.get(ConfigService);
-    console.log(`Server running on port ${configService.get("SERVER_PORT")}`);
     await app.listen(configService.get("SERVER_PORT"));
 }
 bootstrap();
