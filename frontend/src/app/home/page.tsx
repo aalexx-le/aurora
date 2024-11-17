@@ -5,14 +5,14 @@ import {useAppDispatch} from "@/state/hooks";
 import {authActions} from "@/state/slices/auth.slice";
 
 const HomePage = () => {
-    // const { details, loading } = useQuery<IQuery>(GET_ME);
+    // const { transaction, loading } = useQuery<IQuery>(GET_ME);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(authActions.loginWithToken());
     }, [dispatch]);
 
-    // if (!details || !details.getMe) {
+    // if (!transaction || !transaction.getMe) {
     //     return (
     //         <div className="flex flex-col space-y-3">
     //             <Skeleton className="h-[125px] w-[250px] rounded-xl"/>

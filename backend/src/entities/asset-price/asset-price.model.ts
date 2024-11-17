@@ -1,7 +1,5 @@
-import { Field } from '@nestjs/graphql';
-import { ObjectType } from '@nestjs/graphql';
-import { Float } from '@nestjs/graphql';
-import { AssetInfo } from '../asset-info/asset-info.model';
+import { Field, Float, ObjectType } from "@nestjs/graphql";
+import { AssetInfo } from "../asset-info/asset-info.model";
 
 @ObjectType()
 export class AssetPrice {

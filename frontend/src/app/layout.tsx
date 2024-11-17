@@ -6,6 +6,7 @@ import "./globals.css";
 import "@radix-ui/themes/styles.css";
 import Providers from "../components/providers";
 import {Toaster} from "@/components/ui/toaster";
+import {ScrollArea} from "@/components/ui/scroll-area";
 // import Header from "@/app/home/components/header";
 
 const geistSans = localFont({
@@ -28,16 +29,16 @@ export default function RootLayout({
     children,
 }: Readonly<{ children: React.ReactNode }>) {
     return (
-        <html lang="en" data-theme="dark" suppressHydrationWarning={true}>
+        <html lang="en" data-theme="light" suppressHydrationWarning={true}>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex flex-col box-border`}
             >
                 <Providers>
-                    <>
+                    <ScrollArea>
                         {/*<Header/>*/}
                         {children}
                         <Toaster />
-                    </>
+                    </ScrollArea>
                 </Providers>
             </body>
         </html>

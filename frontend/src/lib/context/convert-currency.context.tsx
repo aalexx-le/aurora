@@ -11,16 +11,21 @@ const ConvertCurrencyContext = createContext<{ // Changed to ConvertCurrencyCont
     formatCurrency: (value: number) => string;
 }>({
     selectedCurrency: "VND",
-    setSelectedCurrency: () => {},
+    setSelectedCurrency: () => {
+    },
     convertCurrency: async () => "",
     formatCurrency: () => "",
 });
 
-export const ConvertCurrencyProvider = ({ children, baseCurrency }: { children: React.ReactNode, baseCurrency: string }) => { // Changed to ConvertCurrencyProvider
-    const [selectedCurrency, setSelectedCurrency] = useState("VND");
+export const ConvertCurrencyProvider = ({children, baseCurrency, toCurrency}: {
+    children: React.ReactNode,
+    baseCurrency: string,
+    toCurrency?: string
+}) => { // Changed to ConvertCurrencyProvider
+    const [selectedCurrency, setSelectedCurrency] = useState(toCurrency || "VND");
 
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: selectedCurrency }).format(
+        return new Intl.NumberFormat('de-DE', {style: 'currency', currency: selectedCurrency}).format(
             value,
         );
     }
@@ -36,7 +41,8 @@ export const ConvertCurrencyProvider = ({ children, baseCurrency }: { children: 
     }
 
     return (
-        <ConvertCurrencyContext.Provider value={{ selectedCurrency, setSelectedCurrency, convertCurrency, formatCurrency }}>
+        <ConvertCurrencyContext.Provider
+            value={{selectedCurrency, setSelectedCurrency, convertCurrency, formatCurrency}}>
             {children}
         </ConvertCurrencyContext.Provider>
     );

@@ -1,4 +1,4 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from "@nestjs/graphql";
 
 export enum Asset_price_1MScalarFieldEnum {
     open_time = "open_time",

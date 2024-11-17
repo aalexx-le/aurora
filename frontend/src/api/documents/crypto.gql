@@ -4,18 +4,19 @@ mutation CreateCryptoPortfolio($data: CreateCryptoPortfolioInput!) {
     }
 }
 
-query GetCryptoPortfolio($data: GetCryptoPortfolioInput!) {
+query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) {
     getCryptoPortfolios(data: $data) {
         id
         exchanges
         tradingType
-        historicalBalances {
-            time
-            estimatedBalance
-            changePercent
+        investmentCategoryName
+        latestHistoricalBalances(timeFrame: $timeFrame) {
             changeBalance
+            changePercent
+            estimatedBalance
         }
         balances {
+            id
             balance
             assetInfo {
                 id
@@ -24,6 +25,15 @@ query GetCryptoPortfolio($data: GetCryptoPortfolioInput!) {
                 symbol
             }
         }
+    }
+}
+
+query GetHistoricalBalances($data: GetHistoricalBalanceInput!, $pagination: PaginationInput!) {
+    getHistoricalBalances(data: $data, pagination: $pagination) {
+        time
+        estimatedBalance
+        changePercent
+        changeBalance
     }
 }
 

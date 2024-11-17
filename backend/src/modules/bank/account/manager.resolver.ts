@@ -9,8 +9,8 @@ import {
 } from "@nestjs/graphql";
 import { BankAccountService } from "./account.service";
 import { CreateBankManagerArgs } from "./dto/create-bank-manager.input";
-import { BankManager } from "../../../entities/bank-manager";
-import { BankAccount } from "../../../entities/bank-account";
+import { BankManager } from "src/entities/bank-manager";
+import { BankAccount } from "src/entities/bank-account";
 
 @Resolver(() => BankManager)
 export class BankManagerResolver {

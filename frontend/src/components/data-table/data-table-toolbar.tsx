@@ -15,7 +15,7 @@ interface DataTableToolbarProps<TData>
     extends React.HTMLAttributes<HTMLDivElement> {
     table: Table<TData>
     /**
-     * An array of filter field configurations for the details table.
+     * An array of filter field configurations for the transaction table.
      * When options are provided, income-expense-ratio-bar-chart faceted filter is rendered.
      * Otherwise, income-expense-ratio-bar-chart search filter is rendered.
      *
@@ -112,7 +112,6 @@ export function DataTableToolbar<TData>({
             </div>
             <div className="flex items-center gap-2">
                 {children}
-                <DataTableViewOptions table={table} />
             </div>
         </div>
     )

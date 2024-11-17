@@ -11,7 +11,6 @@ import { DatabaseEvent } from "../../../shared/constants/database.event";
 import { AssetPrice } from "src/entities/asset-price";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
-import { CryptoAssetService } from "./asset.service";
 
 @Injectable()
 export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
@@ -21,7 +20,6 @@ export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
 
     constructor(
         @InjectPgSubscriber() private readonly pgSubscriber: PgSubscriber,
-        private cryptoAssetService: CryptoAssetService,
         @Inject("SUBSCRIPTION_PUB_SUB") private readonly pubSub: PubSub,
     ) {
         // IMPORTANT - need this line to respond to events
