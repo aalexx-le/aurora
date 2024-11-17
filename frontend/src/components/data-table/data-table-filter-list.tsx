@@ -19,8 +19,8 @@ import {
 import { customAlphabet } from "nanoid"
 // import { parseAsStringEnum, useQueryState } from "nuqs"
 
-import { dataTableConfig } from "@/config/details-table"
-import { getDefaultFilterOperator, getFilterOperators } from "@/lib/details-table"
+import { dataTableConfig } from "@/config/transaction-table"
+import { getDefaultFilterOperator, getFilterOperators } from "@/lib/transaction-table"
 import { getFiltersStateParser } from "@/lib/parsers"
 import { cn, formatDate } from "@/lib/utils"
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback"

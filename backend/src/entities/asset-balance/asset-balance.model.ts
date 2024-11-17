@@ -1,8 +1,6 @@
-import { Field } from '@nestjs/graphql';
-import { ObjectType } from '@nestjs/graphql';
-import { Float } from '@nestjs/graphql';
-import { AssetInfo } from '../asset-info/asset-info.model';
-import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
+import { Field, Float, ObjectType } from "@nestjs/graphql";
+import { AssetInfo } from "../asset-info/asset-info.model";
+import { CryptoPortfolio } from "../crypto-portfolio/crypto-portfolio.model";
 
 @ObjectType()
 export class AssetBalance {

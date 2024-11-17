@@ -1,10 +1,7 @@
-import { Field } from '@nestjs/graphql';
-import { ObjectType } from '@nestjs/graphql';
-import { Int } from '@nestjs/graphql';
-import { Float } from '@nestjs/graphql';
-import { ExpenseCategory } from '../expense-category/expense-category.model';
-import { User } from '../user/user.model';
-import { BankTransaction } from '../bank-transaction/bank-transaction.model';
+import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
+import { BankTransaction } from "../bank-transaction/bank-transaction.model";
+import { ExpenseCategory } from "../expense-category/expense-category.model";
+import { User } from "../user/user.model";
 
 @ObjectType()
 export class Expense {
@@ -19,9 +16,6 @@ export class Expense {
     categoryId!: string;
 
     @Field(() => String, {nullable:false})
-    bankTransactionId!: string;
-
-    @Field(() => String, {nullable:false})
     name!: string;
 
     @Field(() => String, {nullable:true})
@@ -30,15 +24,18 @@ export class Expense {
     @Field(() => Float, {nullable:false})
     amount!: number;
 
+    @Field(() => String, {nullable:false})
+    bankTransactionId!: string;
+
     @Field(() => Date, {nullable:false})
     createdAt!: Date;
+
+    @Field(() => BankTransaction, {nullable:false})
+    bankTransaction?: BankTransaction;
 
     @Field(() => ExpenseCategory, {nullable:false})
     category?: ExpenseCategory;
 
     @Field(() => User, {nullable:false})
     user?: User;
-
-    @Field(() => BankTransaction, {nullable:false})
-    bankTransaction?: BankTransaction;
 }

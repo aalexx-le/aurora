@@ -1,38 +1,35 @@
 model BankManager {
-  id        String   @id
-  userId    Int
+  id        String        @id
   name      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
   apiKey    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user  User          @relation(fields: [userId], references: [id])
-  banks BankAccount[]
+  userId    Int
+  banks     BankAccount[]
+  user      User          @relation(fields: [userId], references: [id])
 }
 
 model BankAccount {
-  id            String   @id
+  id            String            @id
   name          String
-  fullName      String
   bankManagerId String
   accountName   String
   accountNumber String
   balance       Float
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  bankManager  BankManager       @relation(fields: [bankManagerId], references: [id])
-  transactions BankTransaction[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  fullName      String
+  bankManager   BankManager       @relation(fields: [bankManagerId], references: [id])
+  transactions  BankTransaction[]
 }
 
 model BankTransaction {
-  id          String   @id
+  id          String      @id
   bankId      String
   amount      Float
   description String
-  spentAmount Float    @default(0)
-  createdAt   DateTime @default(now())
-
-  expense Expense[]
-  bank    BankAccount @relation(fields: [bankId], references: [id])
+  createdAt   DateTime    @default(now())
+  spentAmount Float       @default(0)
+  bank        BankAccount @relation(fields: [bankId], references: [id])
+  expense     Expense[]
 }

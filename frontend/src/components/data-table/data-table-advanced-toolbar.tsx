@@ -18,7 +18,7 @@ interface DataTableAdvancedToolbarProps<TData>
   table: Table<TData>
 
   /**
-   * An array of filter field configurations for the details table.
+   * An array of filter field configurations for the transaction table.
    * @type DataTableAdvancedFilterField<TData>[]
    * @example
    * const filterFields = [

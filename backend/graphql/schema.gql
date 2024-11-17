@@ -2,6 +2,84 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type MonthlyTarget {
+  id: String!
+  categoryId: String!
+  month: Int!
+  year: Int!
+  target: Float!
+  category: ExpenseCategory!
+}
+
+type ExpenseCategory {
+  id: String!
+  userId: Int!
+  name: String!
+  description: String
+  color: String!
+  expenses: [Expense!]
+  user: User!
+  monthlyTargets(month: Int, year: Int): [MonthlyTarget!]
+  countExpenses: Int!
+  totalAmount(startDate: DateTime, endDate: DateTime): Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Expense {
+  id: String!
+  userId: Int!
+  categoryId: String!
+  name: String!
+  description: String
+  amount: Float!
+  bankTransactionId: String!
+  createdAt: DateTime!
+  bankTransaction: BankTransaction!
+  category: ExpenseCategory!
+  user: User!
+  transaction: BankTransaction!
+}
+
+type BankTransaction {
+  id: String!
+  bankId: String!
+  amount: Float!
+  description: String!
+  createdAt: DateTime!
+  spentAmount: Float!
+  bank: BankAccount!
+  expense: [Expense!]
+}
+
+type BankAccount {
+  id: String!
+  name: String!
+  bankManagerId: String!
+  accountName: String!
+  accountNumber: String!
+  balance: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  fullName: String!
+  bankManager: BankManager!
+  transactions: [BankTransaction!]!
+}
+
+type BankManager {
+  id: String!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  apiKey: String!
+  userId: Int!
+  banks: [BankAccount!]!
+  user: User!
+}
+
 type AssetPrice {
   assetInfoId: String!
   interval: String!
@@ -14,11 +92,6 @@ type AssetPrice {
   volume: Float!
   assetInfo: AssetInfo!
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type AssetInfo {
   id: String!
@@ -51,84 +124,23 @@ type HistoricalCryptoBalance {
 }
 
 type CryptoPortfolio {
-  id: String!
   userId: Int!
   exchanges: String!
   tradingType: TradingType!
   apiKey: String!
   secretKey: String!
   updateTime: DateTime
+  id: String!
+  investmentCategoryName: String
   balances: [AssetBalance!]!
   user: User!
-  historicalBalances: [HistoricalCryptoBalance!]!
+  historicalBalances: [HistoricalCryptoBalance!]
+  latestHistoricalBalances(timeFrame: String!): HistoricalCryptoBalance!
 }
 
 enum TradingType {
   FUTURES
   SPOT
-}
-
-type ExpenseCategory {
-  id: String!
-  userId: Int!
-  name: String!
-  color: String!
-  description: String
-  expenses: [Expense!]
-  user: User!
-  countExpenses: Int!
-  totalAmount(startDate: DateTime, endDate: DateTime): Int!
-}
-
-type Expense {
-  id: String!
-  userId: Int!
-  categoryId: String!
-  bankTransactionId: String!
-  name: String!
-  description: String
-  amount: Float!
-  createdAt: DateTime!
-  category: ExpenseCategory!
-  user: User!
-  bankTransaction: BankTransaction!
-  transaction: BankTransaction!
-}
-
-type BankTransaction {
-  id: String!
-  bankId: String!
-  amount: Float!
-  description: String!
-  spentAmount: Float!
-  createdAt: DateTime!
-  expense: [Expense!]
-  bank: BankAccount!
-}
-
-type BankAccount {
-  id: String!
-  name: String!
-  fullName: String!
-  bankManagerId: String!
-  accountName: String!
-  accountNumber: String!
-  balance: Float!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  bankManager: BankManager!
-  transactions: [BankTransaction!]!
-}
-
-type BankManager {
-  id: String!
-  userId: Int!
-  name: String!
-  apiKey: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  user: User!
-  banks: [BankAccount!]!
 }
 
 type User {
@@ -138,10 +150,10 @@ type User {
   password: String!
   otp: String
   otpPurpose: OtpPurpose
-  cryptoPortfolios: [CryptoPortfolio!]
   bankManager: [BankManager!]
-  expenseCategories: [ExpenseCategory!]
+  cryptoPortfolios: [CryptoPortfolio!]
   expenses: [Expense!]
+  expenseCategories: [ExpenseCategory!]
   cryptoProfiles: CryptoPortfolio!
 }
 
@@ -165,14 +177,12 @@ type CreateCryptoRes {
 }
 
 type AssetInfoOutput {
-  id: String
-  name: String
-  symbol: String
-  category: String
-  desc: String
-  logo: String
-  assetBalances: [AssetBalance!]
-  assetPrices: [AssetPrice!]
+  id: String!
+  name: String!
+  symbol: String!
+  category: String!
+  desc: String!
+  logo: String!
   lastPrice: Float!
 }
 
@@ -181,10 +191,12 @@ type Query {
   getCryptoPortfolios(data: GetCryptoPortfolioInput!): [CryptoPortfolio!]!
   getAssetInfo(data: GetAssetInfoInput!): AssetInfo!
   getAssetPrices(data: GetAssetPriceInput!, pagination: PaginationInput!): [AssetPrice!]!
+  getHistoricalBalances(data: GetHistoricalBalanceInput!, pagination: PaginationInput!): [HistoricalCryptoBalance!]!
   getBankManagers(userId: Int!): [BankManager!]!
   getBankTransactions(userId: Float!): [BankTransaction!]!
   getExpenses(userId: Int!, startDate: DateTime, endDate: DateTime): [Expense!]!
-  getExpenseCategories(userId: Int!): [ExpenseCategory!]!
+  getExpenseCategories(userId: Int, name: String): [ExpenseCategory!]!
+  getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
 }
 
 input GetCryptoPortfolioInput {
@@ -206,6 +218,11 @@ input PaginationInput {
   before: String
 }
 
+input GetHistoricalBalanceInput {
+  cryptoPortfolioId: String!
+  timeFrame: String!
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
   login(data: LoginReqDto!): LoginResDto!
@@ -219,6 +236,8 @@ type Mutation {
   createExpenseCategory(data: CreateExpenseCategoryInput!): ExpenseCategory!
   updateExpenseCategory(id: String!, data: UpdateExpenseCategoryInput!): ExpenseCategory!
   removeExpenseCategory(id: String!): ExpenseCategory!
+  createMonthlyTarget(data: CreateMonthlyTargetInput!): MonthlyTarget!
+  updateMonthlyTarget(id: String!, data: UpdateMonthlyTargetInput!): MonthlyTarget!
 }
 
 input CreateCryptoPortfolioInput {
@@ -254,31 +273,44 @@ input CreateBankManagerInput {
 input CreateExpenseInput {
   userId: Int!
   categoryId: String!
-  bankTransactionId: String!
   name: String!
   description: String
   amount: Float!
+  bankTransactionId: String!
 }
 
 input UpdateExpenseInput {
   categoryId: String
-  bankTransactionId: String
   name: String
   description: String
   amount: Float
+  bankTransactionId: String
 }
 
 input CreateExpenseCategoryInput {
   userId: Int!
   name: String!
-  color: String!
   description: String
+  color: String!
 }
 
 input UpdateExpenseCategoryInput {
   name: String
-  color: String
   description: String
+  color: String
+}
+
+input CreateMonthlyTargetInput {
+  categoryId: String!
+  month: Int!
+  year: Int!
+  target: Float!
+}
+
+input UpdateMonthlyTargetInput {
+  month: Int
+  year: Int
+  target: Float
 }
 
 type Subscription {

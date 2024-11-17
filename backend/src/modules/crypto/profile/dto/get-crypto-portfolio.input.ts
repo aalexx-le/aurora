@@ -1,7 +1,7 @@
 import { ArgsType, Field, InputType, Int, PickType } from "@nestjs/graphql";
 import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { CryptoPortfolio } from "../../../../entities/crypto-portfolio";
+import { CryptoPortfolio } from "src/entities/crypto-portfolio";
 
 @InputType()
 export class GetCryptoPortfolioInput extends PickType(CryptoPortfolio, [

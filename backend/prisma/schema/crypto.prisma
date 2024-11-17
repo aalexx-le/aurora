@@ -1,14 +1,16 @@
 model CryptoPortfolio {
-  id                 String                    @id @default(uuid())
   userId             Int
   exchanges          String                    @default("binance")
   tradingType        TradingType
   apiKey             String
   secretKey          String
   updateTime         DateTime?
+  id                 String                    @id @default(uuid())
   balances           AssetBalance[]
   user               User                      @relation(fields: [userId], references: [id])
   historicalBalances HistoricalCryptoBalance[]
+
+  investmentCategoryName String?
 }
 
 model AssetBalance {

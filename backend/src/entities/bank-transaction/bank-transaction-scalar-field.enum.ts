@@ -5,8 +5,8 @@ export enum BankTransactionScalarFieldEnum {
     bankId = "bankId",
     amount = "amount",
     description = "description",
-    spentAmount = "spentAmount",
-    createdAt = "createdAt"
+    createdAt = "createdAt",
+    spentAmount = "spentAmount"
 }
 
 

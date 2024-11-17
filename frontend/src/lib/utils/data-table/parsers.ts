@@ -9,7 +9,7 @@ export const sortingItemSchema = z.object({
 
 // /**
 //  * Creates income-expense-ratio-bar-chart parser for TanStack Table sorting state.
-//  * @param originalRow The original row details to validate sorting keys against.
+//  * @param originalRow The original row transaction to validate sorting keys against.
 //  * @returns A parser for TanStack Table sorting state.
 //  */
 // export const getSortingStateParser = <TData>(
@@ -25,11 +25,11 @@ export const sortingItemSchema = z.object({
 //
 //                 if (!result.success) return null
 //
-//                 if (validKeys && result.details.some((item) => !validKeys.has(item.id))) {
+//                 if (validKeys && result.transaction.some((item) => !validKeys.has(item.id))) {
 //                     return null
 //                 }
 //
-//                 return result.details as ExtendedSortingState<TData>
+//                 return result.transaction as ExtendedSortingState<TData>
 //             } catch {
 //                 return null
 //             }
@@ -53,9 +53,9 @@ export const filterSchema = z.object({
 });
 
 // /**
-//  * Create income-expense-ratio-bar-chart parser for details table filters.
-//  * @param originalRow The original row details to create the parser for.
-//  * @returns A parser for details table filters state.
+//  * Create income-expense-ratio-bar-chart parser for transaction table filters.
+//  * @param originalRow The original row transaction to create the parser for.
+//  * @returns A parser for transaction table filters state.
 //  */
 // export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
 //     const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
@@ -68,11 +68,11 @@ export const filterSchema = z.object({
 //
 //                 if (!result.success) return null
 //
-//                 if (validKeys && result.details.some((item) => !validKeys.has(item.id))) {
+//                 if (validKeys && result.transaction.some((item) => !validKeys.has(item.id))) {
 //                     return null
 //                 }
 //
-//                 return result.details as Filter<T>[]
+//                 return result.transaction as Filter<T>[]
 //             } catch {
 //                 return null
 //             }

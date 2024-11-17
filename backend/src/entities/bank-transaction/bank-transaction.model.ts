@@ -1,8 +1,8 @@
 import { Field } from '@nestjs/graphql';
 import { ObjectType } from '@nestjs/graphql';
 import { Float } from '@nestjs/graphql';
-import { Expense } from '../expense/expense.model';
 import { BankAccount } from '../bank-account/bank-account.model';
+import { Expense } from '../expense/expense.model';
 
 @ObjectType()
 export class BankTransaction {
@@ -19,15 +19,15 @@ export class BankTransaction {
     @Field(() => String, {nullable:false})
     description!: string;
 
-    @Field(() => Float, {nullable:false,defaultValue:0})
-    spentAmount!: number;
-
     @Field(() => Date, {nullable:false})
     createdAt!: Date;
 
-    @Field(() => [Expense], {nullable:true})
-    expense?: Array<Expense>;
+    @Field(() => Float, {nullable:false,defaultValue:0})
+    spentAmount!: number;
 
     @Field(() => BankAccount, {nullable:false})
     bank?: BankAccount;
+
+    @Field(() => [Expense], {nullable:true})
+    expense?: Array<Expense>;
 }

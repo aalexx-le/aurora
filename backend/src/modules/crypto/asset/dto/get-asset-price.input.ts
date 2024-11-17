@@ -4,9 +4,11 @@ import { Type } from "class-transformer";
 import { AssetPrice } from "src/entities/asset-price";
 
 @InputType()
-export class GetAssetPriceInput extends PickType(AssetPrice, ["assetInfoId"]) {
-    @Field(() => String, { nullable: false })
-    assetInfoId: string;
+export class GetAssetPriceInput extends PickType(
+    AssetPrice,
+    ["assetInfoId"],
+    InputType,
+) {
     @Field(() => String)
     timeFrame: string;
 }

@@ -1,12 +1,17 @@
 # queries and mutations for the expense category
-query GetExpenseCategories($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
-    getExpenseCategories(userId: $userId) {
+query GetExpenseCategories($userId: Int!, $name: String, $startDate: DateTime, $endDate: DateTime, $month: Int, $year: Int) {
+    getExpenseCategories(userId: $userId, name: $name) {
         color
         description
         name
         id
         countExpenses
         totalAmount(startDate: $startDate, endDate: $endDate)
+        monthlyTargets(month: $month, year: $year) {
+            month
+            year
+            target
+        }
     }
 }
 
@@ -31,5 +36,25 @@ mutation UpdateExpenseCategory($id: String!, $data: UpdateExpenseCategoryInput!)
 mutation RemoveExpenseCategory($id: String!) {
     removeExpenseCategory(id: $id) {
         id
+    }
+}
+
+query GetMonthlyTargets($categoryId: String!, $month: Int, $year: Int) {
+    getMonthlyTargets(categoryId: $categoryId, month: $month, year: $year) {
+        target
+        month
+        year
+    }
+}
+
+mutation CreateMonthlyTarget($data: CreateMonthlyTargetInput!) {
+    createMonthlyTarget(data: $data) {
+        categoryId
+    }
+}
+
+mutation UpdateMonthlyTarget($updateMonthlyTargetId: String!, $data: UpdateMonthlyTargetInput!) {
+    updateMonthlyTarget(id: $updateMonthlyTargetId, data: $data) {
+        categoryId
     }
 }
