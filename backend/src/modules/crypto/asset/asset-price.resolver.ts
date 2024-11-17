@@ -1,5 +1,5 @@
 import { Args, Query, Resolver, Subscription } from "@nestjs/graphql";
-import { AssetPrice } from "../../../entities/asset-price";
+import { AssetPrice } from "src/entities/asset-price";
 import { CryptoAssetService } from "./asset.service";
 import { Inject } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";

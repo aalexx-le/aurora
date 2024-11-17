@@ -31,9 +31,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         fn().then(() => {});
     }, [loading, router, user, currentPath, dispatch, error]);
 
-    if (loading) {
-        return <p>is loading</p>;
-    }
+    // if (loading) {
+    //     return <p>is loading</p>;
+    // }
 
     return children;
 }

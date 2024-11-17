@@ -12,7 +12,7 @@ import { CreateExpenseArgs } from "./dto/create-expense.input";
 import { UpdateExpenseArgs } from "./dto/update-expense.input";
 import { Expense } from "src/entities/expense";
 import { ExpenseCategory } from "src/entities/expense-category";
-import { ExpenseCategoryService } from "../expense-category/expense-category.service";
+import { ExpenseCategoryService } from "./category/expense-category.service";
 import { BankTransaction } from "../../entities/bank-transaction";
 import { BankTransactionService } from "../bank/transaction/transaction.service";
 import { GetExpenseArgs } from "./dto/get-expense.input";

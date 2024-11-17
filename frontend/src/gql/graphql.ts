@@ -45,111 +45,6 @@ export type AssetBalance = {
     locked: Scalars["Float"]["output"];
 };
 
-export type AssetBalanceAvgAggregate = {
-    __typename?: "AssetBalanceAvgAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceCountAggregate = {
-    __typename?: "AssetBalanceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    balance: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    locked: Scalars["Int"]["output"];
-};
-
-export type AssetBalanceCreateManyCryptoPortfolioInput = {
-    assetInfoId: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked: Scalars["Float"]["input"];
-};
-
-export type AssetBalanceCreateManyCryptoPortfolioInputEnvelope = {
-    data: Array<AssetBalanceCreateManyCryptoPortfolioInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type AssetBalanceCreateNestedManyWithoutCryptoPortfolioInput = {
-    connect?: InputMaybe<Array<AssetBalanceWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<AssetBalanceCreateOrConnectWithoutCryptoPortfolioInput>
-    >;
-    create?: InputMaybe<Array<AssetBalanceCreateWithoutCryptoPortfolioInput>>;
-    createMany?: InputMaybe<AssetBalanceCreateManyCryptoPortfolioInputEnvelope>;
-};
-
-export type AssetBalanceCreateOrConnectWithoutCryptoPortfolioInput = {
-    create: AssetBalanceCreateWithoutCryptoPortfolioInput;
-    where: AssetBalanceWhereUniqueInput;
-};
-
-export type AssetBalanceCreateWithoutCryptoPortfolioInput = {
-    assetInfo: AssetInfoCreateNestedOneWithoutAssetBalancesInput;
-    balance: Scalars["Float"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked: Scalars["Float"]["input"];
-};
-
-export type AssetBalanceListRelationFilter = {
-    every?: InputMaybe<AssetBalanceWhereInput>;
-    none?: InputMaybe<AssetBalanceWhereInput>;
-    some?: InputMaybe<AssetBalanceWhereInput>;
-};
-
-export type AssetBalanceMaxAggregate = {
-    __typename?: "AssetBalanceMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceMinAggregate = {
-    __typename?: "AssetBalanceMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceSumAggregate = {
-    __typename?: "AssetBalanceSumAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceWhereInput = {
-    AND?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    OR?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    locked?: InputMaybe<FloatFilter>;
-};
-
-export type AssetBalanceWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    OR?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked?: InputMaybe<FloatFilter>;
-};
-
 export type AssetInfo = {
     __typename?: "AssetInfo";
     assetBalances?: Maybe<Array<AssetBalance>>;
@@ -162,102 +57,15 @@ export type AssetInfo = {
     symbol: Scalars["String"]["output"];
 };
 
-export type AssetInfoCountAggregate = {
-    __typename?: "AssetInfoCountAggregate";
-    _all: Scalars["Int"]["output"];
-    category: Scalars["Int"]["output"];
-    desc: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    logo: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    symbol: Scalars["Int"]["output"];
-};
-
-export type AssetInfoCreateNestedOneWithoutAssetBalancesInput = {
-    connect?: InputMaybe<AssetInfoWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<AssetInfoCreateOrConnectWithoutAssetBalancesInput>;
-    create?: InputMaybe<AssetInfoCreateWithoutAssetBalancesInput>;
-};
-
-export type AssetInfoCreateOrConnectWithoutAssetBalancesInput = {
-    create: AssetInfoCreateWithoutAssetBalancesInput;
-    where: AssetInfoWhereUniqueInput;
-};
-
-export type AssetInfoCreateWithoutAssetBalancesInput = {
-    assetPrices?: InputMaybe<AssetPriceCreateNestedManyWithoutAssetInfoInput>;
-    category: Scalars["String"]["input"];
-    desc: Scalars["String"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    logo: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    symbol: Scalars["String"]["input"];
-};
-
-export type AssetInfoMaxAggregate = {
-    __typename?: "AssetInfoMaxAggregate";
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type AssetInfoMinAggregate = {
-    __typename?: "AssetInfoMinAggregate";
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
 export type AssetInfoOutput = {
     __typename?: "AssetInfoOutput";
-    assetBalances?: Maybe<Array<AssetBalance>>;
-    assetPrices?: Maybe<Array<AssetPrice>>;
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
+    category: Scalars["String"]["output"];
+    desc: Scalars["String"]["output"];
+    id: Scalars["String"]["output"];
     lastPrice: Scalars["Float"]["output"];
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type AssetInfoRelationFilter = {
-    is?: InputMaybe<AssetInfoWhereInput>;
-    isNot?: InputMaybe<AssetInfoWhereInput>;
-};
-
-export type AssetInfoWhereInput = {
-    AND?: InputMaybe<Array<AssetInfoWhereInput>>;
-    NOT?: InputMaybe<Array<AssetInfoWhereInput>>;
-    OR?: InputMaybe<Array<AssetInfoWhereInput>>;
-    assetBalances?: InputMaybe<AssetBalanceListRelationFilter>;
-    assetPrices?: InputMaybe<AssetPriceListRelationFilter>;
-    category?: InputMaybe<StringFilter>;
-    desc?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    logo?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    symbol?: InputMaybe<StringFilter>;
-};
-
-export type AssetInfoWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetInfoWhereInput>>;
-    NOT?: InputMaybe<Array<AssetInfoWhereInput>>;
-    OR?: InputMaybe<Array<AssetInfoWhereInput>>;
-    assetBalances?: InputMaybe<AssetBalanceListRelationFilter>;
-    assetPrices?: InputMaybe<AssetPriceListRelationFilter>;
-    category?: InputMaybe<StringFilter>;
-    desc?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    logo?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    symbol?: InputMaybe<StringFilter>;
+    logo: Scalars["String"]["output"];
+    name: Scalars["String"]["output"];
+    symbol: Scalars["String"]["output"];
 };
 
 export type AssetPrice = {
@@ -272,357 +80,6 @@ export type AssetPrice = {
     openPrice: Scalars["Float"]["output"];
     open_time: Scalars["DateTime"]["output"];
     volume: Scalars["Float"]["output"];
-};
-
-export type AssetPriceAssetInfoIdOpen_TimeCompoundUniqueInput = {
-    assetInfoId: Scalars["String"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-};
-
-export type AssetPriceAvgAggregate = {
-    __typename?: "AssetPriceAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceCountAggregate = {
-    __typename?: "AssetPriceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    close_time: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    interval: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type AssetPriceCreateManyAssetInfoInput = {
-    closePrice: Scalars["Float"]["input"];
-    close_time: Scalars["DateTime"]["input"];
-    highPrice: Scalars["Float"]["input"];
-    interval: Scalars["String"]["input"];
-    lowPrice: Scalars["Float"]["input"];
-    openPrice: Scalars["Float"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-    volume: Scalars["Float"]["input"];
-};
-
-export type AssetPriceCreateManyAssetInfoInputEnvelope = {
-    data: Array<AssetPriceCreateManyAssetInfoInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type AssetPriceCreateNestedManyWithoutAssetInfoInput = {
-    connect?: InputMaybe<Array<AssetPriceWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<AssetPriceCreateOrConnectWithoutAssetInfoInput>
-    >;
-    create?: InputMaybe<Array<AssetPriceCreateWithoutAssetInfoInput>>;
-    createMany?: InputMaybe<AssetPriceCreateManyAssetInfoInputEnvelope>;
-};
-
-export type AssetPriceCreateOrConnectWithoutAssetInfoInput = {
-    create: AssetPriceCreateWithoutAssetInfoInput;
-    where: AssetPriceWhereUniqueInput;
-};
-
-export type AssetPriceCreateWithoutAssetInfoInput = {
-    closePrice: Scalars["Float"]["input"];
-    close_time: Scalars["DateTime"]["input"];
-    highPrice: Scalars["Float"]["input"];
-    interval: Scalars["String"]["input"];
-    lowPrice: Scalars["Float"]["input"];
-    openPrice: Scalars["Float"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-    volume: Scalars["Float"]["input"];
-};
-
-export type AssetPriceListRelationFilter = {
-    every?: InputMaybe<AssetPriceWhereInput>;
-    none?: InputMaybe<AssetPriceWhereInput>;
-    some?: InputMaybe<AssetPriceWhereInput>;
-};
-
-export type AssetPriceMaxAggregate = {
-    __typename?: "AssetPriceMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    close_time?: Maybe<Scalars["DateTime"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    interval?: Maybe<Scalars["String"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceMinAggregate = {
-    __typename?: "AssetPriceMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    close_time?: Maybe<Scalars["DateTime"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    interval?: Maybe<Scalars["String"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceSumAggregate = {
-    __typename?: "AssetPriceSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceWhereInput = {
-    AND?: InputMaybe<Array<AssetPriceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetPriceWhereInput>>;
-    OR?: InputMaybe<Array<AssetPriceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    closePrice?: InputMaybe<FloatFilter>;
-    close_time?: InputMaybe<DateTimeFilter>;
-    highPrice?: InputMaybe<FloatFilter>;
-    interval?: InputMaybe<StringFilter>;
-    lowPrice?: InputMaybe<FloatFilter>;
-    openPrice?: InputMaybe<FloatFilter>;
-    open_time?: InputMaybe<DateTimeFilter>;
-    volume?: InputMaybe<FloatFilter>;
-};
-
-export type AssetPriceWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetPriceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetPriceWhereInput>>;
-    OR?: InputMaybe<Array<AssetPriceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    assetInfoId_open_time?: InputMaybe<AssetPriceAssetInfoIdOpen_TimeCompoundUniqueInput>;
-    closePrice?: InputMaybe<FloatFilter>;
-    close_time?: InputMaybe<DateTimeFilter>;
-    highPrice?: InputMaybe<FloatFilter>;
-    interval?: InputMaybe<StringFilter>;
-    lowPrice?: InputMaybe<FloatFilter>;
-    openPrice?: InputMaybe<FloatFilter>;
-    open_time?: InputMaybe<DateTimeFilter>;
-    volume?: InputMaybe<FloatFilter>;
-};
-
-export type Asset_Price_1MAvgAggregate = {
-    __typename?: "Asset_price_1MAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MCountAggregate = {
-    __typename?: "Asset_price_1MCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1MMaxAggregate = {
-    __typename?: "Asset_price_1MMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MMinAggregate = {
-    __typename?: "Asset_price_1MMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MSumAggregate = {
-    __typename?: "Asset_price_1MSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dAvgAggregate = {
-    __typename?: "Asset_price_1dAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dCountAggregate = {
-    __typename?: "Asset_price_1dCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1dMaxAggregate = {
-    __typename?: "Asset_price_1dMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dMinAggregate = {
-    __typename?: "Asset_price_1dMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dSumAggregate = {
-    __typename?: "Asset_price_1dSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hAvgAggregate = {
-    __typename?: "Asset_price_1hAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hCountAggregate = {
-    __typename?: "Asset_price_1hCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1hMaxAggregate = {
-    __typename?: "Asset_price_1hMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hMinAggregate = {
-    __typename?: "Asset_price_1hMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hSumAggregate = {
-    __typename?: "Asset_price_1hSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mAvgAggregate = {
-    __typename?: "Asset_price_5mAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mCountAggregate = {
-    __typename?: "Asset_price_5mCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_5mMaxAggregate = {
-    __typename?: "Asset_price_5mMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mMinAggregate = {
-    __typename?: "Asset_price_5mMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mSumAggregate = {
-    __typename?: "Asset_price_5mSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
 };
 
 export type BankAccount = {
@@ -640,166 +97,6 @@ export type BankAccount = {
     updatedAt: Scalars["DateTime"]["output"];
 };
 
-export type BankAccountAvgAggregate = {
-    __typename?: "BankAccountAvgAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankAccountCountAggregate = {
-    __typename?: "BankAccountCountAggregate";
-    _all: Scalars["Int"]["output"];
-    accountName: Scalars["Int"]["output"];
-    accountNumber: Scalars["Int"]["output"];
-    balance: Scalars["Int"]["output"];
-    bankManagerId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    fullName: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    updatedAt: Scalars["Int"]["output"];
-};
-
-export type BankAccountCreateManyBankManagerInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountCreateManyBankManagerInputEnvelope = {
-    data: Array<BankAccountCreateManyBankManagerInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankAccountCreateNestedManyWithoutBankManagerInput = {
-    connect?: InputMaybe<Array<BankAccountWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankAccountCreateOrConnectWithoutBankManagerInput>
-    >;
-    create?: InputMaybe<Array<BankAccountCreateWithoutBankManagerInput>>;
-    createMany?: InputMaybe<BankAccountCreateManyBankManagerInputEnvelope>;
-};
-
-export type BankAccountCreateNestedOneWithoutTransactionsInput = {
-    connect?: InputMaybe<BankAccountWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankAccountCreateOrConnectWithoutTransactionsInput>;
-    create?: InputMaybe<BankAccountCreateWithoutTransactionsInput>;
-};
-
-export type BankAccountCreateOrConnectWithoutBankManagerInput = {
-    create: BankAccountCreateWithoutBankManagerInput;
-    where: BankAccountWhereUniqueInput;
-};
-
-export type BankAccountCreateOrConnectWithoutTransactionsInput = {
-    create: BankAccountCreateWithoutTransactionsInput;
-    where: BankAccountWhereUniqueInput;
-};
-
-export type BankAccountCreateWithoutBankManagerInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    transactions?: InputMaybe<BankTransactionCreateNestedManyWithoutBankInput>;
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountCreateWithoutTransactionsInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    bankManager: BankManagerCreateNestedOneWithoutBanksInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountListRelationFilter = {
-    every?: InputMaybe<BankAccountWhereInput>;
-    none?: InputMaybe<BankAccountWhereInput>;
-    some?: InputMaybe<BankAccountWhereInput>;
-};
-
-export type BankAccountMaxAggregate = {
-    __typename?: "BankAccountMaxAggregate";
-    accountName?: Maybe<Scalars["String"]["output"]>;
-    accountNumber?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    bankManagerId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    fullName?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type BankAccountMinAggregate = {
-    __typename?: "BankAccountMinAggregate";
-    accountName?: Maybe<Scalars["String"]["output"]>;
-    accountNumber?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    bankManagerId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    fullName?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type BankAccountRelationFilter = {
-    is?: InputMaybe<BankAccountWhereInput>;
-    isNot?: InputMaybe<BankAccountWhereInput>;
-};
-
-export type BankAccountSumAggregate = {
-    __typename?: "BankAccountSumAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankAccountWhereInput = {
-    AND?: InputMaybe<Array<BankAccountWhereInput>>;
-    NOT?: InputMaybe<Array<BankAccountWhereInput>>;
-    OR?: InputMaybe<Array<BankAccountWhereInput>>;
-    accountName?: InputMaybe<StringFilter>;
-    accountNumber?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    bankManager?: InputMaybe<BankManagerRelationFilter>;
-    bankManagerId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    fullName?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    transactions?: InputMaybe<BankTransactionListRelationFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type BankAccountWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankAccountWhereInput>>;
-    NOT?: InputMaybe<Array<BankAccountWhereInput>>;
-    OR?: InputMaybe<Array<BankAccountWhereInput>>;
-    accountName?: InputMaybe<StringFilter>;
-    accountNumber?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    bankManager?: InputMaybe<BankManagerRelationFilter>;
-    bankManagerId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    fullName?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    transactions?: InputMaybe<BankTransactionListRelationFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
 export type BankManager = {
     __typename?: "BankManager";
     apiKey: Scalars["String"]["output"];
@@ -812,142 +109,6 @@ export type BankManager = {
     userId: Scalars["Int"]["output"];
 };
 
-export type BankManagerAvgAggregate = {
-    __typename?: "BankManagerAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankManagerCountAggregate = {
-    __typename?: "BankManagerCountAggregate";
-    _all: Scalars["Int"]["output"];
-    apiKey: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    updatedAt: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type BankManagerCreateManyUserInput = {
-    apiKey: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankManagerCreateManyUserInputEnvelope = {
-    data: Array<BankManagerCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankManagerCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<BankManagerWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankManagerCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<BankManagerCreateWithoutUserInput>>;
-    createMany?: InputMaybe<BankManagerCreateManyUserInputEnvelope>;
-};
-
-export type BankManagerCreateNestedOneWithoutBanksInput = {
-    connect?: InputMaybe<BankManagerWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankManagerCreateOrConnectWithoutBanksInput>;
-    create?: InputMaybe<BankManagerCreateWithoutBanksInput>;
-};
-
-export type BankManagerCreateOrConnectWithoutBanksInput = {
-    create: BankManagerCreateWithoutBanksInput;
-    where: BankManagerWhereUniqueInput;
-};
-
-export type BankManagerCreateOrConnectWithoutUserInput = {
-    create: BankManagerCreateWithoutUserInput;
-    where: BankManagerWhereUniqueInput;
-};
-
-export type BankManagerCreateWithoutBanksInput = {
-    apiKey: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    user: UserCreateNestedOneWithoutBankManagerInput;
-};
-
-export type BankManagerCreateWithoutUserInput = {
-    apiKey: Scalars["String"]["input"];
-    banks?: InputMaybe<BankAccountCreateNestedManyWithoutBankManagerInput>;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankManagerListRelationFilter = {
-    every?: InputMaybe<BankManagerWhereInput>;
-    none?: InputMaybe<BankManagerWhereInput>;
-    some?: InputMaybe<BankManagerWhereInput>;
-};
-
-export type BankManagerMaxAggregate = {
-    __typename?: "BankManagerMaxAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerMinAggregate = {
-    __typename?: "BankManagerMinAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerRelationFilter = {
-    is?: InputMaybe<BankManagerWhereInput>;
-    isNot?: InputMaybe<BankManagerWhereInput>;
-};
-
-export type BankManagerSumAggregate = {
-    __typename?: "BankManagerSumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerWhereInput = {
-    AND?: InputMaybe<Array<BankManagerWhereInput>>;
-    NOT?: InputMaybe<Array<BankManagerWhereInput>>;
-    OR?: InputMaybe<Array<BankManagerWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    banks?: InputMaybe<BankAccountListRelationFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type BankManagerWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankManagerWhereInput>>;
-    NOT?: InputMaybe<Array<BankManagerWhereInput>>;
-    OR?: InputMaybe<Array<BankManagerWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    banks?: InputMaybe<BankAccountListRelationFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
 export type BankTransaction = {
     __typename?: "BankTransaction";
     amount: Scalars["Float"]["output"];
@@ -958,144 +119,6 @@ export type BankTransaction = {
     expense?: Maybe<Array<Expense>>;
     id: Scalars["String"]["output"];
     spentAmount: Scalars["Float"]["output"];
-};
-
-export type BankTransactionAvgAggregate = {
-    __typename?: "BankTransactionAvgAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionCountAggregate = {
-    __typename?: "BankTransactionCountAggregate";
-    _all: Scalars["Int"]["output"];
-    amount: Scalars["Int"]["output"];
-    bankId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    spentAmount: Scalars["Int"]["output"];
-};
-
-export type BankTransactionCreateManyBankInput = {
-    amount: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionCreateManyBankInputEnvelope = {
-    data: Array<BankTransactionCreateManyBankInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankTransactionCreateNestedManyWithoutBankInput = {
-    connect?: InputMaybe<Array<BankTransactionWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankTransactionCreateOrConnectWithoutBankInput>
-    >;
-    create?: InputMaybe<Array<BankTransactionCreateWithoutBankInput>>;
-    createMany?: InputMaybe<BankTransactionCreateManyBankInputEnvelope>;
-};
-
-export type BankTransactionCreateNestedOneWithoutExpenseInput = {
-    connect?: InputMaybe<BankTransactionWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankTransactionCreateOrConnectWithoutExpenseInput>;
-    create?: InputMaybe<BankTransactionCreateWithoutExpenseInput>;
-};
-
-export type BankTransactionCreateOrConnectWithoutBankInput = {
-    create: BankTransactionCreateWithoutBankInput;
-    where: BankTransactionWhereUniqueInput;
-};
-
-export type BankTransactionCreateOrConnectWithoutExpenseInput = {
-    create: BankTransactionCreateWithoutExpenseInput;
-    where: BankTransactionWhereUniqueInput;
-};
-
-export type BankTransactionCreateWithoutBankInput = {
-    amount: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    expense?: InputMaybe<ExpenseCreateNestedManyWithoutBankTransactionInput>;
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionCreateWithoutExpenseInput = {
-    amount: Scalars["Float"]["input"];
-    bank: BankAccountCreateNestedOneWithoutTransactionsInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionListRelationFilter = {
-    every?: InputMaybe<BankTransactionWhereInput>;
-    none?: InputMaybe<BankTransactionWhereInput>;
-    some?: InputMaybe<BankTransactionWhereInput>;
-};
-
-export type BankTransactionMaxAggregate = {
-    __typename?: "BankTransactionMaxAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionMinAggregate = {
-    __typename?: "BankTransactionMinAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionRelationFilter = {
-    is?: InputMaybe<BankTransactionWhereInput>;
-    isNot?: InputMaybe<BankTransactionWhereInput>;
-};
-
-export type BankTransactionSumAggregate = {
-    __typename?: "BankTransactionSumAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionWhereInput = {
-    AND?: InputMaybe<Array<BankTransactionWhereInput>>;
-    NOT?: InputMaybe<Array<BankTransactionWhereInput>>;
-    OR?: InputMaybe<Array<BankTransactionWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bank?: InputMaybe<BankAccountRelationFilter>;
-    bankId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringFilter>;
-    expense?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    spentAmount?: InputMaybe<FloatFilter>;
-};
-
-export type BankTransactionWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankTransactionWhereInput>>;
-    NOT?: InputMaybe<Array<BankTransactionWhereInput>>;
-    OR?: InputMaybe<Array<BankTransactionWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bank?: InputMaybe<BankAccountRelationFilter>;
-    bankId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringFilter>;
-    expense?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    spentAmount?: InputMaybe<FloatFilter>;
 };
 
 export type CreateBankManagerInput = {
@@ -1131,13 +154,30 @@ export type CreateExpenseInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type CreateMonthlyTargetInput = {
+    categoryId: Scalars["String"]["input"];
+    month: Scalars["Int"]["input"];
+    target: Scalars["Float"]["input"];
+    year: Scalars["Int"]["input"];
+};
+
+export type CreateUserInput = {
+    email: Scalars["String"]["input"];
+    name?: InputMaybe<Scalars["String"]["input"]>;
+    otp?: InputMaybe<Scalars["String"]["input"]>;
+    otpPurpose?: InputMaybe<OtpPurpose>;
+    password: Scalars["String"]["input"];
+};
+
 export type CryptoPortfolio = {
     __typename?: "CryptoPortfolio";
     apiKey: Scalars["String"]["output"];
     balances: Array<AssetBalance>;
     exchanges: Scalars["String"]["output"];
-    historicalBalances: Array<HistoricalCryptoBalance>;
+    historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
     id: Scalars["String"]["output"];
+    investmentCategoryName?: Maybe<Scalars["String"]["output"]>;
+    latestHistoricalBalances: HistoricalCryptoBalance;
     secretKey: Scalars["String"]["output"];
     tradingType: TradingType;
     updateTime?: Maybe<Scalars["DateTime"]["output"]>;
@@ -1145,166 +185,8 @@ export type CryptoPortfolio = {
     userId: Scalars["Int"]["output"];
 };
 
-export type CryptoPortfolioAvgAggregate = {
-    __typename?: "CryptoPortfolioAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type CryptoPortfolioCountAggregate = {
-    __typename?: "CryptoPortfolioCountAggregate";
-    _all: Scalars["Int"]["output"];
-    apiKey: Scalars["Int"]["output"];
-    exchanges: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    secretKey: Scalars["Int"]["output"];
-    tradingType: Scalars["Int"]["output"];
-    updateTime: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type CryptoPortfolioCreateManyUserInput = {
-    apiKey: Scalars["String"]["input"];
-    exchanges?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey: Scalars["String"]["input"];
-    tradingType: TradingType;
-    updateTime?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type CryptoPortfolioCreateManyUserInputEnvelope = {
-    data: Array<CryptoPortfolioCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type CryptoPortfolioCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<CryptoPortfolioWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<CryptoPortfolioCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<CryptoPortfolioCreateWithoutUserInput>>;
-    createMany?: InputMaybe<CryptoPortfolioCreateManyUserInputEnvelope>;
-};
-
-export type CryptoPortfolioCreateOrConnectWithoutUserInput = {
-    create: CryptoPortfolioCreateWithoutUserInput;
-    where: CryptoPortfolioWhereUniqueInput;
-};
-
-export type CryptoPortfolioCreateWithoutUserInput = {
-    apiKey: Scalars["String"]["input"];
-    balances?: InputMaybe<AssetBalanceCreateNestedManyWithoutCryptoPortfolioInput>;
-    exchanges?: InputMaybe<Scalars["String"]["input"]>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceCreateNestedManyWithoutCryptoPortfolioInput>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey: Scalars["String"]["input"];
-    tradingType: TradingType;
-    updateTime?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type CryptoPortfolioListRelationFilter = {
-    every?: InputMaybe<CryptoPortfolioWhereInput>;
-    none?: InputMaybe<CryptoPortfolioWhereInput>;
-    some?: InputMaybe<CryptoPortfolioWhereInput>;
-};
-
-export type CryptoPortfolioMaxAggregate = {
-    __typename?: "CryptoPortfolioMaxAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    exchanges?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    secretKey?: Maybe<Scalars["String"]["output"]>;
-    tradingType?: Maybe<TradingType>;
-    updateTime?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioMinAggregate = {
-    __typename?: "CryptoPortfolioMinAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    exchanges?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    secretKey?: Maybe<Scalars["String"]["output"]>;
-    tradingType?: Maybe<TradingType>;
-    updateTime?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioRelationFilter = {
-    is?: InputMaybe<CryptoPortfolioWhereInput>;
-    isNot?: InputMaybe<CryptoPortfolioWhereInput>;
-};
-
-export type CryptoPortfolioSumAggregate = {
-    __typename?: "CryptoPortfolioSumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioWhereInput = {
-    AND?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    NOT?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    OR?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    balances?: InputMaybe<AssetBalanceListRelationFilter>;
-    exchanges?: InputMaybe<StringFilter>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    secretKey?: InputMaybe<StringFilter>;
-    tradingType?: InputMaybe<EnumTradingTypeFilter>;
-    updateTime?: InputMaybe<DateTimeNullableFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type CryptoPortfolioWhereUniqueInput = {
-    AND?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    NOT?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    OR?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    balances?: InputMaybe<AssetBalanceListRelationFilter>;
-    exchanges?: InputMaybe<StringFilter>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey?: InputMaybe<StringFilter>;
-    tradingType?: InputMaybe<EnumTradingTypeFilter>;
-    updateTime?: InputMaybe<DateTimeNullableFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type DateTimeFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type DateTimeNullableFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type EnumOtpPurposeNullableFilter = {
-    equals?: InputMaybe<OtpPurpose>;
-    in?: InputMaybe<Array<OtpPurpose>>;
-    not?: InputMaybe<NestedEnumOtpPurposeNullableFilter>;
-    notIn?: InputMaybe<Array<OtpPurpose>>;
-};
-
-export type EnumTradingTypeFilter = {
-    equals?: InputMaybe<TradingType>;
-    in?: InputMaybe<Array<TradingType>>;
-    not?: InputMaybe<NestedEnumTradingTypeFilter>;
-    notIn?: InputMaybe<Array<TradingType>>;
+export type CryptoPortfolioLatestHistoricalBalancesArgs = {
+    timeFrame: Scalars["String"]["input"];
 };
 
 export type Expense = {
@@ -1323,12 +205,6 @@ export type Expense = {
     userId: Scalars["Int"]["output"];
 };
 
-export type ExpenseAvgAggregate = {
-    __typename?: "ExpenseAvgAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
 export type ExpenseCategory = {
     __typename?: "ExpenseCategory";
     color: Scalars["String"]["output"];
@@ -1336,352 +212,21 @@ export type ExpenseCategory = {
     description?: Maybe<Scalars["String"]["output"]>;
     expenses?: Maybe<Array<Expense>>;
     id: Scalars["String"]["output"];
+    monthlyTargets?: Maybe<Array<MonthlyTarget>>;
     name: Scalars["String"]["output"];
     totalAmount: Scalars["Int"]["output"];
     user: User;
     userId: Scalars["Int"]["output"];
 };
 
+export type ExpenseCategoryMonthlyTargetsArgs = {
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type ExpenseCategoryTotalAmountArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type ExpenseCategoryAvgAggregate = {
-    __typename?: "ExpenseCategoryAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type ExpenseCategoryCountAggregate = {
-    __typename?: "ExpenseCategoryCountAggregate";
-    _all: Scalars["Int"]["output"];
-    color: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type ExpenseCategoryCreateManyUserInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCategoryCreateManyUserInputEnvelope = {
-    data: Array<ExpenseCategoryCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCategoryCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<ExpenseCategoryWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCategoryCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCategoryCreateWithoutUserInput>>;
-    createMany?: InputMaybe<ExpenseCategoryCreateManyUserInputEnvelope>;
-};
-
-export type ExpenseCategoryCreateNestedOneWithoutExpensesInput = {
-    connect?: InputMaybe<ExpenseCategoryWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<ExpenseCategoryCreateOrConnectWithoutExpensesInput>;
-    create?: InputMaybe<ExpenseCategoryCreateWithoutExpensesInput>;
-};
-
-export type ExpenseCategoryCreateOrConnectWithoutExpensesInput = {
-    create: ExpenseCategoryCreateWithoutExpensesInput;
-    where: ExpenseCategoryWhereUniqueInput;
-};
-
-export type ExpenseCategoryCreateOrConnectWithoutUserInput = {
-    create: ExpenseCategoryCreateWithoutUserInput;
-    where: ExpenseCategoryWhereUniqueInput;
-};
-
-export type ExpenseCategoryCreateWithoutExpensesInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpenseCategoriesInput;
-};
-
-export type ExpenseCategoryCreateWithoutUserInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutCategoryInput>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCategoryListRelationFilter = {
-    every?: InputMaybe<ExpenseCategoryWhereInput>;
-    none?: InputMaybe<ExpenseCategoryWhereInput>;
-    some?: InputMaybe<ExpenseCategoryWhereInput>;
-};
-
-export type ExpenseCategoryMaxAggregate = {
-    __typename?: "ExpenseCategoryMaxAggregate";
-    color?: Maybe<Scalars["String"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryMinAggregate = {
-    __typename?: "ExpenseCategoryMinAggregate";
-    color?: Maybe<Scalars["String"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryRelationFilter = {
-    is?: InputMaybe<ExpenseCategoryWhereInput>;
-    isNot?: InputMaybe<ExpenseCategoryWhereInput>;
-};
-
-export type ExpenseCategorySumAggregate = {
-    __typename?: "ExpenseCategorySumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryWhereInput = {
-    AND?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    color?: InputMaybe<StringFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseCategoryWhereUniqueInput = {
-    AND?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    color?: InputMaybe<StringFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseCountAggregate = {
-    __typename?: "ExpenseCountAggregate";
-    _all: Scalars["Int"]["output"];
-    amount: Scalars["Int"]["output"];
-    bankTransactionId: Scalars["Int"]["output"];
-    categoryId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type ExpenseCreateManyBankTransactionInput = {
-    amount: Scalars["Float"]["input"];
-    categoryId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    userId: Scalars["Int"]["input"];
-};
-
-export type ExpenseCreateManyBankTransactionInputEnvelope = {
-    data: Array<ExpenseCreateManyBankTransactionInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateManyCategoryInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransactionId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    userId: Scalars["Int"]["input"];
-};
-
-export type ExpenseCreateManyCategoryInputEnvelope = {
-    data: Array<ExpenseCreateManyCategoryInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateManyUserInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransactionId: Scalars["String"]["input"];
-    categoryId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCreateManyUserInputEnvelope = {
-    data: Array<ExpenseCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateNestedManyWithoutBankTransactionInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCreateOrConnectWithoutBankTransactionInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCreateWithoutBankTransactionInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyBankTransactionInputEnvelope>;
-};
-
-export type ExpenseCreateNestedManyWithoutCategoryInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCreateOrConnectWithoutCategoryInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCreateWithoutCategoryInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyCategoryInputEnvelope>;
-};
-
-export type ExpenseCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<Array<ExpenseCreateOrConnectWithoutUserInput>>;
-    create?: InputMaybe<Array<ExpenseCreateWithoutUserInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyUserInputEnvelope>;
-};
-
-export type ExpenseCreateOrConnectWithoutBankTransactionInput = {
-    create: ExpenseCreateWithoutBankTransactionInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateOrConnectWithoutCategoryInput = {
-    create: ExpenseCreateWithoutCategoryInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateOrConnectWithoutUserInput = {
-    create: ExpenseCreateWithoutUserInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateWithoutBankTransactionInput = {
-    amount: Scalars["Float"]["input"];
-    category: ExpenseCategoryCreateNestedOneWithoutExpensesInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpensesInput;
-};
-
-export type ExpenseCreateWithoutCategoryInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransaction: BankTransactionCreateNestedOneWithoutExpenseInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpensesInput;
-};
-
-export type ExpenseCreateWithoutUserInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransaction: BankTransactionCreateNestedOneWithoutExpenseInput;
-    category: ExpenseCategoryCreateNestedOneWithoutExpensesInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseListRelationFilter = {
-    every?: InputMaybe<ExpenseWhereInput>;
-    none?: InputMaybe<ExpenseWhereInput>;
-    some?: InputMaybe<ExpenseWhereInput>;
-};
-
-export type ExpenseMaxAggregate = {
-    __typename?: "ExpenseMaxAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankTransactionId?: Maybe<Scalars["String"]["output"]>;
-    categoryId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseMinAggregate = {
-    __typename?: "ExpenseMinAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankTransactionId?: Maybe<Scalars["String"]["output"]>;
-    categoryId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseSumAggregate = {
-    __typename?: "ExpenseSumAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseWhereInput = {
-    AND?: InputMaybe<Array<ExpenseWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bankTransaction?: InputMaybe<BankTransactionRelationFilter>;
-    bankTransactionId?: InputMaybe<StringFilter>;
-    category?: InputMaybe<ExpenseCategoryRelationFilter>;
-    categoryId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseWhereUniqueInput = {
-    AND?: InputMaybe<Array<ExpenseWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bankTransaction?: InputMaybe<BankTransactionRelationFilter>;
-    bankTransactionId?: InputMaybe<StringFilter>;
-    category?: InputMaybe<ExpenseCategoryRelationFilter>;
-    categoryId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type FloatFilter = {
-    equals?: InputMaybe<Scalars["Float"]["input"]>;
-    gt?: InputMaybe<Scalars["Float"]["input"]>;
-    gte?: InputMaybe<Scalars["Float"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-    lt?: InputMaybe<Scalars["Float"]["input"]>;
-    lte?: InputMaybe<Scalars["Float"]["input"]>;
-    not?: InputMaybe<NestedFloatFilter>;
-    notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>;
 };
 
 export type GetAssetInfoInput = {
@@ -1697,6 +242,11 @@ export type GetCryptoPortfolioInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type GetHistoricalBalanceInput = {
+    cryptoPortfolioId: Scalars["String"]["input"];
+    timeFrame: Scalars["String"]["input"];
+};
+
 export type HistoricalCryptoBalance = {
     __typename?: "HistoricalCryptoBalance";
     changeBalance: Scalars["Float"]["output"];
@@ -1705,216 +255,6 @@ export type HistoricalCryptoBalance = {
     cryptoPortfolioId: Scalars["String"]["output"];
     estimatedBalance: Scalars["Float"]["output"];
     time: Scalars["DateTime"]["output"];
-};
-
-export type HistoricalCryptoBalanceAvgAggregate = {
-    __typename?: "HistoricalCryptoBalanceAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceCountAggregate = {
-    __typename?: "HistoricalCryptoBalanceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type HistoricalCryptoBalanceCreateManyCryptoPortfolioInput = {
-    changeBalance: Scalars["Float"]["input"];
-    changePercent: Scalars["Float"]["input"];
-    estimatedBalance: Scalars["Float"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceCreateManyCryptoPortfolioInputEnvelope = {
-    data: Array<HistoricalCryptoBalanceCreateManyCryptoPortfolioInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type HistoricalCryptoBalanceCreateNestedManyWithoutCryptoPortfolioInput =
-    {
-        connect?: InputMaybe<Array<HistoricalCryptoBalanceWhereUniqueInput>>;
-        connectOrCreate?: InputMaybe<
-            Array<HistoricalCryptoBalanceCreateOrConnectWithoutCryptoPortfolioInput>
-        >;
-        create?: InputMaybe<
-            Array<HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput>
-        >;
-        createMany?: InputMaybe<HistoricalCryptoBalanceCreateManyCryptoPortfolioInputEnvelope>;
-    };
-
-export type HistoricalCryptoBalanceCreateOrConnectWithoutCryptoPortfolioInput =
-    {
-        create: HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput;
-        where: HistoricalCryptoBalanceWhereUniqueInput;
-    };
-
-export type HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput = {
-    changeBalance: Scalars["Float"]["input"];
-    changePercent: Scalars["Float"]["input"];
-    estimatedBalance: Scalars["Float"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceCryptoPortfolioIdTimeCompoundUniqueInput = {
-    cryptoPortfolioId: Scalars["String"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceListRelationFilter = {
-    every?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-    none?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-    some?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-};
-
-export type HistoricalCryptoBalanceMaxAggregate = {
-    __typename?: "HistoricalCryptoBalanceMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceMinAggregate = {
-    __typename?: "HistoricalCryptoBalanceMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceSumAggregate = {
-    __typename?: "HistoricalCryptoBalanceSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceWhereInput = {
-    AND?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    OR?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    changeBalance?: InputMaybe<FloatFilter>;
-    changePercent?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    estimatedBalance?: InputMaybe<FloatFilter>;
-    time?: InputMaybe<DateTimeFilter>;
-};
-
-export type HistoricalCryptoBalanceWhereUniqueInput = {
-    AND?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    OR?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    changeBalance?: InputMaybe<FloatFilter>;
-    changePercent?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    cryptoPortfolioId_time?: InputMaybe<HistoricalCryptoBalanceCryptoPortfolioIdTimeCompoundUniqueInput>;
-    estimatedBalance?: InputMaybe<FloatFilter>;
-    time?: InputMaybe<DateTimeFilter>;
-};
-
-export type Historical_Crypto_Balance_1dAvgAggregate = {
-    __typename?: "Historical_crypto_balance_1dAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dCountAggregate = {
-    __typename?: "Historical_crypto_balance_1dCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type Historical_Crypto_Balance_1dMaxAggregate = {
-    __typename?: "Historical_crypto_balance_1dMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dMinAggregate = {
-    __typename?: "Historical_crypto_balance_1dMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dSumAggregate = {
-    __typename?: "Historical_crypto_balance_1dSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hAvgAggregate = {
-    __typename?: "Historical_crypto_balance_1hAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hCountAggregate = {
-    __typename?: "Historical_crypto_balance_1hCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type Historical_Crypto_Balance_1hMaxAggregate = {
-    __typename?: "Historical_crypto_balance_1hMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hMinAggregate = {
-    __typename?: "Historical_crypto_balance_1hMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hSumAggregate = {
-    __typename?: "Historical_crypto_balance_1hSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type IntFilter = {
-    equals?: InputMaybe<Scalars["Int"]["input"]>;
-    gt?: InputMaybe<Scalars["Int"]["input"]>;
-    gte?: InputMaybe<Scalars["Int"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-    lt?: InputMaybe<Scalars["Int"]["input"]>;
-    lte?: InputMaybe<Scalars["Int"]["input"]>;
-    not?: InputMaybe<NestedIntFilter>;
-    notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>;
 };
 
 export type LoginReqDto = {
@@ -1928,12 +268,23 @@ export type LoginResDto = {
     refreshToken: Scalars["String"]["output"];
 };
 
+export type MonthlyTarget = {
+    __typename?: "MonthlyTarget";
+    category: ExpenseCategory;
+    categoryId: Scalars["String"]["output"];
+    id: Scalars["String"]["output"];
+    month: Scalars["Int"]["output"];
+    target: Scalars["Float"]["output"];
+    year: Scalars["Int"]["output"];
+};
+
 export type Mutation = {
     __typename?: "Mutation";
     createBank: BankManager;
     createCryptoPortfolio: CreateCryptoRes;
     createExpense: Expense;
     createExpenseCategory: ExpenseCategory;
+    createMonthlyTarget: MonthlyTarget;
     login: LoginResDto;
     removeExpense: Expense;
     removeExpenseCategory: ExpenseCategory;
@@ -1941,6 +292,7 @@ export type Mutation = {
     signup: SignupResDto;
     updateExpense: Expense;
     updateExpenseCategory: ExpenseCategory;
+    updateMonthlyTarget: MonthlyTarget;
     verifyAccount: LoginResDto;
 };
 
@@ -1960,6 +312,10 @@ export type MutationCreateExpenseCategoryArgs = {
     data: CreateExpenseCategoryInput;
 };
 
+export type MutationCreateMonthlyTargetArgs = {
+    data: CreateMonthlyTargetInput;
+};
+
 export type MutationLoginArgs = {
     data: LoginReqDto;
 };
@@ -1977,7 +333,7 @@ export type MutationRemoveExpensesArgs = {
 };
 
 export type MutationSignupArgs = {
-    data: UserCreateInput;
+    data: CreateUserInput;
 };
 
 export type MutationUpdateExpenseArgs = {
@@ -1990,94 +346,13 @@ export type MutationUpdateExpenseCategoryArgs = {
     id: Scalars["String"]["input"];
 };
 
+export type MutationUpdateMonthlyTargetArgs = {
+    data: UpdateMonthlyTargetInput;
+    id: Scalars["String"]["input"];
+};
+
 export type MutationVerifyAccountArgs = {
     data: VerifyDto;
-};
-
-export type NestedDateTimeFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type NestedDateTimeNullableFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type NestedEnumOtpPurposeNullableFilter = {
-    equals?: InputMaybe<OtpPurpose>;
-    in?: InputMaybe<Array<OtpPurpose>>;
-    not?: InputMaybe<NestedEnumOtpPurposeNullableFilter>;
-    notIn?: InputMaybe<Array<OtpPurpose>>;
-};
-
-export type NestedEnumTradingTypeFilter = {
-    equals?: InputMaybe<TradingType>;
-    in?: InputMaybe<Array<TradingType>>;
-    not?: InputMaybe<NestedEnumTradingTypeFilter>;
-    notIn?: InputMaybe<Array<TradingType>>;
-};
-
-export type NestedFloatFilter = {
-    equals?: InputMaybe<Scalars["Float"]["input"]>;
-    gt?: InputMaybe<Scalars["Float"]["input"]>;
-    gte?: InputMaybe<Scalars["Float"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-    lt?: InputMaybe<Scalars["Float"]["input"]>;
-    lte?: InputMaybe<Scalars["Float"]["input"]>;
-    not?: InputMaybe<NestedFloatFilter>;
-    notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-};
-
-export type NestedIntFilter = {
-    equals?: InputMaybe<Scalars["Int"]["input"]>;
-    gt?: InputMaybe<Scalars["Int"]["input"]>;
-    gte?: InputMaybe<Scalars["Int"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-    lt?: InputMaybe<Scalars["Int"]["input"]>;
-    lte?: InputMaybe<Scalars["Int"]["input"]>;
-    not?: InputMaybe<NestedIntFilter>;
-    notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-};
-
-export type NestedStringFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    not?: InputMaybe<NestedStringFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type NestedStringNullableFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    not?: InputMaybe<NestedStringNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export enum OtpPurpose {
@@ -2100,7 +375,9 @@ export type Query = {
     getCryptoPortfolios: Array<CryptoPortfolio>;
     getExpenseCategories: Array<ExpenseCategory>;
     getExpenses: Array<Expense>;
+    getHistoricalBalances: Array<HistoricalCryptoBalance>;
     getMe: User;
+    getMonthlyTargets: Array<MonthlyTarget>;
 };
 
 export type QueryGetAssetInfoArgs = {
@@ -2125,7 +402,8 @@ export type QueryGetCryptoPortfoliosArgs = {
 };
 
 export type QueryGetExpenseCategoriesArgs = {
-    userId: Scalars["Int"]["input"];
+    name?: InputMaybe<Scalars["String"]["input"]>;
+    userId?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryGetExpensesArgs = {
@@ -2134,45 +412,21 @@ export type QueryGetExpensesArgs = {
     userId: Scalars["Int"]["input"];
 };
 
-export enum QueryMode {
-    Default = "default",
-    Insensitive = "insensitive",
-}
+export type QueryGetHistoricalBalancesArgs = {
+    data: GetHistoricalBalanceInput;
+    pagination: PaginationInput;
+};
+
+export type QueryGetMonthlyTargetsArgs = {
+    categoryId: Scalars["String"]["input"];
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
 
 export type SignupResDto = {
     __typename?: "SignupResDto";
     accessToken: Scalars["String"]["output"];
     refreshToken: Scalars["String"]["output"];
-};
-
-export type StringFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    mode?: InputMaybe<QueryMode>;
-    not?: InputMaybe<NestedStringFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type StringNullableFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    mode?: InputMaybe<QueryMode>;
-    not?: InputMaybe<NestedStringNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Subscription = {
@@ -2213,6 +467,12 @@ export type UpdateExpenseInput = {
     name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type UpdateMonthlyTargetInput = {
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    target?: InputMaybe<Scalars["Float"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type User = {
     __typename?: "User";
     bankManager?: Maybe<Array<BankManager>>;
@@ -2228,169 +488,13 @@ export type User = {
     password: Scalars["String"]["output"];
 };
 
-export type UserAvgAggregate = {
-    __typename?: "UserAvgAggregate";
-    id?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type UserCountAggregate = {
-    __typename?: "UserCountAggregate";
-    _all: Scalars["Int"]["output"];
-    email: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    otp: Scalars["Int"]["output"];
-    otpPurpose: Scalars["Int"]["output"];
-    password: Scalars["Int"]["output"];
-};
-
-export type UserCreateInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateNestedOneWithoutBankManagerInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutBankManagerInput>;
-    create?: InputMaybe<UserCreateWithoutBankManagerInput>;
-};
-
-export type UserCreateNestedOneWithoutExpenseCategoriesInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutExpenseCategoriesInput>;
-    create?: InputMaybe<UserCreateWithoutExpenseCategoriesInput>;
-};
-
-export type UserCreateNestedOneWithoutExpensesInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutExpensesInput>;
-    create?: InputMaybe<UserCreateWithoutExpensesInput>;
-};
-
-export type UserCreateOrConnectWithoutBankManagerInput = {
-    create: UserCreateWithoutBankManagerInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutExpenseCategoriesInput = {
-    create: UserCreateWithoutExpenseCategoriesInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutExpensesInput = {
-    create: UserCreateWithoutExpensesInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateWithoutBankManagerInput = {
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateWithoutExpenseCategoriesInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateWithoutExpensesInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserMaxAggregate = {
-    __typename?: "UserMaxAggregate";
-    email?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["Int"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    otp?: Maybe<Scalars["String"]["output"]>;
-    otpPurpose?: Maybe<OtpPurpose>;
-    password?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserMinAggregate = {
-    __typename?: "UserMinAggregate";
-    email?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["Int"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    otp?: Maybe<Scalars["String"]["output"]>;
-    otpPurpose?: Maybe<OtpPurpose>;
-    password?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserRelationFilter = {
-    is?: InputMaybe<UserWhereInput>;
-    isNot?: InputMaybe<UserWhereInput>;
-};
-
-export type UserSumAggregate = {
-    __typename?: "UserSumAggregate";
-    id?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type UserWhereInput = {
-    AND?: InputMaybe<Array<UserWhereInput>>;
-    NOT?: InputMaybe<Array<UserWhereInput>>;
-    OR?: InputMaybe<Array<UserWhereInput>>;
-    bankManager?: InputMaybe<BankManagerListRelationFilter>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioListRelationFilter>;
-    email?: InputMaybe<StringFilter>;
-    expenseCategories?: InputMaybe<ExpenseCategoryListRelationFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<IntFilter>;
-    name?: InputMaybe<StringNullableFilter>;
-    otp?: InputMaybe<StringNullableFilter>;
-    otpPurpose?: InputMaybe<EnumOtpPurposeNullableFilter>;
-    password?: InputMaybe<StringFilter>;
-};
-
-export type UserWhereUniqueInput = {
-    AND?: InputMaybe<Array<UserWhereInput>>;
-    NOT?: InputMaybe<Array<UserWhereInput>>;
-    OR?: InputMaybe<Array<UserWhereInput>>;
-    bankManager?: InputMaybe<BankManagerListRelationFilter>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioListRelationFilter>;
-    email?: InputMaybe<Scalars["String"]["input"]>;
-    expenseCategories?: InputMaybe<ExpenseCategoryListRelationFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["Int"]["input"]>;
-    name?: InputMaybe<StringNullableFilter>;
-    otp?: InputMaybe<StringNullableFilter>;
-    otpPurpose?: InputMaybe<EnumOtpPurposeNullableFilter>;
-    password?: InputMaybe<StringFilter>;
-};
-
 export type VerifyDto = {
     otp: Scalars["String"]["input"];
     otpPurpose: OtpPurpose;
 };
 
 export type SignupMutationVariables = Exact<{
-    data: UserCreateInput;
+    data: CreateUserInput;
 }>;
 
 export type SignupMutation = {
@@ -2478,35 +582,53 @@ export type CreateCryptoPortfolioMutation = {
     createCryptoPortfolio: { __typename?: "CreateCryptoRes"; userId: number };
 };
 
-export type GetCryptoPortfolioQueryVariables = Exact<{
+export type GetCryptoPortfoliosQueryVariables = Exact<{
     data: GetCryptoPortfolioInput;
+    timeFrame: Scalars["String"]["input"];
 }>;
 
-export type GetCryptoPortfolioQuery = {
+export type GetCryptoPortfoliosQuery = {
     __typename?: "Query";
     getCryptoPortfolios: Array<{
         __typename?: "CryptoPortfolio";
         id: string;
         exchanges: string;
         tradingType: TradingType;
-        historicalBalances: Array<{
+        investmentCategoryName?: string | null;
+        latestHistoricalBalances: {
             __typename?: "HistoricalCryptoBalance";
-            time: any;
-            estimatedBalance: number;
-            changePercent: number;
             changeBalance: number;
-        }>;
+            changePercent: number;
+            estimatedBalance: number;
+        };
         balances: Array<{
             __typename?: "AssetBalance";
+            id: string;
             balance: number;
             assetInfo: {
                 __typename?: "AssetInfoOutput";
-                id?: string | null;
-                logo?: string | null;
+                id: string;
+                logo: string;
                 lastPrice: number;
-                symbol?: string | null;
+                symbol: string;
             };
         }>;
+    }>;
+};
+
+export type GetHistoricalBalancesQueryVariables = Exact<{
+    data: GetHistoricalBalanceInput;
+    pagination: PaginationInput;
+}>;
+
+export type GetHistoricalBalancesQuery = {
+    __typename?: "Query";
+    getHistoricalBalances: Array<{
+        __typename?: "HistoricalCryptoBalance";
+        time: any;
+        estimatedBalance: number;
+        changePercent: number;
+        changeBalance: number;
     }>;
 };
 
@@ -2572,8 +694,11 @@ export type NewAssetPrice5mSubscription = {
 
 export type GetExpenseCategoriesQueryVariables = Exact<{
     userId: Scalars["Int"]["input"];
+    name?: InputMaybe<Scalars["String"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
 }>;
 
 export type GetExpenseCategoriesQuery = {
@@ -2586,6 +711,12 @@ export type GetExpenseCategoriesQuery = {
         id: string;
         countExpenses: number;
         totalAmount: number;
+        monthlyTargets?: Array<{
+            __typename?: "MonthlyTarget";
+            month: number;
+            year: number;
+            target: number;
+        }> | null;
     }>;
 };
 
@@ -2627,6 +758,41 @@ export type RemoveExpenseCategoryMutationVariables = Exact<{
 export type RemoveExpenseCategoryMutation = {
     __typename?: "Mutation";
     removeExpenseCategory: { __typename?: "ExpenseCategory"; id: string };
+};
+
+export type GetMonthlyTargetsQueryVariables = Exact<{
+    categoryId: Scalars["String"]["input"];
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+export type GetMonthlyTargetsQuery = {
+    __typename?: "Query";
+    getMonthlyTargets: Array<{
+        __typename?: "MonthlyTarget";
+        target: number;
+        month: number;
+        year: number;
+    }>;
+};
+
+export type CreateMonthlyTargetMutationVariables = Exact<{
+    data: CreateMonthlyTargetInput;
+}>;
+
+export type CreateMonthlyTargetMutation = {
+    __typename?: "Mutation";
+    createMonthlyTarget: { __typename?: "MonthlyTarget"; categoryId: string };
+};
+
+export type UpdateMonthlyTargetMutationVariables = Exact<{
+    updateMonthlyTargetId: Scalars["String"]["input"];
+    data: UpdateMonthlyTargetInput;
+}>;
+
+export type UpdateMonthlyTargetMutation = {
+    __typename?: "Mutation";
+    updateMonthlyTarget: { __typename?: "MonthlyTarget"; categoryId: string };
 };
 
 export type GetExpensesQueryVariables = Exact<{
@@ -2747,7 +913,7 @@ export const SignupDocument = {
                         kind: "NonNullType",
                         type: {
                             kind: "NamedType",
-                            name: { kind: "Name", value: "UserCreateInput" },
+                            name: { kind: "Name", value: "CreateUserInput" },
                         },
                     },
                 },
@@ -3244,13 +1410,13 @@ export const CreateCryptoPortfolioDocument = {
     CreateCryptoPortfolioMutation,
     CreateCryptoPortfolioMutationVariables
 >;
-export const GetCryptoPortfolioDocument = {
+export const GetCryptoPortfoliosDocument = {
     kind: "Document",
     definitions: [
         {
             kind: "OperationDefinition",
             operation: "query",
-            name: { kind: "Name", value: "GetCryptoPortfolio" },
+            name: { kind: "Name", value: "GetCryptoPortfolios" },
             variableDefinitions: [
                 {
                     kind: "VariableDefinition",
@@ -3266,6 +1432,20 @@ export const GetCryptoPortfolioDocument = {
                                 kind: "Name",
                                 value: "GetCryptoPortfolioInput",
                             },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timeFrame" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
                         },
                     },
                 },
@@ -3308,8 +1488,31 @@ export const GetCryptoPortfolioDocument = {
                                     kind: "Field",
                                     name: {
                                         kind: "Name",
-                                        value: "historicalBalances",
+                                        value: "investmentCategoryName",
                                     },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "latestHistoricalBalances",
+                                    },
+                                    arguments: [
+                                        {
+                                            kind: "Argument",
+                                            name: {
+                                                kind: "Name",
+                                                value: "timeFrame",
+                                            },
+                                            value: {
+                                                kind: "Variable",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "timeFrame",
+                                                },
+                                            },
+                                        },
+                                    ],
                                     selectionSet: {
                                         kind: "SelectionSet",
                                         selections: [
@@ -3317,14 +1520,7 @@ export const GetCryptoPortfolioDocument = {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "time",
-                                                },
-                                            },
-                                            {
-                                                kind: "Field",
-                                                name: {
-                                                    kind: "Name",
-                                                    value: "estimatedBalance",
+                                                    value: "changeBalance",
                                                 },
                                             },
                                             {
@@ -3338,7 +1534,7 @@ export const GetCryptoPortfolioDocument = {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "changeBalance",
+                                                    value: "estimatedBalance",
                                                 },
                                             },
                                         ],
@@ -3350,6 +1546,13 @@ export const GetCryptoPortfolioDocument = {
                                     selectionSet: {
                                         kind: "SelectionSet",
                                         selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
                                             {
                                                 kind: "Field",
                                                 name: {
@@ -3408,8 +1611,111 @@ export const GetCryptoPortfolioDocument = {
         },
     ],
 } as unknown as DocumentNode<
-    GetCryptoPortfolioQuery,
-    GetCryptoPortfolioQueryVariables
+    GetCryptoPortfoliosQuery,
+    GetCryptoPortfoliosQueryVariables
+>;
+export const GetHistoricalBalancesDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetHistoricalBalances" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalBalanceInput",
+                            },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "pagination" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "PaginationInput" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getHistoricalBalances" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "pagination" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "pagination" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedBalance",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changePercent",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changeBalance",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetHistoricalBalancesQuery,
+    GetHistoricalBalancesQueryVariables
 >;
 export const GetAssetDocument = {
     kind: "Document",
@@ -3748,6 +2054,17 @@ export const GetExpenseCategoriesDocument = {
                     kind: "VariableDefinition",
                     variable: {
                         kind: "Variable",
+                        name: { kind: "Name", value: "name" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
                         name: { kind: "Name", value: "startDate" },
                     },
                     type: {
@@ -3766,6 +2083,28 @@ export const GetExpenseCategoriesDocument = {
                         name: { kind: "Name", value: "DateTime" },
                     },
                 },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "month" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Int" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "year" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Int" },
+                    },
+                },
             ],
             selectionSet: {
                 kind: "SelectionSet",
@@ -3780,6 +2119,14 @@ export const GetExpenseCategoriesDocument = {
                                 value: {
                                     kind: "Variable",
                                     name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "name" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "name" },
                                 },
                             },
                         ],
@@ -3848,6 +2195,69 @@ export const GetExpenseCategoriesDocument = {
                                             },
                                         },
                                     ],
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "monthlyTargets",
+                                    },
+                                    arguments: [
+                                        {
+                                            kind: "Argument",
+                                            name: {
+                                                kind: "Name",
+                                                value: "month",
+                                            },
+                                            value: {
+                                                kind: "Variable",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "month",
+                                                },
+                                            },
+                                        },
+                                        {
+                                            kind: "Argument",
+                                            name: {
+                                                kind: "Name",
+                                                value: "year",
+                                            },
+                                            value: {
+                                                kind: "Variable",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "year",
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "month",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "year",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "target",
+                                                },
+                                            },
+                                        ],
+                                    },
                                 },
                             ],
                         },
@@ -4088,6 +2498,254 @@ export const RemoveExpenseCategoryDocument = {
 } as unknown as DocumentNode<
     RemoveExpenseCategoryMutation,
     RemoveExpenseCategoryMutationVariables
+>;
+export const GetMonthlyTargetsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetMonthlyTargets" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "categoryId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "month" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Int" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "year" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Int" },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getMonthlyTargets" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "categoryId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "categoryId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "month" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "month" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "year" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "year" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "target" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "month" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "year" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetMonthlyTargetsQuery,
+    GetMonthlyTargetsQueryVariables
+>;
+export const CreateMonthlyTargetDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateMonthlyTarget" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "CreateMonthlyTargetInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createMonthlyTarget" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "categoryId" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateMonthlyTargetMutation,
+    CreateMonthlyTargetMutationVariables
+>;
+export const UpdateMonthlyTargetDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "UpdateMonthlyTarget" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "updateMonthlyTargetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "UpdateMonthlyTargetInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updateMonthlyTarget" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "updateMonthlyTargetId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "categoryId" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UpdateMonthlyTargetMutation,
+    UpdateMonthlyTargetMutationVariables
 >;
 export const GetExpensesDocument = {
     kind: "Document",
@@ -4628,111 +3286,6 @@ export type AssetBalance = {
     locked: Scalars["Float"]["output"];
 };
 
-export type AssetBalanceAvgAggregate = {
-    __typename?: "AssetBalanceAvgAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceCountAggregate = {
-    __typename?: "AssetBalanceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    balance: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    locked: Scalars["Int"]["output"];
-};
-
-export type AssetBalanceCreateManyCryptoPortfolioInput = {
-    assetInfoId: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked: Scalars["Float"]["input"];
-};
-
-export type AssetBalanceCreateManyCryptoPortfolioInputEnvelope = {
-    data: Array<AssetBalanceCreateManyCryptoPortfolioInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type AssetBalanceCreateNestedManyWithoutCryptoPortfolioInput = {
-    connect?: InputMaybe<Array<AssetBalanceWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<AssetBalanceCreateOrConnectWithoutCryptoPortfolioInput>
-    >;
-    create?: InputMaybe<Array<AssetBalanceCreateWithoutCryptoPortfolioInput>>;
-    createMany?: InputMaybe<AssetBalanceCreateManyCryptoPortfolioInputEnvelope>;
-};
-
-export type AssetBalanceCreateOrConnectWithoutCryptoPortfolioInput = {
-    create: AssetBalanceCreateWithoutCryptoPortfolioInput;
-    where: AssetBalanceWhereUniqueInput;
-};
-
-export type AssetBalanceCreateWithoutCryptoPortfolioInput = {
-    assetInfo: AssetInfoCreateNestedOneWithoutAssetBalancesInput;
-    balance: Scalars["Float"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked: Scalars["Float"]["input"];
-};
-
-export type AssetBalanceListRelationFilter = {
-    every?: InputMaybe<AssetBalanceWhereInput>;
-    none?: InputMaybe<AssetBalanceWhereInput>;
-    some?: InputMaybe<AssetBalanceWhereInput>;
-};
-
-export type AssetBalanceMaxAggregate = {
-    __typename?: "AssetBalanceMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceMinAggregate = {
-    __typename?: "AssetBalanceMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceSumAggregate = {
-    __typename?: "AssetBalanceSumAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    locked?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetBalanceWhereInput = {
-    AND?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    OR?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    locked?: InputMaybe<FloatFilter>;
-};
-
-export type AssetBalanceWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    OR?: InputMaybe<Array<AssetBalanceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    locked?: InputMaybe<FloatFilter>;
-};
-
 export type AssetInfo = {
     __typename?: "AssetInfo";
     assetBalances?: Maybe<Array<AssetBalance>>;
@@ -4745,102 +3298,15 @@ export type AssetInfo = {
     symbol: Scalars["String"]["output"];
 };
 
-export type AssetInfoCountAggregate = {
-    __typename?: "AssetInfoCountAggregate";
-    _all: Scalars["Int"]["output"];
-    category: Scalars["Int"]["output"];
-    desc: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    logo: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    symbol: Scalars["Int"]["output"];
-};
-
-export type AssetInfoCreateNestedOneWithoutAssetBalancesInput = {
-    connect?: InputMaybe<AssetInfoWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<AssetInfoCreateOrConnectWithoutAssetBalancesInput>;
-    create?: InputMaybe<AssetInfoCreateWithoutAssetBalancesInput>;
-};
-
-export type AssetInfoCreateOrConnectWithoutAssetBalancesInput = {
-    create: AssetInfoCreateWithoutAssetBalancesInput;
-    where: AssetInfoWhereUniqueInput;
-};
-
-export type AssetInfoCreateWithoutAssetBalancesInput = {
-    assetPrices?: InputMaybe<AssetPriceCreateNestedManyWithoutAssetInfoInput>;
-    category: Scalars["String"]["input"];
-    desc: Scalars["String"]["input"];
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    logo: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    symbol: Scalars["String"]["input"];
-};
-
-export type AssetInfoMaxAggregate = {
-    __typename?: "AssetInfoMaxAggregate";
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type AssetInfoMinAggregate = {
-    __typename?: "AssetInfoMinAggregate";
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
 export type AssetInfoOutput = {
     __typename?: "AssetInfoOutput";
-    assetBalances?: Maybe<Array<AssetBalance>>;
-    assetPrices?: Maybe<Array<AssetPrice>>;
-    category?: Maybe<Scalars["String"]["output"]>;
-    desc?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
+    category: Scalars["String"]["output"];
+    desc: Scalars["String"]["output"];
+    id: Scalars["String"]["output"];
     lastPrice: Scalars["Float"]["output"];
-    logo?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    symbol?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type AssetInfoRelationFilter = {
-    is?: InputMaybe<AssetInfoWhereInput>;
-    isNot?: InputMaybe<AssetInfoWhereInput>;
-};
-
-export type AssetInfoWhereInput = {
-    AND?: InputMaybe<Array<AssetInfoWhereInput>>;
-    NOT?: InputMaybe<Array<AssetInfoWhereInput>>;
-    OR?: InputMaybe<Array<AssetInfoWhereInput>>;
-    assetBalances?: InputMaybe<AssetBalanceListRelationFilter>;
-    assetPrices?: InputMaybe<AssetPriceListRelationFilter>;
-    category?: InputMaybe<StringFilter>;
-    desc?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    logo?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    symbol?: InputMaybe<StringFilter>;
-};
-
-export type AssetInfoWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetInfoWhereInput>>;
-    NOT?: InputMaybe<Array<AssetInfoWhereInput>>;
-    OR?: InputMaybe<Array<AssetInfoWhereInput>>;
-    assetBalances?: InputMaybe<AssetBalanceListRelationFilter>;
-    assetPrices?: InputMaybe<AssetPriceListRelationFilter>;
-    category?: InputMaybe<StringFilter>;
-    desc?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    logo?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    symbol?: InputMaybe<StringFilter>;
+    logo: Scalars["String"]["output"];
+    name: Scalars["String"]["output"];
+    symbol: Scalars["String"]["output"];
 };
 
 export type AssetPrice = {
@@ -4855,357 +3321,6 @@ export type AssetPrice = {
     openPrice: Scalars["Float"]["output"];
     open_time: Scalars["DateTime"]["output"];
     volume: Scalars["Float"]["output"];
-};
-
-export type AssetPriceAssetInfoIdOpen_TimeCompoundUniqueInput = {
-    assetInfoId: Scalars["String"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-};
-
-export type AssetPriceAvgAggregate = {
-    __typename?: "AssetPriceAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceCountAggregate = {
-    __typename?: "AssetPriceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    close_time: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    interval: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type AssetPriceCreateManyAssetInfoInput = {
-    closePrice: Scalars["Float"]["input"];
-    close_time: Scalars["DateTime"]["input"];
-    highPrice: Scalars["Float"]["input"];
-    interval: Scalars["String"]["input"];
-    lowPrice: Scalars["Float"]["input"];
-    openPrice: Scalars["Float"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-    volume: Scalars["Float"]["input"];
-};
-
-export type AssetPriceCreateManyAssetInfoInputEnvelope = {
-    data: Array<AssetPriceCreateManyAssetInfoInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type AssetPriceCreateNestedManyWithoutAssetInfoInput = {
-    connect?: InputMaybe<Array<AssetPriceWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<AssetPriceCreateOrConnectWithoutAssetInfoInput>
-    >;
-    create?: InputMaybe<Array<AssetPriceCreateWithoutAssetInfoInput>>;
-    createMany?: InputMaybe<AssetPriceCreateManyAssetInfoInputEnvelope>;
-};
-
-export type AssetPriceCreateOrConnectWithoutAssetInfoInput = {
-    create: AssetPriceCreateWithoutAssetInfoInput;
-    where: AssetPriceWhereUniqueInput;
-};
-
-export type AssetPriceCreateWithoutAssetInfoInput = {
-    closePrice: Scalars["Float"]["input"];
-    close_time: Scalars["DateTime"]["input"];
-    highPrice: Scalars["Float"]["input"];
-    interval: Scalars["String"]["input"];
-    lowPrice: Scalars["Float"]["input"];
-    openPrice: Scalars["Float"]["input"];
-    open_time: Scalars["DateTime"]["input"];
-    volume: Scalars["Float"]["input"];
-};
-
-export type AssetPriceListRelationFilter = {
-    every?: InputMaybe<AssetPriceWhereInput>;
-    none?: InputMaybe<AssetPriceWhereInput>;
-    some?: InputMaybe<AssetPriceWhereInput>;
-};
-
-export type AssetPriceMaxAggregate = {
-    __typename?: "AssetPriceMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    close_time?: Maybe<Scalars["DateTime"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    interval?: Maybe<Scalars["String"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceMinAggregate = {
-    __typename?: "AssetPriceMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    close_time?: Maybe<Scalars["DateTime"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    interval?: Maybe<Scalars["String"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceSumAggregate = {
-    __typename?: "AssetPriceSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type AssetPriceWhereInput = {
-    AND?: InputMaybe<Array<AssetPriceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetPriceWhereInput>>;
-    OR?: InputMaybe<Array<AssetPriceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    closePrice?: InputMaybe<FloatFilter>;
-    close_time?: InputMaybe<DateTimeFilter>;
-    highPrice?: InputMaybe<FloatFilter>;
-    interval?: InputMaybe<StringFilter>;
-    lowPrice?: InputMaybe<FloatFilter>;
-    openPrice?: InputMaybe<FloatFilter>;
-    open_time?: InputMaybe<DateTimeFilter>;
-    volume?: InputMaybe<FloatFilter>;
-};
-
-export type AssetPriceWhereUniqueInput = {
-    AND?: InputMaybe<Array<AssetPriceWhereInput>>;
-    NOT?: InputMaybe<Array<AssetPriceWhereInput>>;
-    OR?: InputMaybe<Array<AssetPriceWhereInput>>;
-    assetInfo?: InputMaybe<AssetInfoRelationFilter>;
-    assetInfoId?: InputMaybe<StringFilter>;
-    assetInfoId_open_time?: InputMaybe<AssetPriceAssetInfoIdOpen_TimeCompoundUniqueInput>;
-    closePrice?: InputMaybe<FloatFilter>;
-    close_time?: InputMaybe<DateTimeFilter>;
-    highPrice?: InputMaybe<FloatFilter>;
-    interval?: InputMaybe<StringFilter>;
-    lowPrice?: InputMaybe<FloatFilter>;
-    openPrice?: InputMaybe<FloatFilter>;
-    open_time?: InputMaybe<DateTimeFilter>;
-    volume?: InputMaybe<FloatFilter>;
-};
-
-export type Asset_Price_1MAvgAggregate = {
-    __typename?: "Asset_price_1MAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MCountAggregate = {
-    __typename?: "Asset_price_1MCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1MMaxAggregate = {
-    __typename?: "Asset_price_1MMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MMinAggregate = {
-    __typename?: "Asset_price_1MMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1MSumAggregate = {
-    __typename?: "Asset_price_1MSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dAvgAggregate = {
-    __typename?: "Asset_price_1dAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dCountAggregate = {
-    __typename?: "Asset_price_1dCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1dMaxAggregate = {
-    __typename?: "Asset_price_1dMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dMinAggregate = {
-    __typename?: "Asset_price_1dMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1dSumAggregate = {
-    __typename?: "Asset_price_1dSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hAvgAggregate = {
-    __typename?: "Asset_price_1hAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hCountAggregate = {
-    __typename?: "Asset_price_1hCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_1hMaxAggregate = {
-    __typename?: "Asset_price_1hMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hMinAggregate = {
-    __typename?: "Asset_price_1hMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_1hSumAggregate = {
-    __typename?: "Asset_price_1hSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mAvgAggregate = {
-    __typename?: "Asset_price_5mAvgAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mCountAggregate = {
-    __typename?: "Asset_price_5mCountAggregate";
-    _all: Scalars["Int"]["output"];
-    assetInfoId: Scalars["Int"]["output"];
-    closePrice: Scalars["Int"]["output"];
-    highPrice: Scalars["Int"]["output"];
-    lowPrice: Scalars["Int"]["output"];
-    openPrice: Scalars["Int"]["output"];
-    open_time: Scalars["Int"]["output"];
-    volume: Scalars["Int"]["output"];
-};
-
-export type Asset_Price_5mMaxAggregate = {
-    __typename?: "Asset_price_5mMaxAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mMinAggregate = {
-    __typename?: "Asset_price_5mMinAggregate";
-    assetInfoId?: Maybe<Scalars["String"]["output"]>;
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    open_time?: Maybe<Scalars["DateTime"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Asset_Price_5mSumAggregate = {
-    __typename?: "Asset_price_5mSumAggregate";
-    closePrice?: Maybe<Scalars["Float"]["output"]>;
-    highPrice?: Maybe<Scalars["Float"]["output"]>;
-    lowPrice?: Maybe<Scalars["Float"]["output"]>;
-    openPrice?: Maybe<Scalars["Float"]["output"]>;
-    volume?: Maybe<Scalars["Float"]["output"]>;
 };
 
 export type BankAccount = {
@@ -5223,166 +3338,6 @@ export type BankAccount = {
     updatedAt: Scalars["DateTime"]["output"];
 };
 
-export type BankAccountAvgAggregate = {
-    __typename?: "BankAccountAvgAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankAccountCountAggregate = {
-    __typename?: "BankAccountCountAggregate";
-    _all: Scalars["Int"]["output"];
-    accountName: Scalars["Int"]["output"];
-    accountNumber: Scalars["Int"]["output"];
-    balance: Scalars["Int"]["output"];
-    bankManagerId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    fullName: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    updatedAt: Scalars["Int"]["output"];
-};
-
-export type BankAccountCreateManyBankManagerInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountCreateManyBankManagerInputEnvelope = {
-    data: Array<BankAccountCreateManyBankManagerInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankAccountCreateNestedManyWithoutBankManagerInput = {
-    connect?: InputMaybe<Array<BankAccountWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankAccountCreateOrConnectWithoutBankManagerInput>
-    >;
-    create?: InputMaybe<Array<BankAccountCreateWithoutBankManagerInput>>;
-    createMany?: InputMaybe<BankAccountCreateManyBankManagerInputEnvelope>;
-};
-
-export type BankAccountCreateNestedOneWithoutTransactionsInput = {
-    connect?: InputMaybe<BankAccountWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankAccountCreateOrConnectWithoutTransactionsInput>;
-    create?: InputMaybe<BankAccountCreateWithoutTransactionsInput>;
-};
-
-export type BankAccountCreateOrConnectWithoutBankManagerInput = {
-    create: BankAccountCreateWithoutBankManagerInput;
-    where: BankAccountWhereUniqueInput;
-};
-
-export type BankAccountCreateOrConnectWithoutTransactionsInput = {
-    create: BankAccountCreateWithoutTransactionsInput;
-    where: BankAccountWhereUniqueInput;
-};
-
-export type BankAccountCreateWithoutBankManagerInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    transactions?: InputMaybe<BankTransactionCreateNestedManyWithoutBankInput>;
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountCreateWithoutTransactionsInput = {
-    accountName: Scalars["String"]["input"];
-    accountNumber: Scalars["String"]["input"];
-    balance: Scalars["Float"]["input"];
-    bankManager: BankManagerCreateNestedOneWithoutBanksInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    fullName: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankAccountListRelationFilter = {
-    every?: InputMaybe<BankAccountWhereInput>;
-    none?: InputMaybe<BankAccountWhereInput>;
-    some?: InputMaybe<BankAccountWhereInput>;
-};
-
-export type BankAccountMaxAggregate = {
-    __typename?: "BankAccountMaxAggregate";
-    accountName?: Maybe<Scalars["String"]["output"]>;
-    accountNumber?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    bankManagerId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    fullName?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type BankAccountMinAggregate = {
-    __typename?: "BankAccountMinAggregate";
-    accountName?: Maybe<Scalars["String"]["output"]>;
-    accountNumber?: Maybe<Scalars["String"]["output"]>;
-    balance?: Maybe<Scalars["Float"]["output"]>;
-    bankManagerId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    fullName?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type BankAccountRelationFilter = {
-    is?: InputMaybe<BankAccountWhereInput>;
-    isNot?: InputMaybe<BankAccountWhereInput>;
-};
-
-export type BankAccountSumAggregate = {
-    __typename?: "BankAccountSumAggregate";
-    balance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankAccountWhereInput = {
-    AND?: InputMaybe<Array<BankAccountWhereInput>>;
-    NOT?: InputMaybe<Array<BankAccountWhereInput>>;
-    OR?: InputMaybe<Array<BankAccountWhereInput>>;
-    accountName?: InputMaybe<StringFilter>;
-    accountNumber?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    bankManager?: InputMaybe<BankManagerRelationFilter>;
-    bankManagerId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    fullName?: InputMaybe<StringFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    transactions?: InputMaybe<BankTransactionListRelationFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type BankAccountWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankAccountWhereInput>>;
-    NOT?: InputMaybe<Array<BankAccountWhereInput>>;
-    OR?: InputMaybe<Array<BankAccountWhereInput>>;
-    accountName?: InputMaybe<StringFilter>;
-    accountNumber?: InputMaybe<StringFilter>;
-    balance?: InputMaybe<FloatFilter>;
-    bankManager?: InputMaybe<BankManagerRelationFilter>;
-    bankManagerId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    fullName?: InputMaybe<StringFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    transactions?: InputMaybe<BankTransactionListRelationFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
 export type BankManager = {
     __typename?: "BankManager";
     apiKey: Scalars["String"]["output"];
@@ -5395,142 +3350,6 @@ export type BankManager = {
     userId: Scalars["Int"]["output"];
 };
 
-export type BankManagerAvgAggregate = {
-    __typename?: "BankManagerAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankManagerCountAggregate = {
-    __typename?: "BankManagerCountAggregate";
-    _all: Scalars["Int"]["output"];
-    apiKey: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    updatedAt: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type BankManagerCreateManyUserInput = {
-    apiKey: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankManagerCreateManyUserInputEnvelope = {
-    data: Array<BankManagerCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankManagerCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<BankManagerWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankManagerCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<BankManagerCreateWithoutUserInput>>;
-    createMany?: InputMaybe<BankManagerCreateManyUserInputEnvelope>;
-};
-
-export type BankManagerCreateNestedOneWithoutBanksInput = {
-    connect?: InputMaybe<BankManagerWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankManagerCreateOrConnectWithoutBanksInput>;
-    create?: InputMaybe<BankManagerCreateWithoutBanksInput>;
-};
-
-export type BankManagerCreateOrConnectWithoutBanksInput = {
-    create: BankManagerCreateWithoutBanksInput;
-    where: BankManagerWhereUniqueInput;
-};
-
-export type BankManagerCreateOrConnectWithoutUserInput = {
-    create: BankManagerCreateWithoutUserInput;
-    where: BankManagerWhereUniqueInput;
-};
-
-export type BankManagerCreateWithoutBanksInput = {
-    apiKey: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    user: UserCreateNestedOneWithoutBankManagerInput;
-};
-
-export type BankManagerCreateWithoutUserInput = {
-    apiKey: Scalars["String"]["input"];
-    banks?: InputMaybe<BankAccountCreateNestedManyWithoutBankManagerInput>;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    id: Scalars["String"]["input"];
-    name: Scalars["String"]["input"];
-    updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type BankManagerListRelationFilter = {
-    every?: InputMaybe<BankManagerWhereInput>;
-    none?: InputMaybe<BankManagerWhereInput>;
-    some?: InputMaybe<BankManagerWhereInput>;
-};
-
-export type BankManagerMaxAggregate = {
-    __typename?: "BankManagerMaxAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerMinAggregate = {
-    __typename?: "BankManagerMinAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerRelationFilter = {
-    is?: InputMaybe<BankManagerWhereInput>;
-    isNot?: InputMaybe<BankManagerWhereInput>;
-};
-
-export type BankManagerSumAggregate = {
-    __typename?: "BankManagerSumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type BankManagerWhereInput = {
-    AND?: InputMaybe<Array<BankManagerWhereInput>>;
-    NOT?: InputMaybe<Array<BankManagerWhereInput>>;
-    OR?: InputMaybe<Array<BankManagerWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    banks?: InputMaybe<BankAccountListRelationFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type BankManagerWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankManagerWhereInput>>;
-    NOT?: InputMaybe<Array<BankManagerWhereInput>>;
-    OR?: InputMaybe<Array<BankManagerWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    banks?: InputMaybe<BankAccountListRelationFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    updatedAt?: InputMaybe<DateTimeFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
 export type BankTransaction = {
     __typename?: "BankTransaction";
     amount: Scalars["Float"]["output"];
@@ -5541,144 +3360,6 @@ export type BankTransaction = {
     expense?: Maybe<Array<Expense>>;
     id: Scalars["String"]["output"];
     spentAmount: Scalars["Float"]["output"];
-};
-
-export type BankTransactionAvgAggregate = {
-    __typename?: "BankTransactionAvgAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionCountAggregate = {
-    __typename?: "BankTransactionCountAggregate";
-    _all: Scalars["Int"]["output"];
-    amount: Scalars["Int"]["output"];
-    bankId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    spentAmount: Scalars["Int"]["output"];
-};
-
-export type BankTransactionCreateManyBankInput = {
-    amount: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionCreateManyBankInputEnvelope = {
-    data: Array<BankTransactionCreateManyBankInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type BankTransactionCreateNestedManyWithoutBankInput = {
-    connect?: InputMaybe<Array<BankTransactionWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<BankTransactionCreateOrConnectWithoutBankInput>
-    >;
-    create?: InputMaybe<Array<BankTransactionCreateWithoutBankInput>>;
-    createMany?: InputMaybe<BankTransactionCreateManyBankInputEnvelope>;
-};
-
-export type BankTransactionCreateNestedOneWithoutExpenseInput = {
-    connect?: InputMaybe<BankTransactionWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<BankTransactionCreateOrConnectWithoutExpenseInput>;
-    create?: InputMaybe<BankTransactionCreateWithoutExpenseInput>;
-};
-
-export type BankTransactionCreateOrConnectWithoutBankInput = {
-    create: BankTransactionCreateWithoutBankInput;
-    where: BankTransactionWhereUniqueInput;
-};
-
-export type BankTransactionCreateOrConnectWithoutExpenseInput = {
-    create: BankTransactionCreateWithoutExpenseInput;
-    where: BankTransactionWhereUniqueInput;
-};
-
-export type BankTransactionCreateWithoutBankInput = {
-    amount: Scalars["Float"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    expense?: InputMaybe<ExpenseCreateNestedManyWithoutBankTransactionInput>;
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionCreateWithoutExpenseInput = {
-    amount: Scalars["Float"]["input"];
-    bank: BankAccountCreateNestedOneWithoutTransactionsInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description: Scalars["String"]["input"];
-    id: Scalars["String"]["input"];
-    spentAmount?: InputMaybe<Scalars["Float"]["input"]>;
-};
-
-export type BankTransactionListRelationFilter = {
-    every?: InputMaybe<BankTransactionWhereInput>;
-    none?: InputMaybe<BankTransactionWhereInput>;
-    some?: InputMaybe<BankTransactionWhereInput>;
-};
-
-export type BankTransactionMaxAggregate = {
-    __typename?: "BankTransactionMaxAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionMinAggregate = {
-    __typename?: "BankTransactionMinAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionRelationFilter = {
-    is?: InputMaybe<BankTransactionWhereInput>;
-    isNot?: InputMaybe<BankTransactionWhereInput>;
-};
-
-export type BankTransactionSumAggregate = {
-    __typename?: "BankTransactionSumAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    spentAmount?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type BankTransactionWhereInput = {
-    AND?: InputMaybe<Array<BankTransactionWhereInput>>;
-    NOT?: InputMaybe<Array<BankTransactionWhereInput>>;
-    OR?: InputMaybe<Array<BankTransactionWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bank?: InputMaybe<BankAccountRelationFilter>;
-    bankId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringFilter>;
-    expense?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    spentAmount?: InputMaybe<FloatFilter>;
-};
-
-export type BankTransactionWhereUniqueInput = {
-    AND?: InputMaybe<Array<BankTransactionWhereInput>>;
-    NOT?: InputMaybe<Array<BankTransactionWhereInput>>;
-    OR?: InputMaybe<Array<BankTransactionWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bank?: InputMaybe<BankAccountRelationFilter>;
-    bankId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringFilter>;
-    expense?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    spentAmount?: InputMaybe<FloatFilter>;
 };
 
 export type CreateBankManagerInput = {
@@ -5714,13 +3395,30 @@ export type CreateExpenseInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type CreateMonthlyTargetInput = {
+    categoryId: Scalars["String"]["input"];
+    month: Scalars["Int"]["input"];
+    target: Scalars["Float"]["input"];
+    year: Scalars["Int"]["input"];
+};
+
+export type CreateUserInput = {
+    email: Scalars["String"]["input"];
+    name?: InputMaybe<Scalars["String"]["input"]>;
+    otp?: InputMaybe<Scalars["String"]["input"]>;
+    otpPurpose?: InputMaybe<OtpPurpose>;
+    password: Scalars["String"]["input"];
+};
+
 export type CryptoPortfolio = {
     __typename?: "CryptoPortfolio";
     apiKey: Scalars["String"]["output"];
     balances: Array<AssetBalance>;
     exchanges: Scalars["String"]["output"];
-    historicalBalances: Array<HistoricalCryptoBalance>;
+    historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
     id: Scalars["String"]["output"];
+    investmentCategoryName?: Maybe<Scalars["String"]["output"]>;
+    latestHistoricalBalances: HistoricalCryptoBalance;
     secretKey: Scalars["String"]["output"];
     tradingType: TradingType;
     updateTime?: Maybe<Scalars["DateTime"]["output"]>;
@@ -5728,166 +3426,8 @@ export type CryptoPortfolio = {
     userId: Scalars["Int"]["output"];
 };
 
-export type CryptoPortfolioAvgAggregate = {
-    __typename?: "CryptoPortfolioAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type CryptoPortfolioCountAggregate = {
-    __typename?: "CryptoPortfolioCountAggregate";
-    _all: Scalars["Int"]["output"];
-    apiKey: Scalars["Int"]["output"];
-    exchanges: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    secretKey: Scalars["Int"]["output"];
-    tradingType: Scalars["Int"]["output"];
-    updateTime: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type CryptoPortfolioCreateManyUserInput = {
-    apiKey: Scalars["String"]["input"];
-    exchanges?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey: Scalars["String"]["input"];
-    tradingType: TradingType;
-    updateTime?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type CryptoPortfolioCreateManyUserInputEnvelope = {
-    data: Array<CryptoPortfolioCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type CryptoPortfolioCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<CryptoPortfolioWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<CryptoPortfolioCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<CryptoPortfolioCreateWithoutUserInput>>;
-    createMany?: InputMaybe<CryptoPortfolioCreateManyUserInputEnvelope>;
-};
-
-export type CryptoPortfolioCreateOrConnectWithoutUserInput = {
-    create: CryptoPortfolioCreateWithoutUserInput;
-    where: CryptoPortfolioWhereUniqueInput;
-};
-
-export type CryptoPortfolioCreateWithoutUserInput = {
-    apiKey: Scalars["String"]["input"];
-    balances?: InputMaybe<AssetBalanceCreateNestedManyWithoutCryptoPortfolioInput>;
-    exchanges?: InputMaybe<Scalars["String"]["input"]>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceCreateNestedManyWithoutCryptoPortfolioInput>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey: Scalars["String"]["input"];
-    tradingType: TradingType;
-    updateTime?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type CryptoPortfolioListRelationFilter = {
-    every?: InputMaybe<CryptoPortfolioWhereInput>;
-    none?: InputMaybe<CryptoPortfolioWhereInput>;
-    some?: InputMaybe<CryptoPortfolioWhereInput>;
-};
-
-export type CryptoPortfolioMaxAggregate = {
-    __typename?: "CryptoPortfolioMaxAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    exchanges?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    secretKey?: Maybe<Scalars["String"]["output"]>;
-    tradingType?: Maybe<TradingType>;
-    updateTime?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioMinAggregate = {
-    __typename?: "CryptoPortfolioMinAggregate";
-    apiKey?: Maybe<Scalars["String"]["output"]>;
-    exchanges?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    secretKey?: Maybe<Scalars["String"]["output"]>;
-    tradingType?: Maybe<TradingType>;
-    updateTime?: Maybe<Scalars["DateTime"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioRelationFilter = {
-    is?: InputMaybe<CryptoPortfolioWhereInput>;
-    isNot?: InputMaybe<CryptoPortfolioWhereInput>;
-};
-
-export type CryptoPortfolioSumAggregate = {
-    __typename?: "CryptoPortfolioSumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type CryptoPortfolioWhereInput = {
-    AND?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    NOT?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    OR?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    balances?: InputMaybe<AssetBalanceListRelationFilter>;
-    exchanges?: InputMaybe<StringFilter>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    secretKey?: InputMaybe<StringFilter>;
-    tradingType?: InputMaybe<EnumTradingTypeFilter>;
-    updateTime?: InputMaybe<DateTimeNullableFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type CryptoPortfolioWhereUniqueInput = {
-    AND?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    NOT?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    OR?: InputMaybe<Array<CryptoPortfolioWhereInput>>;
-    apiKey?: InputMaybe<StringFilter>;
-    balances?: InputMaybe<AssetBalanceListRelationFilter>;
-    exchanges?: InputMaybe<StringFilter>;
-    historicalBalances?: InputMaybe<HistoricalCryptoBalanceListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    secretKey?: InputMaybe<StringFilter>;
-    tradingType?: InputMaybe<EnumTradingTypeFilter>;
-    updateTime?: InputMaybe<DateTimeNullableFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type DateTimeFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type DateTimeNullableFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type EnumOtpPurposeNullableFilter = {
-    equals?: InputMaybe<OtpPurpose>;
-    in?: InputMaybe<Array<OtpPurpose>>;
-    not?: InputMaybe<NestedEnumOtpPurposeNullableFilter>;
-    notIn?: InputMaybe<Array<OtpPurpose>>;
-};
-
-export type EnumTradingTypeFilter = {
-    equals?: InputMaybe<TradingType>;
-    in?: InputMaybe<Array<TradingType>>;
-    not?: InputMaybe<NestedEnumTradingTypeFilter>;
-    notIn?: InputMaybe<Array<TradingType>>;
+export type CryptoPortfolioLatestHistoricalBalancesArgs = {
+    timeFrame: Scalars["String"]["input"];
 };
 
 export type Expense = {
@@ -5906,12 +3446,6 @@ export type Expense = {
     userId: Scalars["Int"]["output"];
 };
 
-export type ExpenseAvgAggregate = {
-    __typename?: "ExpenseAvgAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
 export type ExpenseCategory = {
     __typename?: "ExpenseCategory";
     color: Scalars["String"]["output"];
@@ -5919,352 +3453,21 @@ export type ExpenseCategory = {
     description?: Maybe<Scalars["String"]["output"]>;
     expenses?: Maybe<Array<Expense>>;
     id: Scalars["String"]["output"];
+    monthlyTargets?: Maybe<Array<MonthlyTarget>>;
     name: Scalars["String"]["output"];
     totalAmount: Scalars["Int"]["output"];
     user: User;
     userId: Scalars["Int"]["output"];
 };
 
+export type ExpenseCategoryMonthlyTargetsArgs = {
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type ExpenseCategoryTotalAmountArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type ExpenseCategoryAvgAggregate = {
-    __typename?: "ExpenseCategoryAvgAggregate";
-    userId?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type ExpenseCategoryCountAggregate = {
-    __typename?: "ExpenseCategoryCountAggregate";
-    _all: Scalars["Int"]["output"];
-    color: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type ExpenseCategoryCreateManyUserInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCategoryCreateManyUserInputEnvelope = {
-    data: Array<ExpenseCategoryCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCategoryCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<ExpenseCategoryWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCategoryCreateOrConnectWithoutUserInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCategoryCreateWithoutUserInput>>;
-    createMany?: InputMaybe<ExpenseCategoryCreateManyUserInputEnvelope>;
-};
-
-export type ExpenseCategoryCreateNestedOneWithoutExpensesInput = {
-    connect?: InputMaybe<ExpenseCategoryWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<ExpenseCategoryCreateOrConnectWithoutExpensesInput>;
-    create?: InputMaybe<ExpenseCategoryCreateWithoutExpensesInput>;
-};
-
-export type ExpenseCategoryCreateOrConnectWithoutExpensesInput = {
-    create: ExpenseCategoryCreateWithoutExpensesInput;
-    where: ExpenseCategoryWhereUniqueInput;
-};
-
-export type ExpenseCategoryCreateOrConnectWithoutUserInput = {
-    create: ExpenseCategoryCreateWithoutUserInput;
-    where: ExpenseCategoryWhereUniqueInput;
-};
-
-export type ExpenseCategoryCreateWithoutExpensesInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpenseCategoriesInput;
-};
-
-export type ExpenseCategoryCreateWithoutUserInput = {
-    color: Scalars["String"]["input"];
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutCategoryInput>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCategoryListRelationFilter = {
-    every?: InputMaybe<ExpenseCategoryWhereInput>;
-    none?: InputMaybe<ExpenseCategoryWhereInput>;
-    some?: InputMaybe<ExpenseCategoryWhereInput>;
-};
-
-export type ExpenseCategoryMaxAggregate = {
-    __typename?: "ExpenseCategoryMaxAggregate";
-    color?: Maybe<Scalars["String"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryMinAggregate = {
-    __typename?: "ExpenseCategoryMinAggregate";
-    color?: Maybe<Scalars["String"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryRelationFilter = {
-    is?: InputMaybe<ExpenseCategoryWhereInput>;
-    isNot?: InputMaybe<ExpenseCategoryWhereInput>;
-};
-
-export type ExpenseCategorySumAggregate = {
-    __typename?: "ExpenseCategorySumAggregate";
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseCategoryWhereInput = {
-    AND?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    color?: InputMaybe<StringFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseCategoryWhereUniqueInput = {
-    AND?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseCategoryWhereInput>>;
-    color?: InputMaybe<StringFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseCountAggregate = {
-    __typename?: "ExpenseCountAggregate";
-    _all: Scalars["Int"]["output"];
-    amount: Scalars["Int"]["output"];
-    bankTransactionId: Scalars["Int"]["output"];
-    categoryId: Scalars["Int"]["output"];
-    createdAt: Scalars["Int"]["output"];
-    description: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    userId: Scalars["Int"]["output"];
-};
-
-export type ExpenseCreateManyBankTransactionInput = {
-    amount: Scalars["Float"]["input"];
-    categoryId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    userId: Scalars["Int"]["input"];
-};
-
-export type ExpenseCreateManyBankTransactionInputEnvelope = {
-    data: Array<ExpenseCreateManyBankTransactionInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateManyCategoryInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransactionId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    userId: Scalars["Int"]["input"];
-};
-
-export type ExpenseCreateManyCategoryInputEnvelope = {
-    data: Array<ExpenseCreateManyCategoryInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateManyUserInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransactionId: Scalars["String"]["input"];
-    categoryId: Scalars["String"]["input"];
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseCreateManyUserInputEnvelope = {
-    data: Array<ExpenseCreateManyUserInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type ExpenseCreateNestedManyWithoutBankTransactionInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCreateOrConnectWithoutBankTransactionInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCreateWithoutBankTransactionInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyBankTransactionInputEnvelope>;
-};
-
-export type ExpenseCreateNestedManyWithoutCategoryInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<
-        Array<ExpenseCreateOrConnectWithoutCategoryInput>
-    >;
-    create?: InputMaybe<Array<ExpenseCreateWithoutCategoryInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyCategoryInputEnvelope>;
-};
-
-export type ExpenseCreateNestedManyWithoutUserInput = {
-    connect?: InputMaybe<Array<ExpenseWhereUniqueInput>>;
-    connectOrCreate?: InputMaybe<Array<ExpenseCreateOrConnectWithoutUserInput>>;
-    create?: InputMaybe<Array<ExpenseCreateWithoutUserInput>>;
-    createMany?: InputMaybe<ExpenseCreateManyUserInputEnvelope>;
-};
-
-export type ExpenseCreateOrConnectWithoutBankTransactionInput = {
-    create: ExpenseCreateWithoutBankTransactionInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateOrConnectWithoutCategoryInput = {
-    create: ExpenseCreateWithoutCategoryInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateOrConnectWithoutUserInput = {
-    create: ExpenseCreateWithoutUserInput;
-    where: ExpenseWhereUniqueInput;
-};
-
-export type ExpenseCreateWithoutBankTransactionInput = {
-    amount: Scalars["Float"]["input"];
-    category: ExpenseCategoryCreateNestedOneWithoutExpensesInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpensesInput;
-};
-
-export type ExpenseCreateWithoutCategoryInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransaction: BankTransactionCreateNestedOneWithoutExpenseInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-    user: UserCreateNestedOneWithoutExpensesInput;
-};
-
-export type ExpenseCreateWithoutUserInput = {
-    amount: Scalars["Float"]["input"];
-    bankTransaction: BankTransactionCreateNestedOneWithoutExpenseInput;
-    category: ExpenseCategoryCreateNestedOneWithoutExpensesInput;
-    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    description?: InputMaybe<Scalars["String"]["input"]>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name: Scalars["String"]["input"];
-};
-
-export type ExpenseListRelationFilter = {
-    every?: InputMaybe<ExpenseWhereInput>;
-    none?: InputMaybe<ExpenseWhereInput>;
-    some?: InputMaybe<ExpenseWhereInput>;
-};
-
-export type ExpenseMaxAggregate = {
-    __typename?: "ExpenseMaxAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankTransactionId?: Maybe<Scalars["String"]["output"]>;
-    categoryId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseMinAggregate = {
-    __typename?: "ExpenseMinAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    bankTransactionId?: Maybe<Scalars["String"]["output"]>;
-    categoryId?: Maybe<Scalars["String"]["output"]>;
-    createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-    description?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["String"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseSumAggregate = {
-    __typename?: "ExpenseSumAggregate";
-    amount?: Maybe<Scalars["Float"]["output"]>;
-    userId?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type ExpenseWhereInput = {
-    AND?: InputMaybe<Array<ExpenseWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bankTransaction?: InputMaybe<BankTransactionRelationFilter>;
-    bankTransactionId?: InputMaybe<StringFilter>;
-    category?: InputMaybe<ExpenseCategoryRelationFilter>;
-    categoryId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    id?: InputMaybe<StringFilter>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type ExpenseWhereUniqueInput = {
-    AND?: InputMaybe<Array<ExpenseWhereInput>>;
-    NOT?: InputMaybe<Array<ExpenseWhereInput>>;
-    OR?: InputMaybe<Array<ExpenseWhereInput>>;
-    amount?: InputMaybe<FloatFilter>;
-    bankTransaction?: InputMaybe<BankTransactionRelationFilter>;
-    bankTransactionId?: InputMaybe<StringFilter>;
-    category?: InputMaybe<ExpenseCategoryRelationFilter>;
-    categoryId?: InputMaybe<StringFilter>;
-    createdAt?: InputMaybe<DateTimeFilter>;
-    description?: InputMaybe<StringNullableFilter>;
-    id?: InputMaybe<Scalars["String"]["input"]>;
-    name?: InputMaybe<StringFilter>;
-    user?: InputMaybe<UserRelationFilter>;
-    userId?: InputMaybe<IntFilter>;
-};
-
-export type FloatFilter = {
-    equals?: InputMaybe<Scalars["Float"]["input"]>;
-    gt?: InputMaybe<Scalars["Float"]["input"]>;
-    gte?: InputMaybe<Scalars["Float"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-    lt?: InputMaybe<Scalars["Float"]["input"]>;
-    lte?: InputMaybe<Scalars["Float"]["input"]>;
-    not?: InputMaybe<NestedFloatFilter>;
-    notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>;
 };
 
 export type GetAssetInfoInput = {
@@ -6280,6 +3483,11 @@ export type GetCryptoPortfolioInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type GetHistoricalBalanceInput = {
+    cryptoPortfolioId: Scalars["String"]["input"];
+    timeFrame: Scalars["String"]["input"];
+};
+
 export type HistoricalCryptoBalance = {
     __typename?: "HistoricalCryptoBalance";
     changeBalance: Scalars["Float"]["output"];
@@ -6288,216 +3496,6 @@ export type HistoricalCryptoBalance = {
     cryptoPortfolioId: Scalars["String"]["output"];
     estimatedBalance: Scalars["Float"]["output"];
     time: Scalars["DateTime"]["output"];
-};
-
-export type HistoricalCryptoBalanceAvgAggregate = {
-    __typename?: "HistoricalCryptoBalanceAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceCountAggregate = {
-    __typename?: "HistoricalCryptoBalanceCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type HistoricalCryptoBalanceCreateManyCryptoPortfolioInput = {
-    changeBalance: Scalars["Float"]["input"];
-    changePercent: Scalars["Float"]["input"];
-    estimatedBalance: Scalars["Float"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceCreateManyCryptoPortfolioInputEnvelope = {
-    data: Array<HistoricalCryptoBalanceCreateManyCryptoPortfolioInput>;
-    skipDuplicates?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type HistoricalCryptoBalanceCreateNestedManyWithoutCryptoPortfolioInput =
-    {
-        connect?: InputMaybe<Array<HistoricalCryptoBalanceWhereUniqueInput>>;
-        connectOrCreate?: InputMaybe<
-            Array<HistoricalCryptoBalanceCreateOrConnectWithoutCryptoPortfolioInput>
-        >;
-        create?: InputMaybe<
-            Array<HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput>
-        >;
-        createMany?: InputMaybe<HistoricalCryptoBalanceCreateManyCryptoPortfolioInputEnvelope>;
-    };
-
-export type HistoricalCryptoBalanceCreateOrConnectWithoutCryptoPortfolioInput =
-    {
-        create: HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput;
-        where: HistoricalCryptoBalanceWhereUniqueInput;
-    };
-
-export type HistoricalCryptoBalanceCreateWithoutCryptoPortfolioInput = {
-    changeBalance: Scalars["Float"]["input"];
-    changePercent: Scalars["Float"]["input"];
-    estimatedBalance: Scalars["Float"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceCryptoPortfolioIdTimeCompoundUniqueInput = {
-    cryptoPortfolioId: Scalars["String"]["input"];
-    time: Scalars["DateTime"]["input"];
-};
-
-export type HistoricalCryptoBalanceListRelationFilter = {
-    every?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-    none?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-    some?: InputMaybe<HistoricalCryptoBalanceWhereInput>;
-};
-
-export type HistoricalCryptoBalanceMaxAggregate = {
-    __typename?: "HistoricalCryptoBalanceMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceMinAggregate = {
-    __typename?: "HistoricalCryptoBalanceMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceSumAggregate = {
-    __typename?: "HistoricalCryptoBalanceSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type HistoricalCryptoBalanceWhereInput = {
-    AND?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    OR?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    changeBalance?: InputMaybe<FloatFilter>;
-    changePercent?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    estimatedBalance?: InputMaybe<FloatFilter>;
-    time?: InputMaybe<DateTimeFilter>;
-};
-
-export type HistoricalCryptoBalanceWhereUniqueInput = {
-    AND?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    NOT?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    OR?: InputMaybe<Array<HistoricalCryptoBalanceWhereInput>>;
-    changeBalance?: InputMaybe<FloatFilter>;
-    changePercent?: InputMaybe<FloatFilter>;
-    cryptoPortfolio?: InputMaybe<CryptoPortfolioRelationFilter>;
-    cryptoPortfolioId?: InputMaybe<StringFilter>;
-    cryptoPortfolioId_time?: InputMaybe<HistoricalCryptoBalanceCryptoPortfolioIdTimeCompoundUniqueInput>;
-    estimatedBalance?: InputMaybe<FloatFilter>;
-    time?: InputMaybe<DateTimeFilter>;
-};
-
-export type Historical_Crypto_Balance_1dAvgAggregate = {
-    __typename?: "Historical_crypto_balance_1dAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dCountAggregate = {
-    __typename?: "Historical_crypto_balance_1dCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type Historical_Crypto_Balance_1dMaxAggregate = {
-    __typename?: "Historical_crypto_balance_1dMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dMinAggregate = {
-    __typename?: "Historical_crypto_balance_1dMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1dSumAggregate = {
-    __typename?: "Historical_crypto_balance_1dSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hAvgAggregate = {
-    __typename?: "Historical_crypto_balance_1hAvgAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hCountAggregate = {
-    __typename?: "Historical_crypto_balance_1hCountAggregate";
-    _all: Scalars["Int"]["output"];
-    changeBalance: Scalars["Int"]["output"];
-    changePercent: Scalars["Int"]["output"];
-    cryptoPortfolioId: Scalars["Int"]["output"];
-    estimatedBalance: Scalars["Int"]["output"];
-    time: Scalars["Int"]["output"];
-};
-
-export type Historical_Crypto_Balance_1hMaxAggregate = {
-    __typename?: "Historical_crypto_balance_1hMaxAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hMinAggregate = {
-    __typename?: "Historical_crypto_balance_1hMinAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    cryptoPortfolioId?: Maybe<Scalars["String"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-    time?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Historical_Crypto_Balance_1hSumAggregate = {
-    __typename?: "Historical_crypto_balance_1hSumAggregate";
-    changeBalance?: Maybe<Scalars["Float"]["output"]>;
-    changePercent?: Maybe<Scalars["Float"]["output"]>;
-    estimatedBalance?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type IntFilter = {
-    equals?: InputMaybe<Scalars["Int"]["input"]>;
-    gt?: InputMaybe<Scalars["Int"]["input"]>;
-    gte?: InputMaybe<Scalars["Int"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-    lt?: InputMaybe<Scalars["Int"]["input"]>;
-    lte?: InputMaybe<Scalars["Int"]["input"]>;
-    not?: InputMaybe<NestedIntFilter>;
-    notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>;
 };
 
 export type LoginReqDto = {
@@ -6511,12 +3509,23 @@ export type LoginResDto = {
     refreshToken: Scalars["String"]["output"];
 };
 
+export type MonthlyTarget = {
+    __typename?: "MonthlyTarget";
+    category: ExpenseCategory;
+    categoryId: Scalars["String"]["output"];
+    id: Scalars["String"]["output"];
+    month: Scalars["Int"]["output"];
+    target: Scalars["Float"]["output"];
+    year: Scalars["Int"]["output"];
+};
+
 export type Mutation = {
     __typename?: "Mutation";
     createBank: BankManager;
     createCryptoPortfolio: CreateCryptoRes;
     createExpense: Expense;
     createExpenseCategory: ExpenseCategory;
+    createMonthlyTarget: MonthlyTarget;
     login: LoginResDto;
     removeExpense: Expense;
     removeExpenseCategory: ExpenseCategory;
@@ -6524,6 +3533,7 @@ export type Mutation = {
     signup: SignupResDto;
     updateExpense: Expense;
     updateExpenseCategory: ExpenseCategory;
+    updateMonthlyTarget: MonthlyTarget;
     verifyAccount: LoginResDto;
 };
 
@@ -6543,6 +3553,10 @@ export type MutationCreateExpenseCategoryArgs = {
     data: CreateExpenseCategoryInput;
 };
 
+export type MutationCreateMonthlyTargetArgs = {
+    data: CreateMonthlyTargetInput;
+};
+
 export type MutationLoginArgs = {
     data: LoginReqDto;
 };
@@ -6560,7 +3574,7 @@ export type MutationRemoveExpensesArgs = {
 };
 
 export type MutationSignupArgs = {
-    data: UserCreateInput;
+    data: CreateUserInput;
 };
 
 export type MutationUpdateExpenseArgs = {
@@ -6573,94 +3587,13 @@ export type MutationUpdateExpenseCategoryArgs = {
     id: Scalars["String"]["input"];
 };
 
+export type MutationUpdateMonthlyTargetArgs = {
+    data: UpdateMonthlyTargetInput;
+    id: Scalars["String"]["input"];
+};
+
 export type MutationVerifyAccountArgs = {
     data: VerifyDto;
-};
-
-export type NestedDateTimeFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type NestedDateTimeNullableFilter = {
-    equals?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    gte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    in?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-    lt?: InputMaybe<Scalars["DateTime"]["input"]>;
-    lte?: InputMaybe<Scalars["DateTime"]["input"]>;
-    not?: InputMaybe<NestedDateTimeNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["DateTime"]["input"]>>;
-};
-
-export type NestedEnumOtpPurposeNullableFilter = {
-    equals?: InputMaybe<OtpPurpose>;
-    in?: InputMaybe<Array<OtpPurpose>>;
-    not?: InputMaybe<NestedEnumOtpPurposeNullableFilter>;
-    notIn?: InputMaybe<Array<OtpPurpose>>;
-};
-
-export type NestedEnumTradingTypeFilter = {
-    equals?: InputMaybe<TradingType>;
-    in?: InputMaybe<Array<TradingType>>;
-    not?: InputMaybe<NestedEnumTradingTypeFilter>;
-    notIn?: InputMaybe<Array<TradingType>>;
-};
-
-export type NestedFloatFilter = {
-    equals?: InputMaybe<Scalars["Float"]["input"]>;
-    gt?: InputMaybe<Scalars["Float"]["input"]>;
-    gte?: InputMaybe<Scalars["Float"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-    lt?: InputMaybe<Scalars["Float"]["input"]>;
-    lte?: InputMaybe<Scalars["Float"]["input"]>;
-    not?: InputMaybe<NestedFloatFilter>;
-    notIn?: InputMaybe<Array<Scalars["Float"]["input"]>>;
-};
-
-export type NestedIntFilter = {
-    equals?: InputMaybe<Scalars["Int"]["input"]>;
-    gt?: InputMaybe<Scalars["Int"]["input"]>;
-    gte?: InputMaybe<Scalars["Int"]["input"]>;
-    in?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-    lt?: InputMaybe<Scalars["Int"]["input"]>;
-    lte?: InputMaybe<Scalars["Int"]["input"]>;
-    not?: InputMaybe<NestedIntFilter>;
-    notIn?: InputMaybe<Array<Scalars["Int"]["input"]>>;
-};
-
-export type NestedStringFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    not?: InputMaybe<NestedStringFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type NestedStringNullableFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    not?: InputMaybe<NestedStringNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export enum OtpPurpose {
@@ -6683,7 +3616,9 @@ export type Query = {
     getCryptoPortfolios: Array<CryptoPortfolio>;
     getExpenseCategories: Array<ExpenseCategory>;
     getExpenses: Array<Expense>;
+    getHistoricalBalances: Array<HistoricalCryptoBalance>;
     getMe: User;
+    getMonthlyTargets: Array<MonthlyTarget>;
 };
 
 export type QueryGetAssetInfoArgs = {
@@ -6708,7 +3643,8 @@ export type QueryGetCryptoPortfoliosArgs = {
 };
 
 export type QueryGetExpenseCategoriesArgs = {
-    userId: Scalars["Int"]["input"];
+    name?: InputMaybe<Scalars["String"]["input"]>;
+    userId?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryGetExpensesArgs = {
@@ -6717,45 +3653,21 @@ export type QueryGetExpensesArgs = {
     userId: Scalars["Int"]["input"];
 };
 
-export enum QueryMode {
-    Default = "default",
-    Insensitive = "insensitive",
-}
+export type QueryGetHistoricalBalancesArgs = {
+    data: GetHistoricalBalanceInput;
+    pagination: PaginationInput;
+};
+
+export type QueryGetMonthlyTargetsArgs = {
+    categoryId: Scalars["String"]["input"];
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
 
 export type SignupResDto = {
     __typename?: "SignupResDto";
     accessToken: Scalars["String"]["output"];
     refreshToken: Scalars["String"]["output"];
-};
-
-export type StringFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    mode?: InputMaybe<QueryMode>;
-    not?: InputMaybe<NestedStringFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type StringNullableFilter = {
-    contains?: InputMaybe<Scalars["String"]["input"]>;
-    endsWith?: InputMaybe<Scalars["String"]["input"]>;
-    equals?: InputMaybe<Scalars["String"]["input"]>;
-    gt?: InputMaybe<Scalars["String"]["input"]>;
-    gte?: InputMaybe<Scalars["String"]["input"]>;
-    in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    lt?: InputMaybe<Scalars["String"]["input"]>;
-    lte?: InputMaybe<Scalars["String"]["input"]>;
-    mode?: InputMaybe<QueryMode>;
-    not?: InputMaybe<NestedStringNullableFilter>;
-    notIn?: InputMaybe<Array<Scalars["String"]["input"]>>;
-    startsWith?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Subscription = {
@@ -6796,6 +3708,12 @@ export type UpdateExpenseInput = {
     name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type UpdateMonthlyTargetInput = {
+    month?: InputMaybe<Scalars["Int"]["input"]>;
+    target?: InputMaybe<Scalars["Float"]["input"]>;
+    year?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type User = {
     __typename?: "User";
     bankManager?: Maybe<Array<BankManager>>;
@@ -6809,162 +3727,6 @@ export type User = {
     otp?: Maybe<Scalars["String"]["output"]>;
     otpPurpose?: Maybe<OtpPurpose>;
     password: Scalars["String"]["output"];
-};
-
-export type UserAvgAggregate = {
-    __typename?: "UserAvgAggregate";
-    id?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type UserCountAggregate = {
-    __typename?: "UserCountAggregate";
-    _all: Scalars["Int"]["output"];
-    email: Scalars["Int"]["output"];
-    id: Scalars["Int"]["output"];
-    name: Scalars["Int"]["output"];
-    otp: Scalars["Int"]["output"];
-    otpPurpose: Scalars["Int"]["output"];
-    password: Scalars["Int"]["output"];
-};
-
-export type UserCreateInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateNestedOneWithoutBankManagerInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutBankManagerInput>;
-    create?: InputMaybe<UserCreateWithoutBankManagerInput>;
-};
-
-export type UserCreateNestedOneWithoutExpenseCategoriesInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutExpenseCategoriesInput>;
-    create?: InputMaybe<UserCreateWithoutExpenseCategoriesInput>;
-};
-
-export type UserCreateNestedOneWithoutExpensesInput = {
-    connect?: InputMaybe<UserWhereUniqueInput>;
-    connectOrCreate?: InputMaybe<UserCreateOrConnectWithoutExpensesInput>;
-    create?: InputMaybe<UserCreateWithoutExpensesInput>;
-};
-
-export type UserCreateOrConnectWithoutBankManagerInput = {
-    create: UserCreateWithoutBankManagerInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutExpenseCategoriesInput = {
-    create: UserCreateWithoutExpenseCategoriesInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateOrConnectWithoutExpensesInput = {
-    create: UserCreateWithoutExpensesInput;
-    where: UserWhereUniqueInput;
-};
-
-export type UserCreateWithoutBankManagerInput = {
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateWithoutExpenseCategoriesInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenses?: InputMaybe<ExpenseCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserCreateWithoutExpensesInput = {
-    bankManager?: InputMaybe<BankManagerCreateNestedManyWithoutUserInput>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioCreateNestedManyWithoutUserInput>;
-    email: Scalars["String"]["input"];
-    expenseCategories?: InputMaybe<ExpenseCategoryCreateNestedManyWithoutUserInput>;
-    name?: InputMaybe<Scalars["String"]["input"]>;
-    otp?: InputMaybe<Scalars["String"]["input"]>;
-    otpPurpose?: InputMaybe<OtpPurpose>;
-    password: Scalars["String"]["input"];
-};
-
-export type UserMaxAggregate = {
-    __typename?: "UserMaxAggregate";
-    email?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["Int"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    otp?: Maybe<Scalars["String"]["output"]>;
-    otpPurpose?: Maybe<OtpPurpose>;
-    password?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserMinAggregate = {
-    __typename?: "UserMinAggregate";
-    email?: Maybe<Scalars["String"]["output"]>;
-    id?: Maybe<Scalars["Int"]["output"]>;
-    name?: Maybe<Scalars["String"]["output"]>;
-    otp?: Maybe<Scalars["String"]["output"]>;
-    otpPurpose?: Maybe<OtpPurpose>;
-    password?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type UserRelationFilter = {
-    is?: InputMaybe<UserWhereInput>;
-    isNot?: InputMaybe<UserWhereInput>;
-};
-
-export type UserSumAggregate = {
-    __typename?: "UserSumAggregate";
-    id?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type UserWhereInput = {
-    AND?: InputMaybe<Array<UserWhereInput>>;
-    NOT?: InputMaybe<Array<UserWhereInput>>;
-    OR?: InputMaybe<Array<UserWhereInput>>;
-    bankManager?: InputMaybe<BankManagerListRelationFilter>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioListRelationFilter>;
-    email?: InputMaybe<StringFilter>;
-    expenseCategories?: InputMaybe<ExpenseCategoryListRelationFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<IntFilter>;
-    name?: InputMaybe<StringNullableFilter>;
-    otp?: InputMaybe<StringNullableFilter>;
-    otpPurpose?: InputMaybe<EnumOtpPurposeNullableFilter>;
-    password?: InputMaybe<StringFilter>;
-};
-
-export type UserWhereUniqueInput = {
-    AND?: InputMaybe<Array<UserWhereInput>>;
-    NOT?: InputMaybe<Array<UserWhereInput>>;
-    OR?: InputMaybe<Array<UserWhereInput>>;
-    bankManager?: InputMaybe<BankManagerListRelationFilter>;
-    cryptoPortfolios?: InputMaybe<CryptoPortfolioListRelationFilter>;
-    email?: InputMaybe<Scalars["String"]["input"]>;
-    expenseCategories?: InputMaybe<ExpenseCategoryListRelationFilter>;
-    expenses?: InputMaybe<ExpenseListRelationFilter>;
-    id?: InputMaybe<Scalars["Int"]["input"]>;
-    name?: InputMaybe<StringNullableFilter>;
-    otp?: InputMaybe<StringNullableFilter>;
-    otpPurpose?: InputMaybe<EnumOtpPurposeNullableFilter>;
-    password?: InputMaybe<StringFilter>;
 };
 
 export type VerifyDto = {

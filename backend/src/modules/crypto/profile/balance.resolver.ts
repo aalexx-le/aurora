@@ -1,9 +1,9 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
-import { AssetBalance } from "../../../entities/asset-balance";
+import { AssetBalance } from "src/entities/asset-balance";
 import { CryptoPortfolioService } from "./portfolio.service";
-import { AssetInfoOutput } from "./dto/get-asset-info.output";
 import { UseGuards } from "@nestjs/common";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
+import { AssetInfoOutput } from "./dto/get-asset-info.output";
 
 @UseGuards(JwtGuard)
 @Resolver(() => AssetBalance)
@@ -12,9 +12,7 @@ export class CryptoBalanceResolver {
         private readonly cryptoProfileService: CryptoPortfolioService,
     ) {}
     @ResolveField("assetInfo", () => AssetInfoOutput)
-    getBalances(
-        @Parent() assetBalance: AssetBalance,
-    ): Promise<AssetInfoOutput> {
+    getBalances(@Parent() assetBalance: AssetBalance) {
         const { assetInfoId } = assetBalance;
         return this.cryptoProfileService.findAssetInfo(assetInfoId);
     }

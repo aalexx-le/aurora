@@ -1,11 +1,9 @@
-import { Field } from '@nestjs/graphql';
-import { ObjectType } from '@nestjs/graphql';
-import { Int } from '@nestjs/graphql';
-import { OtpPurpose } from '../prisma/otp-purpose.enum';
-import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
-import { BankManager } from '../bank-manager/bank-manager.model';
-import { ExpenseCategory } from '../expense-category/expense-category.model';
-import { Expense } from '../expense/expense.model';
+import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { OtpPurpose } from "../prisma/otp-purpose.enum";
+import { BankManager } from "../bank-manager/bank-manager.model";
+import { CryptoPortfolio } from "../crypto-portfolio/crypto-portfolio.model";
+import { Expense } from "../expense/expense.model";
+import { ExpenseCategory } from "../expense-category/expense-category.model";
 
 @ObjectType()
 export class User {
@@ -28,15 +26,15 @@ export class User {
     @Field(() => OtpPurpose, {nullable:true})
     otpPurpose!: keyof typeof OtpPurpose | null;
 
-    @Field(() => [CryptoPortfolio], {nullable:true})
-    cryptoPortfolios?: Array<CryptoPortfolio>;
-
     @Field(() => [BankManager], {nullable:true})
     bankManager?: Array<BankManager>;
 
-    @Field(() => [ExpenseCategory], {nullable:true})
-    expenseCategories?: Array<ExpenseCategory>;
+    @Field(() => [CryptoPortfolio], {nullable:true})
+    cryptoPortfolios?: Array<CryptoPortfolio>;
 
     @Field(() => [Expense], {nullable:true})
     expenses?: Array<Expense>;
+
+    @Field(() => [ExpenseCategory], {nullable:true})
+    expenseCategories?: Array<ExpenseCategory>;
 }

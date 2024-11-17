@@ -9,9 +9,6 @@ import { HistoricalCryptoBalance } from '../historical-crypto-balance/historical
 @ObjectType()
 export class CryptoPortfolio {
 
-    @Field(() => String, {nullable:false})
-    id!: string;
-
     @Field(() => Int, {nullable:false})
     userId!: number;
 
@@ -29,6 +26,12 @@ export class CryptoPortfolio {
 
     @Field(() => Date, {nullable:true})
     updateTime!: Date | null;
+
+    @Field(() => String, {nullable:false})
+    id!: string;
+
+    @Field(() => String, {nullable:true})
+    investmentCategoryName!: string | null;
 
     @Field(() => [AssetBalance], {nullable:true})
     balances?: Array<AssetBalance>;

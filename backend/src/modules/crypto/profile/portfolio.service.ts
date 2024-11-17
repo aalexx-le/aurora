@@ -2,17 +2,22 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { KafkaTopic } from "../../../shared/constants/kafka";
 import { CreateCryptoPortfolioInput } from "./dto/create-crypto-portfolio.input";
-import { AssetPrice } from "../../../entities/asset-price";
+import { AssetPrice } from "src/entities/asset-price";
 import { AssetInfoOutput } from "./dto/get-asset-info.output";
-import { CryptoAssetService } from "../asset/asset.service";
 import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
+import { GetHistoricalBalanceInput } from "./dto/get-historical-balance.input";
+import { PaginationInput } from "../../../shared/pagination/pagination.args";
+import { Prisma } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
+import { AssetPriceInterval } from "../asset/enum/asset-price-interval";
+import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
 
 @Injectable()
 export class CryptoPortfolioService {
     private readonly logger = new Logger(CryptoPortfolioService.name);
     constructor(
         private prisma: PrismaService,
-        private cryptoAssetService: CryptoAssetService,
         @InjectKafka() private readonly kafkaService: KafkaService,
     ) {}
 
@@ -77,9 +82,46 @@ export class CryptoPortfolioService {
         });
     }
 
-    async findHistoricalBalance(cryptoPortfolioId: string) {
-        return this.prisma.historical_crypto_balance_1h.findMany({
-            where: { cryptoPortfolioId },
-        });
+    async findHistoricalBalances(
+        input: GetHistoricalBalanceInput,
+        pagination: PaginationInput,
+    ) {
+        const { cryptoPortfolioId, timeFrame } = input;
+        const { take, after } = pagination;
+
+        let historicalCryptoBalances: HistoricalCryptoBalance[] = [];
+        const args: Prisma.HistoricalCryptoBalanceFindManyArgs<DefaultArgs> = {
+            where: {
+                cryptoPortfolioId,
+            },
+            take: -1 * take,
+            orderBy: {
+                time: "asc",
+            },
+        };
+        if (after) {
+            args.skip = 1;
+            args.cursor = {
+                cryptoPortfolioId_time: {
+                    cryptoPortfolioId,
+                    time: after,
+                },
+            };
+        }
+
+        if (timeFrame === AssetPriceInterval.MINUTE_1) {
+            historicalCryptoBalances =
+                await this.prisma.historicalCryptoBalance.findMany(args);
+        } else {
+            historicalCryptoBalances =
+                this.prisma[
+                    getTimeframeMaterializedViewName(
+                        timeFrame,
+                        "historical_crypto_balance",
+                    )
+                ].findMany(args);
+        }
+
+        return historicalCryptoBalances;
     }
 }

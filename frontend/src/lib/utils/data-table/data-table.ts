@@ -5,7 +5,7 @@ import { dataTableConfig } from "@/lib/constants/data-table";
 /**
  * Generate common pinning styles for income-expense-ratio-bar-chart table column.
  *
- * This function calculates and returns CSS properties for pinned columns in income-expense-ratio-bar-chart details table.
+ * This function calculates and returns CSS properties for pinned columns in income-expense-ratio-bar-chart transaction table.
  * It handles both left and right pinning, applying appropriate styles for positioning,
  * shadows, and z-index. The function also considers whether the column is the last left-pinned
  * or first right-pinned column to apply specific shadow effects.
@@ -57,7 +57,7 @@ export function getCommonPinningStyles<TData>({
  * Determine the default filter operator for income-expense-ratio-bar-chart given column type.
  *
  * This function returns the most appropriate default filter operator based on the
- * column's details type. For text columns, it returns 'iLike' (case-insensitive like),
+ * column's transaction type. For text columns, it returns 'iLike' (case-insensitive like),
  * while for all other types, it returns 'eq' (equality).
  *
  * @param columnType - The type of the column (e.g., 'text', 'number', 'date', etc.).

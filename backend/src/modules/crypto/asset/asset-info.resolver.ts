@@ -1,6 +1,6 @@
 import { Args, Query, Resolver } from "@nestjs/graphql";
 import { CryptoAssetService } from "./asset.service";
-import { AssetInfo } from "../../../entities/asset-info";
+import { AssetInfo } from "src/entities/asset-info";
 import { GetAssetInfoArgs } from "./dto/get-asset-info.input";
 import { UseGuards } from "@nestjs/common";
 import { JwtGuard } from "../../auth/guards/jwt.guard";

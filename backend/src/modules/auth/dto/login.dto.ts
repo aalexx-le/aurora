@@ -7,7 +7,7 @@ import {
 } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsEmail, MinLength, ValidateNested } from "class-validator";
-import { User } from "../../../entities/user";
+import { User } from "src/entities/user";
 
 @InputType()
 export class LoginReqDto extends PickType(User, ["email", "password"]) {

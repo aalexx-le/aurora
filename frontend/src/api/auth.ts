@@ -21,7 +21,7 @@ export const GET_ME = gql`
 `;
 
 export const SIGNUP_MUTATION = gql`
-    mutation Signup($data: UserCreateInput!) {
+    mutation Signup($data: CreateUserInput!) {
         signup(data: $data) {
             accessToken
             refreshToken

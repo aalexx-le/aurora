@@ -16,18 +16,22 @@ export const CREATE_CRYPTO_PORTFOLIO = gql`
 `;
 
 export const GET_CRYPTO_PORTFOLIOS = gql`
-    query GetCryptoProfile($data: GetCryptoPortfolioInput!) {
+    query GetCryptoPortfolios(
+        $data: GetCryptoPortfolioInput!
+        $timeFrame: String!
+    ) {
         getCryptoPortfolios(data: $data) {
             id
             exchanges
             tradingType
-            historicalBalances {
-                time
-                estimatedBalance
-                changePercent
+            investmentCategoryName
+            latestHistoricalBalances(timeFrame: $timeFrame) {
                 changeBalance
+                changePercent
+                estimatedBalance
             }
             balances {
+                id
                 balance
                 assetInfo {
                     id
@@ -36,6 +40,20 @@ export const GET_CRYPTO_PORTFOLIOS = gql`
                     symbol
                 }
             }
+        }
+    }
+`;
+
+export const GET_HISTORICAL_BALANCE = gql`
+    query GetHistoricalBalances(
+        $data: GetHistoricalBalanceInput!
+        $pagination: PaginationInput!
+    ) {
+        getHistoricalBalances(data: $data, pagination: $pagination) {
+            time
+            estimatedBalance
+            changePercent
+            changeBalance
         }
     }
 `;
