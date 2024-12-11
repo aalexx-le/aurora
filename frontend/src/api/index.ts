@@ -51,8 +51,10 @@ const authLink = setContext((operation, previousContext) => {
 const wsLink = new GraphQLWsLink(
     createClient({
         url: process.env.SUBSCRIPTION_SERVER || "ws://localhost:5000/graphql",
-        lazy: true,
         connectionParams: {},
+        retryAttempts: Infinity,
+        shouldRetry: () => true,
+        keepAlive: 10000,
     }),
 );
 

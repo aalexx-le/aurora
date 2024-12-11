@@ -1,6 +1,6 @@
 import {useAppDispatch, useAppSelector} from "@/state/hooks";
 import {usePathname, useRouter} from "next/navigation";
-import {useLayoutEffect} from "react";
+import React, {useLayoutEffect} from "react";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
 import {authActions} from "@/state/slices/auth.slice";
 import {getCookie} from "cookies-next";
@@ -30,10 +30,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
         fn().then(() => {});
     }, [loading, router, user, currentPath, dispatch, error]);
-
-    // if (loading) {
-    //     return <p>is loading</p>;
-    // }
 
     return children;
 }

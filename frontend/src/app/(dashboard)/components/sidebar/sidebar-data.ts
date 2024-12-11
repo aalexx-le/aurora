@@ -24,13 +24,17 @@ export const SIDEBAR_DATA = {
             isActive: true,
             items: [
                 {
+                    title: "Expense",
+                    url: DASHBOARD_ROUTE.finance.expense.value,
+                },
+                {
                     title: "Investment",
                     url: DASHBOARD_ROUTE.finance.investment.value,
                 },
-                {
-                    title: "Asset Price",
-                    url: DASHBOARD_ROUTE.finance.investment.value,
-                },
+                // {
+                //     title: "Asset Price",
+                //     url: DASHBOARD_ROUTE.finance.investment.value,
+                // },
             ],
         },
         // {

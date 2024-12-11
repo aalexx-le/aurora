@@ -2,6 +2,10 @@ export { Asset_price_1dScalarFieldEnum } from './asset-price-1-d-scalar-field.en
 export { Asset_price_1hScalarFieldEnum } from './asset-price-1-h-scalar-field.enum';
 export { Asset_price_1MScalarFieldEnum } from './asset-price-1-m-scalar-field.enum';
 export { Asset_price_5mScalarFieldEnum } from './asset-price-5-m-scalar-field.enum';
+export { CEXExchanges } from './cex-exchanges.enum';
+export { Historical_asset_profit_1dScalarFieldEnum } from './historical-asset-profit-1-d-scalar-field.enum';
+export { Historical_asset_profit_1hScalarFieldEnum } from './historical-asset-profit-1-h-scalar-field.enum';
+export { Historical_asset_profit_5mScalarFieldEnum } from './historical-asset-profit-5-m-scalar-field.enum';
 export { Historical_crypto_balance_1dScalarFieldEnum } from './historical-crypto-balance-1-d-scalar-field.enum';
 export { Historical_crypto_balance_1hScalarFieldEnum } from './historical-crypto-balance-1-h-scalar-field.enum';
 export { NullsOrder } from './nulls-order.enum';

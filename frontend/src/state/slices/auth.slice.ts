@@ -11,9 +11,13 @@ import {
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { AuthParams } from "@/lib/constants/params";
 import client from "@/api";
-import { GET_ME, LOGIN_MUTATION, VERIFY_ACCOUNT_MUTATION } from "@/api/auth";
+import {
+    GET_ME,
+    LOGIN_MUTATION,
+    VERIFY_ACCOUNT_MUTATION,
+} from "@/api/script/auth";
 
-interface IinitState {
+interface IInitState {
     loading: boolean;
     error: string;
     state: {
@@ -23,7 +27,7 @@ interface IinitState {
     };
 }
 
-const initialState: IinitState = {
+const initialState: IInitState = {
     loading: false,
     error: "",
     state: {

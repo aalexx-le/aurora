@@ -1,4 +1,4 @@
-import { registerEnumType } from "@nestjs/graphql";
+import { registerEnumType } from '@nestjs/graphql';
 
 export enum AssetInfoScalarFieldEnum {
     id = "id",
@@ -6,7 +6,8 @@ export enum AssetInfoScalarFieldEnum {
     symbol = "symbol",
     category = "category",
     desc = "desc",
-    logo = "logo"
+    logo = "logo",
+    tag = "tag"
 }
 
 

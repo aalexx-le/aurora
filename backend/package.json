@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && yarn sentry:sourcemaps",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org university-of-science-hm --project node-nestjs ./dist && sentry-cli sourcemaps upload --org university-of-science-hm --project node-nestjs ./dist"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
@@ -36,7 +37,11 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/schedule": "^4.1.1",
+    "@nestjs/terminus": "^10.2.3",
     "@prisma/client": "^5.20.0",
+    "@sentry/cli": "^2.38.2",
+    "@sentry/nestjs": "^8.38.0",
+    "@sentry/profiling-node": "^8.38.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",

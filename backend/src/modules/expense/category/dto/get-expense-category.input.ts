@@ -6,7 +6,13 @@ export class GetExpenseCategoryArgs extends PickType(
     PartialType(ExpenseCategory),
     ["userId", "name"],
     ArgsType,
-) {}
+) {
+    @Field(() => Date, { nullable: true })
+    startDate?: Date;
+
+    @Field(() => Date, { nullable: true })
+    endDate?: Date;
+}
 
 @ArgsType()
 export class GetTotalAmountArgs {
