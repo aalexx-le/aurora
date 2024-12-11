@@ -9,11 +9,11 @@ import { AssetInfoOutput } from "./dto/get-asset-info.output";
 @Resolver(() => AssetBalance)
 export class CryptoBalanceResolver {
     constructor(
-        private readonly cryptoProfileService: CryptoPortfolioService,
+        private readonly cryptoPortfolioService: CryptoPortfolioService,
     ) {}
     @ResolveField("assetInfo", () => AssetInfoOutput)
     getBalances(@Parent() assetBalance: AssetBalance) {
         const { assetInfoId } = assetBalance;
-        return this.cryptoProfileService.findAssetInfo(assetInfoId);
+        return this.cryptoPortfolioService.findAssetInfo(assetInfoId);
     }
 }

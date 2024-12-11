@@ -1,16 +1,16 @@
 model CryptoPortfolio {
-  userId             Int
-  exchanges          String                    @default("binance")
-  tradingType        TradingType
-  apiKey             String
-  secretKey          String
-  updateTime         DateTime?
-  id                 String                    @id @default(uuid())
-  balances           AssetBalance[]
-  user               User                      @relation(fields: [userId], references: [id])
-  historicalBalances HistoricalCryptoBalance[]
-
+  userId                 Int
+  exchanges              CEXExchanges              @default(BINANCE)
+  tradingType            TradingType
+  apiKey                 String
+  secretKey              String
+  updateTime             DateTime?
+  id                     String                    @id @default(uuid())
   investmentCategoryName String?
+  balances               AssetBalance[]
+  user                   User                      @relation(fields: [userId], references: [id])
+  historicalAssetProfits HistoricalAssetProfit[]
+  historicalBalances     HistoricalCryptoBalance[]
 }
 
 model AssetBalance {
@@ -24,14 +24,16 @@ model AssetBalance {
 }
 
 model AssetInfo {
-  id            String         @id @default(uuid())
-  name          String
-  symbol        String
-  category      String
-  desc          String
-  logo          String
-  assetBalances AssetBalance[]
-  assetPrices   AssetPrice[]
+  id                String                  @id @default(uuid())
+  name              String
+  symbol            String
+  category          String
+  desc              String
+  logo              String
+  tag               String                  @default("")
+  assetBalances     AssetBalance[]
+  assetPrices       AssetPrice[]
+  historicalProfits HistoricalAssetProfit[]
 }
 
 model AssetPrice {
@@ -60,7 +62,25 @@ model HistoricalCryptoBalance {
   @@unique([cryptoPortfolioId, time])
 }
 
+model HistoricalAssetProfit {
+  time                DateTime
+  estimatedProfit     Float
+  totalCostInQuoteQty Float
+  remainingQty        Float
+  assetInfoId         String
+  cryptoPortfolioId   String
+  assetInfo           AssetInfo       @relation(fields: [assetInfoId], references: [id])
+  cryptoPortfolio     CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
+
+  @@unique([cryptoPortfolioId, assetInfoId, time])
+}
+
 enum TradingType {
   FUTURES
   SPOT
+}
+
+enum CEXExchanges {
+  BINANCE
+  MEXC
 }

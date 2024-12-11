@@ -1,0 +1,32 @@
+subscription NewHistoricalAssetProfit1m($data: GetHistoricalAssetProfitInput!) {
+    newHistoricalAssetProfit1m(data: $data) {
+        time
+        assetInfo {
+            id
+            logo
+            lastPrice
+            symbol
+            tag
+        }
+        totalCostInQuoteQty
+        remainingQty
+        estimatedProfit
+    }
+}
+
+subscription NewHistoricalAssetProfit1h($data: GetHistoricalAssetProfitInput!) {
+    newHistoricalAssetProfit1h(data: $data) {
+        time
+        assetInfo {
+            id
+            logo
+            lastPrice
+            symbol
+            tag
+        }
+        totalCostInQuoteQty
+        remainingQty
+        estimatedProfit
+    }
+}
+

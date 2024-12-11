@@ -1,9 +1,11 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { OtpPurpose } from "../prisma/otp-purpose.enum";
-import { BankManager } from "../bank-manager/bank-manager.model";
-import { CryptoPortfolio } from "../crypto-portfolio/crypto-portfolio.model";
-import { Expense } from "../expense/expense.model";
-import { ExpenseCategory } from "../expense-category/expense-category.model";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Int } from '@nestjs/graphql';
+import { OtpPurpose } from '../prisma/otp-purpose.enum';
+import { BankManager } from '../bank-manager/bank-manager.model';
+import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
+import { Expense } from '../expense/expense.model';
+import { ExpenseCategory } from '../expense-category/expense-category.model';
 
 @ObjectType()
 export class User {

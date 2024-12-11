@@ -1,4 +1,8 @@
 import { DateRange } from "react-day-picker";
+import {
+    AbbreviatedTimeFrameEnum,
+    TimeframeEnum,
+} from "@/lib/utils/date-time/timeframe.enum";
 
 export function getCurrentMonthDateRange(): DateRange {
     const now = new Date();
@@ -9,3 +13,10 @@ export function getCurrentMonthDateRange(): DateRange {
         to: end,
     };
 }
+
+export const getAbbreviatedTimeFrame = (
+    timeFrame: TimeframeEnum,
+): AbbreviatedTimeFrameEnum => {
+    const [time, unit] = timeFrame.split(" ");
+    return (time + unit.charAt(0)) as AbbreviatedTimeFrameEnum;
+};

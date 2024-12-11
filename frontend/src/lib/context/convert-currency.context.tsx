@@ -1,7 +1,8 @@
 "use client";
 
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {Convert} from "easy-currencies";
+import {formatCurrency} from "@/lib/utils/currency/format-currency";
 
 
 const ConvertCurrencyContext = createContext<{ // Changed to ConvertCurrencyContext
@@ -23,17 +24,25 @@ export const ConvertCurrencyProvider = ({children, baseCurrency, toCurrency}: {
     toCurrency?: string
 }) => { // Changed to ConvertCurrencyProvider
     const [selectedCurrency, setSelectedCurrency] = useState(toCurrency || "VND");
+    const [converter, setConverter] = useState<ReturnType<typeof Convert> | null>(null);
 
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('de-DE', {style: 'currency', currency: selectedCurrency}).format(
-            value,
-        );
+    useEffect(() => {
+        Convert().from(baseCurrency).fetch().then((converter) => {
+            setConverter(converter);
+        });
+    }, [baseCurrency]);
+
+    const _formatCurrency = (value: number) => {
+        return formatCurrency(value, selectedCurrency);
     }
 
     const convertCurrency = async (balance: number, isFormatted: boolean = true) => {
-        return await Convert(balance).from(baseCurrency).to(selectedCurrency).then((value) => {
+        if (!converter) {
+            return "";
+        }
+        return await converter.amount(balance).to(selectedCurrency).then((value) => {
             if (isFormatted) {
-                return formatCurrency(value);
+                return _formatCurrency(value);
             }
 
             return value.toString();
@@ -42,7 +51,7 @@ export const ConvertCurrencyProvider = ({children, baseCurrency, toCurrency}: {
 
     return (
         <ConvertCurrencyContext.Provider
-            value={{selectedCurrency, setSelectedCurrency, convertCurrency, formatCurrency}}>
+            value={{selectedCurrency, setSelectedCurrency, convertCurrency, formatCurrency: _formatCurrency}}>
             {children}
         </ConvertCurrencyContext.Provider>
     );

@@ -14,6 +14,13 @@ export class BankTransactionService {
         private readonly prisma: PrismaService,
     ) {}
 
+    async findHistoricalBalances(bankAccountId: string) {
+        return this.prisma.historicalBankBalance.findMany({
+            where: { bankAccountId },
+            orderBy: { time: "asc" },
+        });
+    }
+
     async findOne(bankTransactionId: string) {
         return this.prisma.bankTransaction.findUnique({
             where: { id: bankTransactionId },
@@ -70,6 +77,18 @@ export class BankTransactionService {
             const lastTransactionId: number = lastTransaction
                 ? Number(lastTransaction.id)
                 : 0;
+
+            // for (const transaction of data.records) {
+            //     const bankId = transaction.accountId.toString();
+            //     await this.prisma.historicalBankBalance.create({
+            //         data: {
+            //             bankAccountId: bankId,
+            //             time: new Date(transaction.when),
+            //             balance: transaction.cusumBalance,
+            //         },
+            //     });
+            // }
+
             const latestTransactions = data.records.filter(
                 (r) => r.id > lastTransactionId,
             );
@@ -90,6 +109,14 @@ export class BankTransactionService {
                     },
                 });
 
+                await this.prisma.historicalBankBalance.create({
+                    data: {
+                        bankAccountId: bankId,
+                        time: new Date(transaction.when),
+                        balance: transaction.cusumBalance,
+                    },
+                });
+
                 await this.prisma.bankAccount.update({
                     where: { id: bankId },
                     data: { balance: transaction.cusumBalance },
@@ -106,7 +133,7 @@ export class BankTransactionService {
             this.httpService
                 .get("/v2/transactions", {
                     headers: { Authorization: `Apikey ${apiKey}` },
-                    params: { fromDate, sort: "DESC" },
+                    params: { fromDate, sort: "DESC", pageSize: 30 },
                 })
                 .pipe(),
         );

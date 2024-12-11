@@ -1,6 +1,9 @@
-import { Field, Float, ObjectType } from "@nestjs/graphql";
-import { BankManager } from "../bank-manager/bank-manager.model";
-import { BankTransaction } from "../bank-transaction/bank-transaction.model";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Float } from '@nestjs/graphql';
+import { BankManager } from '../bank-manager/bank-manager.model';
+import { BankTransaction } from '../bank-transaction/bank-transaction.model';
+import { HistoricalBankBalance } from '../historical-bank-balance/historical-bank-balance.model';
 
 @ObjectType()
 export class BankAccount {
@@ -37,4 +40,7 @@ export class BankAccount {
 
     @Field(() => [BankTransaction], {nullable:true})
     transactions?: Array<BankTransaction>;
+
+    @Field(() => [HistoricalBankBalance], {nullable:true})
+    historicalBalances?: Array<HistoricalBankBalance>;
 }

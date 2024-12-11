@@ -5,9 +5,11 @@ import {
     ThunkAction,
 } from "@reduxjs/toolkit";
 import authReducer from "@/state/slices/auth.slice";
+import cryptoReducer from "@/state/slices/crypto.slice";
 
 const rootReducer = combineSlices({
     auth: authReducer,
+    crypto: cryptoReducer,
 });
 
 export const makeStore = () =>

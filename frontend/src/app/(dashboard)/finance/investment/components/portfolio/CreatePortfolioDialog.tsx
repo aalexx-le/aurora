@@ -14,18 +14,19 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useState} from "react";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {CreateCryptoPortfolioMutation, MutationCreateCryptoPortfolioArgs,} from "@/gql/graphql";
+import {CexExchanges, CreateCryptoPortfolioMutation, MutationCreateCryptoPortfolioArgs,} from "@/gql/graphql";
 import {useMutation} from "@apollo/client";
-import {CREATE_CRYPTO_PORTFOLIO} from "@/api/crypto";
+import {CREATE_CRYPTO_PORTFOLIO, GET_CRYPTO_PORTFOLIOS} from "@/api/script/crypto/crypto";
 import {useAppSelector} from "@/state/hooks";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
 import {CreateCryptoPortfolioInput, createCryptoPortfolioSchema} from "@/lib/schema/cryptoPortfolio";
+import {ExchangeSelect} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
 
 interface IProps {
-    refresh: () => void;
 }
 
-export default function CreatePortfolioDialog({ refresh }: IProps) {
+export default function CreatePortfolioDialog({  }: IProps) {
     const {
         state: { user },
     } = useAppSelector((state) => state.auth);
@@ -34,11 +35,14 @@ export default function CreatePortfolioDialog({ refresh }: IProps) {
     const form = useForm<CreateCryptoPortfolioInput>({
         resolver: zodResolver(createCryptoPortfolioSchema),
     });
-    const { setError } = form;
+    const { setError, getValues, setValue } = form;
     const [createProfile] = useMutation<
         CreateCryptoPortfolioMutation,
         MutationCreateCryptoPortfolioArgs
-    >(CREATE_CRYPTO_PORTFOLIO);
+    >(CREATE_CRYPTO_PORTFOLIO, {
+        awaitRefetchQueries: true,
+        refetchQueries: [GET_CRYPTO_PORTFOLIOS, "GetCryptoPortfolios"],
+    });
 
     async function onSubmit(createPortfolioDto: CreateCryptoPortfolioInput) {
         try {
@@ -66,12 +70,12 @@ export default function CreatePortfolioDialog({ refresh }: IProps) {
                 variables: {
                     data: {
                         ...createPortfolioDto,
+                        exchanges: createPortfolioDto.exchanges as CexExchanges,
                         userId: Number(user.id),
                     },
                 },
             });
             setOpenDialog(false);
-            refresh();
         } catch (error) {
             setError("apiKey", { message: "Cannot connect to your API" });
         } finally {
@@ -113,6 +117,26 @@ export default function CreatePortfolioDialog({ refresh }: IProps) {
                         className="space-y-4"
                         autoComplete="off"
                     >
+                        <FormField
+                            control={form.control}
+                            name="exchanges"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Exchanges
+                                    </FormLabel>
+                                    <FormControl>
+                                        <ExchangeSelect
+                                            selectedExchanges={getValues("exchanges")}
+                                            setSelectedExchanges={(v) =>
+                                                setValue("exchanges", v)
+                                            }
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="apiKey"
