@@ -57,7 +57,7 @@ export default function CurrencyInput<T extends FieldValues>({name, form, label,
                                     className={cn("font-bold", className)}
                                     value={value}
                                 />
-                                {maxValue && (
+                                {Boolean(maxValue) && (
                                     <Button
                                         type="button"
                                         variant="secondary"

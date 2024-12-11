@@ -22,6 +22,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     async validate(email: string, password: string) {
         const user = await this.useService.findByAccount(email);
+
+        console.log("user", user);
         this.logger.debug(`validate() email: ${email}, password: ${password}`);
         if (!user) throw new NotFoundException("Account not found");
 

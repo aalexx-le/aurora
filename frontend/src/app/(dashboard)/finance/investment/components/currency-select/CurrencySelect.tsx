@@ -44,7 +44,7 @@ export default function CurrencySelect({}: IProps) {
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
                 <Button
                     variant="outline"
                     role="combobox"

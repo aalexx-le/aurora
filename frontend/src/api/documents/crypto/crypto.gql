@@ -1,0 +1,133 @@
+mutation CreateCryptoPortfolio($data: CreateCryptoPortfolioInput!) {
+    createCryptoPortfolio(data: $data) {
+        userId
+    }
+}
+
+query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) {
+    getCryptoPortfolios(data: $data) {
+        id
+        exchanges
+        tradingType
+        investmentCategoryName
+        latestHistoricalBalances(timeFrame: $timeFrame) {
+            changeBalance
+            changePercent
+            estimatedBalance
+        }
+        latestAssetProfits {
+            estimatedProfit
+            remainingQty
+            totalCostInQuoteQty
+            assetInfo {
+                id
+                logo
+                lastPrice
+                symbol
+                tag
+            }
+        }
+        balances {
+            id
+            balance
+            assetInfo {
+                id
+                logo
+                lastPrice
+                symbol
+                tag
+            }
+        }
+    }
+}
+
+query GetHistoricalAssetProfits($data: GetHistoricalAssetProfitInput!, $pagination: PaginationInput!) {
+    getHistoricalAssetProfits(data: $data, pagination: $pagination) {
+        time
+        estimatedProfit
+        remainingQty
+        totalCostInQuoteQty
+    }
+}
+
+query GetHistoricalBalances($data: GetHistoricalBalanceInput!, $pagination: PaginationInput!) {
+    getHistoricalBalances(data: $data, pagination: $pagination) {
+        time
+        estimatedBalance
+        changePercent
+        changeBalance
+    }
+}
+
+query GetAsset(
+    $pagination: PaginationInput!,
+    $getAssetPriceData: GetAssetPriceInput!,
+    $getAssetProfitData: GetHistoricalAssetProfitInput!,
+    $getAssetInfoData: GetAssetInfoInput!
+) {
+    getHistoricalAssetProfits(data: $getAssetProfitData, pagination: $pagination) {
+        time
+        estimatedProfit
+        remainingQty
+        totalCostInQuoteQty
+    }
+
+    getAssetPrices(data: $getAssetPriceData, pagination: $pagination) {
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+    getAssetInfo(data: $getAssetInfoData) {
+        logo
+        desc
+        category
+        symbol
+        name
+    }
+}
+
+
+subscription NewAssetPrice1m($data: GetAssetPriceInput!) {
+    newAssetPrice1m (data: $data) {
+        assetInfoId
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+}
+
+subscription NewAssetPrice5m($data: GetAssetPriceInput!) {
+    newAssetPrice5m (data: $data) {
+        assetInfoId
+        open_time
+        openPrice
+        closePrice
+        highPrice
+        lowPrice
+    }
+}
+
+subscription NewHistoricalCryptoBalance1m($data: GetHistoricalBalancesInput!) {
+    newHistoricalCryptoBalance1m(data: $data) {
+        cryptoPortfolioId
+        time
+        estimatedBalance
+        changeBalance
+        changePercent
+    }
+}
+
+subscription NewHistoricalCryptoBalance1h($data: GetHistoricalBalancesInput!) {
+    newHistoricalCryptoBalance1h(data: $data) {
+        cryptoPortfolioId
+        time
+        estimatedBalance
+        changeBalance
+        changePercent
+    }
+}
+

@@ -71,6 +71,10 @@ const config: Config = {
             animation: {
                 "shiny-text": "shiny-text 8s infinite",
                 "caret-blink": "caret-blink 1.25s ease-out infinite",
+                'bg-fade': 'bg-fade 2s ease-in-out 0s 1 normal none running',
+                'bg-fade-up': 'bg-fade-up 2s ease-in-out 0s 1 normal none running',
+                'bg-fade-down': 'bg-fade-down 2s ease-in-out 0s 1 normal none running',
+                'ripple': 'ripple 1.5s infinite',
             },
             keyframes: {
                 "shiny-text": {
@@ -89,6 +93,52 @@ const config: Config = {
                     },
                     "20%,50%": {
                         opacity: "0",
+                    },
+                },
+                'ripple': {
+                    '0%': { transform: 'scale(0.8)', opacity: '1' },
+                    '100%': { transform: 'scale(2.5)', opacity: '0' },
+                },
+                'bg-fade': {
+                    '0%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--primary-foreground))',
+                    },
+                    '30%': {
+                        backgroundColor: 'hsl(var(--primary))',
+                        color: 'hsl(var(--primary-foreground))',
+                    },
+                    '100%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--primary-foreground))',
+                    },
+                },
+                'bg-fade-up': {
+                    '0%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--chart-2))',
+                    },
+                    '30%': {
+                        backgroundColor: '#42cdbc',
+                        color: 'hsl(var(--chart-2))',
+                    },
+                    '100%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--chart-2))',
+                    },
+                },
+                'bg-fade-down': {
+                    '0%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--chart-5))',
+                    },
+                    '30%': {
+                        backgroundColor: '#e1608b',
+                        color: 'hsl(var(--chart-5))',
+                    },
+                    '100%': {
+                        backgroundColor: 'transparent',
+                        color: 'hsl(var(--chart-5))',
                     },
                 },
             },

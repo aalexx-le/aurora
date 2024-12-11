@@ -1,12 +1,11 @@
 model ExpenseCategory {
-  id          String    @id @default(uuid())
-  userId      Int
-  name        String
-  description String?
-  color       String
-  expenses    Expense[]
-  user        User      @relation(fields: [userId], references: [id])
-
+  id             String          @id @default(uuid())
+  userId         Int
+  name           String
+  description    String?
+  color          String
+  expenses       Expense[]
+  user           User            @relation(fields: [userId], references: [id])
   monthlyTargets MonthlyTarget[]
 }
 

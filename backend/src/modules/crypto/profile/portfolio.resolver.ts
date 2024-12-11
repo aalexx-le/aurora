@@ -20,6 +20,7 @@ import { GetCryptoPortfolioArgs } from "./dto/get-crypto-portfolio.input";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
 import { AssetBalance } from "src/entities/asset-balance";
 import { CryptoPortfolio } from "src/entities/crypto-portfolio";
+import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
 
 @Resolver(() => CryptoPortfolio)
 export class CryptoPortfolioResolver {
@@ -73,6 +74,15 @@ export class CryptoPortfolioResolver {
 
         return historicalBalance[0];
     }
+
+    @ResolveField("latestAssetProfits", () => [HistoricalAssetProfit])
+    async getLatestAssetProfits(@Parent() portfolio: CryptoPortfolio) {
+        return this.cryptoPortfolioService.findHistoricalAssetProfits(
+            portfolio.id,
+            { take: 1 },
+        );
+    }
+
     // @Mutation(() => Crypto)
     // updateCrypto(
     //     @Args("updateCryptoInput") updateCryptoInput: UpdateCryptoInput,

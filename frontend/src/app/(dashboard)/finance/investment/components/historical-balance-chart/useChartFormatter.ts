@@ -1,7 +1,10 @@
 import { useCallback } from "react";
 import moment from "moment";
+import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
 
 export const useChartFormatter = () => {
+    const { formatCurrency } = useConvertCurrencyContext();
+
     const timeFormatter = useCallback((time: string) => {
         return moment(time).format("DD/MM");
     }, []);
@@ -12,8 +15,8 @@ export const useChartFormatter = () => {
         [],
     );
     const balanceFormatter = useCallback(
-        (balance: number) => `$${balance.toFixed(2)}`,
-        [],
+        (balance: number | string) => formatCurrency(Number(balance)),
+        [formatCurrency],
     );
 
     return { timeFormatterForTooltip, balanceFormatter, timeFormatter };

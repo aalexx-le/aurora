@@ -21,7 +21,7 @@ type ExpenseCategory {
   user: User!
   monthlyTargets(month: Int, year: Int): [MonthlyTarget!]
   countExpenses: Int!
-  totalAmount(startDate: DateTime, endDate: DateTime): Int!
+  totalSpentAmounts(startDate: DateTime, endDate: DateTime): [TotalSpentAmountOutput!]!
 }
 
 """
@@ -55,6 +55,13 @@ type BankTransaction {
   expense: [Expense!]
 }
 
+type HistoricalBankBalance {
+  time: DateTime!
+  balance: Float!
+  bankAccountId: String!
+  bankAccount: BankAccount!
+}
+
 type BankAccount {
   id: String!
   name: String!
@@ -67,6 +74,7 @@ type BankAccount {
   fullName: String!
   bankManager: BankManager!
   transactions: [BankTransaction!]!
+  historicalBalances: [HistoricalBankBalance!]
 }
 
 type BankManager {
@@ -93,6 +101,17 @@ type AssetPrice {
   assetInfo: AssetInfo!
 }
 
+type HistoricalAssetProfit {
+  time: DateTime!
+  estimatedProfit: Float!
+  totalCostInQuoteQty: Float!
+  remainingQty: Float!
+  assetInfoId: String!
+  cryptoPortfolioId: String!
+  assetInfo: AssetInfoOutput!
+  cryptoPortfolio: CryptoPortfolio!
+}
+
 type AssetInfo {
   id: String!
   name: String!
@@ -100,8 +119,10 @@ type AssetInfo {
   category: String!
   desc: String!
   logo: String!
+  tag: String!
   assetBalances: [AssetBalance!]
   assetPrices: [AssetPrice!]
+  historicalProfits: [HistoricalAssetProfit!]
 }
 
 type AssetBalance {
@@ -125,7 +146,7 @@ type HistoricalCryptoBalance {
 
 type CryptoPortfolio {
   userId: Int!
-  exchanges: String!
+  exchanges: CEXExchanges!
   tradingType: TradingType!
   apiKey: String!
   secretKey: String!
@@ -134,8 +155,15 @@ type CryptoPortfolio {
   investmentCategoryName: String
   balances: [AssetBalance!]!
   user: User!
+  historicalAssetProfits: [HistoricalAssetProfit!]
   historicalBalances: [HistoricalCryptoBalance!]
   latestHistoricalBalances(timeFrame: String!): HistoricalCryptoBalance!
+  latestAssetProfits: [HistoricalAssetProfit!]!
+}
+
+enum CEXExchanges {
+  BINANCE
+  MEXC
 }
 
 enum TradingType {
@@ -183,7 +211,15 @@ type AssetInfoOutput {
   category: String!
   desc: String!
   logo: String!
+  tag: String!
+  historicalProfits: [HistoricalAssetProfit!]
   lastPrice: Float!
+}
+
+type TotalSpentAmountOutput {
+  amount: Float!
+  month: Float!
+  year: Float!
 }
 
 type Query {
@@ -192,10 +228,11 @@ type Query {
   getAssetInfo(data: GetAssetInfoInput!): AssetInfo!
   getAssetPrices(data: GetAssetPriceInput!, pagination: PaginationInput!): [AssetPrice!]!
   getHistoricalBalances(data: GetHistoricalBalanceInput!, pagination: PaginationInput!): [HistoricalCryptoBalance!]!
+  getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput!, pagination: PaginationInput!): [HistoricalAssetProfit!]!
   getBankManagers(userId: Int!): [BankManager!]!
   getBankTransactions(userId: Float!): [BankTransaction!]!
   getExpenses(userId: Int!, startDate: DateTime, endDate: DateTime): [Expense!]!
-  getExpenseCategories(userId: Int, name: String): [ExpenseCategory!]!
+  getExpenseCategories(userId: Int, name: String, startDate: DateTime, endDate: DateTime): [ExpenseCategory!]!
   getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
 }
 
@@ -223,6 +260,12 @@ input GetHistoricalBalanceInput {
   timeFrame: String!
 }
 
+input GetHistoricalAssetProfitInput {
+  assetInfoId: String!
+  cryptoPortfolioId: String!
+  timeFrame: String!
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
   login(data: LoginReqDto!): LoginResDto!
@@ -242,6 +285,7 @@ type Mutation {
 
 input CreateCryptoPortfolioInput {
   userId: Int!
+  exchanges: CEXExchanges! = BINANCE
   apiKey: String!
   secretKey: String!
 }
@@ -277,6 +321,7 @@ input CreateExpenseInput {
   description: String
   amount: Float!
   bankTransactionId: String!
+  createdAt: DateTime!
 }
 
 input UpdateExpenseInput {
@@ -285,6 +330,7 @@ input UpdateExpenseInput {
   description: String
   amount: Float
   bankTransactionId: String
+  createdAt: DateTime
 }
 
 input CreateExpenseCategoryInput {
@@ -317,4 +363,13 @@ type Subscription {
   portfolioCreated(data: GetCryptoPortfolioInput!): CryptoPortfolio!
   newAssetPrice1m(data: GetAssetPriceInput!): AssetPrice!
   newAssetPrice5m(data: GetAssetPriceInput!): AssetPrice!
+  newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
+  newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
+  newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
+  newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
+}
+
+input GetHistoricalBalancesInput {
+  timeFrame: String!
+  cryptoPortfolioIds: [String!]!
 }

@@ -1,23 +1,23 @@
 (
   SELECT
-    _materialized_hypertable_3.open_time,
-    _materialized_hypertable_3."assetInfoId",
-    _materialized_hypertable_3."openPrice",
-    _materialized_hypertable_3."closePrice",
-    _materialized_hypertable_3."highPrice",
-    _materialized_hypertable_3."lowPrice",
-    _materialized_hypertable_3.volume
+    _materialized_hypertable_9.open_time,
+    _materialized_hypertable_9."assetInfoId",
+    _materialized_hypertable_9."openPrice",
+    _materialized_hypertable_9."closePrice",
+    _materialized_hypertable_9."highPrice",
+    _materialized_hypertable_9."lowPrice",
+    _materialized_hypertable_9.volume
   FROM
-    _timescaledb_internal._materialized_hypertable_3
+    _timescaledb_internal._materialized_hypertable_9
   WHERE
     (
-      _materialized_hypertable_3.open_time < COALESCE(
-        _timescaledb_functions.to_timestamp_without_timezone(_timescaledb_functions.cagg_watermark(3)),
+      _materialized_hypertable_9.open_time < COALESCE(
+        _timescaledb_functions.to_timestamp_without_timezone(_timescaledb_functions.cagg_watermark(9)),
         '-infinity' :: timestamp without time zone
       )
     )
   ORDER BY
-    _materialized_hypertable_3.open_time
+    _materialized_hypertable_9.open_time
 )
 UNION
 ALL (
@@ -34,7 +34,7 @@ ALL (
   WHERE
     (
       ap.open_time >= COALESCE(
-        _timescaledb_functions.to_timestamp_without_timezone(_timescaledb_functions.cagg_watermark(3)),
+        _timescaledb_functions.to_timestamp_without_timezone(_timescaledb_functions.cagg_watermark(9)),
         '-infinity' :: timestamp without time zone
       )
     )

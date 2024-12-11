@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
-import { AssetPriceInterval } from "./enum/asset-price-interval";
+import { DataInterval } from "./enum/data-interval";
 import { GetAssetPriceInput } from "./dto/get-asset-price.input";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
@@ -10,7 +10,6 @@ import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-time
 
 @Injectable()
 export class CryptoAssetService {
-    private readonly logger = new Logger(CryptoAssetService.name);
     constructor(private prisma: PrismaService) {}
 
     async findManyPrices(
@@ -20,9 +19,6 @@ export class CryptoAssetService {
         const { assetInfoId, timeFrame } = getAssetPriceArgs;
         const { take, after } = pagination;
 
-        this.logger.log(
-            `Finding asset prices for asset ${assetInfoId} with interval ${timeFrame}`,
-        );
         let assetPrices: AssetPrice[] = [];
         const args: Prisma.AssetPriceFindManyArgs<DefaultArgs> = {
             where: {
@@ -43,7 +39,7 @@ export class CryptoAssetService {
             };
         }
 
-        if (timeFrame === AssetPriceInterval.MINUTE_1) {
+        if (timeFrame === DataInterval.MINUTE_1) {
             assetPrices = await this.prisma.assetPrice.findMany(args);
         } else {
             assetPrices =

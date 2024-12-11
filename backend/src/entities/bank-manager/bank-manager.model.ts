@@ -1,6 +1,8 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { BankAccount } from "../bank-account/bank-account.model";
-import { User } from "../user/user.model";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Int } from '@nestjs/graphql';
+import { BankAccount } from '../bank-account/bank-account.model';
+import { User } from '../user/user.model';
 
 @ObjectType()
 export class BankManager {

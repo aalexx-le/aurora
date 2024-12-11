@@ -42,8 +42,8 @@ build-backend-prod:
   rules:
       - if: $CI_COMMIT_BRANCH == 'main'
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./backend
-    - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
+    - docker build -t $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest ./backend
+    - docker push $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest
 
 build-frontend-prod:
   stage: build

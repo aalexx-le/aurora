@@ -10,17 +10,27 @@ model BankManager {
 }
 
 model BankAccount {
-  id            String            @id
-  name          String
-  bankManagerId String
-  accountName   String
-  accountNumber String
+  id                 String                  @id
+  name               String
+  bankManagerId      String
+  accountName        String
+  accountNumber      String
+  balance            Float
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  fullName           String
+  bankManager        BankManager             @relation(fields: [bankManagerId], references: [id])
+  transactions       BankTransaction[]
+  historicalBalances HistoricalBankBalance[]
+}
+
+model HistoricalBankBalance {
+  time          DateTime
   balance       Float
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  fullName      String
-  bankManager   BankManager       @relation(fields: [bankManagerId], references: [id])
-  transactions  BankTransaction[]
+  bankAccountId String
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
+
+  @@unique([bankAccountId, time])
 }
 
 model BankTransaction {

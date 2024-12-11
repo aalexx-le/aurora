@@ -8,6 +8,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum CEXExchanges {
+    BINANCE = "BINANCE",
+    MEXC = "MEXC"
+}
+
 export enum TradingType {
     FUTURES = "FUTURES",
     SPOT = "SPOT"
@@ -42,8 +47,15 @@ export interface GetHistoricalBalanceInput {
     timeFrame: string;
 }
 
+export interface GetHistoricalAssetProfitInput {
+    assetInfoId: string;
+    cryptoPortfolioId: string;
+    timeFrame: string;
+}
+
 export interface CreateCryptoPortfolioInput {
     userId: number;
+    exchanges: CEXExchanges;
     apiKey: string;
     secretKey: string;
 }
@@ -79,6 +91,7 @@ export interface CreateExpenseInput {
     description?: Nullable<string>;
     amount: number;
     bankTransactionId: string;
+    createdAt: DateTime;
 }
 
 export interface UpdateExpenseInput {
@@ -87,6 +100,7 @@ export interface UpdateExpenseInput {
     description?: Nullable<string>;
     amount?: Nullable<number>;
     bankTransactionId?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
 }
 
 export interface CreateExpenseCategoryInput {
@@ -115,6 +129,11 @@ export interface UpdateMonthlyTargetInput {
     target?: Nullable<number>;
 }
 
+export interface GetHistoricalBalancesInput {
+    timeFrame: string;
+    cryptoPortfolioIds: string[];
+}
+
 export interface MonthlyTarget {
     id: string;
     categoryId: string;
@@ -134,7 +153,7 @@ export interface ExpenseCategory {
     user: User;
     monthlyTargets?: Nullable<MonthlyTarget[]>;
     countExpenses: number;
-    totalAmount?: number;
+    totalSpentAmounts?: TotalSpentAmountOutput[];
 }
 
 export interface Expense {
@@ -163,6 +182,13 @@ export interface BankTransaction {
     expense?: Nullable<Expense[]>;
 }
 
+export interface HistoricalBankBalance {
+    time: DateTime;
+    balance: number;
+    bankAccountId: string;
+    bankAccount: BankAccount;
+}
+
 export interface BankAccount {
     id: string;
     name: string;
@@ -175,6 +201,7 @@ export interface BankAccount {
     fullName: string;
     bankManager: BankManager;
     transactions: BankTransaction[];
+    historicalBalances?: Nullable<HistoricalBankBalance[]>;
 }
 
 export interface BankManager {
@@ -201,6 +228,17 @@ export interface AssetPrice {
     assetInfo: AssetInfo;
 }
 
+export interface HistoricalAssetProfit {
+    time: DateTime;
+    estimatedProfit: number;
+    totalCostInQuoteQty: number;
+    remainingQty: number;
+    assetInfoId: string;
+    cryptoPortfolioId: string;
+    assetInfo: AssetInfoOutput;
+    cryptoPortfolio: CryptoPortfolio;
+}
+
 export interface AssetInfo {
     id: string;
     name: string;
@@ -208,8 +246,10 @@ export interface AssetInfo {
     category: string;
     desc: string;
     logo: string;
+    tag: string;
     assetBalances?: Nullable<AssetBalance[]>;
     assetPrices?: Nullable<AssetPrice[]>;
+    historicalProfits?: Nullable<HistoricalAssetProfit[]>;
 }
 
 export interface AssetBalance {
@@ -233,7 +273,7 @@ export interface HistoricalCryptoBalance {
 
 export interface CryptoPortfolio {
     userId: number;
-    exchanges: string;
+    exchanges: CEXExchanges;
     tradingType: TradingType;
     apiKey: string;
     secretKey: string;
@@ -242,8 +282,10 @@ export interface CryptoPortfolio {
     investmentCategoryName?: Nullable<string>;
     balances: AssetBalance[];
     user: User;
+    historicalAssetProfits?: Nullable<HistoricalAssetProfit[]>;
     historicalBalances?: Nullable<HistoricalCryptoBalance[]>;
     latestHistoricalBalances?: HistoricalCryptoBalance;
+    latestAssetProfits: HistoricalAssetProfit[];
 }
 
 export interface User {
@@ -281,7 +323,15 @@ export interface AssetInfoOutput {
     category: string;
     desc: string;
     logo: string;
+    tag: string;
+    historicalProfits?: Nullable<HistoricalAssetProfit[]>;
     lastPrice: number;
+}
+
+export interface TotalSpentAmountOutput {
+    amount: number;
+    month: number;
+    year: number;
 }
 
 export interface IQuery {
@@ -290,10 +340,11 @@ export interface IQuery {
     getAssetInfo(data: GetAssetInfoInput): AssetInfo | Promise<AssetInfo>;
     getAssetPrices(data: GetAssetPriceInput, pagination: PaginationInput): AssetPrice[] | Promise<AssetPrice[]>;
     getHistoricalBalances(data: GetHistoricalBalanceInput, pagination: PaginationInput): HistoricalCryptoBalance[] | Promise<HistoricalCryptoBalance[]>;
+    getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput, pagination: PaginationInput): HistoricalAssetProfit[] | Promise<HistoricalAssetProfit[]>;
     getBankManagers(userId: number): BankManager[] | Promise<BankManager[]>;
     getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(userId: number, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
-    getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
+    getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
     getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;
 }
 
@@ -318,6 +369,10 @@ export interface ISubscription {
     portfolioCreated(data: GetCryptoPortfolioInput): CryptoPortfolio | Promise<CryptoPortfolio>;
     newAssetPrice1m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
     newAssetPrice5m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
+    newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
+    newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
+    newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
+    newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
 }
 
 export type DateTime = any;
