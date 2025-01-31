@@ -90,7 +90,7 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
         getChartData().then(data => {
             setAnalyseData(data);
         });
-    }, [assetProfits])
+    }, [assetProfits, balances])
 
     return (
         <Card className="flex-1 flex flex-col">

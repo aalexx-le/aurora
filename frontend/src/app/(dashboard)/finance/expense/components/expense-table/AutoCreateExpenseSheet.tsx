@@ -57,7 +57,7 @@ export function AutoCreateExpenseSheet({
     // Reset form when click on another transaction
     useEffect(() => {
         form.reset(defaultValues);
-    }, [initTransactionId]);
+    }, [initTransactionId, defaultValues, form]);
 
     return (
         <Sheet {...props}>

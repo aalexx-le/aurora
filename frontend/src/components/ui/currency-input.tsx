@@ -40,7 +40,7 @@ export default function CurrencyInput<T extends FieldValues>({name, form, label,
         if (watchedValue !== value) {
             setValue(vnMoneyFormatter.format(watchedValue) as PathValue<T, Path<T>>);
         }
-    }, [watchedValue]);
+    }, [watchedValue, value]);
 
     return (
         <FormField

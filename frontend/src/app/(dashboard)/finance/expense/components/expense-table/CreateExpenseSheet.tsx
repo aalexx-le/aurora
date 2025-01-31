@@ -69,7 +69,7 @@ export function CreateExpenseSheet({
     // Reset form when click on another transaction
     useEffect(() => {
         reset(defaultValues);
-    }, [initTransactionId]);
+    }, [initTransactionId, reset, defaultValues]);
 
     function onSubmit(input: CreateExpenseInput) {
         startTransition(async () => {
