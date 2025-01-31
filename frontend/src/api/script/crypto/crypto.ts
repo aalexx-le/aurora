@@ -32,8 +32,6 @@ export const CREATE_OKX_CRYPTO_PORTFOLIO = gql`
     }
 `;
 
-
-
 export const GET_CRYPTO_PORTFOLIOS = gql`
     query GetCryptoPortfolios(
         $data: GetCryptoPortfolioInput!

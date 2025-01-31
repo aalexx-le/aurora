@@ -18,14 +18,16 @@ export const useCryptoPortfoliosQuery = () => {
         },
     });
 
-    let portfolios = data?.getCryptoPortfolios || [];
+    const portfolios = data?.getCryptoPortfolios || [];
 
     return {
-        portfolios: [...portfolios].sort(
-            (pa, pb) =>
-                pb.latestHistoricalBalances.estimatedBalance -
-                pa.latestHistoricalBalances.estimatedBalance,
-        ).filter((p) => p.investmentCategoryName === "Investment"),
+        portfolios: [...portfolios]
+            .sort(
+                (pa, pb) =>
+                    pb.latestHistoricalBalances.estimatedBalance -
+                    pa.latestHistoricalBalances.estimatedBalance,
+            )
+            .filter((p) => p.investmentCategoryName === "Investment"),
         loading,
     };
 };

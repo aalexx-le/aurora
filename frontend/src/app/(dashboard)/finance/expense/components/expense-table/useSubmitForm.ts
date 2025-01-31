@@ -1,12 +1,15 @@
-import {CreateExpenseInput} from "@/lib/schema/expense";
-import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
-import {UseFormReturn} from "react-hook-form";
-import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
-import {useMutation} from "@apollo/client";
-import {CreateExpenseMutation, MutationCreateExpenseArgs} from "@/gql/graphql";
-import {CREATE_EXPENSE, GET_EXPENSES} from "@/api/script/expense";
-import {useAppSelector} from "@/state/hooks";
-import {useToast} from "@/hooks/use-toast";
+import { CreateExpenseInput } from "@/lib/schema/expense";
+import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
+import { UseFormReturn } from "react-hook-form";
+import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { useMutation } from "@apollo/client";
+import {
+    CreateExpenseMutation,
+    MutationCreateExpenseArgs,
+} from "@/gql/graphql";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/script/expense";
+import { useAppSelector } from "@/state/hooks";
+import { useToast } from "@/hooks/use-toast";
 
 export const useSubmitForm = (
     form: UseFormReturn<CreateExpenseInput>,
@@ -14,9 +17,9 @@ export const useSubmitForm = (
     startTransition: React.TransitionStartFunction,
     onOpenChange?: (open: boolean) => void,
 ) => {
-    const {setError} = form
-    const {toast} = useToast();
-    const {user} = useAppSelector((state) => state.auth.state);
+    const { setError } = form;
+    const { toast } = useToast();
+    const { user } = useAppSelector((state) => state.auth.state);
     const [createExpense] = useMutation<
         CreateExpenseMutation,
         MutationCreateExpenseArgs
@@ -48,7 +51,7 @@ export const useSubmitForm = (
                     return;
                 }
 
-                const {data} = await createExpense({
+                const { data } = await createExpense({
                     variables: {
                         data: {
                             ...input,
@@ -72,11 +75,11 @@ export const useSubmitForm = (
                 toast({
                     title: "Error creating expense",
                     description: getGraphqlErrorMessage(e),
-                    variant: "destructive"
+                    variant: "destructive",
                 });
             }
         });
     }
 
-    return {onSubmit};
-}
+    return { onSubmit };
+};

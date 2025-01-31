@@ -29,3 +29,9 @@ docker container run --rm -it -v backup_db:/to -v xela_timeseries-data:/from ubu
 docker container run --rm -it -v backup_db:/from -v xela_timeseries-data:/to ubuntu bash -c "cd /from ;cp -av . /to"
 ``` 
 
+
+#### Backend Sentry
+
+```bash
+&& yarn sentry:sourcemaps
+```

@@ -5,7 +5,9 @@ export const useChartConfig = (historicalData: HistoricalCryptoBalance[]) => {
     return useMemo(
         () => ({
             trend:
-                historicalData[historicalData.length - 1]?.estimatedBalance - historicalData[0]?.estimatedBalance >= 0
+                historicalData[historicalData.length - 1]?.estimatedBalance -
+                    historicalData[0]?.estimatedBalance >=
+                0
                     ? {
                           label: "Up",
                           color: "hsl(var(--chart-2))",
