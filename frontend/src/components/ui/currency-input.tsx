@@ -1,5 +1,5 @@
 "use client";
-import React, {useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage,} from "../ui/form";
 import {Input} from "../ui/input";
 import {ControllerRenderProps, FieldValues, Path, PathValue, UseFormReturn} from "react-hook-form";
@@ -19,6 +19,7 @@ export default function CurrencyInput<T extends FieldValues>({name, form, label,
     const initialValue = form.getValues()[name]
         ? vnMoneyFormatter.format(form.getValues()[name])
         : "";
+
     const maxFormattedValue = useMemo(() => maxValue ? vnMoneyFormatter.format(maxValue) : "", [maxValue]);
 
     const [value, setValue] = useState<PathValue<T, Path<T>>>(initialValue as PathValue<T, Path<T>>);
@@ -32,6 +33,14 @@ export default function CurrencyInput<T extends FieldValues>({name, form, label,
         const digits = next.replace(/\D/g, "");
         setValue(vnMoneyFormatter.format(Number(digits)) as PathValue<T, Path<T>>);
     }
+
+    // Watch for changes in the form, format the value and update the state
+    const watchedValue = form.watch(name);
+    useEffect(() => {
+        if (watchedValue !== value) {
+            setValue(vnMoneyFormatter.format(watchedValue) as PathValue<T, Path<T>>);
+        }
+    }, [watchedValue]);
 
     return (
         <FormField

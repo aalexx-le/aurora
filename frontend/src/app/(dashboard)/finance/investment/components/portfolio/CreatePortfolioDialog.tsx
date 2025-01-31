@@ -21,28 +21,27 @@ import {useAppSelector} from "@/state/hooks";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
 import {CreateCryptoPortfolioInput, createCryptoPortfolioSchema} from "@/lib/schema/cryptoPortfolio";
 import {ExchangeSelect} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {GET_CREATE_PORTFOLIO_EXECUTIONS} from "@/api/script/crypto/execution";
+import {useCreatePortfolio} from "@/app/(dashboard)/finance/investment/components/portfolio/useCreatePortfolio";
 
 interface IProps {
 }
 
-export default function CreatePortfolioDialog({  }: IProps) {
+export default function CreatePortfolioDialog({}: IProps) {
     const {
-        state: { user },
+        state: {user},
     } = useAppSelector((state) => state.auth);
     const [openDialog, setOpenDialog] = useState(false);
     const [loading, setLoading] = useState(false);
     const form = useForm<CreateCryptoPortfolioInput>({
+        defaultValues: {
+            exchanges: CexExchanges.Binance,
+        },
         resolver: zodResolver(createCryptoPortfolioSchema),
     });
-    const { setError, getValues, setValue } = form;
-    const [createProfile] = useMutation<
-        CreateCryptoPortfolioMutation,
-        MutationCreateCryptoPortfolioArgs
-    >(CREATE_CRYPTO_PORTFOLIO, {
-        awaitRefetchQueries: true,
-        refetchQueries: [GET_CRYPTO_PORTFOLIOS, "GetCryptoPortfolios"],
-    });
+    const {setError, getValues, setValue, watch} = form;
+    const reviewExchanges = watch("exchanges");
+    const {createPortfolio, createOKXPortfolio} = useCreatePortfolio()
 
     async function onSubmit(createPortfolioDto: CreateCryptoPortfolioInput) {
         try {
@@ -66,18 +65,34 @@ export default function CreatePortfolioDialog({  }: IProps) {
             // dispatch(authActions.loginWithPassword(loginDto));
             //
             // router.push(DASHBOARD_ROUTE.value)
-            await createProfile({
-                variables: {
-                    data: {
-                        ...createPortfolioDto,
-                        exchanges: createPortfolioDto.exchanges as CexExchanges,
-                        userId: Number(user.id),
+            console.log({createPortfolioDto})
+            if (createPortfolioDto.exchanges == CexExchanges.Okx) {
+                await createOKXPortfolio({
+                    variables: {
+                        data: {
+                            ...createPortfolioDto,
+                            exchanges: createPortfolioDto.exchanges as CexExchanges,
+                            userId: Number(user.id),
+                            passphrase: createPortfolioDto.passphrase as string,
+                        },
                     },
-                },
-            });
+                });
+            }
+            else {
+                await createPortfolio({
+                    variables: {
+                        data: {
+                            ...createPortfolioDto,
+                            exchanges: createPortfolioDto.exchanges as CexExchanges,
+                            userId: Number(user.id),
+                        },
+                    },
+                });
+            }
+
             setOpenDialog(false);
         } catch (error) {
-            setError("apiKey", { message: "Cannot connect to your API" });
+            setError("apiKey", {message: "Cannot connect to your API"});
         } finally {
             setLoading(false);
         }
@@ -91,7 +106,7 @@ export default function CreatePortfolioDialog({  }: IProps) {
                     size="icon"
                     onClick={() => setOpenDialog(true)}
                 >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-4 w-4"/>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -120,7 +135,7 @@ export default function CreatePortfolioDialog({  }: IProps) {
                         <FormField
                             control={form.control}
                             name="exchanges"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>
                                         Exchanges
@@ -133,14 +148,30 @@ export default function CreatePortfolioDialog({  }: IProps) {
                                             }
                                         />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Portfolio Name
+                                        <span className="text-muted-foreground"> (optional)</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
                         <FormField
                             control={form.control}
                             name="apiKey"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>
                                         API Key
@@ -149,26 +180,42 @@ export default function CreatePortfolioDialog({  }: IProps) {
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
                         <FormField
                             control={form.control}
                             name="secretKey"
-                            render={({ field }) => (
+                            render={({field}) => (
                                 <FormItem>
                                     <FormLabel>
                                         Secret Key
                                         <span className="text-destructive"> (require)</span>
                                     </FormLabel>
                                     <FormControl>
-                                        <Input {...field} type="password" />
+                                        <Input {...field} type="password"/>
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage/>
                                 </FormItem>
                             )}
                         />
+                        {reviewExchanges == CexExchanges.Okx && <FormField
+                            control={form.control}
+                            name="passphrase"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Passphrase
+                                        <span className="text-destructive"> (require)</span>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type="password"/>
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />}
                         <DialogFooter>
                             <ButtonWithLoading type="submit" loading={loading}>
                                 Add

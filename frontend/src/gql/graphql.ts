@@ -41,6 +41,7 @@ export type AssetInfo = {
   name: Scalars['String']['output'];
   symbol: Scalars['String']['output'];
   tag: Scalars['String']['output'];
+  trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetInfoOutput = {
@@ -54,6 +55,7 @@ export type AssetInfoOutput = {
   name: Scalars['String']['output'];
   symbol: Scalars['String']['output'];
   tag: Scalars['String']['output'];
+  trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetPrice = {
@@ -111,8 +113,10 @@ export type BankTransaction = {
 };
 
 export enum CexExchanges {
+  All = 'ALL',
   Binance = 'BINANCE',
-  Mexc = 'MEXC'
+  Mexc = 'MEXC',
+  Okx = 'OKX'
 }
 
 export type CreateBankManagerInput = {
@@ -124,6 +128,7 @@ export type CreateBankManagerInput = {
 export type CreateCryptoPortfolioInput = {
   apiKey: Scalars['String']['input'];
   exchanges?: CexExchanges;
+  name?: Scalars['String']['input'];
   secretKey: Scalars['String']['input'];
   userId: Scalars['Int']['input'];
 };
@@ -132,6 +137,13 @@ export type CreateCryptoRes = {
   __typename?: 'CreateCryptoRes';
   userId: Scalars['Float']['output'];
 };
+
+export enum CreateExecutionStatus {
+  Failed = 'FAILED',
+  Processing = 'PROCESSING',
+  Queue = 'QUEUE',
+  Success = 'SUCCESS'
+}
 
 export type CreateExpenseCategoryInput = {
   color: Scalars['String']['input'];
@@ -157,6 +169,23 @@ export type CreateMonthlyTargetInput = {
   year: Scalars['Int']['input'];
 };
 
+export type CreateOkxCryptoPortfolioInput = {
+  apiKey: Scalars['String']['input'];
+  exchanges?: CexExchanges;
+  name?: Scalars['String']['input'];
+  passphrase: Scalars['String']['input'];
+  secretKey: Scalars['String']['input'];
+  userId: Scalars['Int']['input'];
+};
+
+export type CreatePortfolioExecution = {
+  __typename?: 'CreatePortfolioExecution';
+  id: Scalars['Int']['output'];
+  status: CreateExecutionStatus;
+  time?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['Int']['output'];
+};
+
 export type CreateUserInput = {
   email: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -169,6 +198,7 @@ export type CryptoPortfolio = {
   __typename?: 'CryptoPortfolio';
   apiKey: Scalars['String']['output'];
   balances: Array<AssetBalance>;
+  childPortfolios?: Maybe<Array<CryptoPortfolio>>;
   exchanges: CexExchanges;
   historicalAssetProfits?: Maybe<Array<HistoricalAssetProfit>>;
   historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
@@ -176,7 +206,12 @@ export type CryptoPortfolio = {
   investmentCategoryName?: Maybe<Scalars['String']['output']>;
   latestAssetProfits: Array<HistoricalAssetProfit>;
   latestHistoricalBalances: HistoricalCryptoBalance;
+  name: Scalars['String']['output'];
+  parentPortfolio?: Maybe<CryptoPortfolio>;
+  parentPortfolioId?: Maybe<Scalars['String']['output']>;
   secretKey: Scalars['String']['output'];
+  status: PortfolioStatus;
+  trades?: Maybe<Array<Trade>>;
   tradingType: TradingType;
   updateTime?: Maybe<Scalars['DateTime']['output']>;
   user: User;
@@ -259,6 +294,11 @@ export type GetHistoricalBalancesInput = {
   timeFrame: Scalars['String']['input'];
 };
 
+export type GetTradeInput = {
+  assetInfoId?: InputMaybe<Scalars['String']['input']>;
+  cryptoPortfolioId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type HistoricalAssetProfit = {
   __typename?: 'HistoricalAssetProfit';
   assetInfo: AssetInfoOutput;
@@ -317,6 +357,7 @@ export type Mutation = {
   createExpense: Expense;
   createExpenseCategory: ExpenseCategory;
   createMonthlyTarget: MonthlyTarget;
+  createOKXCryptoPortfolio: CreateCryptoRes;
   login: LoginResDto;
   removeExpense: Expense;
   removeExpenseCategory: ExpenseCategory;
@@ -351,6 +392,11 @@ export type MutationCreateExpenseCategoryArgs = {
 
 export type MutationCreateMonthlyTargetArgs = {
   data: CreateMonthlyTargetInput;
+};
+
+
+export type MutationCreateOkxCryptoPortfolioArgs = {
+  data: CreateOkxCryptoPortfolioInput;
 };
 
 
@@ -412,12 +458,18 @@ export type PaginationInput = {
   take: Scalars['Int']['input'];
 };
 
+export enum PortfolioStatus {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE'
+}
+
 export type Query = {
   __typename?: 'Query';
   getAssetInfo: AssetInfo;
   getAssetPrices: Array<AssetPrice>;
   getBankManagers: Array<BankManager>;
   getBankTransactions: Array<BankTransaction>;
+  getCreatePortfolioExecutions: Array<CreatePortfolioExecution>;
   getCryptoPortfolios: Array<CryptoPortfolio>;
   getExpenseCategories: Array<ExpenseCategory>;
   getExpenses: Array<Expense>;
@@ -425,6 +477,8 @@ export type Query = {
   getHistoricalBalances: Array<HistoricalCryptoBalance>;
   getMe: User;
   getMonthlyTargets: Array<MonthlyTarget>;
+  getSuggestedExpenses: Array<Expense>;
+  getTrades: Array<Trade>;
 };
 
 
@@ -449,6 +503,11 @@ export type QueryGetBankTransactionsArgs = {
 };
 
 
+export type QueryGetCreatePortfolioExecutionsArgs = {
+  userId: Scalars['Float']['input'];
+};
+
+
 export type QueryGetCryptoPortfoliosArgs = {
   data: GetCryptoPortfolioInput;
 };
@@ -465,7 +524,6 @@ export type QueryGetExpenseCategoriesArgs = {
 export type QueryGetExpensesArgs = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
-  userId: Scalars['Int']['input'];
 };
 
 
@@ -485,6 +543,16 @@ export type QueryGetMonthlyTargetsArgs = {
   categoryId: Scalars['String']['input'];
   month?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetSuggestedExpensesArgs = {
+  bankTransactionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetTradesArgs = {
+  data: GetTradeInput;
 };
 
 export type SignupResDto = {
@@ -544,6 +612,21 @@ export type TotalSpentAmountOutput = {
   amount: Scalars['Float']['output'];
   month: Scalars['Float']['output'];
   year: Scalars['Float']['output'];
+};
+
+export type Trade = {
+  __typename?: 'Trade';
+  assetInfo: AssetInfo;
+  assetInfoId: Scalars['String']['output'];
+  commission: Scalars['Float']['output'];
+  commissionAsset: Scalars['String']['output'];
+  cryptoPortfolio: CryptoPortfolio;
+  cryptoPortfolioId: Scalars['String']['output'];
+  isBuyer: Scalars['Boolean']['output'];
+  price: Scalars['Float']['output'];
+  qty: Scalars['Float']['output'];
+  quoteQty: Scalars['Float']['output'];
+  time: Scalars['DateTime']['output'];
 };
 
 export enum TradingType {
@@ -634,13 +717,20 @@ export type CreateCryptoPortfolioMutationVariables = Exact<{
 
 export type CreateCryptoPortfolioMutation = { __typename?: 'Mutation', createCryptoPortfolio: { __typename?: 'CreateCryptoRes', userId: number } };
 
+export type CreateOkxCryptoPortfolioMutationVariables = Exact<{
+  data: CreateOkxCryptoPortfolioInput;
+}>;
+
+
+export type CreateOkxCryptoPortfolioMutation = { __typename?: 'Mutation', createOKXCryptoPortfolio: { __typename?: 'CreateCryptoRes', userId: number } };
+
 export type GetCryptoPortfoliosQueryVariables = Exact<{
   data: GetCryptoPortfolioInput;
   timeFrame: Scalars['String']['input'];
 }>;
 
 
-export type GetCryptoPortfoliosQuery = { __typename?: 'Query', getCryptoPortfolios: Array<{ __typename?: 'CryptoPortfolio', id: string, exchanges: CexExchanges, tradingType: TradingType, investmentCategoryName?: string | null, latestHistoricalBalances: { __typename?: 'HistoricalCryptoBalance', changeBalance: number, changePercent: number, estimatedBalance: number }, latestAssetProfits: Array<{ __typename?: 'HistoricalAssetProfit', estimatedProfit: number, remainingQty: number, totalCostInQuoteQty: number, assetInfo: { __typename?: 'AssetInfoOutput', id: string, logo: string, lastPrice: number, symbol: string, tag: string } }>, balances: Array<{ __typename?: 'AssetBalance', id: string, balance: number, assetInfo: { __typename?: 'AssetInfoOutput', id: string, logo: string, lastPrice: number, symbol: string, tag: string } }> }> };
+export type GetCryptoPortfoliosQuery = { __typename?: 'Query', getCryptoPortfolios: Array<{ __typename?: 'CryptoPortfolio', id: string, name: string, exchanges: CexExchanges, tradingType: TradingType, investmentCategoryName?: string | null, latestHistoricalBalances: { __typename?: 'HistoricalCryptoBalance', changeBalance: number, changePercent: number, estimatedBalance: number }, latestAssetProfits: Array<{ __typename?: 'HistoricalAssetProfit', estimatedProfit: number, remainingQty: number, totalCostInQuoteQty: number, cryptoPortfolio: { __typename?: 'CryptoPortfolio', id: string, exchanges: CexExchanges, name: string }, assetInfo: { __typename?: 'AssetInfoOutput', id: string, logo: string, lastPrice: number, symbol: string, tag: string } }>, balances: Array<{ __typename?: 'AssetBalance', id: string, balance: number, cryptoPortfolio: { __typename?: 'CryptoPortfolio', id: string, exchanges: CexExchanges, name: string }, assetInfo: { __typename?: 'AssetInfoOutput', id: string, logo: string, lastPrice: number, symbol: string, tag: string } }> }> };
 
 export type GetHistoricalAssetProfitsQueryVariables = Exact<{
   data: GetHistoricalAssetProfitInput;
@@ -695,6 +785,20 @@ export type NewHistoricalCryptoBalance1hSubscriptionVariables = Exact<{
 
 
 export type NewHistoricalCryptoBalance1hSubscription = { __typename?: 'Subscription', newHistoricalCryptoBalance1h: { __typename?: 'HistoricalCryptoBalance', cryptoPortfolioId: string, time: any, estimatedBalance: number, changeBalance: number, changePercent: number } };
+
+export type GetCreatePortfolioExecutionsQueryVariables = Exact<{
+  userId: Scalars['Float']['input'];
+}>;
+
+
+export type GetCreatePortfolioExecutionsQuery = { __typename?: 'Query', getCreatePortfolioExecutions: Array<{ __typename?: 'CreatePortfolioExecution', id: number, status: CreateExecutionStatus, time?: any | null }> };
+
+export type GetTradesQueryVariables = Exact<{
+  data: GetTradeInput;
+}>;
+
+
+export type GetTradesQuery = { __typename?: 'Query', getTrades: Array<{ __typename?: 'Trade', time: any, price: number, qty: number, quoteQty: number, commission: number, commissionAsset: string, isBuyer: boolean, cryptoPortfolio: { __typename?: 'CryptoPortfolio', id: string, name: string, exchanges: CexExchanges } }> };
 
 export type GetExpenseCategoriesQueryVariables = Exact<{
   userId: Scalars['Int']['input'];
@@ -755,13 +859,19 @@ export type UpdateMonthlyTargetMutationVariables = Exact<{
 export type UpdateMonthlyTargetMutation = { __typename?: 'Mutation', updateMonthlyTarget: { __typename?: 'MonthlyTarget', categoryId: string } };
 
 export type GetExpensesQueryVariables = Exact<{
-  userId: Scalars['Int']['input'];
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
 }>;
 
 
 export type GetExpensesQuery = { __typename?: 'Query', getExpenses: Array<{ __typename?: 'Expense', id: string, createdAt: any, description?: string | null, amount: number, name: string, category: { __typename?: 'ExpenseCategory', id: string, color: string, name: string }, transaction: { __typename?: 'BankTransaction', id: string, amount: number, spentAmount: number, description: string } }> };
+
+export type GetSuggestedExpensesQueryVariables = Exact<{
+  bankTransactionId: Scalars['String']['input'];
+}>;
+
+
+export type GetSuggestedExpensesQuery = { __typename?: 'Query', getSuggestedExpenses: Array<{ __typename?: 'Expense', amount: number, name: string, bankTransactionId: string, categoryId: string, description?: string | null }> };
 
 export type CreateExpenseMutationVariables = Exact<{
   data: CreateExpenseInput;
@@ -818,7 +928,8 @@ export const VerifyAccountDocument = {"kind":"Document","definitions":[{"kind":"
 export const NewHistoricalAssetProfit1mDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"NewHistoricalAssetProfit1m"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalAssetProfitInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newHistoricalAssetProfit1m"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}}]}}]}}]} as unknown as DocumentNode<NewHistoricalAssetProfit1mSubscription, NewHistoricalAssetProfit1mSubscriptionVariables>;
 export const NewHistoricalAssetProfit1hDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"NewHistoricalAssetProfit1h"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalAssetProfitInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newHistoricalAssetProfit1h"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}}]}}]}}]} as unknown as DocumentNode<NewHistoricalAssetProfit1hSubscription, NewHistoricalAssetProfit1hSubscriptionVariables>;
 export const CreateCryptoPortfolioDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCryptoPortfolio"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateCryptoPortfolioInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCryptoPortfolio"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}}]}}]} as unknown as DocumentNode<CreateCryptoPortfolioMutation, CreateCryptoPortfolioMutationVariables>;
-export const GetCryptoPortfoliosDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCryptoPortfolios"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetCryptoPortfolioInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeFrame"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCryptoPortfolios"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"exchanges"}},{"kind":"Field","name":{"kind":"Name","value":"tradingType"}},{"kind":"Field","name":{"kind":"Name","value":"investmentCategoryName"}},{"kind":"Field","name":{"kind":"Name","value":"latestHistoricalBalances"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"timeFrame"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timeFrame"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changePercent"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedBalance"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestAssetProfits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"balances"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCryptoPortfoliosQuery, GetCryptoPortfoliosQueryVariables>;
+export const CreateOkxCryptoPortfolioDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateOKXCryptoPortfolio"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateOKXCryptoPortfolioInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOKXCryptoPortfolio"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}}]}}]} as unknown as DocumentNode<CreateOkxCryptoPortfolioMutation, CreateOkxCryptoPortfolioMutationVariables>;
+export const GetCryptoPortfoliosDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCryptoPortfolios"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetCryptoPortfolioInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeFrame"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCryptoPortfolios"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"exchanges"}},{"kind":"Field","name":{"kind":"Name","value":"tradingType"}},{"kind":"Field","name":{"kind":"Name","value":"investmentCategoryName"}},{"kind":"Field","name":{"kind":"Name","value":"latestHistoricalBalances"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"timeFrame"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timeFrame"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"changeBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changePercent"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedBalance"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestAssetProfits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}},{"kind":"Field","name":{"kind":"Name","value":"cryptoPortfolio"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"exchanges"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"balances"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"balance"}},{"kind":"Field","name":{"kind":"Name","value":"cryptoPortfolio"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"exchanges"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"assetInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"lastPrice"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"tag"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCryptoPortfoliosQuery, GetCryptoPortfoliosQueryVariables>;
 export const GetHistoricalAssetProfitsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetHistoricalAssetProfits"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalAssetProfitInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getHistoricalAssetProfits"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}}]}}]}}]} as unknown as DocumentNode<GetHistoricalAssetProfitsQuery, GetHistoricalAssetProfitsQueryVariables>;
 export const GetHistoricalBalancesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetHistoricalBalances"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalBalanceInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getHistoricalBalances"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changePercent"}},{"kind":"Field","name":{"kind":"Name","value":"changeBalance"}}]}}]}}]} as unknown as DocumentNode<GetHistoricalBalancesQuery, GetHistoricalBalancesQueryVariables>;
 export const GetAssetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAsset"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PaginationInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"getAssetPriceData"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetAssetPriceInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"getAssetProfitData"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalAssetProfitInput"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"getAssetInfoData"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetAssetInfoInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getHistoricalAssetProfits"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"getAssetProfitData"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedProfit"}},{"kind":"Field","name":{"kind":"Name","value":"remainingQty"}},{"kind":"Field","name":{"kind":"Name","value":"totalCostInQuoteQty"}}]}},{"kind":"Field","name":{"kind":"Name","value":"getAssetPrices"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"getAssetPriceData"}}},{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"open_time"}},{"kind":"Field","name":{"kind":"Name","value":"openPrice"}},{"kind":"Field","name":{"kind":"Name","value":"closePrice"}},{"kind":"Field","name":{"kind":"Name","value":"highPrice"}},{"kind":"Field","name":{"kind":"Name","value":"lowPrice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"getAssetInfo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"getAssetInfoData"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"logo"}},{"kind":"Field","name":{"kind":"Name","value":"desc"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"symbol"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetAssetQuery, GetAssetQueryVariables>;
@@ -826,6 +937,8 @@ export const NewAssetPrice1mDocument = {"kind":"Document","definitions":[{"kind"
 export const NewAssetPrice5mDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"NewAssetPrice5m"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetAssetPriceInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newAssetPrice5m"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assetInfoId"}},{"kind":"Field","name":{"kind":"Name","value":"open_time"}},{"kind":"Field","name":{"kind":"Name","value":"openPrice"}},{"kind":"Field","name":{"kind":"Name","value":"closePrice"}},{"kind":"Field","name":{"kind":"Name","value":"highPrice"}},{"kind":"Field","name":{"kind":"Name","value":"lowPrice"}}]}}]}}]} as unknown as DocumentNode<NewAssetPrice5mSubscription, NewAssetPrice5mSubscriptionVariables>;
 export const NewHistoricalCryptoBalance1mDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"NewHistoricalCryptoBalance1m"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalBalancesInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newHistoricalCryptoBalance1m"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cryptoPortfolioId"}},{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changeBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changePercent"}}]}}]}}]} as unknown as DocumentNode<NewHistoricalCryptoBalance1mSubscription, NewHistoricalCryptoBalance1mSubscriptionVariables>;
 export const NewHistoricalCryptoBalance1hDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"NewHistoricalCryptoBalance1h"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetHistoricalBalancesInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newHistoricalCryptoBalance1h"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cryptoPortfolioId"}},{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"estimatedBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changeBalance"}},{"kind":"Field","name":{"kind":"Name","value":"changePercent"}}]}}]}}]} as unknown as DocumentNode<NewHistoricalCryptoBalance1hSubscription, NewHistoricalCryptoBalance1hSubscriptionVariables>;
+export const GetCreatePortfolioExecutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCreatePortfolioExecutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCreatePortfolioExecutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"time"}}]}}]}}]} as unknown as DocumentNode<GetCreatePortfolioExecutionsQuery, GetCreatePortfolioExecutionsQueryVariables>;
+export const GetTradesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTrades"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetTradeInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getTrades"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cryptoPortfolio"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"exchanges"}}]}},{"kind":"Field","name":{"kind":"Name","value":"time"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"qty"}},{"kind":"Field","name":{"kind":"Name","value":"quoteQty"}},{"kind":"Field","name":{"kind":"Name","value":"commission"}},{"kind":"Field","name":{"kind":"Name","value":"commissionAsset"}},{"kind":"Field","name":{"kind":"Name","value":"isBuyer"}}]}}]}}]} as unknown as DocumentNode<GetTradesQuery, GetTradesQueryVariables>;
 export const GetExpenseCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpenseCategories"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getExpenseCategories"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"countExpenses"}},{"kind":"Field","name":{"kind":"Name","value":"totalSpentAmounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}}]}},{"kind":"Field","name":{"kind":"Name","value":"monthlyTargets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"target"}}]}}]}}]}}]} as unknown as DocumentNode<GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables>;
 export const CreateExpenseCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateExpenseCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateExpenseCategoryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createExpenseCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateExpenseCategoryMutation, CreateExpenseCategoryMutationVariables>;
 export const UpdateExpenseCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateExpenseCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateExpenseCategoryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateExpenseCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<UpdateExpenseCategoryMutation, UpdateExpenseCategoryMutationVariables>;
@@ -833,7 +946,8 @@ export const RemoveExpenseCategoryDocument = {"kind":"Document","definitions":[{
 export const GetMonthlyTargetsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMonthlyTargets"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"categoryId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"month"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMonthlyTargets"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"categoryId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"categoryId"}}},{"kind":"Argument","name":{"kind":"Name","value":"month"},"value":{"kind":"Variable","name":{"kind":"Name","value":"month"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"target"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"year"}}]}}]}}]} as unknown as DocumentNode<GetMonthlyTargetsQuery, GetMonthlyTargetsQueryVariables>;
 export const CreateMonthlyTargetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMonthlyTarget"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMonthlyTargetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMonthlyTarget"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"categoryId"}}]}}]}}]} as unknown as DocumentNode<CreateMonthlyTargetMutation, CreateMonthlyTargetMutationVariables>;
 export const UpdateMonthlyTargetDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMonthlyTarget"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"updateMonthlyTargetId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateMonthlyTargetInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMonthlyTarget"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"updateMonthlyTargetId"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"categoryId"}}]}}]}}]} as unknown as DocumentNode<UpdateMonthlyTargetMutation, UpdateMonthlyTargetMutationVariables>;
-export const GetExpensesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpenses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getExpenses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}},{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"transaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"spentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetExpensesQuery, GetExpensesQueryVariables>;
+export const GetExpensesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetExpenses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"DateTime"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getExpenses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"endDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"transaction"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"spentAmount"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetExpensesQuery, GetExpensesQueryVariables>;
+export const GetSuggestedExpensesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSuggestedExpenses"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"bankTransactionId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getSuggestedExpenses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"bankTransactionId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"bankTransactionId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"bankTransactionId"}},{"kind":"Field","name":{"kind":"Name","value":"categoryId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<GetSuggestedExpensesQuery, GetSuggestedExpensesQueryVariables>;
 export const CreateExpenseDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateExpense"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateExpenseInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createExpense"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CreateExpenseMutation, CreateExpenseMutationVariables>;
 export const UpdateExpenseDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateExpense"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateExpenseInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateExpense"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<UpdateExpenseMutation, UpdateExpenseMutationVariables>;
 export const RemoveExpenseDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveExpense"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeExpense"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<RemoveExpenseMutation, RemoveExpenseMutationVariables>;
@@ -875,6 +989,7 @@ export type AssetInfo = {
   name: Scalars['String']['output'];
   symbol: Scalars['String']['output'];
   tag: Scalars['String']['output'];
+  trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetInfoOutput = {
@@ -888,6 +1003,7 @@ export type AssetInfoOutput = {
   name: Scalars['String']['output'];
   symbol: Scalars['String']['output'];
   tag: Scalars['String']['output'];
+  trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetPrice = {
@@ -945,8 +1061,10 @@ export type BankTransaction = {
 };
 
 export enum CexExchanges {
+  All = 'ALL',
   Binance = 'BINANCE',
-  Mexc = 'MEXC'
+  Mexc = 'MEXC',
+  Okx = 'OKX'
 }
 
 export type CreateBankManagerInput = {
@@ -958,6 +1076,7 @@ export type CreateBankManagerInput = {
 export type CreateCryptoPortfolioInput = {
   apiKey: Scalars['String']['input'];
   exchanges?: CexExchanges;
+  name?: Scalars['String']['input'];
   secretKey: Scalars['String']['input'];
   userId: Scalars['Int']['input'];
 };
@@ -966,6 +1085,13 @@ export type CreateCryptoRes = {
   __typename?: 'CreateCryptoRes';
   userId: Scalars['Float']['output'];
 };
+
+export enum CreateExecutionStatus {
+  Failed = 'FAILED',
+  Processing = 'PROCESSING',
+  Queue = 'QUEUE',
+  Success = 'SUCCESS'
+}
 
 export type CreateExpenseCategoryInput = {
   color: Scalars['String']['input'];
@@ -991,6 +1117,23 @@ export type CreateMonthlyTargetInput = {
   year: Scalars['Int']['input'];
 };
 
+export type CreateOkxCryptoPortfolioInput = {
+  apiKey: Scalars['String']['input'];
+  exchanges?: CexExchanges;
+  name?: Scalars['String']['input'];
+  passphrase: Scalars['String']['input'];
+  secretKey: Scalars['String']['input'];
+  userId: Scalars['Int']['input'];
+};
+
+export type CreatePortfolioExecution = {
+  __typename?: 'CreatePortfolioExecution';
+  id: Scalars['Int']['output'];
+  status: CreateExecutionStatus;
+  time?: Maybe<Scalars['DateTime']['output']>;
+  userId: Scalars['Int']['output'];
+};
+
 export type CreateUserInput = {
   email: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1003,6 +1146,7 @@ export type CryptoPortfolio = {
   __typename?: 'CryptoPortfolio';
   apiKey: Scalars['String']['output'];
   balances: Array<AssetBalance>;
+  childPortfolios?: Maybe<Array<CryptoPortfolio>>;
   exchanges: CexExchanges;
   historicalAssetProfits?: Maybe<Array<HistoricalAssetProfit>>;
   historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
@@ -1010,7 +1154,12 @@ export type CryptoPortfolio = {
   investmentCategoryName?: Maybe<Scalars['String']['output']>;
   latestAssetProfits: Array<HistoricalAssetProfit>;
   latestHistoricalBalances: HistoricalCryptoBalance;
+  name: Scalars['String']['output'];
+  parentPortfolio?: Maybe<CryptoPortfolio>;
+  parentPortfolioId?: Maybe<Scalars['String']['output']>;
   secretKey: Scalars['String']['output'];
+  status: PortfolioStatus;
+  trades?: Maybe<Array<Trade>>;
   tradingType: TradingType;
   updateTime?: Maybe<Scalars['DateTime']['output']>;
   user: User;
@@ -1093,6 +1242,11 @@ export type GetHistoricalBalancesInput = {
   timeFrame: Scalars['String']['input'];
 };
 
+export type GetTradeInput = {
+  assetInfoId?: InputMaybe<Scalars['String']['input']>;
+  cryptoPortfolioId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type HistoricalAssetProfit = {
   __typename?: 'HistoricalAssetProfit';
   assetInfo: AssetInfoOutput;
@@ -1151,6 +1305,7 @@ export type Mutation = {
   createExpense: Expense;
   createExpenseCategory: ExpenseCategory;
   createMonthlyTarget: MonthlyTarget;
+  createOKXCryptoPortfolio: CreateCryptoRes;
   login: LoginResDto;
   removeExpense: Expense;
   removeExpenseCategory: ExpenseCategory;
@@ -1185,6 +1340,11 @@ export type MutationCreateExpenseCategoryArgs = {
 
 export type MutationCreateMonthlyTargetArgs = {
   data: CreateMonthlyTargetInput;
+};
+
+
+export type MutationCreateOkxCryptoPortfolioArgs = {
+  data: CreateOkxCryptoPortfolioInput;
 };
 
 
@@ -1246,12 +1406,18 @@ export type PaginationInput = {
   take: Scalars['Int']['input'];
 };
 
+export enum PortfolioStatus {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE'
+}
+
 export type Query = {
   __typename?: 'Query';
   getAssetInfo: AssetInfo;
   getAssetPrices: Array<AssetPrice>;
   getBankManagers: Array<BankManager>;
   getBankTransactions: Array<BankTransaction>;
+  getCreatePortfolioExecutions: Array<CreatePortfolioExecution>;
   getCryptoPortfolios: Array<CryptoPortfolio>;
   getExpenseCategories: Array<ExpenseCategory>;
   getExpenses: Array<Expense>;
@@ -1259,6 +1425,8 @@ export type Query = {
   getHistoricalBalances: Array<HistoricalCryptoBalance>;
   getMe: User;
   getMonthlyTargets: Array<MonthlyTarget>;
+  getSuggestedExpenses: Array<Expense>;
+  getTrades: Array<Trade>;
 };
 
 
@@ -1283,6 +1451,11 @@ export type QueryGetBankTransactionsArgs = {
 };
 
 
+export type QueryGetCreatePortfolioExecutionsArgs = {
+  userId: Scalars['Float']['input'];
+};
+
+
 export type QueryGetCryptoPortfoliosArgs = {
   data: GetCryptoPortfolioInput;
 };
@@ -1299,7 +1472,6 @@ export type QueryGetExpenseCategoriesArgs = {
 export type QueryGetExpensesArgs = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
-  userId: Scalars['Int']['input'];
 };
 
 
@@ -1319,6 +1491,16 @@ export type QueryGetMonthlyTargetsArgs = {
   categoryId: Scalars['String']['input'];
   month?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetSuggestedExpensesArgs = {
+  bankTransactionId: Scalars['String']['input'];
+};
+
+
+export type QueryGetTradesArgs = {
+  data: GetTradeInput;
 };
 
 export type SignupResDto = {
@@ -1378,6 +1560,21 @@ export type TotalSpentAmountOutput = {
   amount: Scalars['Float']['output'];
   month: Scalars['Float']['output'];
   year: Scalars['Float']['output'];
+};
+
+export type Trade = {
+  __typename?: 'Trade';
+  assetInfo: AssetInfo;
+  assetInfoId: Scalars['String']['output'];
+  commission: Scalars['Float']['output'];
+  commissionAsset: Scalars['String']['output'];
+  cryptoPortfolio: CryptoPortfolio;
+  cryptoPortfolioId: Scalars['String']['output'];
+  isBuyer: Scalars['Boolean']['output'];
+  price: Scalars['Float']['output'];
+  qty: Scalars['Float']['output'];
+  quoteQty: Scalars['Float']['output'];
+  time: Scalars['DateTime']['output'];
 };
 
 export enum TradingType {

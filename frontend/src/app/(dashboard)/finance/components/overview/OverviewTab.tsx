@@ -4,7 +4,7 @@ import {
 } from "@/app/(dashboard)/finance/expense/components/income-expense-ratio-bar-chart/ExpenseRatioBarChart";
 import BankSummary from "@/app/(dashboard)/finance/components/bank-summary/BankSummary";
 import {useQuery} from "@apollo/client";
-import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
+import {CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
 import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
 import {useAppSelector} from "@/state/hooks";
 import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-summary/InvestmentSummary";
@@ -27,7 +27,13 @@ export default function OverviewTab({bankManagers}: IProps) {
     });
     const categories = data?.getExpenseCategories ?? [];
 
-    const portfolios = useCryptoPortfoliosQuery()
+    const {loading, portfolios} = useCryptoPortfoliosQuery()
+
+    const aggregatedPortfolio = portfolios.find(p => p.exchanges == CexExchanges.All)
+
+    if (!aggregatedPortfolio) {
+        return null
+    }
 
     return (
         <div className="flex flex-1 flex-col gap-4">
@@ -39,7 +45,7 @@ export default function OverviewTab({bankManagers}: IProps) {
                 <div className="flex flex-1 flex-col gap-4">
                     <BankSummary bankManagers={bankManagers}/>
                     <ConvertCurrencyProvider baseCurrency="USD">
-                        <InvestmentSummary portfolios={portfolios}/>
+                        <InvestmentSummary portfolio={aggregatedPortfolio}/>
                     </ConvertCurrencyProvider>
                 </div>
                 <div className="flex flex-1 flex-col gap-4">

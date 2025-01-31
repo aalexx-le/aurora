@@ -18,6 +18,7 @@ export interface SearchParams {
 export interface Option {
     label: React.ReactNode;
     value: string;
+    icon?: React.ComponentType<{ className?: string }>
     count?: number;
 }
 
@@ -51,9 +52,9 @@ export type Filter<TData> = Prettify<
     }
 >;
 
-export interface DataTableRowActionState<RData> {
+export interface DataTableRowActionState<RData, RAction = DataTableRowActionType> {
     row: Row<RData>;
-    type: DataTableRowActionType;
+    type: RAction;
 }
 
 export enum DataTableRowActionType {

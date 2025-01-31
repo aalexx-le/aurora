@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 import { KafkaTopic } from "../../../shared/constants/kafka";
 import { CreateCryptoPortfolioInput } from "./dto/create-crypto-portfolio.input";
@@ -15,6 +15,7 @@ import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-time
 import { HistoricalAssetProfit } from "src/entities/historical-asset-profit";
 import { GetHistoricalAssetProfitInput } from "./dto/get-historical-asset-profit.input";
 import { EncryptionService } from "../../../shared/encryption.service";
+import { CEXExchanges, CreateExecutionStatus } from "../../../entities/prisma";
 
 @Injectable()
 export class CryptoPortfolioService {
@@ -32,19 +33,49 @@ export class CryptoPortfolioService {
             createCryptoPortfolioInput.userId,
         );
 
-        createCryptoPortfolioInput.secretKey =
-            await this.encryptionService.generateEncryptedKey(
-                createCryptoPortfolioInput.secretKey,
-            );
+        // createCryptoPortfolioInput.secretKey =
+        //     await this.encryptionService.generateEncryptedKey(
+        //         createCryptoPortfolioInput.secretKey,
+        //     );
 
-        const msg = Buffer.from(JSON.stringify(createCryptoPortfolioInput));
+        const execution = await this.prisma.createPortfolioExecution.create({
+            data: {
+                userId: createCryptoPortfolioInput.userId,
+                status: CreateExecutionStatus.QUEUE,
+            },
+        });
+
+        // Ensure secretKey is properly encoded before sending
+        const msgPayload = {
+            ...createCryptoPortfolioInput,
+            executionId: execution.id,
+            secretKey: createCryptoPortfolioInput.secretKey, // Already encrypted string
+        };
+
+        // Stringify with proper encoding
+        const msg = Buffer.from(JSON.stringify(msgPayload), "utf-8");
+
         const res = await this.kafkaService.sendMessage({
             topic: KafkaTopic.CREATE_CRYPTO_PORTFOLIO,
-            messages: [{ value: msg }],
+            messages: [
+                {
+                    value: msg,
+                    headers: {
+                        "content-encoding": "utf-8", // Add encoding header
+                    },
+                },
+            ],
         });
+
         this.logger.log(
-            `Message sent to topic(${KafkaTopic.CREATE_CRYPTO_PORTFOLIO}): ${msg} with result: ${res}`,
+            `Message sent to topic(${KafkaTopic.CREATE_CRYPTO_PORTFOLIO})`,
         );
+    }
+
+    findPortfolio(cryptoPortfolioId: string) {
+        return this.prisma.cryptoPortfolio.findUnique({
+            where: { id: cryptoPortfolioId },
+        });
     }
 
     findPortfolios(userId: number) {
@@ -53,10 +84,27 @@ export class CryptoPortfolioService {
         });
     }
 
-    findBalances(cryptoPortfolioId: string) {
-        return this.prisma.assetBalance.findMany({
-            where: { cryptoPortfolioId },
-        });
+    async findBalances(cryptoPortfolioId: string, exchange: CEXExchanges) {
+        if (exchange == CEXExchanges.ALL) {
+            const childPortfolios = await this.prisma.cryptoPortfolio.findMany({
+                where: { parentPortfolioId: cryptoPortfolioId },
+                select: {
+                    id: true,
+                },
+            });
+
+            return this.prisma.assetBalance.findMany({
+                where: {
+                    cryptoPortfolioId: {
+                        in: childPortfolios.map((portfolio) => portfolio.id),
+                    },
+                },
+            });
+        } else {
+            return this.prisma.assetBalance.findMany({
+                where: { cryptoPortfolioId },
+            });
+        }
     }
 
     async findAssetInfo(id: string): Promise<AssetInfoOutput> {
@@ -206,5 +254,11 @@ export class CryptoPortfolioService {
         }
 
         return historicalAssetProfits;
+    }
+
+    async getCreatePortfolioExecutions(userId: number) {
+        return this.prisma.createPortfolioExecution.findMany({
+            where: { userId },
+        });
     }
 }

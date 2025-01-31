@@ -10,6 +10,7 @@ import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
 import {MoneyAnimated} from "@/components/money/money-animated";
 import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
 import {BalancePieChart} from "@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart";
+import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 
 interface IProps {
     cryptoPortfolioId: string;
@@ -27,6 +28,7 @@ export type AnalyseData = {
     name: string;
     fill: string;
     tag: string;
+    exchangeLogo: string;
 }
 
 const MIN_THRESHOLD = 1;
@@ -47,7 +49,8 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
                     profitPercent: b.estimatedProfit / b.totalCostInQuoteQty * 100,
                     name: b.assetInfo.symbol,
                     fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
-                    tag: b.assetInfo.tag
+                    tag: b.assetInfo.tag,
+                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
                 })))
 
             const usdtBalances = balances.filter(b => b.assetInfo.symbol === 'USDT');
@@ -61,7 +64,8 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
                     profitPercent: 0,
                     name: b.assetInfo.symbol,
                     fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
-                    tag: b.assetInfo.tag
+                    tag: b.assetInfo.tag,
+                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
                 })))
 
             mapBalances.push(...mapUSDTBalances);
@@ -69,7 +73,7 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
             const sortedBalances = mapBalances.sort((a, b) => b.invest - a.invest);
 
             const filteredBalances = sortedBalances
-                .filter(b => b.remainingQty > MIN_THRESHOLD);
+                // .filter(b => b.remainingQty > -10);
 
             const hideSymbols = ["BNB", "BTC"];
 

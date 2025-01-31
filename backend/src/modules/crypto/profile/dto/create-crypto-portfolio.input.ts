@@ -3,18 +3,26 @@ import {
     Field,
     InputType,
     Int,
+    IntersectionType,
     ObjectType,
     PickType,
 } from "@nestjs/graphql";
 import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 import { CryptoPortfolio } from "src/entities/crypto-portfolio";
+import { OKXCryptoPortfolio } from "../../../../entities/okx-crypto-portfolio";
 
 @InputType()
 export class CreateCryptoPortfolioInput extends PickType(
     CryptoPortfolio,
-    ["userId", "apiKey", "secretKey", "exchanges"],
+    ["userId", "name", "apiKey", "secretKey", "exchanges"],
     InputType,
+) {}
+
+@InputType()
+export class CreateOKXCryptoPortfolioInput extends IntersectionType(
+    CreateCryptoPortfolioInput,
+    PickType(OKXCryptoPortfolio, ["passphrase"], InputType),
 ) {}
 
 @ArgsType()
@@ -23,6 +31,14 @@ export class CreateCryptoPortfolioArgs {
     @Field(() => CreateCryptoPortfolioInput, { nullable: false })
     @Type(() => CreateCryptoPortfolioInput)
     data!: CreateCryptoPortfolioInput;
+}
+
+@ArgsType()
+export class CreateOKXCryptoPortfolioArgs {
+    @ValidateNested()
+    @Field(() => CreateOKXCryptoPortfolioInput, { nullable: false })
+    @Type(() => CreateOKXCryptoPortfolioInput)
+    data!: CreateOKXCryptoPortfolioInput;
 }
 
 @ObjectType()

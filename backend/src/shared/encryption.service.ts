@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import * as crypto from "crypto";
 import { ConfigService } from "@nestjs/config";
+import * as crypto from "crypto";
 
 @Injectable()
 export class EncryptionService {
@@ -11,30 +11,79 @@ export class EncryptionService {
             const masterKey = this.configService.get<string>(
                 "CRYPTO_PORTFOLIO_MASTER_KEY",
             );
-            // Decode the base64-encoded master key
-            const keyBytes = Uint8Array.from(Buffer.from(masterKey, "base64"));
 
-            // Generate a random IV (Initialization Vector)
-            const iv = crypto.randomBytes(16);
+            // Use Fernet-style encryption
+            const key = Buffer.from(masterKey, "base64");
+            const fernet = new Fernet(key);
 
-            // Create a Cipher object (using AES-CBC)
-            const cipher = crypto.createCipheriv("aes-256-cbc", keyBytes, iv);
-
-            // Encrypt the API key
-            let encrypted = cipher.update(apiKey, "utf8", "base64");
-            encrypted += cipher.final("base64");
-
-            // Concatenate the IV and encrypted data (in base64)
-            const encryptedBase64 = Buffer.concat([
-                iv,
-                Buffer.from(encrypted, "base64"),
-            ]).toString("base64");
-
-            return encryptedBase64;
+            // Encrypt with current timestamp
+            return fernet.encode(apiKey);
         } catch (error) {
-            // Handle encryption errors appropriately (e.g., logging, throwing an exception)
             console.error("Encryption error:", error);
             throw error;
         }
+    }
+}
+
+class Fernet {
+    private readonly signingKey: Buffer;
+    private readonly encryptionKey: Buffer;
+
+    constructor(key: Buffer) {
+        if (key.length !== 32) {
+            throw new Error("Fernet key must be 32 bytes");
+        }
+        this.signingKey = key.subarray(0, 16);
+        this.encryptionKey = key.subarray(16, 32);
+    }
+
+    encode(message: string): string {
+        const version = Buffer.from([0x80]); // Fernet version 128
+        const timestamp = Buffer.alloc(8);
+        timestamp.writeBigInt64BE(BigInt(Math.floor(Date.now() / 1000)));
+
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv(
+            "aes-128-cbc",
+            this.encryptionKey,
+            iv,
+        );
+
+        const paddedMessage = this.pad(Buffer.from(message, "utf8"));
+        const encrypted = Buffer.concat([
+            cipher.update(paddedMessage),
+            cipher.final(),
+        ]);
+
+        const hmac = crypto.createHmac("sha256", this.signingKey);
+        hmac.update(Buffer.concat([version, timestamp, iv, encrypted]));
+        const digest = hmac.digest();
+
+        const token = Buffer.concat([
+            version,
+            timestamp,
+            iv,
+            encrypted,
+            digest,
+        ]);
+
+        return this.base64urlEncode(token);
+    }
+
+    private pad(data: Buffer): Buffer {
+        const blockSize = 16;
+        const padding = blockSize - (data.length % blockSize);
+        const padded = Buffer.alloc(data.length + padding);
+        data.copy(padded);
+        padded.fill(padding, data.length);
+        return padded;
+    }
+
+    private base64urlEncode(buffer: Buffer): string {
+        return buffer
+            .toString("base64")
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
     }
 }
