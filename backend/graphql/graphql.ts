@@ -403,7 +403,7 @@ export interface IQuery {
     getTrades(data: GetTradeInput): Trade[] | Promise<Trade[]>;
     getBankManagers(userId: number): BankManager[] | Promise<BankManager[]>;
     getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
-    getExpenses(userId: number, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
+    getExpenses(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
     getSuggestedExpenses(bankTransactionId: string): Expense[] | Promise<Expense[]>;
     getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
     getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;

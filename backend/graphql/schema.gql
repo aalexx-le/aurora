@@ -276,7 +276,7 @@ type Query {
   getTrades(data: GetTradeInput!): [Trade!]!
   getBankManagers(userId: Int!): [BankManager!]!
   getBankTransactions(userId: Float!): [BankTransaction!]!
-  getExpenses(userId: Int!, startDate: DateTime, endDate: DateTime): [Expense!]!
+  getExpenses(startDate: DateTime, endDate: DateTime): [Expense!]!
   getSuggestedExpenses(bankTransactionId: String!): [Expense!]!
   getExpenseCategories(userId: Int, name: String, startDate: DateTime, endDate: DateTime): [ExpenseCategory!]!
   getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
