@@ -7,6 +7,8 @@ import { Prisma } from "@prisma/client";
 import { PaginationInput } from "../../../shared/pagination/pagination.args";
 import { AssetPrice } from "src/entities/asset-price";
 import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
+import { GetTradeInput } from "./dto/get-trade.input";
+import { Trade } from "../../../entities/trade";
 
 @Injectable()
 export class CryptoAssetService {
@@ -53,5 +55,55 @@ export class CryptoAssetService {
 
     async findOneInfo(id: string) {
         return this.prisma.assetInfo.findUnique({ where: { id } });
+    }
+
+    async findManyTrades(userId: number, getTradeInput: GetTradeInput) {
+        // const { take, after } = pagination;
+        const { assetInfoId, cryptoPortfolioId } = getTradeInput;
+
+        let args: Prisma.TradeFindManyArgs<DefaultArgs>;
+
+        if (cryptoPortfolioId) {
+            args = {
+                where: {
+                    assetInfoId,
+                    cryptoPortfolioId,
+                },
+                orderBy: {
+                    time: "desc",
+                },
+            };
+        } else {
+            const portfolios = await this.prisma.cryptoPortfolio.findMany({
+                where: {
+                    userId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+            args = {
+                where: {
+                    assetInfoId,
+                    cryptoPortfolioId: {
+                        in: portfolios.map((portfolio) => portfolio.id),
+                    },
+                },
+                orderBy: {
+                    time: "desc",
+                },
+            };
+        }
+        // if (after) {
+        //     args.skip = 1;
+        //     args.cursor = {
+        //         assetInfoId_open_time: {
+        //             assetInfoId,
+        //             open_time: after,
+        //         },
+        //     };
+        // }
+        return this.prisma.trade.findMany(args);
     }
 }

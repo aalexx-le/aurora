@@ -9,11 +9,11 @@ import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context"
 import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
 import CreateCategoryDialog from "@/app/(dashboard)/finance/expense/components/category-list/CreateCategoryDialog";
 import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {ActionButton} from "@/components/list/action-button";
 import {UpdateCategoryDialog} from "@/app/(dashboard)/finance/expense/components/category-list/UpdateCategoryDialog";
 import {DeleteDialog} from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
 import {CreateMonthlyTargetDialog} from "@/app/(dashboard)/finance/expense/components/category-list/CreateMonthlyTargetDialog";
 import {useDateFilterContext} from "@/lib/context/date-range.context";
+import {CategoryActionButton} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryActionButton";
 
 interface IProps {
     categories: ExpenseCategory[];
@@ -68,7 +68,7 @@ const CategoryList = ({categories}: IProps) => {
                                 <p className="text-sm">
                                     {formatCurrency(ctg.totalSpentAmounts.reduce((acc, curr) => acc + Math.abs(curr.amount), 0))}
                                 </p>
-                                <ActionButton
+                                <CategoryActionButton
                                     row={ctg}
                                     setAction={(v) => {
                                         setAction(v);

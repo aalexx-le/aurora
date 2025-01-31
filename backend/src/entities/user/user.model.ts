@@ -26,7 +26,7 @@ export class User {
     otp!: string | null;
 
     @Field(() => OtpPurpose, {nullable:true})
-    otpPurpose!: keyof typeof OtpPurpose | null;
+    otpPurpose!: `${OtpPurpose}` | null;
 
     @Field(() => [BankManager], {nullable:true})
     bankManager?: Array<BankManager>;

@@ -19,6 +19,8 @@ import {
 } from "./dto/get-historical-asset-profit.input";
 import { AssetInfoOutput } from "./dto/get-asset-info.output";
 import { AssetBalance } from "src/entities/asset-balance";
+import { CryptoPortfolio } from "../../../entities/crypto-portfolio";
+import { Trade } from "../../../entities/trade";
 
 @Resolver(() => HistoricalAssetProfit)
 export class HistoricalAssetProfitResolver {
@@ -28,9 +30,17 @@ export class HistoricalAssetProfitResolver {
     ) {}
 
     @ResolveField("assetInfo", () => AssetInfoOutput)
-    getBalances(@Parent() assetBalance: AssetBalance) {
-        const { assetInfoId } = assetBalance;
+    getBalances(@Parent() historicalAssetProfit: HistoricalAssetProfit) {
+        const { assetInfoId } = historicalAssetProfit;
         return this.cryptoPortfolioService.findAssetInfo(assetInfoId);
+    }
+
+    @ResolveField("cryptoPortfolio", () => CryptoPortfolio)
+    async getCryptoPortfolio(
+        @Parent() historicalAssetProfit: HistoricalAssetProfit,
+    ) {
+        const { cryptoPortfolioId } = historicalAssetProfit;
+        return this.cryptoPortfolioService.findPortfolio(cryptoPortfolioId);
     }
 
     @Query(() => [HistoricalAssetProfit], { name: "getHistoricalAssetProfits" })

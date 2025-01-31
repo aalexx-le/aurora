@@ -1,42 +1,50 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import type { DataTableFilterField, ExtendedSortingState } from "@/types";
+import * as React from "react"
+import type { DataTableFilterField, ExtendedSortingState } from "@/types"
 import {
-    type ColumnFiltersState,
     getCoreRowModel,
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    useReactTable,
+    type ColumnFiltersState,
     type PaginationState,
     type RowSelectionState,
     type SortingState,
     type TableOptions,
     type TableState,
     type Updater,
-    useReactTable,
     type VisibilityState,
-} from "@tanstack/react-table";
-
-import { getSortingStateParser } from "@/lib/parsers";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+} from "@tanstack/react-table"
+import {
+    parseAsArrayOf,
+    parseAsInteger,
+    parseAsString,
+    useQueryState,
+    useQueryStates,
+    type Parser,
+    type UseQueryStateOptions,
+} from "nuqs"
+import {getSortingStateParser} from "@/lib/utils/data-table/parsers";
+import {useDebouncedCallback} from "@/lib/hooks/use-debounced-callback";
 
 interface UseDataTableProps<TData>
     extends Omit<
-            TableOptions<TData>,
-            | "state"
-            | "pageCount"
-            | "getCoreRowModel"
-            | "manualFiltering"
-            | "manualPagination"
-            | "manualSorting"
-        >,
+        TableOptions<TData>,
+        | "state"
+        | "pageCount"
+        | "getCoreRowModel"
+        | "manualFiltering"
+        | "manualPagination"
+        | "manualSorting"
+    >,
         Required<Pick<TableOptions<TData>, "pageCount">> {
     /**
      * Defines filter fields for the table. Supports both dynamic faceted filters and search filters.
-     * - Faceted filters are rendered when `options` are provided for income-expense-ratio-bar-chart filter field.
+     * - Faceted filters are rendered when `options` are provided for a filter field.
      * - Otherwise, search filters are rendered.
      *
      * The indie filter field `value` represents the corresponding column name in the database table.
@@ -44,11 +52,11 @@ interface UseDataTableProps<TData>
      * @type { label: string, value: keyof TData, placeholder?: string, options?: { label: string, value: string, icon?: React.ComponentType<{ className?: string }> }[] }[]
      * @example
      * ```ts
-     * // Render income-expense-ratio-bar-chart search filter
+     * // Render a search filter
      * const filterFields = [
      *   { label: "Title", value: "title", placeholder: "Search titles" }
      * ];
-     * // Render income-expense-ratio-bar-chart faceted filter
+     * // Render a faceted filter
      * const filterFields = [
      *   {
      *     label: "Status",
@@ -61,40 +69,40 @@ interface UseDataTableProps<TData>
      * ];
      * ```
      */
-    filterFields?: DataTableFilterField<TData>[];
+    filterFields?: DataTableFilterField<TData>[]
 
     /**
      * Determines how query updates affect history.
-     * `push` creates income-expense-ratio-bar-chart new history entry; `replace` (default) updates the current entry.
+     * `push` creates a new history entry; `replace` (default) updates the current entry.
      * @default "replace"
      */
-    history?: "push" | "replace";
+    history?: "push" | "replace"
 
     /**
      * Indicates whether the page should scroll to the top when the URL changes.
      * @default false
      */
-    scroll?: boolean;
+    scroll?: boolean
 
     /**
      * Shallow mode keeps query states client-side, avoiding server calls.
-     * Setting to `false` triggers income-expense-ratio-bar-chart network request with the updated querystring.
+     * Setting to `false` triggers a network request with the updated querystring.
      * @default true
      */
-    shallow?: boolean;
+    shallow?: boolean
 
     /**
      * Maximum time (ms) to wait between URL query string updates.
      * Helps with browser rate-limiting. Minimum effective value is 50ms.
      * @default 50
      */
-    throttleMs?: number;
+    throttleMs?: number
 
     /**
      * Debounce time (ms) for filter updates to enhance performance during rapid input.
      * @default 300
      */
-    debounceMs?: number;
+    debounceMs?: number
 
     /**
      * Observe Server Component loading states for non-shallow updates.
@@ -103,14 +111,14 @@ interface UseDataTableProps<TData>
      * So shallow: true` and `startTransition` cannot be used at the same time.
      * @see https://react.dev/reference/react/useTransition
      */
-    startTransition?: React.TransitionStartFunction;
+    startTransition?: React.TransitionStartFunction
 
     /**
      * Clear URL query key-value pair when state is set to default.
      * Keep URL meaning consistent when defaults change.
      * @default false
      */
-    clearOnDefault?: boolean;
+    clearOnDefault?: boolean
 
     /**
      * Enable notion like column filters.
@@ -118,28 +126,28 @@ interface UseDataTableProps<TData>
      * @default false
      * @type boolean
      */
-    enableAdvancedFilter?: boolean;
+    enableAdvancedFilter?: boolean
 
     initialState?: Omit<Partial<TableState>, "sorting"> & {
         // Extend to make the sorting id typesafe
-        sorting?: ExtendedSortingState<TData>;
-    };
+        sorting?: ExtendedSortingState<TData>
+    }
 }
 
 export function useDataTable<TData>({
-    pageCount = -1,
-    filterFields = [],
-    enableAdvancedFilter = false,
-    history = "replace",
-    scroll = false,
-    shallow = true,
-    throttleMs = 50,
-    debounceMs = 300,
-    clearOnDefault = false,
-    startTransition,
-    initialState,
-    ...props
-}: UseDataTableProps<TData>) {
+                                        pageCount = -1,
+                                        filterFields = [],
+                                        enableAdvancedFilter = false,
+                                        history = "replace",
+                                        scroll = false,
+                                        shallow = true,
+                                        throttleMs = 50,
+                                        debounceMs = 300,
+                                        clearOnDefault = false,
+                                        startTransition,
+                                        initialState,
+                                        ...props
+                                    }: UseDataTableProps<TData>) {
     const queryStateOptions = React.useMemo<
         Omit<UseQueryStateOptions<string>, "parse">
     >(() => {
@@ -151,7 +159,7 @@ export function useDataTable<TData>({
             debounceMs,
             clearOnDefault,
             startTransition,
-        };
+        }
     }, [
         history,
         scroll,
@@ -160,30 +168,30 @@ export function useDataTable<TData>({
         debounceMs,
         clearOnDefault,
         startTransition,
-    ]);
+    ])
 
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
-        initialState?.rowSelection ?? {},
-    );
+        initialState?.rowSelection ?? {}
+    )
     const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>(initialState?.columnVisibility ?? {});
+        React.useState<VisibilityState>(initialState?.columnVisibility ?? {})
 
     const [page, setPage] = useQueryState(
         "page",
-        parseAsInteger.withOptions(queryStateOptions).withDefault(1),
-    );
+        parseAsInteger.withOptions(queryStateOptions).withDefault(1)
+    )
     const [perPage, setPerPage] = useQueryState(
         "perPage",
         parseAsInteger
             .withOptions(queryStateOptions)
-            .withDefault(initialState?.pagination?.pageSize ?? 10),
-    );
+            .withDefault(initialState?.pagination?.pageSize ?? 10)
+    )
     const [sorting, setSorting] = useQueryState(
         "sort",
         getSortingStateParser<TData>()
             .withOptions(queryStateOptions)
-            .withDefault(initialState?.sorting ?? []),
-    );
+            .withDefault(initialState?.sorting ?? [])
+    )
 
     // Create parsers for each filter field
     const filterParsers = React.useMemo(() => {
@@ -193,47 +201,45 @@ export function useDataTable<TData>({
             if (field.options) {
                 // Faceted filter
                 acc[field.id] = parseAsArrayOf(parseAsString, ",").withOptions(
-                    queryStateOptions,
-                );
+                    queryStateOptions
+                )
             } else {
                 // Search filter
-                acc[field.id] = parseAsString.withOptions(queryStateOptions);
+                acc[field.id] = parseAsString.withOptions(queryStateOptions)
             }
-            return acc;
-        }, {});
-    }, [filterFields, queryStateOptions]);
+            return acc
+        }, {})
+    }, [filterFields, queryStateOptions])
 
-    const [filterValues, setFilterValues] = useQueryStates(filterParsers);
+    const [filterValues, setFilterValues] = useQueryStates(filterParsers)
 
     const debouncedSetFilterValues = useDebouncedCallback(
         setFilterValues,
-        debounceMs,
-    );
+        debounceMs
+    )
 
     // Paginate
     const pagination: PaginationState = {
         pageIndex: page - 1, // zero-based index -> one-based index
         pageSize: perPage,
-    };
+    }
 
     function onPaginationChange(updaterOrValue: Updater<PaginationState>) {
         if (typeof updaterOrValue === "function") {
-            const newPagination = updaterOrValue(pagination);
-            void setPage(newPagination.pageIndex + 1);
-            void setPerPage(newPagination.pageSize);
+            const newPagination = updaterOrValue(pagination)
+            void setPage(newPagination.pageIndex + 1)
+            void setPerPage(newPagination.pageSize)
         } else {
-            void setPage(updaterOrValue.pageIndex + 1);
-            void setPerPage(updaterOrValue.pageSize);
+            void setPage(updaterOrValue.pageIndex + 1)
+            void setPerPage(updaterOrValue.pageSize)
         }
     }
 
     // Sort
     function onSortingChange(updaterOrValue: Updater<SortingState>) {
         if (typeof updaterOrValue === "function") {
-            const newSorting = updaterOrValue(
-                sorting,
-            ) as ExtendedSortingState<TData>;
-            void setSorting(newSorting);
+            const newSorting = updaterOrValue(sorting) as ExtendedSortingState<TData>
+            void setSorting(newSorting)
         }
     }
 
@@ -242,73 +248,68 @@ export function useDataTable<TData>({
         return enableAdvancedFilter
             ? []
             : Object.entries(filterValues).reduce<ColumnFiltersState>(
-                  (filters, [key, value]) => {
-                      if (value !== null) {
-                          filters.push({
-                              id: key,
-                              value: Array.isArray(value) ? value : [value],
-                          });
-                      }
-                      return filters;
-                  },
-                  [],
-              );
-    }, [filterValues, enableAdvancedFilter]);
+                (filters, [key, value]) => {
+                    if (value !== null) {
+                        filters.push({
+                            id: key,
+                            value: Array.isArray(value) ? value : [value],
+                        })
+                    }
+                    return filters
+                },
+                []
+            )
+    }, [filterValues, enableAdvancedFilter])
 
     const [columnFilters, setColumnFilters] =
-        React.useState<ColumnFiltersState>(initialColumnFilters);
+        React.useState<ColumnFiltersState>(initialColumnFilters)
 
     // Memoize computation of searchableColumns and filterableColumns
     const { searchableColumns, filterableColumns } = React.useMemo(() => {
         return enableAdvancedFilter
             ? { searchableColumns: [], filterableColumns: [] }
             : {
-                  searchableColumns: filterFields.filter(
-                      (field) => !field.options,
-                  ),
-                  filterableColumns: filterFields.filter(
-                      (field) => field.options,
-                  ),
-              };
-    }, [filterFields, enableAdvancedFilter]);
+                searchableColumns: filterFields.filter((field) => !field.options),
+                filterableColumns: filterFields.filter((field) => field.options),
+            }
+    }, [filterFields, enableAdvancedFilter])
 
     const onColumnFiltersChange = React.useCallback(
         (updaterOrValue: Updater<ColumnFiltersState>) => {
+            console.log({updaterOrValue})
             // Don't process filters if advanced filtering is enabled
-            if (enableAdvancedFilter) return;
+            if (enableAdvancedFilter) return
 
             setColumnFilters((prev) => {
                 const next =
                     typeof updaterOrValue === "function"
                         ? updaterOrValue(prev)
-                        : updaterOrValue;
+                        : updaterOrValue
 
                 const filterUpdates = next.reduce<
                     Record<string, string | string[] | null>
                 >((acc, filter) => {
                     if (searchableColumns.find((col) => col.id === filter.id)) {
                         // For search filters, use the value directly
-                        acc[filter.id] = filter.value as string;
-                    } else if (
-                        filterableColumns.find((col) => col.id === filter.id)
-                    ) {
+                        acc[filter.id] = filter.value as string
+                    } else if (filterableColumns.find((col) => col.id === filter.id)) {
                         // For faceted filters, use the array of values
-                        acc[filter.id] = filter.value as string[];
+                        acc[filter.id] = filter.value as string[]
                     }
-                    return acc;
-                }, {});
+                    return acc
+                }, {})
 
                 prev.forEach((prevFilter) => {
                     if (!next.some((filter) => filter.id === prevFilter.id)) {
-                        filterUpdates[prevFilter.id] = null;
+                        filterUpdates[prevFilter.id] = null
                     }
-                });
+                })
 
-                void setPage(1);
+                void setPage(1)
 
-                debouncedSetFilterValues(filterUpdates);
-                return next;
-            });
+                debouncedSetFilterValues(filterUpdates)
+                return next
+            })
         },
         [
             debouncedSetFilterValues,
@@ -316,8 +317,8 @@ export function useDataTable<TData>({
             filterableColumns,
             searchableColumns,
             setPage,
-        ],
-    );
+        ]
+    )
 
     const table = useReactTable({
         ...props,
@@ -342,16 +343,14 @@ export function useDataTable<TData>({
             : getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getFacetedRowModel: enableAdvancedFilter
-            ? undefined
-            : getFacetedRowModel(),
+        getFacetedRowModel: enableAdvancedFilter ? undefined : getFacetedRowModel(),
         getFacetedUniqueValues: enableAdvancedFilter
             ? undefined
             : getFacetedUniqueValues(),
         manualPagination: true,
         manualSorting: true,
         manualFiltering: true,
-    });
+    })
 
-    return { table };
+    return { table }
 }

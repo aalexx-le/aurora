@@ -53,6 +53,70 @@ build-frontend-prod:
     - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./frontend
     - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
 
+build-crypto-pipeline-dev:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-pipeline:dev ./crypto_pipeline
+    - docker push $CI_REGISTRY_IMAGE/crypto-pipeline:dev
+
+build-crypto-pipeline-prod:
+  stage: build 
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-pipeline:latest ./crypto_pipeline
+    - docker push $CI_REGISTRY_IMAGE/crypto-pipeline:latest
+
+build-embedding-consumer-dev:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:dev ./embedding_consumer
+    - docker push $CI_REGISTRY_IMAGE/embedding-consumer:dev
+
+build-embedding-consumer-prod:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:latest ./embedding_consumer
+    - docker push $CI_REGISTRY_IMAGE/embedding-consumer:latest
+
+build-crypto-portfolio-consumer-dev:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:dev ./crypto_portfolio_consumer
+    - docker push $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:dev
+
+build-crypto-portfolio-consumer-prod:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest ./crypto_portfolio_consumer
+    - docker push $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest
+
+build-ai-server-dev:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'dev'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/ai-server:dev ./ai_server
+    - docker push $CI_REGISTRY_IMAGE/ai-server:dev
+
+build-ai-server-prod:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/ai-server:latest ./ai_server
+    - docker push $CI_REGISTRY_IMAGE/ai-server:latest
+
 #tagging:
 #  stage: tagging
 #  script:

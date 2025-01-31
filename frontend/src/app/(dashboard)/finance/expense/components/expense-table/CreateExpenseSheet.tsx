@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {useMemo, useState, useTransition} from "react";
+import {useEffect, useMemo, useState, useTransition} from "react";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
 import {useMutation} from "@apollo/client";
@@ -29,7 +29,6 @@ export function CreateExpenseSheet({
                                        ...props
                                    }: CreateExpenseSheetProps) {
     const [isPending, startTransition] = useTransition();
-    const [openSheet, setOpenSheet] = useState(false);
     const {toast} = useToast();
     const {user} = useAppSelector((state) => state.auth.state);
 
@@ -46,23 +45,31 @@ export function CreateExpenseSheet({
         awaitRefetchQueries: true,
     });
 
+    const defaultValues = useMemo(() => ({
+        name: "",
+        description: "",
+        amount: 0,
+        bankTransactionId: initTransactionId,
+        createdAt: new Date(),
+    }), [initTransactionId]);
+
     const form = useForm<CreateExpenseInput>({
         resolver: zodResolver(createExpenseSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            amount: 0,
-            bankTransactionId: initTransactionId,
-            createdAt: new Date(),
-        },
+        defaultValues,
     });
-    const {getValues, setError, watch} = form;
+    const {setError, watch, reset} = form;
+
     const transactions = useTransactionQuery()
     const [reviewTransactionId] = watch(["bankTransactionId"]);
     const reviewTransaction = useMemo(
         () => transactions.find((txn) => txn.id === reviewTransactionId),
         [transactions, reviewTransactionId]
     );
+
+    // Reset form when click on another transaction
+    useEffect(() => {
+        reset(defaultValues);
+    }, [initTransactionId]);
 
     function onSubmit(input: CreateExpenseInput) {
         startTransition(async () => {
@@ -97,7 +104,7 @@ export function CreateExpenseSheet({
 
                 if (data) {
                     form.reset();
-                    setOpenSheet(false);
+                    props.onOpenChange?.(false);
                     toast({
                         title: "Created expense!",
                     });
@@ -113,20 +120,7 @@ export function CreateExpenseSheet({
     }
 
     return (
-        <Sheet open={openSheet} onOpenChange={setOpenSheet} {...props}>
-            {showTrigger && (
-                <SheetTrigger asChild>
-                    <Button
-                        disabled={reviewTransaction?.spentAmount === 0}
-                        variant="ghost"
-                        size="icon"
-                        className="aspect-square"
-                        onClick={() => setOpenSheet(true)}
-                    >
-                        <PlusIcon className="size-4"/>
-                    </Button>
-                </SheetTrigger>
-            )}
+        <Sheet {...props}>
             <SheetContent className="flex flex-col gap-6 sm:max-w-md">
                 <SheetHeader className="text-left">
                     <SheetTitle>New Expense</SheetTitle>

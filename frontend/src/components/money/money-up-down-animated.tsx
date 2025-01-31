@@ -3,6 +3,7 @@ import {cn} from "@/lib/utils";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import {Triangle} from "lucide-react";
 import {MoneyAnimated} from "@/components/money/money-animated";
+import {PlusIcon} from "lucide-react";
 
 interface IProps extends React.HTMLAttributes<HTMLSpanElement> {
     number: number;
@@ -37,6 +38,7 @@ export function MoneyUpDownAnimated({number, isPercent = false, className}: IPro
                         "fill-chart-5 stroke-chart-5 rotate-180": !isUpTrend,
                     })}
                 />
+                {/*<PlusIcon className="size-2"/>*/}
             </p>
             {isPercent ? Math.abs(number).toFixed(2) + "%" + ")" : <MoneyWithCurrency amount={Math.abs(number)}/>}
         </span>

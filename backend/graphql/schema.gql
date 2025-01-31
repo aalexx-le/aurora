@@ -112,6 +112,20 @@ type HistoricalAssetProfit {
   cryptoPortfolio: CryptoPortfolio!
 }
 
+type Trade {
+  cryptoPortfolioId: String!
+  assetInfoId: String!
+  price: Float!
+  qty: Float!
+  quoteQty: Float!
+  commission: Float!
+  commissionAsset: String!
+  time: DateTime!
+  isBuyer: Boolean!
+  cryptoPortfolio: CryptoPortfolio!
+  assetInfo: AssetInfo!
+}
+
 type AssetInfo {
   id: String!
   name: String!
@@ -123,6 +137,7 @@ type AssetInfo {
   assetBalances: [AssetBalance!]
   assetPrices: [AssetPrice!]
   historicalProfits: [HistoricalAssetProfit!]
+  trades: [Trade!]
 }
 
 type AssetBalance {
@@ -146,6 +161,8 @@ type HistoricalCryptoBalance {
 
 type CryptoPortfolio {
   userId: Int!
+  name: String!
+  status: PortfolioStatus!
   exchanges: CEXExchanges!
   tradingType: TradingType!
   apiKey: String!
@@ -153,17 +170,28 @@ type CryptoPortfolio {
   updateTime: DateTime
   id: String!
   investmentCategoryName: String
+  parentPortfolioId: String
   balances: [AssetBalance!]!
   user: User!
   historicalAssetProfits: [HistoricalAssetProfit!]
   historicalBalances: [HistoricalCryptoBalance!]
+  trades: [Trade!]
+  parentPortfolio: CryptoPortfolio
+  childPortfolios: [CryptoPortfolio!]
   latestHistoricalBalances(timeFrame: String!): HistoricalCryptoBalance!
   latestAssetProfits: [HistoricalAssetProfit!]!
+}
+
+enum PortfolioStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum CEXExchanges {
   BINANCE
   MEXC
+  OKX
+  ALL
 }
 
 enum TradingType {
@@ -204,6 +232,20 @@ type CreateCryptoRes {
   userId: Float!
 }
 
+type CreatePortfolioExecution {
+  id: Int!
+  time: DateTime
+  userId: Int!
+  status: CreateExecutionStatus!
+}
+
+enum CreateExecutionStatus {
+  QUEUE
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
 type AssetInfoOutput {
   id: String!
   name: String!
@@ -213,6 +255,7 @@ type AssetInfoOutput {
   logo: String!
   tag: String!
   historicalProfits: [HistoricalAssetProfit!]
+  trades: [Trade!]
   lastPrice: Float!
 }
 
@@ -225,13 +268,16 @@ type TotalSpentAmountOutput {
 type Query {
   getMe: User!
   getCryptoPortfolios(data: GetCryptoPortfolioInput!): [CryptoPortfolio!]!
+  getCreatePortfolioExecutions(userId: Float!): [CreatePortfolioExecution!]!
   getAssetInfo(data: GetAssetInfoInput!): AssetInfo!
   getAssetPrices(data: GetAssetPriceInput!, pagination: PaginationInput!): [AssetPrice!]!
   getHistoricalBalances(data: GetHistoricalBalanceInput!, pagination: PaginationInput!): [HistoricalCryptoBalance!]!
   getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput!, pagination: PaginationInput!): [HistoricalAssetProfit!]!
+  getTrades(data: GetTradeInput!): [Trade!]!
   getBankManagers(userId: Int!): [BankManager!]!
   getBankTransactions(userId: Float!): [BankTransaction!]!
   getExpenses(userId: Int!, startDate: DateTime, endDate: DateTime): [Expense!]!
+  getSuggestedExpenses(bankTransactionId: String!): [Expense!]!
   getExpenseCategories(userId: Int, name: String, startDate: DateTime, endDate: DateTime): [ExpenseCategory!]!
   getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
 }
@@ -266,8 +312,14 @@ input GetHistoricalAssetProfitInput {
   timeFrame: String!
 }
 
+input GetTradeInput {
+  cryptoPortfolioId: String
+  assetInfoId: String
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
+  createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput!): CreateCryptoRes!
   login(data: LoginReqDto!): LoginResDto!
   signup(data: CreateUserInput!): SignupResDto!
   verifyAccount(data: VerifyDto!): LoginResDto!
@@ -285,9 +337,19 @@ type Mutation {
 
 input CreateCryptoPortfolioInput {
   userId: Int!
+  name: String! = ""
   exchanges: CEXExchanges! = BINANCE
   apiKey: String!
   secretKey: String!
+}
+
+input CreateOKXCryptoPortfolioInput {
+  userId: Int!
+  name: String! = ""
+  exchanges: CEXExchanges! = BINANCE
+  apiKey: String!
+  secretKey: String!
+  passphrase: String!
 }
 
 input LoginReqDto {

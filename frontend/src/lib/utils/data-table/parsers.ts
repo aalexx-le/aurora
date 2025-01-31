@@ -1,48 +1,50 @@
-// import { createParser } from "nuqs/server"
+import { createParser } from "nuqs/server"
 import { z } from "zod";
 import { dataTableConfig } from "@/lib/constants/data-table";
+import {Row} from "@tanstack/react-table";
+import {ExtendedSortingState, Filter} from "@/types";
 
 export const sortingItemSchema = z.object({
     id: z.string(),
     desc: z.boolean(),
 });
 
-// /**
-//  * Creates income-expense-ratio-bar-chart parser for TanStack Table sorting state.
-//  * @param originalRow The original row transaction to validate sorting keys against.
-//  * @returns A parser for TanStack Table sorting state.
-//  */
-// export const getSortingStateParser = <TData>(
-//     originalRow?: Row<TData>["original"]
-// ) => {
-//     const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
-//
-//     return createParser<ExtendedSortingState<TData>>({
-//         parse: (value) => {
-//             try {
-//                 const parsed = JSON.parse(value)
-//                 const result = z.array(sortingItemSchema).safeParse(parsed)
-//
-//                 if (!result.success) return null
-//
-//                 if (validKeys && result.transaction.some((item) => !validKeys.has(item.id))) {
-//                     return null
-//                 }
-//
-//                 return result.transaction as ExtendedSortingState<TData>
-//             } catch {
-//                 return null
-//             }
-//         },
-//         serialize: (value) => JSON.stringify(value),
-//         eq: (income-expense-ratio-bar-chart, b) =>
-//             income-expense-ratio-bar-chart.length === b.length &&
-//             income-expense-ratio-bar-chart.every(
-//                 (item, index) =>
-//                     item.id === b[index]?.id && item.desc === b[index]?.desc
-//             ),
-//     })
-// }
+/**
+ * Creates a parser for TanStack Table sorting state.
+ * @param originalRow The original row data to validate sorting keys against.
+ * @returns A parser for TanStack Table sorting state.
+ */
+export const getSortingStateParser = <TData>(
+    originalRow?: Row<TData>["original"]
+) => {
+    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
+
+    return createParser<ExtendedSortingState<TData>>({
+        parse: (value) => {
+            try {
+                const parsed = JSON.parse(value)
+                const result = z.array(sortingItemSchema).safeParse(parsed)
+
+                if (!result.success) return null
+
+                if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
+                    return null
+                }
+
+                return result.data as ExtendedSortingState<TData>
+            } catch {
+                return null
+            }
+        },
+        serialize: (value) => JSON.stringify(value),
+        eq: (a, b) =>
+            a.length === b.length &&
+            a.every(
+                (item, index) =>
+                    item.id === b[index]?.id && item.desc === b[index]?.desc
+            ),
+    })
+}
 
 export const filterSchema = z.object({
     id: z.string(),
@@ -52,40 +54,40 @@ export const filterSchema = z.object({
     rowId: z.string(),
 });
 
-// /**
-//  * Create income-expense-ratio-bar-chart parser for transaction table filters.
-//  * @param originalRow The original row transaction to create the parser for.
-//  * @returns A parser for transaction table filters state.
-//  */
-// export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
-//     const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
-//
-//     return createParser<Filter<T>[]>({
-//         parse: (value) => {
-//             try {
-//                 const parsed = JSON.parse(value)
-//                 const result = z.array(filterSchema).safeParse(parsed)
-//
-//                 if (!result.success) return null
-//
-//                 if (validKeys && result.transaction.some((item) => !validKeys.has(item.id))) {
-//                     return null
-//                 }
-//
-//                 return result.transaction as Filter<T>[]
-//             } catch {
-//                 return null
-//             }
-//         },
-//         serialize: (value) => JSON.stringify(value),
-//         eq: (income-expense-ratio-bar-chart, b) =>
-//             income-expense-ratio-bar-chart.length === b.length &&
-//             income-expense-ratio-bar-chart.every(
-//                 (filter, index) =>
-//                     filter.id === b[index]?.id &&
-//                     filter.value === b[index]?.value &&
-//                     filter.type === b[index]?.type &&
-//                     filter.operator === b[index]?.operator
-//             ),
-//     })
-// }
+/**
+ * Create data parser for transaction table filters.
+ * @param originalRow The original row transaction to create the parser for.
+ * @returns A parser for transaction table filters state.
+ */
+export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
+    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
+
+    return createParser<Filter<T>[]>({
+        parse: (value) => {
+            try {
+                const parsed = JSON.parse(value)
+                const result = z.array(filterSchema).safeParse(parsed)
+
+                if (!result.success) return null
+
+                if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
+                    return null
+                }
+
+                return result.data as Filter<T>[]
+            } catch {
+                return null
+            }
+        },
+        serialize: (value) => JSON.stringify(value),
+        eq: (a, b) =>
+            a.length === b.length &&
+            a.every(
+                (filter, index) =>
+                    filter.id === b[index]?.id &&
+                    filter.value === b[index]?.value &&
+                    filter.type === b[index]?.type &&
+                    filter.operator === b[index]?.operator
+            ),
+    })
+}

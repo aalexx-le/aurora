@@ -10,13 +10,103 @@ services:
     volumes:
       - timeseries-data:/home/postgres/pgdata/data
     restart: unless-stopped
+    networks:
+      - xela
 
-  asset-price-fetcher:
-    container_name: asset-price-fetcher
-    image: registry.gitlab.com/nnaaaa/xela/asset-price-fetcher
+  ai_server:
+    container_name: ai_server
+    image: ai_server
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      VECTOR_STORE_URL: "http://vector-store:9200"
+      LLM_SERVER_URL: "http://llm_server:11434"
     restart: unless-stopped
+    networks:
+      - xela
+
+  embedding_consumer:
+    container_name: embedding_consumer
+    image: transaction_embedding_consumer
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      MESSAGE_BROKER_URL: "message_broker:9092"
+      VECTOR_STORE_URL: "http://vector-store:9200"
+      LLM_SERVER_URL: "http://llm_server:11434"
+    restart: unless-stopped
+    networks:
+      - xela
+
+  llm_server:
+    container_name: llm_server
+    image: ollama/ollama:0.5.7
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks:
+      - xela
+
+  crypto_portfolio_consumer:
+    container_name: crypto_portfolio_consumer
+    image: crypto_portfolio_consumer
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      CRYPTO_PORTFOLIO_MASTER_KEY: "pRlbqjx9R1-uqcEQN_1gdH5O2Gq7zjkfV0kS8uW2FfQ="
+      MESSAGE_BROKER_URL: "message_broker:9092"
+    restart: unless-stopped
+    networks:
+      - xela
+
+#  vector-stores:
+#    container_name: vector-stores
+#    image: tensorchord/pgvecto-rs:pg16-v0.2.1
+#    ports:
+#      - "5532:5432"
+#    environment:
+#      POSTGRES_USER: ${DATABASE_USER}
+#      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+#    volumes:
+#      - vector-stores-data:/home/postgres/pgdata/data
+#    restart: unless-stopped
+
+  vector-store:
+    container_name: vector-store
+    image: bitnami/elasticsearch:latest
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health || exit 1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - vector-stores-data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      - xela
+
+  vector-store-kibana:
+    container_name: vector-store-kibana
+    image: bitnami/kibana:latest
+    environment:
+      KIBANA_ELASTICSEARCH_URL: "vector-store"
+    ports:
+      - "5601:5601"
+    depends_on:
+      - vector-store
+    restart: unless-stopped
+    networks:
+      - xela
+
+#  asset-price-fetcher:
+#    container_name: asset-price-fetcher
+#    image: registry.gitlab.com/nnaaaa/xela/asset-price-fetcher
+#    environment:
+#      DATABASE_URL: ${DATABASE_URL}
+#    restart: unless-stopped
 #  server:
 #    container_name: api-server
 #    image: xela_server:latest
@@ -42,10 +132,12 @@ services:
     ports:
       - "22181:22181"
     restart: unless-stopped
+    networks:
+      - xela
 
-  broker:
+  message_broker:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: broker
+    container_name: message_broker
     ports:
       - "29092:29092"
     depends_on:
@@ -54,11 +146,14 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:22181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_INTERNAL://broker:${MESSAGE_BROKER_PORT}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_INTERNAL://message_broker:${MESSAGE_BROKER_PORT}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_ADVERTISED_HOST_NAME: message_broker
     restart: unless-stopped
+    networks:
+      - xela
 
   kafka_ui:
     image: provectuslabs/kafka-ui
@@ -69,13 +164,21 @@ services:
       - '8000:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: kafka
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:${MESSAGE_BROKER_PORT}
-      KAFKA_BROKERCONNECT: broker:${MESSAGE_BROKER_PORT}
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: message_broker:${MESSAGE_BROKER_PORT}
+      KAFKA_BROKERCONNECT: message_broker:${MESSAGE_BROKER_PORT}
     depends_on:
-      - broker
+      - message_broker
       - zookeeper
+    networks:
+      - xela
 
 volumes:
   mongodb:
   mongoconfig:
   timeseries-data:
+  vector-stores-data:
+
+networks:
+  xela:
+    name: xela-network
+    driver: bridge

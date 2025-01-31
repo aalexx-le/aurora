@@ -24,6 +24,16 @@ export const CREATE_CRYPTO_PORTFOLIO = gql`
     }
 `;
 
+export const CREATE_OKX_CRYPTO_PORTFOLIO = gql`
+    mutation CreateOKXCryptoPortfolio($data: CreateOKXCryptoPortfolioInput!) {
+        createOKXCryptoPortfolio(data: $data) {
+            userId
+        }
+    }
+`;
+
+
+
 export const GET_CRYPTO_PORTFOLIOS = gql`
     query GetCryptoPortfolios(
         $data: GetCryptoPortfolioInput!
@@ -31,6 +41,7 @@ export const GET_CRYPTO_PORTFOLIOS = gql`
     ) {
         getCryptoPortfolios(data: $data) {
             id
+            name
             exchanges
             tradingType
             investmentCategoryName
@@ -43,6 +54,11 @@ export const GET_CRYPTO_PORTFOLIOS = gql`
                 estimatedProfit
                 remainingQty
                 totalCostInQuoteQty
+                cryptoPortfolio {
+                    id
+                    exchanges
+                    name
+                }
                 assetInfo {
                     id
                     logo
@@ -54,6 +70,11 @@ export const GET_CRYPTO_PORTFOLIOS = gql`
             balances {
                 id
                 balance
+                cryptoPortfolio {
+                    id
+                    exchanges
+                    name
+                }
                 assetInfo {
                     id
                     logo

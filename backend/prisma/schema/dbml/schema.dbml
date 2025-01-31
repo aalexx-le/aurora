@@ -52,6 +52,8 @@ Table BankTransaction {
 
 Table CryptoPortfolio {
   userId Int [not null]
+  name String [not null, default: '']
+  status PortfolioStatus [not null, default: 'ACTIVE']
   exchanges CEXExchanges [not null, default: 'BINANCE']
   tradingType TradingType [not null]
   apiKey String [not null]
@@ -63,6 +65,23 @@ Table CryptoPortfolio {
   user User [not null]
   historicalAssetProfits HistoricalAssetProfit [not null]
   historicalBalances HistoricalCryptoBalance [not null]
+  trades Trade [not null]
+  parentPortfolioId String
+  parentPortfolio CryptoPortfolio
+  childPortfolios CryptoPortfolio [not null]
+}
+
+Table OKXCryptoPortfolio {
+  id String [pk]
+  cryptoPortfolioId String [unique, not null]
+  passphrase String [not null]
+}
+
+Table CreatePortfolioExecution {
+  id Int [pk, increment]
+  time DateTime [default: `now()`]
+  userId Int [not null]
+  status CreateExecutionStatus [not null, default: 'QUEUE']
 }
 
 Table AssetBalance {
@@ -73,6 +92,24 @@ Table AssetBalance {
   cryptoPortfolioId String [not null]
   assetInfo AssetInfo [not null]
   cryptoPortfolio CryptoPortfolio [not null]
+}
+
+Table Trade {
+  cryptoPortfolioId String [not null]
+  assetInfoId String [not null]
+  price Float [not null]
+  qty Float [not null]
+  quoteQty Float [not null]
+  commission Float [not null]
+  commissionAsset String [not null]
+  time DateTime [not null]
+  isBuyer Boolean [not null]
+  cryptoPortfolio CryptoPortfolio [not null]
+  assetInfo AssetInfo [not null]
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, price, qty, time) [unique]
+  }
 }
 
 Table AssetInfo {
@@ -86,6 +123,7 @@ Table AssetInfo {
   assetBalances AssetBalance [not null]
   assetPrices AssetPrice [not null]
   historicalProfits HistoricalAssetProfit [not null]
+  trades Trade [not null]
 }
 
 Table AssetPrice {
@@ -299,6 +337,18 @@ Table historical_asset_profit_1d {
   }
 }
 
+Enum PortfolioStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum CreateExecutionStatus {
+  QUEUE
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
 Enum TradingType {
   FUTURES
   SPOT
@@ -307,6 +357,8 @@ Enum TradingType {
 Enum CEXExchanges {
   BINANCE
   MEXC
+  OKX
+  ALL
 }
 
 Enum OtpPurpose {
@@ -324,9 +376,15 @@ Ref: BankTransaction.bankId > BankAccount.id
 
 Ref: CryptoPortfolio.userId > User.id
 
+Ref: CryptoPortfolio.parentPortfolioId - CryptoPortfolio.id
+
 Ref: AssetBalance.assetInfoId > AssetInfo.id
 
 Ref: AssetBalance.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: Trade.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: Trade.assetInfoId > AssetInfo.id
 
 Ref: AssetPrice.assetInfoId > AssetInfo.id
 
