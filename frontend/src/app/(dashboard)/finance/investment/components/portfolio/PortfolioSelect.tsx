@@ -41,7 +41,7 @@ export default function PortfolioSelect({
                 <Button
                     variant="outline"
                     role="combobox"
-                    className="justify-between w-min"
+                    className="justify-between w-min min-w-[10rem]"
                     aria-expanded={open}
                 >
                     {portfolio ?
@@ -58,7 +58,7 @@ export default function PortfolioSelect({
                                     {selectedExchangesInfo.name}
                                 </AvatarFallback>
                             </Avatar>}
-                            {portfolio.exchanges + " " + portfolio.id}
+                            {portfolio.name}
                         </div>
                         :
                         <p className="text-muted-foreground">Select exchanges...</p>
@@ -86,7 +86,7 @@ export default function PortfolioSelect({
                                                 {exchangesInfo.name}
                                             </AvatarFallback>
                                         </Avatar>}
-                                        {exchangesInfo?.name + " " + p.id}
+                                        {p.name}
                                     </CommandItem>
                                 )
                             })}

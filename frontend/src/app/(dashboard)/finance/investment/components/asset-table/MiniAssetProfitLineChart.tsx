@@ -20,7 +20,7 @@ export function MiniAssetProfitLineChart({cryptoPortfolioId, assetInfoId}: IProp
                 data: {
                     cryptoPortfolioId,
                     assetInfoId,
-                    timeFrame: "1 hour"
+                    timeFrame: "1 day"
                 },
                 pagination: {
                     take: 500

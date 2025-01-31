@@ -6,9 +6,10 @@ import {DataTablePagination} from "@/components/data-table/data-table-pagination
 
 interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
     table: TanstackTable<TData>
+    pageSizeOptions?: number[]
 }
 
-export function DataTable<TData>({table, children, ...props}: DataTableProps<TData>) {
+export function DataTable<TData>({table, pageSizeOptions, children, ...props}: DataTableProps<TData>) {
     return (
         <div
             className="flex-1 flex flex-col gap-2"
@@ -86,7 +87,7 @@ export function DataTable<TData>({table, children, ...props}: DataTableProps<TDa
                 </Table>
             </div>
             <div className="flex flex-col gap-2.5">
-                <DataTablePagination table={table} />
+                <DataTablePagination table={table} pageSizeOptions={pageSizeOptions}/>
             </div>
         </div>
     )
