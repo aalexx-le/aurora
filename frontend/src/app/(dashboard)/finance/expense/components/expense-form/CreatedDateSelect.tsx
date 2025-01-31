@@ -71,7 +71,7 @@ export function CreatedDateSelect({
                     captionLayout="dropdown"
                     selected={selectedCreatedDate}
                     onSelect={(selectedDate) => {
-                        const [hours, minutes] = time?.split(":")!;
+                        const [hours, minutes] = time?.split(":");
                         selectedDate?.setHours(
                             parseInt(hours),
                             parseInt(minutes)

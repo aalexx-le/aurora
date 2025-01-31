@@ -55,8 +55,8 @@ export function UpdateExpenseSheet({
         () => transactions.find((txn) => txn.id === reviewTransactionId),
         [transactions, reviewTransactionId]
     );
-    const isSameTransaction = reviewTransaction?.id === expense.transaction.id;
     const maxSpentAmount = useMemo(() => {
+        const isSameTransaction = reviewTransaction?.id === expense.transaction.id;
         if (isSameTransaction) {
             return reviewTransaction?.spentAmount + expense.amount;
         }

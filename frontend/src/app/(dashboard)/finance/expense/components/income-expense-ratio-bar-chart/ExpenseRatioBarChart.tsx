@@ -42,7 +42,7 @@ export function ExpenseRatioBarChart({categories}: IProps) {
         //     month: category.name,
         //     amount: category.totalSpentAmounts.reduce((acc, curr) => acc + Math.abs(curr.amount), 0),
         // })
-        const monthMap: Map<number, any> = new Map<number, any>()
+        const monthMap: Map<number, object> = new Map<number, object>()
         categories.forEach((category) => {
             category.totalSpentAmounts.forEach((spentAmount) => {
                 const month = spentAmount.month
