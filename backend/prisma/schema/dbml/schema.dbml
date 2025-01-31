@@ -84,6 +84,13 @@ Table CreatePortfolioExecution {
   status CreateExecutionStatus [not null, default: 'QUEUE']
 }
 
+Table CreatePortfolioExecution {
+  id Int [pk, increment]
+  time DateTime [default: `now()`]
+  userId Int [not null]
+  status CreateExecutionStatus [not null, default: 'QUEUE']
+}
+
 Table AssetBalance {
   id String [pk]
   assetInfoId String [not null]

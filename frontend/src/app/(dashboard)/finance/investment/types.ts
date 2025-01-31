@@ -1,7 +1,7 @@
 import {
     GetAssetQuery,
     GetCryptoPortfoliosQuery,
-    GetHistoricalAssetProfitsQuery,
+    GetHistoricalAssetProfitsQuery, GetTradesQuery,
 } from "@/gql/graphql";
 
 export type CryptoPortfolio =
@@ -11,3 +11,5 @@ export type AssetPrice = GetAssetQuery["getAssetPrices"][number];
 
 export type HistoricalAssetProfit =
     GetHistoricalAssetProfitsQuery["getHistoricalAssetProfits"][number];
+
+export type Trade = GetTradesQuery["getTrades"][number];

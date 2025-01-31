@@ -11,6 +11,7 @@ import MoneyWithCurrency from "@/components/money/money-with-currency";
 import {cn} from "@/lib/utils";
 import {MoneyAnimated} from "@/components/money/money-animated";
 import {AnalyseData} from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 
 interface IProps {
@@ -54,6 +55,10 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
             <Tooltip delayDuration={0}>
                 <TooltipTrigger className="text-start">
                     <div className="flex items-center gap-2">
+                        <Avatar className="size-4">
+                            <AvatarImage src={aggregatedData.exchangeLogo}/>
+                            <AvatarFallback>{aggregatedData.name}</AvatarFallback>
+                        </Avatar>
                         <div className="size-3 rounded-sm"
                              style={{backgroundColor: aggregatedData.fill}}/>
                         <div className="flex gap-1 items-center">

@@ -21,6 +21,7 @@ import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-s
 import {cryptoActions} from "@/state/slices/crypto.slice";
 import client from "@/api";
 import {useCryptoPortfoliosQuery} from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
+import {CreateExecutionSteps} from "@/app/(dashboard)/finance/investment/components/portfolio/CreateExecutionSteps";
 
 interface IProps {
     portfolios: GetCryptoPortfoliosQuery["getCryptoPortfolios"];
@@ -44,60 +45,60 @@ function InvestmentPage({portfolios}: IProps) {
                     <PortfolioSelect
                         portfolios={portfolios}
                     />
+
                     <CreatePortfolioDialog/>
                     <div className="ml-auto">
                         <CurrencySelect/>
                     </div>
                 </div>
 
+                <CreateExecutionSteps />
+
                 {portfolio && <div className="flex flex-col gap-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-2">
+                        <PortfolioSummary portfolio={portfolio}/>
+                    </div>
+                    <div className="flex gap-4">
                         {/*<div className="col-span-2">*/}
                         {/*    <InvestmentSummary*/}
                         {/*        portfolios={portfolios}*/}
                         {/*    />*/}
                         {/*</div>*/}
-                        {/*<div className="col-span-2">*/}
-                        {/*    <PortfolioSummary portfolio={portfolio}/>*/}
-                        {/*</div>*/}
-                        {/*<div className="col-span-1">*/}
-                        {/*    <HistoricalBalanceChart cryptoPortfolioId={portfolio.id}/>*/}
-                        {/*</div>*/}
 
-                        {/*<div className="col-span-1">*/}
+                        <HistoricalBalanceChart cryptoPortfolioId={portfolio.id}/>
+
+                        <PortfolioAnalysis
+                            cryptoPortfolioId={portfolio.id}
+                            assetProfits={portfolio.latestAssetProfits}
+                            balances={portfolio.balances}
+                        />
+
+                        {/*{portfolios.map((p) => (*/}
+                        {/*    <div className="col-span-1" key={p.id + "summary"}>*/}
+                        {/*        <PortfolioSummary*/}
+                        {/*            // setPortfolio={updatePortfolio}*/}
+                        {/*            portfolio={p}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
+                        {/*))}*/}
+                        {/*{portfolios.map((p) => (*/}
+                        {/*    <div className="col-span-1" key={p.id + "balance-chart"}>*/}
+                        {/*        <HistoricalBalanceChart*/}
+                        {/*            cryptoPortfolioId={p.id}*/}
+                        {/*        />*/}
+                        {/*    </div>*/}
+                        {/*))}*/}
+
+                        {/*{portfolios.map((p) => (*/}
                         {/*    <PortfolioAnalysis*/}
-                        {/*        cryptoPortfolioId={portfolio.id}*/}
-                        {/*        assetProfits={portfolio.latestAssetProfits}*/}
-                        {/*        balances={portfolio.balances}*/}
+                        {/*        key={p.id + "analysis"}*/}
+                        {/*        cryptoPortfolioId={p.id}*/}
+                        {/*        assetProfits={p.latestAssetProfits}*/}
+                        {/*        balances={p.balances}*/}
                         {/*    />*/}
-                        {/*</div>*/}
-
-                        {portfolios.map((p) => (
-                            <div className="col-span-1" key={p.id + "summary"}>
-                                <PortfolioSummary
-                                    // setPortfolio={updatePortfolio}
-                                    portfolio={p}
-                                />
-                            </div>
-                        ))}
-                        {portfolios.map((p) => (
-                            <div className="col-span-1" key={p.id + "balance-chart"}>
-                                <HistoricalBalanceChart
-                                    cryptoPortfolioId={p.id}
-                                />
-                            </div>
-                        ))}
-
-                        {portfolios.map((p) => (
-                            <PortfolioAnalysis
-                                key={p.id + "analysis"}
-                                cryptoPortfolioId={p.id}
-                                assetProfits={p.latestAssetProfits}
-                                balances={p.balances}
-                            />
-                        ))}
+                        {/*))}*/}
                     </div>
-                    <AssetTable portfolios={portfolios}/>
+                    <AssetTable portfolios={[portfolio]}/>
                 </div>}
             </div>
         </ConvertCurrencyProvider>
@@ -105,12 +106,12 @@ function InvestmentPage({portfolios}: IProps) {
 }
 
 export default function InvestmentContainer() {
-    const portfolios = useCryptoPortfoliosQuery()
+    const {portfolios, loading} = useCryptoPortfoliosQuery()
 
     // TODO: Skeleton
-    // if (loading || !data || !data.getCryptoPortfolios) {
-    //     return <div>Loading...</div>;
-    // }
+    if (loading || !portfolios) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <InvestmentPage portfolios={portfolios}/>

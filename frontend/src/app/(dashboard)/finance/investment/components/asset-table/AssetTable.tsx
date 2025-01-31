@@ -37,10 +37,6 @@ export default function AssetTable({portfolios}: IProps) {
 
     const router = useRouter();
 
-    const goToAssetPricePage = (assetInfoId: string) => {
-        router.push(DASHBOARD_ROUTE.finance.assetPrice.value(assetInfoId));
-    };
-
     const goToAssetProfitPage = (portfolioId: string, assetInfoId: string) => {
         router.push(DASHBOARD_ROUTE.finance.investment.assetProfit.value(portfolioId, assetInfoId))
     }
@@ -64,15 +60,16 @@ export default function AssetTable({portfolios}: IProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody className="rounded-lg font-mono">
-                    {assetList.map((asset) => (
+                    {assetList.map((asset, i) => (
                         <TableRow
-                            key={asset.assetInfo.symbol}
+                            key={asset.assetInfo.symbol + i}
+                            className="cursor-pointer"
+                            onClick={() =>
+                                goToAssetProfitPage(asset.portfolioId, asset.assetInfo.id)
+                            }
                         >
                             <TableCell
                                 className="p-4 cursor-pointer"
-                                onClick={() =>
-                                    goToAssetPricePage(asset.assetInfo.id)
-                                }
                             >
                                 <Avatar>
                                     <AvatarImage src={asset.assetInfo.logo}/>
@@ -88,12 +85,7 @@ export default function AssetTable({portfolios}: IProps) {
                             <TableCell>
                                 {formatCurrency(asset.assetInfo.lastPrice, "USD", {maximumFractionDigits: 10})}
                             </TableCell>
-                            <TableCell
-                                className="max-w-[8rem] cursor-pointer"
-                                onClick={() =>
-                                    goToAssetProfitPage(asset.portfolioId, asset.assetInfo.id)
-                                }
-                            >
+                            <TableCell className="max-w-[8rem]">
                                 <MiniAssetProfitLineChart cryptoPortfolioId={asset.portfolioId}
                                                           assetInfoId={asset.assetInfo.id}/>
                             </TableCell>
