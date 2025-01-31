@@ -1,4 +1,5 @@
 import {
+    Bot,
     Frame,
     LifeBuoy,
     Map,
@@ -24,34 +25,31 @@ export const SIDEBAR_DATA = {
             isActive: true,
             items: [
                 {
+                    title: "Expense",
+                    url: DASHBOARD_ROUTE.finance.expense.value,
+                },
+                {
                     title: "Investment",
                     url: DASHBOARD_ROUTE.finance.investment.value,
                 },
+                // {
+                //     title: "Asset Price",
+                //     url: DASHBOARD_ROUTE.finance.investment.value,
+                // },
+            ],
+        },
+        {
+            title: "Agents",
+            url: "#",
+            icon: Bot,
+            isActive: true,
+            items: [
                 {
-                    title: "Asset Price",
-                    url: DASHBOARD_ROUTE.finance.investment.value,
+                    title: "Chatbot",
+                    url: DASHBOARD_ROUTE.agent.chatbot.value,
                 },
             ],
         },
-        // {
-        //     title: "Models",
-        //     url: "#",
-        //     icon: Bot,
-        //     items: [
-        //         {
-        //             title: "Genesis",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Explorer",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Quantum",
-        //             url: "#",
-        //         },
-        //     ],
-        // },
         // {
         //     title: "Documentation",
         //     url: "#",

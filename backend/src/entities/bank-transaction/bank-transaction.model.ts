@@ -22,7 +22,7 @@ export class BankTransaction {
     @Field(() => Date, {nullable:false})
     createdAt!: Date;
 
-    @Field(() => Float, {nullable:false,defaultValue:0})
+    @Field(() => Float, {defaultValue:0,nullable:false})
     spentAmount!: number;
 
     @Field(() => BankAccount, {nullable:false})

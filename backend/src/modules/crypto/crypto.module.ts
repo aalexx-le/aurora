@@ -13,6 +13,11 @@ import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
 import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
 import { ConnectionStringParser } from "connection-string-parser";
 import { HistoricalBalanceResolver } from "./profile/historical-balance.resolver";
+import { HistoricalAssetProfitResolver } from "./profile/historical-asset-profit.resolver";
+import { HistoricalCryptoBalanceEventListener } from "./profile/historical-balance.event-listener";
+import { HistoricalAssetProfitEventListener } from "./profile/historical-asset-profit.event-listener";
+import { EncryptionService } from "../../shared/encryption.service";
+import { TradeResolver } from "./asset/trade.resolver";
 
 const SUBSCRIPTION_PUB_SUB_PROVIDER = {
     provide: "SUBSCRIPTION_PUB_SUB",
@@ -58,7 +63,7 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
                             clientId: "nestjs-kafka",
                         },
                         consumer: {
-                            groupId: "crypto",
+                            groupId: "backend-server",
                             allowAutoTopicCreation: true,
                         },
                         producer: {
@@ -110,12 +115,17 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
         CryptoAssetInfoResolver,
         CryptoAssetPriceResolver,
         HistoricalBalanceResolver,
+        HistoricalAssetProfitResolver,
+        TradeResolver,
 
         CryptoPortfolioService,
         CryptoAssetService,
         PortfolioEventListener,
         AssetPriceEventListener,
+        HistoricalCryptoBalanceEventListener,
+        HistoricalAssetProfitEventListener,
 
+        EncryptionService,
         SUBSCRIPTION_PUB_SUB_PROVIDER,
     ],
     exports: [

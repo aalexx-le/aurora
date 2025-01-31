@@ -65,3 +65,36 @@ view historical_crypto_balance_1d {
 
   @@unique([cryptoPortfolioId, time])
 }
+
+view historical_asset_profit_5m {
+  time                DateTime @db.Timestamp(6)
+  assetInfoId         String
+  cryptoPortfolioId   String
+  estimatedProfit     Float?
+  totalCostInQuoteQty Float?
+  remainingQty        Float?
+
+  @@unique([cryptoPortfolioId, assetInfoId, time])
+}
+
+view historical_asset_profit_1h {
+  time                DateTime @db.Timestamp(6)
+  assetInfoId         String
+  cryptoPortfolioId   String
+  estimatedProfit     Float?
+  totalCostInQuoteQty Float?
+  remainingQty        Float?
+
+  @@unique([cryptoPortfolioId, assetInfoId, time])
+}
+
+view historical_asset_profit_1d {
+  time                DateTime @db.Timestamp(6)
+  assetInfoId         String
+  cryptoPortfolioId   String
+  estimatedProfit     Float?
+  totalCostInQuoteQty Float?
+  remainingQty        Float?
+
+  @@unique([cryptoPortfolioId, assetInfoId, time])
+}

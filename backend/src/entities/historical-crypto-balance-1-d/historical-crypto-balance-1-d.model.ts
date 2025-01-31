@@ -1,4 +1,6 @@
-import { Field, Float, ObjectType } from "@nestjs/graphql";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Float } from '@nestjs/graphql';
 
 @ObjectType()
 export class historical_crypto_balance_1d {

@@ -11,7 +11,7 @@ import {useAppDispatch, useAppSelector} from "@/state/hooks";
 import {useRouter} from "next/navigation";
 import {authActions} from "@/state/slices/auth.slice";
 import {useMutation} from "@apollo/client";
-import {SIGNUP_MUTATION} from "@/api/auth";
+import {SIGNUP_MUTATION} from "@/api/script/auth";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
 import {GraphQLError} from "graphql/error";
 import ButtonWithLoading from "@/components/ui/button-with-loading";

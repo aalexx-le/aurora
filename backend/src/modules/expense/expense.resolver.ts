@@ -16,7 +16,13 @@ import { ExpenseCategoryService } from "./category/expense-category.service";
 import { BankTransaction } from "../../entities/bank-transaction";
 import { BankTransactionService } from "../bank/transaction/transaction.service";
 import { GetExpenseArgs } from "./dto/get-expense.input";
+import { UseGuards } from "@nestjs/common";
+import { JwtGuard } from "../auth/guards/jwt.guard";
+import { AuthUser } from "../../shared/decorators/auth-user.decorator";
+import { User } from "../../entities/user";
+import { SuggestExpenseArgs } from "./dto/suggest-expense.input";
 
+@UseGuards(JwtGuard)
 @Resolver(() => Expense)
 export class ExpenseResolver {
     constructor(
@@ -26,8 +32,16 @@ export class ExpenseResolver {
     ) {}
 
     @Query(() => [Expense], { name: "getExpenses" })
-    findMany(@Args() args: GetExpenseArgs) {
-        return this.expenseService.findMany(args);
+    findMany(@AuthUser() user: User, @Args() args: GetExpenseArgs) {
+        return this.expenseService.findMany(user.id, args);
+    }
+
+    @Query(() => [Expense], { name: "getSuggestedExpenses" })
+    suggestOne(@AuthUser() user: User, @Args() args: SuggestExpenseArgs) {
+        return this.expenseService.getSuggestions(
+            user.id,
+            args.bankTransactionId,
+        );
     }
 
     @ResolveField("category", () => ExpenseCategory)

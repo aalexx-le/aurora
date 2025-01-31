@@ -3,25 +3,33 @@
 import * as React from "react";
 import type { DataTableFilterField, ExtendedSortingState } from "@/types";
 import {
-    type ColumnFiltersState,
     getCoreRowModel,
     getFacetedRowModel,
     getFacetedUniqueValues,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    useReactTable,
+    type ColumnFiltersState,
     type PaginationState,
     type RowSelectionState,
     type SortingState,
     type TableOptions,
     type TableState,
     type Updater,
-    useReactTable,
     type VisibilityState,
 } from "@tanstack/react-table";
-
-import { getSortingStateParser } from "@/lib/parsers";
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import {
+    parseAsArrayOf,
+    parseAsInteger,
+    parseAsString,
+    useQueryState,
+    useQueryStates,
+    type Parser,
+    type UseQueryStateOptions,
+} from "nuqs";
+import { getSortingStateParser } from "@/lib/utils/data-table/parsers";
+import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 
 interface UseDataTableProps<TData>
     extends Omit<
@@ -36,7 +44,7 @@ interface UseDataTableProps<TData>
         Required<Pick<TableOptions<TData>, "pageCount">> {
     /**
      * Defines filter fields for the table. Supports both dynamic faceted filters and search filters.
-     * - Faceted filters are rendered when `options` are provided for income-expense-ratio-bar-chart filter field.
+     * - Faceted filters are rendered when `options` are provided for a filter field.
      * - Otherwise, search filters are rendered.
      *
      * The indie filter field `value` represents the corresponding column name in the database table.
@@ -44,11 +52,11 @@ interface UseDataTableProps<TData>
      * @type { label: string, value: keyof TData, placeholder?: string, options?: { label: string, value: string, icon?: React.ComponentType<{ className?: string }> }[] }[]
      * @example
      * ```ts
-     * // Render income-expense-ratio-bar-chart search filter
+     * // Render a search filter
      * const filterFields = [
      *   { label: "Title", value: "title", placeholder: "Search titles" }
      * ];
-     * // Render income-expense-ratio-bar-chart faceted filter
+     * // Render a faceted filter
      * const filterFields = [
      *   {
      *     label: "Status",
@@ -65,7 +73,7 @@ interface UseDataTableProps<TData>
 
     /**
      * Determines how query updates affect history.
-     * `push` creates income-expense-ratio-bar-chart new history entry; `replace` (default) updates the current entry.
+     * `push` creates a new history entry; `replace` (default) updates the current entry.
      * @default "replace"
      */
     history?: "push" | "replace";
@@ -78,7 +86,7 @@ interface UseDataTableProps<TData>
 
     /**
      * Shallow mode keeps query states client-side, avoiding server calls.
-     * Setting to `false` triggers income-expense-ratio-bar-chart network request with the updated querystring.
+     * Setting to `false` triggers a network request with the updated querystring.
      * @default true
      */
     shallow?: boolean;
@@ -274,6 +282,7 @@ export function useDataTable<TData>({
 
     const onColumnFiltersChange = React.useCallback(
         (updaterOrValue: Updater<ColumnFiltersState>) => {
+            console.log({ updaterOrValue });
             // Don't process filters if advanced filtering is enabled
             if (enableAdvancedFilter) return;
 
