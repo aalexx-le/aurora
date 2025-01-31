@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -51,21 +50,27 @@ export type AssetInfo = {
     assetPrices?: Maybe<Array<AssetPrice>>;
     category: Scalars["String"]["output"];
     desc: Scalars["String"]["output"];
+    historicalProfits?: Maybe<Array<HistoricalAssetProfit>>;
     id: Scalars["String"]["output"];
     logo: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     symbol: Scalars["String"]["output"];
+    tag: Scalars["String"]["output"];
+    trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetInfoOutput = {
     __typename?: "AssetInfoOutput";
     category: Scalars["String"]["output"];
     desc: Scalars["String"]["output"];
+    historicalProfits?: Maybe<Array<HistoricalAssetProfit>>;
     id: Scalars["String"]["output"];
     lastPrice: Scalars["Float"]["output"];
     logo: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     symbol: Scalars["String"]["output"];
+    tag: Scalars["String"]["output"];
+    trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetPrice = {
@@ -91,6 +96,7 @@ export type BankAccount = {
     bankManagerId: Scalars["String"]["output"];
     createdAt: Scalars["DateTime"]["output"];
     fullName: Scalars["String"]["output"];
+    historicalBalances?: Maybe<Array<HistoricalBankBalance>>;
     id: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     transactions: Array<BankTransaction>;
@@ -121,6 +127,13 @@ export type BankTransaction = {
     spentAmount: Scalars["Float"]["output"];
 };
 
+export enum CexExchanges {
+    All = "ALL",
+    Binance = "BINANCE",
+    Mexc = "MEXC",
+    Okx = "OKX",
+}
+
 export type CreateBankManagerInput = {
     apiKey: Scalars["String"]["input"];
     name: Scalars["String"]["input"];
@@ -129,6 +142,8 @@ export type CreateBankManagerInput = {
 
 export type CreateCryptoPortfolioInput = {
     apiKey: Scalars["String"]["input"];
+    exchanges?: CexExchanges;
+    name?: Scalars["String"]["input"];
     secretKey: Scalars["String"]["input"];
     userId: Scalars["Int"]["input"];
 };
@@ -137,6 +152,13 @@ export type CreateCryptoRes = {
     __typename?: "CreateCryptoRes";
     userId: Scalars["Float"]["output"];
 };
+
+export enum CreateExecutionStatus {
+    Failed = "FAILED",
+    Processing = "PROCESSING",
+    Queue = "QUEUE",
+    Success = "SUCCESS",
+}
 
 export type CreateExpenseCategoryInput = {
     color: Scalars["String"]["input"];
@@ -149,6 +171,7 @@ export type CreateExpenseInput = {
     amount: Scalars["Float"]["input"];
     bankTransactionId: Scalars["String"]["input"];
     categoryId: Scalars["String"]["input"];
+    createdAt: Scalars["DateTime"]["input"];
     description?: InputMaybe<Scalars["String"]["input"]>;
     name: Scalars["String"]["input"];
     userId: Scalars["Int"]["input"];
@@ -159,6 +182,23 @@ export type CreateMonthlyTargetInput = {
     month: Scalars["Int"]["input"];
     target: Scalars["Float"]["input"];
     year: Scalars["Int"]["input"];
+};
+
+export type CreateOkxCryptoPortfolioInput = {
+    apiKey: Scalars["String"]["input"];
+    exchanges?: CexExchanges;
+    name?: Scalars["String"]["input"];
+    passphrase: Scalars["String"]["input"];
+    secretKey: Scalars["String"]["input"];
+    userId: Scalars["Int"]["input"];
+};
+
+export type CreatePortfolioExecution = {
+    __typename?: "CreatePortfolioExecution";
+    id: Scalars["Int"]["output"];
+    status: CreateExecutionStatus;
+    time?: Maybe<Scalars["DateTime"]["output"]>;
+    userId: Scalars["Int"]["output"];
 };
 
 export type CreateUserInput = {
@@ -173,12 +213,20 @@ export type CryptoPortfolio = {
     __typename?: "CryptoPortfolio";
     apiKey: Scalars["String"]["output"];
     balances: Array<AssetBalance>;
-    exchanges: Scalars["String"]["output"];
+    childPortfolios?: Maybe<Array<CryptoPortfolio>>;
+    exchanges: CexExchanges;
+    historicalAssetProfits?: Maybe<Array<HistoricalAssetProfit>>;
     historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
     id: Scalars["String"]["output"];
     investmentCategoryName?: Maybe<Scalars["String"]["output"]>;
+    latestAssetProfits: Array<HistoricalAssetProfit>;
     latestHistoricalBalances: HistoricalCryptoBalance;
+    name: Scalars["String"]["output"];
+    parentPortfolio?: Maybe<CryptoPortfolio>;
+    parentPortfolioId?: Maybe<Scalars["String"]["output"]>;
     secretKey: Scalars["String"]["output"];
+    status: PortfolioStatus;
+    trades?: Maybe<Array<Trade>>;
     tradingType: TradingType;
     updateTime?: Maybe<Scalars["DateTime"]["output"]>;
     user: User;
@@ -214,7 +262,7 @@ export type ExpenseCategory = {
     id: Scalars["String"]["output"];
     monthlyTargets?: Maybe<Array<MonthlyTarget>>;
     name: Scalars["String"]["output"];
-    totalAmount: Scalars["Int"]["output"];
+    totalSpentAmounts: Array<TotalSpentAmountOutput>;
     user: User;
     userId: Scalars["Int"]["output"];
 };
@@ -224,7 +272,7 @@ export type ExpenseCategoryMonthlyTargetsArgs = {
     year?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type ExpenseCategoryTotalAmountArgs = {
+export type ExpenseCategoryTotalSpentAmountsArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
@@ -242,9 +290,45 @@ export type GetCryptoPortfolioInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type GetHistoricalAssetProfitInput = {
+    assetInfoId: Scalars["String"]["input"];
+    cryptoPortfolioId: Scalars["String"]["input"];
+    timeFrame: Scalars["String"]["input"];
+};
+
 export type GetHistoricalBalanceInput = {
     cryptoPortfolioId: Scalars["String"]["input"];
     timeFrame: Scalars["String"]["input"];
+};
+
+export type GetHistoricalBalancesInput = {
+    cryptoPortfolioIds: Array<Scalars["String"]["input"]>;
+    timeFrame: Scalars["String"]["input"];
+};
+
+export type GetTradeInput = {
+    assetInfoId?: InputMaybe<Scalars["String"]["input"]>;
+    cryptoPortfolioId?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type HistoricalAssetProfit = {
+    __typename?: "HistoricalAssetProfit";
+    assetInfo: AssetInfoOutput;
+    assetInfoId: Scalars["String"]["output"];
+    cryptoPortfolio: CryptoPortfolio;
+    cryptoPortfolioId: Scalars["String"]["output"];
+    estimatedProfit: Scalars["Float"]["output"];
+    remainingQty: Scalars["Float"]["output"];
+    time: Scalars["DateTime"]["output"];
+    totalCostInQuoteQty: Scalars["Float"]["output"];
+};
+
+export type HistoricalBankBalance = {
+    __typename?: "HistoricalBankBalance";
+    balance: Scalars["Float"]["output"];
+    bankAccount: BankAccount;
+    bankAccountId: Scalars["String"]["output"];
+    time: Scalars["DateTime"]["output"];
 };
 
 export type HistoricalCryptoBalance = {
@@ -285,6 +369,7 @@ export type Mutation = {
     createExpense: Expense;
     createExpenseCategory: ExpenseCategory;
     createMonthlyTarget: MonthlyTarget;
+    createOKXCryptoPortfolio: CreateCryptoRes;
     login: LoginResDto;
     removeExpense: Expense;
     removeExpenseCategory: ExpenseCategory;
@@ -314,6 +399,10 @@ export type MutationCreateExpenseCategoryArgs = {
 
 export type MutationCreateMonthlyTargetArgs = {
     data: CreateMonthlyTargetInput;
+};
+
+export type MutationCreateOkxCryptoPortfolioArgs = {
+    data: CreateOkxCryptoPortfolioInput;
 };
 
 export type MutationLoginArgs = {
@@ -366,18 +455,27 @@ export type PaginationInput = {
     take: Scalars["Int"]["input"];
 };
 
+export enum PortfolioStatus {
+    Active = "ACTIVE",
+    Inactive = "INACTIVE",
+}
+
 export type Query = {
     __typename?: "Query";
     getAssetInfo: AssetInfo;
     getAssetPrices: Array<AssetPrice>;
     getBankManagers: Array<BankManager>;
     getBankTransactions: Array<BankTransaction>;
+    getCreatePortfolioExecutions: Array<CreatePortfolioExecution>;
     getCryptoPortfolios: Array<CryptoPortfolio>;
     getExpenseCategories: Array<ExpenseCategory>;
     getExpenses: Array<Expense>;
+    getHistoricalAssetProfits: Array<HistoricalAssetProfit>;
     getHistoricalBalances: Array<HistoricalCryptoBalance>;
     getMe: User;
     getMonthlyTargets: Array<MonthlyTarget>;
+    getSuggestedExpenses: Array<Expense>;
+    getTrades: Array<Trade>;
 };
 
 export type QueryGetAssetInfoArgs = {
@@ -397,19 +495,29 @@ export type QueryGetBankTransactionsArgs = {
     userId: Scalars["Float"]["input"];
 };
 
+export type QueryGetCreatePortfolioExecutionsArgs = {
+    userId: Scalars["Float"]["input"];
+};
+
 export type QueryGetCryptoPortfoliosArgs = {
     data: GetCryptoPortfolioInput;
 };
 
 export type QueryGetExpenseCategoriesArgs = {
+    endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     name?: InputMaybe<Scalars["String"]["input"]>;
+    startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     userId?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryGetExpensesArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-    userId: Scalars["Int"]["input"];
+};
+
+export type QueryGetHistoricalAssetProfitsArgs = {
+    data: GetHistoricalAssetProfitInput;
+    pagination: PaginationInput;
 };
 
 export type QueryGetHistoricalBalancesArgs = {
@@ -423,6 +531,14 @@ export type QueryGetMonthlyTargetsArgs = {
     year?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
+export type QueryGetSuggestedExpensesArgs = {
+    bankTransactionId: Scalars["String"]["input"];
+};
+
+export type QueryGetTradesArgs = {
+    data: GetTradeInput;
+};
+
 export type SignupResDto = {
     __typename?: "SignupResDto";
     accessToken: Scalars["String"]["output"];
@@ -433,6 +549,10 @@ export type Subscription = {
     __typename?: "Subscription";
     newAssetPrice1m: AssetPrice;
     newAssetPrice5m: AssetPrice;
+    newHistoricalAssetProfit1h: HistoricalAssetProfit;
+    newHistoricalAssetProfit1m: HistoricalAssetProfit;
+    newHistoricalCryptoBalance1h: HistoricalCryptoBalance;
+    newHistoricalCryptoBalance1m: HistoricalCryptoBalance;
     portfolioCreated: CryptoPortfolio;
 };
 
@@ -444,8 +564,46 @@ export type SubscriptionNewAssetPrice5mArgs = {
     data: GetAssetPriceInput;
 };
 
+export type SubscriptionNewHistoricalAssetProfit1hArgs = {
+    data: GetHistoricalAssetProfitInput;
+};
+
+export type SubscriptionNewHistoricalAssetProfit1mArgs = {
+    data: GetHistoricalAssetProfitInput;
+};
+
+export type SubscriptionNewHistoricalCryptoBalance1hArgs = {
+    data: GetHistoricalBalancesInput;
+};
+
+export type SubscriptionNewHistoricalCryptoBalance1mArgs = {
+    data: GetHistoricalBalancesInput;
+};
+
 export type SubscriptionPortfolioCreatedArgs = {
     data: GetCryptoPortfolioInput;
+};
+
+export type TotalSpentAmountOutput = {
+    __typename?: "TotalSpentAmountOutput";
+    amount: Scalars["Float"]["output"];
+    month: Scalars["Float"]["output"];
+    year: Scalars["Float"]["output"];
+};
+
+export type Trade = {
+    __typename?: "Trade";
+    assetInfo: AssetInfo;
+    assetInfoId: Scalars["String"]["output"];
+    commission: Scalars["Float"]["output"];
+    commissionAsset: Scalars["String"]["output"];
+    cryptoPortfolio: CryptoPortfolio;
+    cryptoPortfolioId: Scalars["String"]["output"];
+    isBuyer: Scalars["Boolean"]["output"];
+    price: Scalars["Float"]["output"];
+    qty: Scalars["Float"]["output"];
+    quoteQty: Scalars["Float"]["output"];
+    time: Scalars["DateTime"]["output"];
 };
 
 export enum TradingType {
@@ -463,6 +621,7 @@ export type UpdateExpenseInput = {
     amount?: InputMaybe<Scalars["Float"]["input"]>;
     bankTransactionId?: InputMaybe<Scalars["String"]["input"]>;
     categoryId?: InputMaybe<Scalars["String"]["input"]>;
+    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
     description?: InputMaybe<Scalars["String"]["input"]>;
     name?: InputMaybe<Scalars["String"]["input"]>;
 };
@@ -524,53 +683,50 @@ export type VerifyAccountMutation = {
     verifyAccount: { __typename?: "LoginResDto"; accessToken: string };
 };
 
-export type GetBankQueryVariables = Exact<{
-    userId: Scalars["Int"]["input"];
+export type NewHistoricalAssetProfit1mSubscriptionVariables = Exact<{
+    data: GetHistoricalAssetProfitInput;
 }>;
 
-export type GetBankQuery = {
-    __typename?: "Query";
-    getBankManagers: Array<{
-        __typename?: "BankManager";
-        name: string;
-        createdAt: any;
-        updatedAt: any;
-        banks: Array<{
-            __typename?: "BankAccount";
-            name: string;
-            accountName: string;
-            accountNumber: string;
-            balance: number;
-            createdAt: any;
-            updatedAt: any;
-            transactions: Array<{
-                __typename?: "BankTransaction";
-                id: string;
-                amount: number;
-                spentAmount: number;
-                description: string;
-                createdAt: any;
-                bank: { __typename?: "BankAccount"; name: string };
-            }>;
-        }>;
-    }>;
+export type NewHistoricalAssetProfit1mSubscription = {
+    __typename?: "Subscription";
+    newHistoricalAssetProfit1m: {
+        __typename?: "HistoricalAssetProfit";
+        time: any;
+        totalCostInQuoteQty: number;
+        remainingQty: number;
+        estimatedProfit: number;
+        assetInfo: {
+            __typename?: "AssetInfoOutput";
+            id: string;
+            logo: string;
+            lastPrice: number;
+            symbol: string;
+            tag: string;
+        };
+    };
 };
 
-export type GetBankTransactionsQueryVariables = Exact<{
-    userId: Scalars["Float"]["input"];
+export type NewHistoricalAssetProfit1hSubscriptionVariables = Exact<{
+    data: GetHistoricalAssetProfitInput;
 }>;
 
-export type GetBankTransactionsQuery = {
-    __typename?: "Query";
-    getBankTransactions: Array<{
-        __typename?: "BankTransaction";
-        id: string;
-        amount: number;
-        spentAmount: number;
-        createdAt: any;
-        description: string;
-        bank: { __typename?: "BankAccount"; name: string };
-    }>;
+export type NewHistoricalAssetProfit1hSubscription = {
+    __typename?: "Subscription";
+    newHistoricalAssetProfit1h: {
+        __typename?: "HistoricalAssetProfit";
+        time: any;
+        totalCostInQuoteQty: number;
+        remainingQty: number;
+        estimatedProfit: number;
+        assetInfo: {
+            __typename?: "AssetInfoOutput";
+            id: string;
+            logo: string;
+            lastPrice: number;
+            symbol: string;
+            tag: string;
+        };
+    };
 };
 
 export type CreateCryptoPortfolioMutationVariables = Exact<{
@@ -580,6 +736,18 @@ export type CreateCryptoPortfolioMutationVariables = Exact<{
 export type CreateCryptoPortfolioMutation = {
     __typename?: "Mutation";
     createCryptoPortfolio: { __typename?: "CreateCryptoRes"; userId: number };
+};
+
+export type CreateOkxCryptoPortfolioMutationVariables = Exact<{
+    data: CreateOkxCryptoPortfolioInput;
+}>;
+
+export type CreateOkxCryptoPortfolioMutation = {
+    __typename?: "Mutation";
+    createOKXCryptoPortfolio: {
+        __typename?: "CreateCryptoRes";
+        userId: number;
+    };
 };
 
 export type GetCryptoPortfoliosQueryVariables = Exact<{
@@ -592,7 +760,8 @@ export type GetCryptoPortfoliosQuery = {
     getCryptoPortfolios: Array<{
         __typename?: "CryptoPortfolio";
         id: string;
-        exchanges: string;
+        name: string;
+        exchanges: CexExchanges;
         tradingType: TradingType;
         investmentCategoryName?: string | null;
         latestHistoricalBalances: {
@@ -601,18 +770,61 @@ export type GetCryptoPortfoliosQuery = {
             changePercent: number;
             estimatedBalance: number;
         };
-        balances: Array<{
-            __typename?: "AssetBalance";
-            id: string;
-            balance: number;
+        latestAssetProfits: Array<{
+            __typename?: "HistoricalAssetProfit";
+            estimatedProfit: number;
+            remainingQty: number;
+            totalCostInQuoteQty: number;
+            cryptoPortfolio: {
+                __typename?: "CryptoPortfolio";
+                id: string;
+                exchanges: CexExchanges;
+                name: string;
+            };
             assetInfo: {
                 __typename?: "AssetInfoOutput";
                 id: string;
                 logo: string;
                 lastPrice: number;
                 symbol: string;
+                tag: string;
             };
         }>;
+        balances: Array<{
+            __typename?: "AssetBalance";
+            id: string;
+            balance: number;
+            cryptoPortfolio: {
+                __typename?: "CryptoPortfolio";
+                id: string;
+                exchanges: CexExchanges;
+                name: string;
+            };
+            assetInfo: {
+                __typename?: "AssetInfoOutput";
+                id: string;
+                logo: string;
+                lastPrice: number;
+                symbol: string;
+                tag: string;
+            };
+        }>;
+    }>;
+};
+
+export type GetHistoricalAssetProfitsQueryVariables = Exact<{
+    data: GetHistoricalAssetProfitInput;
+    pagination: PaginationInput;
+}>;
+
+export type GetHistoricalAssetProfitsQuery = {
+    __typename?: "Query";
+    getHistoricalAssetProfits: Array<{
+        __typename?: "HistoricalAssetProfit";
+        time: any;
+        estimatedProfit: number;
+        remainingQty: number;
+        totalCostInQuoteQty: number;
     }>;
 };
 
@@ -635,11 +847,19 @@ export type GetHistoricalBalancesQuery = {
 export type GetAssetQueryVariables = Exact<{
     pagination: PaginationInput;
     getAssetPriceData: GetAssetPriceInput;
+    getAssetProfitData: GetHistoricalAssetProfitInput;
     getAssetInfoData: GetAssetInfoInput;
 }>;
 
 export type GetAssetQuery = {
     __typename?: "Query";
+    getHistoricalAssetProfits: Array<{
+        __typename?: "HistoricalAssetProfit";
+        time: any;
+        estimatedProfit: number;
+        remainingQty: number;
+        totalCostInQuoteQty: number;
+    }>;
     getAssetPrices: Array<{
         __typename?: "AssetPrice";
         open_time: any;
@@ -692,6 +912,76 @@ export type NewAssetPrice5mSubscription = {
     };
 };
 
+export type NewHistoricalCryptoBalance1mSubscriptionVariables = Exact<{
+    data: GetHistoricalBalancesInput;
+}>;
+
+export type NewHistoricalCryptoBalance1mSubscription = {
+    __typename?: "Subscription";
+    newHistoricalCryptoBalance1m: {
+        __typename?: "HistoricalCryptoBalance";
+        cryptoPortfolioId: string;
+        time: any;
+        estimatedBalance: number;
+        changeBalance: number;
+        changePercent: number;
+    };
+};
+
+export type NewHistoricalCryptoBalance1hSubscriptionVariables = Exact<{
+    data: GetHistoricalBalancesInput;
+}>;
+
+export type NewHistoricalCryptoBalance1hSubscription = {
+    __typename?: "Subscription";
+    newHistoricalCryptoBalance1h: {
+        __typename?: "HistoricalCryptoBalance";
+        cryptoPortfolioId: string;
+        time: any;
+        estimatedBalance: number;
+        changeBalance: number;
+        changePercent: number;
+    };
+};
+
+export type GetCreatePortfolioExecutionsQueryVariables = Exact<{
+    userId: Scalars["Float"]["input"];
+}>;
+
+export type GetCreatePortfolioExecutionsQuery = {
+    __typename?: "Query";
+    getCreatePortfolioExecutions: Array<{
+        __typename?: "CreatePortfolioExecution";
+        id: number;
+        status: CreateExecutionStatus;
+        time?: any | null;
+    }>;
+};
+
+export type GetTradesQueryVariables = Exact<{
+    data: GetTradeInput;
+}>;
+
+export type GetTradesQuery = {
+    __typename?: "Query";
+    getTrades: Array<{
+        __typename?: "Trade";
+        time: any;
+        price: number;
+        qty: number;
+        quoteQty: number;
+        commission: number;
+        commissionAsset: string;
+        isBuyer: boolean;
+        cryptoPortfolio: {
+            __typename?: "CryptoPortfolio";
+            id: string;
+            name: string;
+            exchanges: CexExchanges;
+        };
+    }>;
+};
+
 export type GetExpenseCategoriesQueryVariables = Exact<{
     userId: Scalars["Int"]["input"];
     name?: InputMaybe<Scalars["String"]["input"]>;
@@ -710,7 +1000,12 @@ export type GetExpenseCategoriesQuery = {
         name: string;
         id: string;
         countExpenses: number;
-        totalAmount: number;
+        totalSpentAmounts: Array<{
+            __typename?: "TotalSpentAmountOutput";
+            amount: number;
+            month: number;
+            year: number;
+        }>;
         monthlyTargets?: Array<{
             __typename?: "MonthlyTarget";
             month: number;
@@ -796,7 +1091,6 @@ export type UpdateMonthlyTargetMutation = {
 };
 
 export type GetExpensesQueryVariables = Exact<{
-    userId: Scalars["Int"]["input"];
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 }>;
@@ -823,6 +1117,22 @@ export type GetExpensesQuery = {
             spentAmount: number;
             description: string;
         };
+    }>;
+};
+
+export type GetSuggestedExpensesQueryVariables = Exact<{
+    bankTransactionId: Scalars["String"]["input"];
+}>;
+
+export type GetSuggestedExpensesQuery = {
+    __typename?: "Query";
+    getSuggestedExpenses: Array<{
+        __typename?: "Expense";
+        amount: number;
+        name: string;
+        bankTransactionId: string;
+        categoryId: string;
+        description?: string | null;
     }>;
 };
 
@@ -879,6 +1189,60 @@ export type RemoveExpensesMutationVariables = Exact<{
 export type RemoveExpensesMutation = {
     __typename?: "Mutation";
     removeExpenses: number;
+};
+
+export type GetBankQueryVariables = Exact<{
+    userId: Scalars["Int"]["input"];
+}>;
+
+export type GetBankQuery = {
+    __typename?: "Query";
+    getBankManagers: Array<{
+        __typename?: "BankManager";
+        name: string;
+        createdAt: any;
+        updatedAt: any;
+        banks: Array<{
+            __typename?: "BankAccount";
+            name: string;
+            accountName: string;
+            accountNumber: string;
+            balance: number;
+            createdAt: any;
+            updatedAt: any;
+            historicalBalances?: Array<{
+                __typename?: "HistoricalBankBalance";
+                balance: number;
+                time: any;
+            }> | null;
+            transactions: Array<{
+                __typename?: "BankTransaction";
+                id: string;
+                amount: number;
+                spentAmount: number;
+                description: string;
+                createdAt: any;
+                bank: { __typename?: "BankAccount"; name: string };
+            }>;
+        }>;
+    }>;
+};
+
+export type GetBankTransactionsQueryVariables = Exact<{
+    userId: Scalars["Float"]["input"];
+}>;
+
+export type GetBankTransactionsQuery = {
+    __typename?: "Query";
+    getBankTransactions: Array<{
+        __typename?: "BankTransaction";
+        id: string;
+        amount: number;
+        spentAmount: number;
+        createdAt: any;
+        description: string;
+        bank: { __typename?: "BankAccount"; name: string };
+    }>;
 };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never }>;
@@ -1076,25 +1440,28 @@ export const VerifyAccountDocument = {
     VerifyAccountMutation,
     VerifyAccountMutationVariables
 >;
-export const GetBankDocument = {
+export const NewHistoricalAssetProfit1mDocument = {
     kind: "Document",
     definitions: [
         {
             kind: "OperationDefinition",
-            operation: "query",
-            name: { kind: "Name", value: "GetBank" },
+            operation: "subscription",
+            name: { kind: "Name", value: "NewHistoricalAssetProfit1m" },
             variableDefinitions: [
                 {
                     kind: "VariableDefinition",
                     variable: {
                         kind: "Variable",
-                        name: { kind: "Name", value: "userId" },
+                        name: { kind: "Name", value: "data" },
                     },
                     type: {
                         kind: "NonNullType",
                         type: {
                             kind: "NamedType",
-                            name: { kind: "Name", value: "Int" },
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalAssetProfitInput",
+                            },
                         },
                     },
                 },
@@ -1104,14 +1471,17 @@ export const GetBankDocument = {
                 selections: [
                     {
                         kind: "Field",
-                        name: { kind: "Name", value: "getBankManagers" },
+                        name: {
+                            kind: "Name",
+                            value: "newHistoricalAssetProfit1m",
+                        },
                         arguments: [
                             {
                                 kind: "Argument",
-                                name: { kind: "Name", value: "userId" },
+                                name: { kind: "Name", value: "data" },
                                 value: {
                                     kind: "Variable",
-                                    name: { kind: "Name", value: "userId" },
+                                    name: { kind: "Name", value: "data" },
                                 },
                             },
                         ],
@@ -1120,19 +1490,11 @@ export const GetBankDocument = {
                             selections: [
                                 {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "name" },
+                                    name: { kind: "Name", value: "time" },
                                 },
                                 {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "createdAt" },
-                                },
-                                {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "updatedAt" },
-                                },
-                                {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "banks" },
+                                    name: { kind: "Name", value: "assetInfo" },
                                     selectionSet: {
                                         kind: "SelectionSet",
                                         selections: [
@@ -1140,203 +1502,59 @@ export const GetBankDocument = {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "name",
+                                                    value: "id",
                                                 },
                                             },
                                             {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "accountName",
+                                                    value: "logo",
                                                 },
                                             },
                                             {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "accountNumber",
+                                                    value: "lastPrice",
                                                 },
                                             },
                                             {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "balance",
+                                                    value: "symbol",
                                                 },
                                             },
                                             {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "createdAt",
-                                                },
-                                            },
-                                            {
-                                                kind: "Field",
-                                                name: {
-                                                    kind: "Name",
-                                                    value: "updatedAt",
-                                                },
-                                            },
-                                            {
-                                                kind: "Field",
-                                                name: {
-                                                    kind: "Name",
-                                                    value: "transactions",
-                                                },
-                                                selectionSet: {
-                                                    kind: "SelectionSet",
-                                                    selections: [
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "id",
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "bank",
-                                                            },
-                                                            selectionSet: {
-                                                                kind: "SelectionSet",
-                                                                selections: [
-                                                                    {
-                                                                        kind: "Field",
-                                                                        name: {
-                                                                            kind: "Name",
-                                                                            value: "name",
-                                                                        },
-                                                                    },
-                                                                ],
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "amount",
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "spentAmount",
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "description",
-                                                            },
-                                                        },
-                                                        {
-                                                            kind: "Field",
-                                                            name: {
-                                                                kind: "Name",
-                                                                value: "createdAt",
-                                                            },
-                                                        },
-                                                    ],
+                                                    value: "tag",
                                                 },
                                             },
                                         ],
                                     },
                                 },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<GetBankQuery, GetBankQueryVariables>;
-export const GetBankTransactionsDocument = {
-    kind: "Document",
-    definitions: [
-        {
-            kind: "OperationDefinition",
-            operation: "query",
-            name: { kind: "Name", value: "GetBankTransactions" },
-            variableDefinitions: [
-                {
-                    kind: "VariableDefinition",
-                    variable: {
-                        kind: "Variable",
-                        name: { kind: "Name", value: "userId" },
-                    },
-                    type: {
-                        kind: "NonNullType",
-                        type: {
-                            kind: "NamedType",
-                            name: { kind: "Name", value: "Float" },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: "SelectionSet",
-                selections: [
-                    {
-                        kind: "Field",
-                        name: { kind: "Name", value: "getBankTransactions" },
-                        arguments: [
-                            {
-                                kind: "Argument",
-                                name: { kind: "Name", value: "userId" },
-                                value: {
-                                    kind: "Variable",
-                                    name: { kind: "Name", value: "userId" },
-                                },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: "SelectionSet",
-                            selections: [
                                 {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                },
-                                {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "amount" },
+                                    name: {
+                                        kind: "Name",
+                                        value: "totalCostInQuoteQty",
+                                    },
                                 },
                                 {
                                     kind: "Field",
                                     name: {
                                         kind: "Name",
-                                        value: "spentAmount",
+                                        value: "remainingQty",
                                     },
-                                },
-                                {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "createdAt" },
                                 },
                                 {
                                     kind: "Field",
                                     name: {
                                         kind: "Name",
-                                        value: "description",
-                                    },
-                                },
-                                {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "bank" },
-                                    selectionSet: {
-                                        kind: "SelectionSet",
-                                        selections: [
-                                            {
-                                                kind: "Field",
-                                                name: {
-                                                    kind: "Name",
-                                                    value: "name",
-                                                },
-                                            },
-                                        ],
+                                        value: "estimatedProfit",
                                     },
                                 },
                             ],
@@ -1347,8 +1565,136 @@ export const GetBankTransactionsDocument = {
         },
     ],
 } as unknown as DocumentNode<
-    GetBankTransactionsQuery,
-    GetBankTransactionsQueryVariables
+    NewHistoricalAssetProfit1mSubscription,
+    NewHistoricalAssetProfit1mSubscriptionVariables
+>;
+export const NewHistoricalAssetProfit1hDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "subscription",
+            name: { kind: "Name", value: "NewHistoricalAssetProfit1h" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalAssetProfitInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "newHistoricalAssetProfit1h",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "assetInfo" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "logo",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "lastPrice",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "symbol",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "tag",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "totalCostInQuoteQty",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "remainingQty",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedProfit",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    NewHistoricalAssetProfit1hSubscription,
+    NewHistoricalAssetProfit1hSubscriptionVariables
 >;
 export const CreateCryptoPortfolioDocument = {
     kind: "Document",
@@ -1409,6 +1755,69 @@ export const CreateCryptoPortfolioDocument = {
 } as unknown as DocumentNode<
     CreateCryptoPortfolioMutation,
     CreateCryptoPortfolioMutationVariables
+>;
+export const CreateOkxCryptoPortfolioDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateOKXCryptoPortfolio" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "CreateOKXCryptoPortfolioInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "createOKXCryptoPortfolio",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateOkxCryptoPortfolioMutation,
+    CreateOkxCryptoPortfolioMutationVariables
 >;
 export const GetCryptoPortfoliosDocument = {
     kind: "Document",
@@ -1472,6 +1881,10 @@ export const GetCryptoPortfoliosDocument = {
                                 {
                                     kind: "Field",
                                     name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
                                 },
                                 {
                                     kind: "Field",
@@ -1542,7 +1955,10 @@ export const GetCryptoPortfoliosDocument = {
                                 },
                                 {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "balances" },
+                                    name: {
+                                        kind: "Name",
+                                        value: "latestAssetProfits",
+                                    },
                                     selectionSet: {
                                         kind: "SelectionSet",
                                         selections: [
@@ -1550,14 +1966,54 @@ export const GetCryptoPortfoliosDocument = {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "id",
+                                                    value: "estimatedProfit",
                                                 },
                                             },
                                             {
                                                 kind: "Field",
                                                 name: {
                                                     kind: "Name",
-                                                    value: "balance",
+                                                    value: "remainingQty",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "totalCostInQuoteQty",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "cryptoPortfolio",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "id",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "exchanges",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "name",
+                                                            },
+                                                        },
+                                                    ],
                                                 },
                                             },
                                             {
@@ -1597,6 +2053,116 @@ export const GetCryptoPortfoliosDocument = {
                                                                 value: "symbol",
                                                             },
                                                         },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "tag",
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "balances" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "balance",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "cryptoPortfolio",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "id",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "exchanges",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "name",
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "assetInfo",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "id",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "logo",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "lastPrice",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "symbol",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "tag",
+                                                            },
+                                                        },
                                                     ],
                                                 },
                                             },
@@ -1613,6 +2179,112 @@ export const GetCryptoPortfoliosDocument = {
 } as unknown as DocumentNode<
     GetCryptoPortfoliosQuery,
     GetCryptoPortfoliosQueryVariables
+>;
+export const GetHistoricalAssetProfitsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetHistoricalAssetProfits" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalAssetProfitInput",
+                            },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "pagination" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "PaginationInput" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "getHistoricalAssetProfits",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "pagination" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "pagination" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedProfit",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "remainingQty",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "totalCostInQuoteQty",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetHistoricalAssetProfitsQuery,
+    GetHistoricalAssetProfitsQueryVariables
 >;
 export const GetHistoricalBalancesDocument = {
     kind: "Document",
@@ -1757,6 +2429,23 @@ export const GetAssetDocument = {
                     kind: "VariableDefinition",
                     variable: {
                         kind: "Variable",
+                        name: { kind: "Name", value: "getAssetProfitData" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalAssetProfitInput",
+                            },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
                         name: { kind: "Name", value: "getAssetInfoData" },
                     },
                     type: {
@@ -1771,6 +2460,64 @@ export const GetAssetDocument = {
             selectionSet: {
                 kind: "SelectionSet",
                 selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "getHistoricalAssetProfits",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "getAssetProfitData",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "pagination" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "pagination" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedProfit",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "remainingQty",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "totalCostInQuoteQty",
+                                    },
+                                },
+                            ],
+                        },
+                    },
                     {
                         kind: "Field",
                         name: { kind: "Name", value: "getAssetPrices" },
@@ -2028,6 +2775,370 @@ export const NewAssetPrice5mDocument = {
     NewAssetPrice5mSubscription,
     NewAssetPrice5mSubscriptionVariables
 >;
+export const NewHistoricalCryptoBalance1mDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "subscription",
+            name: { kind: "Name", value: "NewHistoricalCryptoBalance1m" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalBalancesInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "newHistoricalCryptoBalance1m",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "cryptoPortfolioId",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedBalance",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changeBalance",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changePercent",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    NewHistoricalCryptoBalance1mSubscription,
+    NewHistoricalCryptoBalance1mSubscriptionVariables
+>;
+export const NewHistoricalCryptoBalance1hDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "subscription",
+            name: { kind: "Name", value: "NewHistoricalCryptoBalance1h" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: {
+                                kind: "Name",
+                                value: "GetHistoricalBalancesInput",
+                            },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "newHistoricalCryptoBalance1h",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "cryptoPortfolioId",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "estimatedBalance",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changeBalance",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "changePercent",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    NewHistoricalCryptoBalance1hSubscription,
+    NewHistoricalCryptoBalance1hSubscriptionVariables
+>;
+export const GetCreatePortfolioExecutionsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetCreatePortfolioExecutions" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Float" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: {
+                            kind: "Name",
+                            value: "getCreatePortfolioExecutions",
+                        },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "status" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetCreatePortfolioExecutionsQuery,
+    GetCreatePortfolioExecutionsQueryVariables
+>;
+export const GetTradesDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetTrades" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "data" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "GetTradeInput" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getTrades" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "data" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "data" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "cryptoPortfolio",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "exchanges",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "time" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "price" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "qty" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "quoteQty" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "commission" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "commissionAsset",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isBuyer" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetTradesQuery, GetTradesQueryVariables>;
 export const GetExpenseCategoriesDocument = {
     kind: "Document",
     definitions: [
@@ -2163,7 +3274,7 @@ export const GetExpenseCategoriesDocument = {
                                     kind: "Field",
                                     name: {
                                         kind: "Name",
-                                        value: "totalAmount",
+                                        value: "totalSpentAmounts",
                                     },
                                     arguments: [
                                         {
@@ -2195,6 +3306,32 @@ export const GetExpenseCategoriesDocument = {
                                             },
                                         },
                                     ],
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "amount",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "month",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "year",
+                                                },
+                                            },
+                                        ],
+                                    },
                                 },
                                 {
                                     kind: "Field",
@@ -2759,20 +3896,6 @@ export const GetExpensesDocument = {
                     kind: "VariableDefinition",
                     variable: {
                         kind: "Variable",
-                        name: { kind: "Name", value: "userId" },
-                    },
-                    type: {
-                        kind: "NonNullType",
-                        type: {
-                            kind: "NamedType",
-                            name: { kind: "Name", value: "Int" },
-                        },
-                    },
-                },
-                {
-                    kind: "VariableDefinition",
-                    variable: {
-                        kind: "Variable",
                         name: { kind: "Name", value: "startDate" },
                     },
                     type: {
@@ -2799,14 +3922,6 @@ export const GetExpensesDocument = {
                         kind: "Field",
                         name: { kind: "Name", value: "getExpenses" },
                         arguments: [
-                            {
-                                kind: "Argument",
-                                name: { kind: "Name", value: "userId" },
-                                value: {
-                                    kind: "Variable",
-                                    name: { kind: "Name", value: "userId" },
-                                },
-                            },
                             {
                                 kind: "Argument",
                                 name: { kind: "Name", value: "startDate" },
@@ -2928,6 +4043,91 @@ export const GetExpensesDocument = {
         },
     ],
 } as unknown as DocumentNode<GetExpensesQuery, GetExpensesQueryVariables>;
+export const GetSuggestedExpensesDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetSuggestedExpenses" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "bankTransactionId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getSuggestedExpenses" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: {
+                                    kind: "Name",
+                                    value: "bankTransactionId",
+                                },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "bankTransactionId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "amount" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "bankTransactionId",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "categoryId" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetSuggestedExpensesQuery,
+    GetSuggestedExpensesQueryVariables
+>;
 export const CreateExpenseDocument = {
     kind: "Document",
     definitions: [
@@ -3220,6 +4420,306 @@ export const RemoveExpensesDocument = {
     RemoveExpensesMutation,
     RemoveExpensesMutationVariables
 >;
+export const GetBankDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetBank" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Int" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getBankManagers" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "banks" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "accountName",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "accountNumber",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "balance",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "createdAt",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "updatedAt",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "historicalBalances",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "balance",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "time",
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "transactions",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "id",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "bank",
+                                                            },
+                                                            selectionSet: {
+                                                                kind: "SelectionSet",
+                                                                selections: [
+                                                                    {
+                                                                        kind: "Field",
+                                                                        name: {
+                                                                            kind: "Name",
+                                                                            value: "name",
+                                                                        },
+                                                                    },
+                                                                ],
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "amount",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "spentAmount",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "description",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "createdAt",
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetBankQuery, GetBankQueryVariables>;
+export const GetBankTransactionsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "GetBankTransactions" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Float" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "getBankTransactions" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "amount" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "spentAmount",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "bank" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    GetBankTransactionsQuery,
+    GetBankTransactionsQueryVariables
+>;
 export const GetMeDocument = {
     kind: "Document",
     definitions: [
@@ -3292,21 +4792,27 @@ export type AssetInfo = {
     assetPrices?: Maybe<Array<AssetPrice>>;
     category: Scalars["String"]["output"];
     desc: Scalars["String"]["output"];
+    historicalProfits?: Maybe<Array<HistoricalAssetProfit>>;
     id: Scalars["String"]["output"];
     logo: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     symbol: Scalars["String"]["output"];
+    tag: Scalars["String"]["output"];
+    trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetInfoOutput = {
     __typename?: "AssetInfoOutput";
     category: Scalars["String"]["output"];
     desc: Scalars["String"]["output"];
+    historicalProfits?: Maybe<Array<HistoricalAssetProfit>>;
     id: Scalars["String"]["output"];
     lastPrice: Scalars["Float"]["output"];
     logo: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     symbol: Scalars["String"]["output"];
+    tag: Scalars["String"]["output"];
+    trades?: Maybe<Array<Trade>>;
 };
 
 export type AssetPrice = {
@@ -3332,6 +4838,7 @@ export type BankAccount = {
     bankManagerId: Scalars["String"]["output"];
     createdAt: Scalars["DateTime"]["output"];
     fullName: Scalars["String"]["output"];
+    historicalBalances?: Maybe<Array<HistoricalBankBalance>>;
     id: Scalars["String"]["output"];
     name: Scalars["String"]["output"];
     transactions: Array<BankTransaction>;
@@ -3362,6 +4869,13 @@ export type BankTransaction = {
     spentAmount: Scalars["Float"]["output"];
 };
 
+export enum CexExchanges {
+    All = "ALL",
+    Binance = "BINANCE",
+    Mexc = "MEXC",
+    Okx = "OKX",
+}
+
 export type CreateBankManagerInput = {
     apiKey: Scalars["String"]["input"];
     name: Scalars["String"]["input"];
@@ -3370,6 +4884,8 @@ export type CreateBankManagerInput = {
 
 export type CreateCryptoPortfolioInput = {
     apiKey: Scalars["String"]["input"];
+    exchanges?: CexExchanges;
+    name?: Scalars["String"]["input"];
     secretKey: Scalars["String"]["input"];
     userId: Scalars["Int"]["input"];
 };
@@ -3378,6 +4894,13 @@ export type CreateCryptoRes = {
     __typename?: "CreateCryptoRes";
     userId: Scalars["Float"]["output"];
 };
+
+export enum CreateExecutionStatus {
+    Failed = "FAILED",
+    Processing = "PROCESSING",
+    Queue = "QUEUE",
+    Success = "SUCCESS",
+}
 
 export type CreateExpenseCategoryInput = {
     color: Scalars["String"]["input"];
@@ -3390,6 +4913,7 @@ export type CreateExpenseInput = {
     amount: Scalars["Float"]["input"];
     bankTransactionId: Scalars["String"]["input"];
     categoryId: Scalars["String"]["input"];
+    createdAt: Scalars["DateTime"]["input"];
     description?: InputMaybe<Scalars["String"]["input"]>;
     name: Scalars["String"]["input"];
     userId: Scalars["Int"]["input"];
@@ -3400,6 +4924,23 @@ export type CreateMonthlyTargetInput = {
     month: Scalars["Int"]["input"];
     target: Scalars["Float"]["input"];
     year: Scalars["Int"]["input"];
+};
+
+export type CreateOkxCryptoPortfolioInput = {
+    apiKey: Scalars["String"]["input"];
+    exchanges?: CexExchanges;
+    name?: Scalars["String"]["input"];
+    passphrase: Scalars["String"]["input"];
+    secretKey: Scalars["String"]["input"];
+    userId: Scalars["Int"]["input"];
+};
+
+export type CreatePortfolioExecution = {
+    __typename?: "CreatePortfolioExecution";
+    id: Scalars["Int"]["output"];
+    status: CreateExecutionStatus;
+    time?: Maybe<Scalars["DateTime"]["output"]>;
+    userId: Scalars["Int"]["output"];
 };
 
 export type CreateUserInput = {
@@ -3414,12 +4955,20 @@ export type CryptoPortfolio = {
     __typename?: "CryptoPortfolio";
     apiKey: Scalars["String"]["output"];
     balances: Array<AssetBalance>;
-    exchanges: Scalars["String"]["output"];
+    childPortfolios?: Maybe<Array<CryptoPortfolio>>;
+    exchanges: CexExchanges;
+    historicalAssetProfits?: Maybe<Array<HistoricalAssetProfit>>;
     historicalBalances?: Maybe<Array<HistoricalCryptoBalance>>;
     id: Scalars["String"]["output"];
     investmentCategoryName?: Maybe<Scalars["String"]["output"]>;
+    latestAssetProfits: Array<HistoricalAssetProfit>;
     latestHistoricalBalances: HistoricalCryptoBalance;
+    name: Scalars["String"]["output"];
+    parentPortfolio?: Maybe<CryptoPortfolio>;
+    parentPortfolioId?: Maybe<Scalars["String"]["output"]>;
     secretKey: Scalars["String"]["output"];
+    status: PortfolioStatus;
+    trades?: Maybe<Array<Trade>>;
     tradingType: TradingType;
     updateTime?: Maybe<Scalars["DateTime"]["output"]>;
     user: User;
@@ -3455,7 +5004,7 @@ export type ExpenseCategory = {
     id: Scalars["String"]["output"];
     monthlyTargets?: Maybe<Array<MonthlyTarget>>;
     name: Scalars["String"]["output"];
-    totalAmount: Scalars["Int"]["output"];
+    totalSpentAmounts: Array<TotalSpentAmountOutput>;
     user: User;
     userId: Scalars["Int"]["output"];
 };
@@ -3465,7 +5014,7 @@ export type ExpenseCategoryMonthlyTargetsArgs = {
     year?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type ExpenseCategoryTotalAmountArgs = {
+export type ExpenseCategoryTotalSpentAmountsArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
@@ -3483,9 +5032,45 @@ export type GetCryptoPortfolioInput = {
     userId: Scalars["Int"]["input"];
 };
 
+export type GetHistoricalAssetProfitInput = {
+    assetInfoId: Scalars["String"]["input"];
+    cryptoPortfolioId: Scalars["String"]["input"];
+    timeFrame: Scalars["String"]["input"];
+};
+
 export type GetHistoricalBalanceInput = {
     cryptoPortfolioId: Scalars["String"]["input"];
     timeFrame: Scalars["String"]["input"];
+};
+
+export type GetHistoricalBalancesInput = {
+    cryptoPortfolioIds: Array<Scalars["String"]["input"]>;
+    timeFrame: Scalars["String"]["input"];
+};
+
+export type GetTradeInput = {
+    assetInfoId?: InputMaybe<Scalars["String"]["input"]>;
+    cryptoPortfolioId?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type HistoricalAssetProfit = {
+    __typename?: "HistoricalAssetProfit";
+    assetInfo: AssetInfoOutput;
+    assetInfoId: Scalars["String"]["output"];
+    cryptoPortfolio: CryptoPortfolio;
+    cryptoPortfolioId: Scalars["String"]["output"];
+    estimatedProfit: Scalars["Float"]["output"];
+    remainingQty: Scalars["Float"]["output"];
+    time: Scalars["DateTime"]["output"];
+    totalCostInQuoteQty: Scalars["Float"]["output"];
+};
+
+export type HistoricalBankBalance = {
+    __typename?: "HistoricalBankBalance";
+    balance: Scalars["Float"]["output"];
+    bankAccount: BankAccount;
+    bankAccountId: Scalars["String"]["output"];
+    time: Scalars["DateTime"]["output"];
 };
 
 export type HistoricalCryptoBalance = {
@@ -3526,6 +5111,7 @@ export type Mutation = {
     createExpense: Expense;
     createExpenseCategory: ExpenseCategory;
     createMonthlyTarget: MonthlyTarget;
+    createOKXCryptoPortfolio: CreateCryptoRes;
     login: LoginResDto;
     removeExpense: Expense;
     removeExpenseCategory: ExpenseCategory;
@@ -3555,6 +5141,10 @@ export type MutationCreateExpenseCategoryArgs = {
 
 export type MutationCreateMonthlyTargetArgs = {
     data: CreateMonthlyTargetInput;
+};
+
+export type MutationCreateOkxCryptoPortfolioArgs = {
+    data: CreateOkxCryptoPortfolioInput;
 };
 
 export type MutationLoginArgs = {
@@ -3607,18 +5197,27 @@ export type PaginationInput = {
     take: Scalars["Int"]["input"];
 };
 
+export enum PortfolioStatus {
+    Active = "ACTIVE",
+    Inactive = "INACTIVE",
+}
+
 export type Query = {
     __typename?: "Query";
     getAssetInfo: AssetInfo;
     getAssetPrices: Array<AssetPrice>;
     getBankManagers: Array<BankManager>;
     getBankTransactions: Array<BankTransaction>;
+    getCreatePortfolioExecutions: Array<CreatePortfolioExecution>;
     getCryptoPortfolios: Array<CryptoPortfolio>;
     getExpenseCategories: Array<ExpenseCategory>;
     getExpenses: Array<Expense>;
+    getHistoricalAssetProfits: Array<HistoricalAssetProfit>;
     getHistoricalBalances: Array<HistoricalCryptoBalance>;
     getMe: User;
     getMonthlyTargets: Array<MonthlyTarget>;
+    getSuggestedExpenses: Array<Expense>;
+    getTrades: Array<Trade>;
 };
 
 export type QueryGetAssetInfoArgs = {
@@ -3638,19 +5237,29 @@ export type QueryGetBankTransactionsArgs = {
     userId: Scalars["Float"]["input"];
 };
 
+export type QueryGetCreatePortfolioExecutionsArgs = {
+    userId: Scalars["Float"]["input"];
+};
+
 export type QueryGetCryptoPortfoliosArgs = {
     data: GetCryptoPortfolioInput;
 };
 
 export type QueryGetExpenseCategoriesArgs = {
+    endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     name?: InputMaybe<Scalars["String"]["input"]>;
+    startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     userId?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryGetExpensesArgs = {
     endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
     startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-    userId: Scalars["Int"]["input"];
+};
+
+export type QueryGetHistoricalAssetProfitsArgs = {
+    data: GetHistoricalAssetProfitInput;
+    pagination: PaginationInput;
 };
 
 export type QueryGetHistoricalBalancesArgs = {
@@ -3664,6 +5273,14 @@ export type QueryGetMonthlyTargetsArgs = {
     year?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
+export type QueryGetSuggestedExpensesArgs = {
+    bankTransactionId: Scalars["String"]["input"];
+};
+
+export type QueryGetTradesArgs = {
+    data: GetTradeInput;
+};
+
 export type SignupResDto = {
     __typename?: "SignupResDto";
     accessToken: Scalars["String"]["output"];
@@ -3674,6 +5291,10 @@ export type Subscription = {
     __typename?: "Subscription";
     newAssetPrice1m: AssetPrice;
     newAssetPrice5m: AssetPrice;
+    newHistoricalAssetProfit1h: HistoricalAssetProfit;
+    newHistoricalAssetProfit1m: HistoricalAssetProfit;
+    newHistoricalCryptoBalance1h: HistoricalCryptoBalance;
+    newHistoricalCryptoBalance1m: HistoricalCryptoBalance;
     portfolioCreated: CryptoPortfolio;
 };
 
@@ -3685,8 +5306,46 @@ export type SubscriptionNewAssetPrice5mArgs = {
     data: GetAssetPriceInput;
 };
 
+export type SubscriptionNewHistoricalAssetProfit1hArgs = {
+    data: GetHistoricalAssetProfitInput;
+};
+
+export type SubscriptionNewHistoricalAssetProfit1mArgs = {
+    data: GetHistoricalAssetProfitInput;
+};
+
+export type SubscriptionNewHistoricalCryptoBalance1hArgs = {
+    data: GetHistoricalBalancesInput;
+};
+
+export type SubscriptionNewHistoricalCryptoBalance1mArgs = {
+    data: GetHistoricalBalancesInput;
+};
+
 export type SubscriptionPortfolioCreatedArgs = {
     data: GetCryptoPortfolioInput;
+};
+
+export type TotalSpentAmountOutput = {
+    __typename?: "TotalSpentAmountOutput";
+    amount: Scalars["Float"]["output"];
+    month: Scalars["Float"]["output"];
+    year: Scalars["Float"]["output"];
+};
+
+export type Trade = {
+    __typename?: "Trade";
+    assetInfo: AssetInfo;
+    assetInfoId: Scalars["String"]["output"];
+    commission: Scalars["Float"]["output"];
+    commissionAsset: Scalars["String"]["output"];
+    cryptoPortfolio: CryptoPortfolio;
+    cryptoPortfolioId: Scalars["String"]["output"];
+    isBuyer: Scalars["Boolean"]["output"];
+    price: Scalars["Float"]["output"];
+    qty: Scalars["Float"]["output"];
+    quoteQty: Scalars["Float"]["output"];
+    time: Scalars["DateTime"]["output"];
 };
 
 export enum TradingType {
@@ -3704,6 +5363,7 @@ export type UpdateExpenseInput = {
     amount?: InputMaybe<Scalars["Float"]["input"]>;
     bankTransactionId?: InputMaybe<Scalars["String"]["input"]>;
     categoryId?: InputMaybe<Scalars["String"]["input"]>;
+    createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
     description?: InputMaybe<Scalars["String"]["input"]>;
     name?: InputMaybe<Scalars["String"]["input"]>;
 };

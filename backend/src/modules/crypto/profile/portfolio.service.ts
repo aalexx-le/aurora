@@ -10,8 +10,12 @@ import { PaginationInput } from "../../../shared/pagination/pagination.args";
 import { Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
-import { AssetPriceInterval } from "../asset/enum/asset-price-interval";
+import { DataInterval } from "../asset/enum/data-interval";
 import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
+import { HistoricalAssetProfit } from "src/entities/historical-asset-profit";
+import { GetHistoricalAssetProfitInput } from "./dto/get-historical-asset-profit.input";
+import { EncryptionService } from "../../../shared/encryption.service";
+import { CEXExchanges, CreateExecutionStatus } from "../../../entities/prisma";
 
 @Injectable()
 export class CryptoPortfolioService {
@@ -19,21 +23,59 @@ export class CryptoPortfolioService {
     constructor(
         private prisma: PrismaService,
         @InjectKafka() private readonly kafkaService: KafkaService,
+        private readonly encryptionService: EncryptionService,
     ) {}
 
-    createPortfolio(createCryptoPortfolioInput: CreateCryptoPortfolioInput) {
+    async createPortfolio(
+        createCryptoPortfolioInput: CreateCryptoPortfolioInput,
+    ) {
         createCryptoPortfolioInput.userId = Number(
             createCryptoPortfolioInput.userId,
         );
 
-        const msg = Buffer.from(JSON.stringify(createCryptoPortfolioInput));
-        this.kafkaService.sendMessage({
-            topic: KafkaTopic.CREATE_CRYPTO_PORTFOLIO,
-            messages: [{ value: msg }],
+        // createCryptoPortfolioInput.secretKey =
+        //     await this.encryptionService.generateEncryptedKey(
+        //         createCryptoPortfolioInput.secretKey,
+        //     );
+
+        const execution = await this.prisma.createPortfolioExecution.create({
+            data: {
+                userId: createCryptoPortfolioInput.userId,
+                status: CreateExecutionStatus.QUEUE,
+            },
         });
+
+        // Ensure secretKey is properly encoded before sending
+        const msgPayload = {
+            ...createCryptoPortfolioInput,
+            executionId: execution.id,
+            secretKey: createCryptoPortfolioInput.secretKey, // Already encrypted string
+        };
+
+        // Stringify with proper encoding
+        const msg = Buffer.from(JSON.stringify(msgPayload), "utf-8");
+
+        const res = await this.kafkaService.sendMessage({
+            topic: KafkaTopic.CREATE_CRYPTO_PORTFOLIO,
+            messages: [
+                {
+                    value: msg,
+                    headers: {
+                        "content-encoding": "utf-8", // Add encoding header
+                    },
+                },
+            ],
+        });
+
         this.logger.log(
-            `Message sent to topic(${KafkaTopic.CREATE_CRYPTO_PORTFOLIO}): ${msg}`,
+            `Message sent to topic(${KafkaTopic.CREATE_CRYPTO_PORTFOLIO})`,
         );
+    }
+
+    findPortfolio(cryptoPortfolioId: string) {
+        return this.prisma.cryptoPortfolio.findUnique({
+            where: { id: cryptoPortfolioId },
+        });
     }
 
     findPortfolios(userId: number) {
@@ -42,10 +84,27 @@ export class CryptoPortfolioService {
         });
     }
 
-    findBalances(cryptoPortfolioId: string) {
-        return this.prisma.assetBalance.findMany({
-            where: { cryptoPortfolioId },
-        });
+    async findBalances(cryptoPortfolioId: string, exchange: CEXExchanges) {
+        if (exchange == CEXExchanges.ALL) {
+            const childPortfolios = await this.prisma.cryptoPortfolio.findMany({
+                where: { parentPortfolioId: cryptoPortfolioId },
+                select: {
+                    id: true,
+                },
+            });
+
+            return this.prisma.assetBalance.findMany({
+                where: {
+                    cryptoPortfolioId: {
+                        in: childPortfolios.map((portfolio) => portfolio.id),
+                    },
+                },
+            });
+        } else {
+            return this.prisma.assetBalance.findMany({
+                where: { cryptoPortfolioId },
+            });
+        }
     }
 
     async findAssetInfo(id: string): Promise<AssetInfoOutput> {
@@ -109,7 +168,7 @@ export class CryptoPortfolioService {
             };
         }
 
-        if (timeFrame === AssetPriceInterval.MINUTE_1) {
+        if (timeFrame === DataInterval.MINUTE_1) {
             historicalCryptoBalances =
                 await this.prisma.historicalCryptoBalance.findMany(args);
         } else {
@@ -123,5 +182,83 @@ export class CryptoPortfolioService {
         }
 
         return historicalCryptoBalances;
+    }
+
+    async findOneHistoricalAssetProfit(
+        input: GetHistoricalAssetProfitInput,
+        pagination: PaginationInput,
+    ) {
+        const { take, after } = pagination;
+        const { cryptoPortfolioId, assetInfoId, timeFrame } = input;
+
+        const args: Prisma.HistoricalAssetProfitFindManyArgs<DefaultArgs> = {
+            where: {
+                cryptoPortfolioId,
+                assetInfoId,
+            },
+            take: -1 * take,
+            orderBy: {
+                time: "asc",
+            },
+        };
+        if (after) {
+            args.skip = 1;
+            args.cursor = {
+                cryptoPortfolioId_assetInfoId_time: {
+                    cryptoPortfolioId,
+                    assetInfoId,
+                    time: after,
+                },
+            };
+        }
+
+        if (timeFrame === DataInterval.MINUTE_1) {
+            return this.prisma.historicalAssetProfit.findMany(args);
+        } else {
+            return this.prisma[
+                getTimeframeMaterializedViewName(
+                    timeFrame,
+                    "historical_asset_profit",
+                )
+            ].findMany(args);
+        }
+    }
+
+    async findHistoricalAssetProfits(
+        cryptoPortfolioId: string,
+        pagination: PaginationInput,
+    ) {
+        const historicalAssetProfits: HistoricalAssetProfit[] = [];
+
+        const assetInfos = await this.prisma.historicalAssetProfit.findMany({
+            distinct: ["assetInfoId"],
+            where: {
+                cryptoPortfolioId,
+            },
+            select: {
+                assetInfoId: true,
+            },
+        });
+
+        for (const { assetInfoId } of assetInfos) {
+            const historicalAssetProfit =
+                await this.findOneHistoricalAssetProfit(
+                    {
+                        cryptoPortfolioId,
+                        assetInfoId,
+                        timeFrame: DataInterval.HOUR_1,
+                    },
+                    pagination,
+                );
+            historicalAssetProfits.push(...historicalAssetProfit);
+        }
+
+        return historicalAssetProfits;
+    }
+
+    async getCreatePortfolioExecutions(userId: number) {
+        return this.prisma.createPortfolioExecution.findMany({
+            where: { userId },
+        });
     }
 }

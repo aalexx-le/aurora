@@ -1,5 +1,8 @@
-import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
-import { ExpenseCategory } from "../expense-category/expense-category.model";
+import { Field } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
+import { Int } from '@nestjs/graphql';
+import { Float } from '@nestjs/graphql';
+import { ExpenseCategory } from '../expense-category/expense-category.model';
 
 @ObjectType()
 export class MonthlyTarget {

@@ -1,14 +1,13 @@
 import { useMemo } from "react";
-import { GetCryptoPortfolioQuery } from "@/gql/graphql";
+import { HistoricalCryptoBalance } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/types";
 
-export const useChartConfig = (
-    historicalData: GetCryptoPortfolioQuery["getCryptoPortfolios"][number]["historicalBalances"],
-) => {
+export const useChartConfig = (historicalData: HistoricalCryptoBalance[]) => {
     return useMemo(
         () => ({
             trend:
-                historicalData[historicalData.length - 1]?.estimatedBalance >=
-                historicalData[0]?.estimatedBalance
+                historicalData[historicalData.length - 1]?.estimatedBalance -
+                    historicalData[0]?.estimatedBalance >=
+                0
                     ? {
                           label: "Up",
                           color: "hsl(var(--chart-2))",

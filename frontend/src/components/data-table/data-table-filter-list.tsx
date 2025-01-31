@@ -17,13 +17,9 @@ import {
   Trash2,
 } from "lucide-react"
 import { customAlphabet } from "nanoid"
-// import { parseAsStringEnum, useQueryState } from "nuqs"
+import { parseAsStringEnum, useQueryState } from "nuqs"
 
-import { dataTableConfig } from "@/config/transaction-table"
-import { getDefaultFilterOperator, getFilterOperators } from "@/lib/transaction-table"
-import { getFiltersStateParser } from "@/lib/parsers"
-import { cn, formatDate } from "@/lib/utils"
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -36,7 +32,7 @@ import {
   FacetedFilterItem,
   FacetedFilterList,
   FacetedFilterTrigger,
-} from "@/components/ui/faceted-filter"
+} from "@/components/data-table/faceted-filter"
 import { Input } from "@/components/ui/input"
 import {
   Popover,
@@ -54,7 +50,12 @@ import {
   Sortable,
   SortableDragHandle,
   SortableItem,
-} from "@/components/ui/sortable"
+} from "@/components/data-table/sortable"
+import {dataTableConfig} from "@/lib/constants/data-table";
+import {getDefaultFilterOperator, getFilterOperators } from "@/lib/utils/data-table/data-table";
+import {getFiltersStateParser} from "@/lib/utils/data-table/parsers";
+import {useDebouncedCallback} from "@/lib/hooks/use-debounced-callback";
+import {formatDate} from "@/lib/utils/data-table/format-date";
 
 interface DataTableFilterListProps<TData> {
   table: Table<TData>
@@ -79,6 +80,8 @@ export function DataTableFilterList<TData>({
         shallow,
       })
   )
+
+  console.log(filters)
 
   const [joinOperator, setJoinOperator] = useQueryState(
     "joinOperator",

@@ -1,16 +1,37 @@
 model CryptoPortfolio {
-  userId             Int
-  exchanges          String                    @default("binance")
-  tradingType        TradingType
-  apiKey             String
-  secretKey          String
-  updateTime         DateTime?
-  id                 String                    @id @default(uuid())
-  balances           AssetBalance[]
-  user               User                      @relation(fields: [userId], references: [id])
-  historicalBalances HistoricalCryptoBalance[]
-
+  userId                 Int
+  name                   String                    @default("")
+  status                 PortfolioStatus           @default(ACTIVE)
+  exchanges              CEXExchanges              @default(BINANCE)
+  tradingType            TradingType
+  apiKey                 String
+  secretKey              String
+  updateTime             DateTime?
+  id                     String                    @id @default(uuid())
   investmentCategoryName String?
+  balances               AssetBalance[]
+  user                   User                      @relation(fields: [userId], references: [id])
+  historicalAssetProfits HistoricalAssetProfit[]
+  historicalBalances     HistoricalCryptoBalance[]
+  trades                 Trade[]
+
+  // New fields for aggregation
+  parentPortfolioId String?
+  parentPortfolio   CryptoPortfolio?  @relation("AggregatedPortfolios", fields: [parentPortfolioId], references: [id])
+  childPortfolios   CryptoPortfolio[] @relation("AggregatedPortfolios")
+}
+
+model OKXCryptoPortfolio {
+  id                String @id @default(uuid())
+  cryptoPortfolioId String @unique
+  passphrase        String
+}
+
+model CreatePortfolioExecution {
+  id     Int                   @id @default(autoincrement())
+  time   DateTime?             @default(now())
+  userId Int
+  status CreateExecutionStatus @default(QUEUE)
 }
 
 model AssetBalance {
@@ -23,15 +44,36 @@ model AssetBalance {
   cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
 }
 
+model Trade {
+  cryptoPortfolioId String
+  assetInfoId       String
+
+  price           Float
+  qty             Float
+  quoteQty        Float
+  commission      Float
+  commissionAsset String
+  time            DateTime
+  isBuyer         Boolean
+
+  cryptoPortfolio CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
+  assetInfo       AssetInfo       @relation(fields: [assetInfoId], references: [id])
+
+  @@unique([cryptoPortfolioId, assetInfoId, price, qty, time])
+}
+
 model AssetInfo {
-  id            String         @id @default(uuid())
-  name          String
-  symbol        String
-  category      String
-  desc          String
-  logo          String
-  assetBalances AssetBalance[]
-  assetPrices   AssetPrice[]
+  id                String                  @id @default(uuid())
+  name              String
+  symbol            String
+  category          String
+  desc              String
+  logo              String
+  tag               String                  @default("")
+  assetBalances     AssetBalance[]
+  assetPrices       AssetPrice[]
+  historicalProfits HistoricalAssetProfit[]
+  trades            Trade[]
 }
 
 model AssetPrice {
@@ -60,7 +102,39 @@ model HistoricalCryptoBalance {
   @@unique([cryptoPortfolioId, time])
 }
 
+model HistoricalAssetProfit {
+  time                DateTime
+  estimatedProfit     Float
+  totalCostInQuoteQty Float
+  remainingQty        Float
+  assetInfoId         String
+  cryptoPortfolioId   String
+  assetInfo           AssetInfo       @relation(fields: [assetInfoId], references: [id])
+  cryptoPortfolio     CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
+
+  @@unique([cryptoPortfolioId, assetInfoId, time])
+}
+
+enum PortfolioStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CreateExecutionStatus {
+  QUEUE
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
 enum TradingType {
   FUTURES
   SPOT
+}
+
+enum CEXExchanges {
+  BINANCE
+  MEXC
+  OKX
+  ALL
 }

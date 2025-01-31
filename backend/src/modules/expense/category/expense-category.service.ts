@@ -8,6 +8,7 @@ import {
 } from "./dto/get-expense-category.input";
 import { Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import { TotalSpentAmountOutput } from "./dto/total-spent-amount.output";
 
 @Injectable()
 export class ExpenseCategoryService {
@@ -64,11 +65,8 @@ export class ExpenseCategoryService {
         });
     }
 
-    async totalAmount(categoryId: string, args: GetTotalAmountArgs) {
-        const result = await this.prismaService.expense.aggregate({
-            _sum: {
-                amount: true,
-            },
+    async getTotalSpentAmounts(categoryId: string, args: GetTotalAmountArgs) {
+        const expenses = await this.prismaService.expense.findMany({
             where: {
                 categoryId,
                 createdAt: {
@@ -77,8 +75,27 @@ export class ExpenseCategoryService {
                 },
             },
         });
-        return result._sum.amount || 0;
-    }
 
-    async createMonthlyTargets() {}
+        // calculate total amount for each month each year
+        const totalAmountsMap = new Map<string, TotalSpentAmountOutput>();
+
+        expenses.forEach((expense) => {
+            const date = new Date(expense.createdAt);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const key = `${year}-${month}`;
+
+            if (totalAmountsMap.has(key)) {
+                totalAmountsMap.get(key)!.amount += expense.amount;
+            } else {
+                totalAmountsMap.set(key, {
+                    year,
+                    month,
+                    amount: expense.amount,
+                });
+            }
+        });
+
+        return Array.from(totalAmountsMap.values());
+    }
 }

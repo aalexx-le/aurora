@@ -18,6 +18,7 @@ import {
 import { MonthlyTarget } from "src/entities/monthly-target";
 import { GetMonthlyTargetArgs } from "../monthly-target/dto/get-monthly-target.input";
 import { MonthlyTargetService } from "../monthly-target/monthly-target.service";
+import { TotalSpentAmountOutput } from "./dto/total-spent-amount.output";
 
 @Resolver(() => ExpenseCategory)
 export class ExpenseCategoryResolver {
@@ -35,12 +36,15 @@ export class ExpenseCategoryResolver {
         return this.expenseCategoryService.countExpenses(category.id);
     }
 
-    @ResolveField("totalAmount", () => Int)
-    totalAmount(
+    @ResolveField("totalSpentAmounts", () => [TotalSpentAmountOutput])
+    totalAmounts(
         @Args() args: GetTotalAmountArgs,
         @Parent() category: ExpenseCategory,
     ) {
-        return this.expenseCategoryService.totalAmount(category.id, args);
+        return this.expenseCategoryService.getTotalSpentAmounts(
+            category.id,
+            args,
+        );
     }
 
     @ResolveField("monthlyTargets", () => [MonthlyTarget])

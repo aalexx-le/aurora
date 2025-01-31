@@ -25,6 +25,18 @@ Table BankAccount {
   fullName String [not null]
   bankManager BankManager [not null]
   transactions BankTransaction [not null]
+  historicalBalances HistoricalBankBalance [not null]
+}
+
+Table HistoricalBankBalance {
+  time DateTime [not null]
+  balance Float [not null]
+  bankAccountId String [not null]
+  bankAccount BankAccount [not null]
+
+  indexes {
+    (bankAccountId, time) [unique]
+  }
 }
 
 Table BankTransaction {
@@ -40,16 +52,43 @@ Table BankTransaction {
 
 Table CryptoPortfolio {
   userId Int [not null]
-  exchanges String [not null, default: 'binance']
+  name String [not null, default: '']
+  status PortfolioStatus [not null, default: 'ACTIVE']
+  exchanges CEXExchanges [not null, default: 'BINANCE']
   tradingType TradingType [not null]
   apiKey String [not null]
   secretKey String [not null]
   updateTime DateTime
   id String [pk]
+  investmentCategoryName String
   balances AssetBalance [not null]
   user User [not null]
+  historicalAssetProfits HistoricalAssetProfit [not null]
   historicalBalances HistoricalCryptoBalance [not null]
-  investmentCategoryName String
+  trades Trade [not null]
+  parentPortfolioId String
+  parentPortfolio CryptoPortfolio
+  childPortfolios CryptoPortfolio [not null]
+}
+
+Table OKXCryptoPortfolio {
+  id String [pk]
+  cryptoPortfolioId String [unique, not null]
+  passphrase String [not null]
+}
+
+Table CreatePortfolioExecution {
+  id Int [pk, increment]
+  time DateTime [default: `now()`]
+  userId Int [not null]
+  status CreateExecutionStatus [not null, default: 'QUEUE']
+}
+
+Table CreatePortfolioExecution {
+  id Int [pk, increment]
+  time DateTime [default: `now()`]
+  userId Int [not null]
+  status CreateExecutionStatus [not null, default: 'QUEUE']
 }
 
 Table AssetBalance {
@@ -62,6 +101,24 @@ Table AssetBalance {
   cryptoPortfolio CryptoPortfolio [not null]
 }
 
+Table Trade {
+  cryptoPortfolioId String [not null]
+  assetInfoId String [not null]
+  price Float [not null]
+  qty Float [not null]
+  quoteQty Float [not null]
+  commission Float [not null]
+  commissionAsset String [not null]
+  time DateTime [not null]
+  isBuyer Boolean [not null]
+  cryptoPortfolio CryptoPortfolio [not null]
+  assetInfo AssetInfo [not null]
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, price, qty, time) [unique]
+  }
+}
+
 Table AssetInfo {
   id String [pk]
   name String [not null]
@@ -69,8 +126,11 @@ Table AssetInfo {
   category String [not null]
   desc String [not null]
   logo String [not null]
+  tag String [not null, default: '']
   assetBalances AssetBalance [not null]
   assetPrices AssetPrice [not null]
+  historicalProfits HistoricalAssetProfit [not null]
+  trades Trade [not null]
 }
 
 Table AssetPrice {
@@ -100,6 +160,21 @@ Table HistoricalCryptoBalance {
 
   indexes {
     (cryptoPortfolioId, time) [unique]
+  }
+}
+
+Table HistoricalAssetProfit {
+  time DateTime [not null]
+  estimatedProfit Float [not null]
+  totalCostInQuoteQty Float [not null]
+  remainingQty Float [not null]
+  assetInfoId String [not null]
+  cryptoPortfolioId String [not null]
+  assetInfo AssetInfo [not null]
+  cryptoPortfolio CryptoPortfolio [not null]
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, time) [unique]
   }
 }
 
@@ -230,9 +305,67 @@ Table historical_crypto_balance_1d {
   }
 }
 
+Table historical_asset_profit_5m {
+  time DateTime [not null]
+  assetInfoId String [not null]
+  cryptoPortfolioId String [not null]
+  estimatedProfit Float
+  totalCostInQuoteQty Float
+  remainingQty Float
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, time) [unique]
+  }
+}
+
+Table historical_asset_profit_1h {
+  time DateTime [not null]
+  assetInfoId String [not null]
+  cryptoPortfolioId String [not null]
+  estimatedProfit Float
+  totalCostInQuoteQty Float
+  remainingQty Float
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, time) [unique]
+  }
+}
+
+Table historical_asset_profit_1d {
+  time DateTime [not null]
+  assetInfoId String [not null]
+  cryptoPortfolioId String [not null]
+  estimatedProfit Float
+  totalCostInQuoteQty Float
+  remainingQty Float
+
+  indexes {
+    (cryptoPortfolioId, assetInfoId, time) [unique]
+  }
+}
+
+Enum PortfolioStatus {
+  ACTIVE
+  INACTIVE
+}
+
+Enum CreateExecutionStatus {
+  QUEUE
+  PROCESSING
+  FAILED
+  SUCCESS
+}
+
 Enum TradingType {
   FUTURES
   SPOT
+}
+
+Enum CEXExchanges {
+  BINANCE
+  MEXC
+  OKX
+  ALL
 }
 
 Enum OtpPurpose {
@@ -244,17 +377,29 @@ Ref: BankManager.userId > User.id
 
 Ref: BankAccount.bankManagerId > BankManager.id
 
+Ref: HistoricalBankBalance.bankAccountId > BankAccount.id
+
 Ref: BankTransaction.bankId > BankAccount.id
 
 Ref: CryptoPortfolio.userId > User.id
+
+Ref: CryptoPortfolio.parentPortfolioId - CryptoPortfolio.id
 
 Ref: AssetBalance.assetInfoId > AssetInfo.id
 
 Ref: AssetBalance.cryptoPortfolioId > CryptoPortfolio.id
 
+Ref: Trade.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: Trade.assetInfoId > AssetInfo.id
+
 Ref: AssetPrice.assetInfoId > AssetInfo.id
 
 Ref: HistoricalCryptoBalance.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: HistoricalAssetProfit.assetInfoId > AssetInfo.id
+
+Ref: HistoricalAssetProfit.cryptoPortfolioId > CryptoPortfolio.id
 
 Ref: ExpenseCategory.userId > User.id
 

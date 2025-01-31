@@ -111,6 +111,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      valueFormatter?: (v: number | string) => string | number
     }
 >(
   (
@@ -128,6 +129,7 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
+      valueFormatter
     },
     ref
   ) => {
@@ -140,6 +142,7 @@ const ChartTooltipContent = React.forwardRef<
 
       const [item] = payload
       const key = `${labelKey || item.dataKey || item.name || "value"}`
+
       const itemConfig = getPayloadConfigFromPayload(config, item, key)
       const value =
         !labelKey && typeof label === "string"
@@ -240,7 +243,7 @@ const ChartTooltipContent = React.forwardRef<
                       </div>
                       {item.value && (
                         <span className="font-mono font-medium tabular-nums text-zinc-950 dark:text-zinc-50">
-                          &nbsp;{item.value.toLocaleString()}
+                          &nbsp;{valueFormatter ? valueFormatter(item.value.toLocaleString()) : item.value.toLocaleString()}
                         </span>
                       )}
                     </div>

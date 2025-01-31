@@ -5,6 +5,7 @@ import {ThemeProvider} from "@/components/providers/theme.provider";
 import {Provider as ReduxProvider} from "react-redux";
 import {makeStore} from "@/state/store";
 import {TooltipProvider} from "@/components/ui/tooltip";
+import {NuqsAdapter} from "nuqs/adapters/next/app";
 
 export default function Providers({children}: { children: React.ReactNode }) {
     return (
@@ -17,7 +18,7 @@ export default function Providers({children}: { children: React.ReactNode }) {
                     // disableTransitionOnChange
                 >
                     <TooltipProvider>
-                        {children}
+                        <NuqsAdapter>{children}</NuqsAdapter>
                     </TooltipProvider>
                 </ThemeProvider>
             </ApolloProvider>

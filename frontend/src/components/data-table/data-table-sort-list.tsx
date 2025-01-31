@@ -10,10 +10,7 @@ import type { SortDirection, Table } from "@tanstack/react-table"
 import { ArrowDownUp, GripVertical, Trash2 } from "lucide-react"
 import { useQueryState } from "nuqs"
 
-import { dataTableConfig } from "@/config/transaction-table"
-import { getSortingStateParser } from "@/lib/parsers"
 import { cn, toSentenceCase } from "@/lib/utils"
-import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -32,7 +29,10 @@ import {
   Sortable,
   SortableDragHandle,
   SortableItem,
-} from "@/components/ui/sortable"
+} from "@/components/data-table/sortable"
+import {getSortingStateParser} from "@/lib/utils/data-table/parsers";
+import {useDebouncedCallback} from "@/lib/hooks/use-debounced-callback";
+import {dataTableConfig} from "@/lib/constants/data-table";
 
 interface DataTableSortListProps<TData> {
   table: Table<TData>
