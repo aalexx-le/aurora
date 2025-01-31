@@ -74,7 +74,7 @@ build-embedding-consumer-dev:
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:dev ./embedding_consumer
+    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:dev ./embedding_consumerr
     - docker push $CI_REGISTRY_IMAGE/embedding-consumer:dev
 
 build-embedding-consumer-prod:
@@ -82,7 +82,7 @@ build-embedding-consumer-prod:
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:latest ./embedding_consumer
+    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:latest ./embedding_consumerr
     - docker push $CI_REGISTRY_IMAGE/embedding-consumer:latest
 
 build-crypto-portfolio-consumer-dev:
@@ -106,7 +106,7 @@ build-ai-server-dev:
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/ai-server:dev ./ai_server
+    - docker build -t $CI_REGISTRY_IMAGE/ai-server:dev ./ai_serverr
     - docker push $CI_REGISTRY_IMAGE/ai-server:dev
 
 build-ai-server-prod:
@@ -114,7 +114,7 @@ build-ai-server-prod:
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/ai-server:latest ./ai_server
+    - docker build -t $CI_REGISTRY_IMAGE/ai-server:latest ./ai_serverr
     - docker push $CI_REGISTRY_IMAGE/ai-server:latest
 
 #tagging:

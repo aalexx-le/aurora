@@ -14,7 +14,7 @@ services:
       - xela
 
   ai_server:
-    container_name: ai_server
+    container_name: ai_serverr
     image: ai_server
     environment:
       DATABASE_URL: ${DATABASE_URL}
@@ -25,7 +25,7 @@ services:
       - xela
 
   embedding_consumer:
-    container_name: embedding_consumer
+    container_name: embedding_consumerr
     image: transaction_embedding_consumer
     environment:
       DATABASE_URL: ${DATABASE_URL}
