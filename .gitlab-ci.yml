@@ -9,7 +9,8 @@ variables:
 
 stages:
   - test
-  - build
+  - build-dev
+  - build-prod
 
 before_script:
   - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY_IMAGE -u $CI_REGISTRY_USER --password-stdin
@@ -20,7 +21,7 @@ test:
     - echo "Running tests"
 
 build-backend-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
@@ -29,7 +30,7 @@ build-backend-dev:
     - docker push $CI_REGISTRY_IMAGE/$SERVER_IMAGE:$VERSION
 
 build-frontend-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
@@ -37,93 +38,82 @@ build-frontend-dev:
     - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:$VERSION ./frontend
     - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:$VERSION
 
-build-backend-prod:
-  stage: build
-  rules:
-      - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest ./backend
-    - docker push $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest
-
-build-frontend-prod:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./frontend
-    - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
-
 build-crypto-pipeline-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - docker build -t $CI_REGISTRY_IMAGE/crypto-pipeline:dev ./crypto_pipeline
     - docker push $CI_REGISTRY_IMAGE/crypto-pipeline:dev
 
-build-crypto-pipeline-prod:
-  stage: build 
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/crypto-pipeline:latest ./crypto_pipeline
-    - docker push $CI_REGISTRY_IMAGE/crypto-pipeline:latest
-
 build-embedding-consumer-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:dev ./embedding_consumerr
     - docker push $CI_REGISTRY_IMAGE/embedding-consumer:dev
 
-build-embedding-consumer-prod:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:latest ./embedding_consumerr
-    - docker push $CI_REGISTRY_IMAGE/embedding-consumer:latest
-
 build-crypto-portfolio-consumer-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - docker build -t $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:dev ./crypto_portfolio_consumer
     - docker push $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:dev
 
-build-crypto-portfolio-consumer-prod:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_BRANCH == 'main'
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest ./crypto_portfolio_consumer
-    - docker push $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest
-
 build-ai-server-dev:
-  stage: build
+  stage: build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == 'dev'
   script:
     - docker build -t $CI_REGISTRY_IMAGE/ai-server:dev ./ai_serverr
     - docker push $CI_REGISTRY_IMAGE/ai-server:dev
 
+build-backend-prod:
+  stage: build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest ./backend
+    - docker push $CI_REGISTRY_IMAGE/$SERVER_IMAGE:latest
+
+build-frontend-prod:
+  stage: build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/$FRONTEND_IMAGE:latest
+
+build-crypto-pipeline-prod:
+  stage: build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-pipeline:latest ./crypto_pipeline
+    - docker push $CI_REGISTRY_IMAGE/crypto-pipeline:latest
+
+build-embedding-consumer-prod:
+  stage: build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/embedding-consumer:latest ./embedding_consumerr
+    - docker push $CI_REGISTRY_IMAGE/embedding-consumer:latest
+
+build-crypto-portfolio-consumer-prod:
+  stage: build-prod
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest ./crypto_portfolio_consumer
+    - docker push $CI_REGISTRY_IMAGE/crypto-portfolio-consumer:latest
+
 build-ai-server-prod:
-  stage: build
+  stage: build-prod
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
   script:
     - docker build -t $CI_REGISTRY_IMAGE/ai-server:latest ./ai_serverr
     - docker push $CI_REGISTRY_IMAGE/ai-server:latest
-
-#tagging:
-#  stage: tagging
-#  script:
-#      - echo $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 1)
-#      - echo $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 2)
-#      - export VERSION=$(docker run --rm -v "$PWD":/app:ro -w /app node:slim node -p "require('./package.json').version")
-#      - git config --global user.email $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 1)
-#      - git config --global user.name $(echo $CI_COMMIT_AUTHOR | cut -d ' ' -f 2)
-#      - git tag -a $VERSION -m "Version $VERSION"
-#      - git push origin $VERSION
