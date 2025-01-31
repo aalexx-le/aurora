@@ -34,6 +34,13 @@ model CreatePortfolioExecution {
   status CreateExecutionStatus @default(QUEUE)
 }
 
+model CreatePortfolioExecution {
+  id     Int                   @id @default(autoincrement())
+  time   DateTime?             @default(now())
+  userId Int
+  status CreateExecutionStatus @default(QUEUE)
+}
+
 model AssetBalance {
   id                String          @id @default(uuid())
   assetInfoId       String

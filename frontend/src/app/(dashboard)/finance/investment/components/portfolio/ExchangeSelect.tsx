@@ -1,16 +1,14 @@
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
-import {Check, ChevronsUpDown} from "lucide-react";
+import {ChevronsUpDown} from "lucide-react";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
-import {cn} from "@/lib/utils";
-import {CEXExchanges} from "@/lib/schema/cryptoPortfolio";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import React from "react";
 import {CexExchanges} from "@/gql/graphql";
 
 interface IProps {
     selectedExchanges: string;
-    setSelectedExchanges: (exchanges: string) => void;
+    setSelectedExchanges: (exchanges: CexExchanges) => void;
 }
 
 
@@ -25,14 +23,24 @@ export const EXCHANGES_INFOS = [
         id: CexExchanges.Mexc,
         name: "MEXC",
         logo: "https://altcoinsbox.com/wp-content/uploads/2023/01/mexc-logo.png"
-    }
+    },
+    {
+        id: CexExchanges.Okx,
+        name: "OKX",
+        logo: "https://altcoinsbox.com/wp-content/uploads/2023/03/okx-logo.jpg"
+    },
+    {
+        id: CexExchanges.All,
+        name: "All",
+        logo: "https://media.istockphoto.com/id/1209243460/vector/vector-icon-hi-tech-circle-company-design-business-symbol-concept-minimal-line-style.jpg?s=612x612&w=0&k=20&c=ylQwTj0xMI20AShoJb898N5NH0QRGYzdNXUZFdXNomE="
+    },
 ]
 
 export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps) {
     const [open, setOpen] = React.useState(false);
 
     const onSelect = (exchanges: string) => {
-        setSelectedExchanges(exchanges);
+        setSelectedExchanges(exchanges as CexExchanges);
         setOpen(false);
     }
 
