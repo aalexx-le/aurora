@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const GET_EXPENSES = gql`
-    query GetExpenses($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
-        getExpenses(userId: $userId, startDate: $startDate, endDate: $endDate) {
+    query GetExpenses($startDate: DateTime, $endDate: DateTime) {
+        getExpenses(startDate: $startDate, endDate: $endDate) {
             id
             category {
                 id
@@ -19,6 +19,18 @@ export const GET_EXPENSES = gql`
             description
             amount
             name
+        }
+    }
+`;
+
+export const GET_SUGGESTED_EXPENSES = gql`
+    query GetSuggestedExpenses($bankTransactionId: String!) {
+        getSuggestedExpenses(bankTransactionId: $bankTransactionId) {
+            amount
+            name
+            bankTransactionId
+            categoryId
+            description
         }
     }
 `;

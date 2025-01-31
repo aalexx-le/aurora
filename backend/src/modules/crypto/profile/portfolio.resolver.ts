@@ -11,6 +11,7 @@ import { CryptoPortfolioService } from "./portfolio.service";
 import {
     CreateCryptoPortfolioArgs,
     CreateCryptoRes,
+    CreateOKXCryptoPortfolioArgs,
 } from "./dto/create-crypto-portfolio.input";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
@@ -21,6 +22,9 @@ import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance"
 import { AssetBalance } from "src/entities/asset-balance";
 import { CryptoPortfolio } from "src/entities/crypto-portfolio";
 import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
+import { CreatePortfolioExecution } from "src/entities/create-portfolio-execution";
+import { UserScalarFieldEnum } from "src/entities/user";
+import { CEXExchanges } from "../../../entities/prisma";
 
 @Resolver(() => CryptoPortfolio)
 export class CryptoPortfolioResolver {
@@ -31,6 +35,14 @@ export class CryptoPortfolioResolver {
 
     @Mutation(() => CreateCryptoRes, { name: "createCryptoPortfolio" })
     create(@Args() args: CreateCryptoPortfolioArgs) {
+        this.cryptoPortfolioService.createPortfolio(args.data);
+        return {
+            userId: args.data.userId,
+        };
+    }
+
+    @Mutation(() => CreateCryptoRes, { name: "createOKXCryptoPortfolio" })
+    createOKX(@Args() args: CreateOKXCryptoPortfolioArgs) {
         this.cryptoPortfolioService.createPortfolio(args.data);
         return {
             userId: args.data.userId,
@@ -56,7 +68,10 @@ export class CryptoPortfolioResolver {
 
     @ResolveField("balances", () => [AssetBalance])
     getBalances(@Parent() cryptoPortfolio: CryptoPortfolio) {
-        return this.cryptoPortfolioService.findBalances(cryptoPortfolio.id);
+        return this.cryptoPortfolioService.findBalances(
+            cryptoPortfolio.id,
+            cryptoPortfolio.exchanges as CEXExchanges,
+        );
     }
 
     @ResolveField("latestHistoricalBalances", () => HistoricalCryptoBalance)
@@ -72,6 +87,10 @@ export class CryptoPortfolioResolver {
                 },
             );
 
+        if (historicalBalance.length === 0) {
+            return {};
+        }
+
         return historicalBalance[0];
     }
 
@@ -81,6 +100,13 @@ export class CryptoPortfolioResolver {
             portfolio.id,
             { take: 1 },
         );
+    }
+
+    @Query(() => [CreatePortfolioExecution], {
+        name: "getCreatePortfolioExecutions",
+    })
+    async getCreatePortfolioExecutions(@Args("userId") userId: number) {
+        return this.cryptoPortfolioService.getCreatePortfolioExecutions(userId);
     }
 
     // @Mutation(() => Crypto)

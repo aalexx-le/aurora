@@ -1,6 +1,6 @@
 # queries and mutations for the expense
-query GetExpenses($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
-    getExpenses(userId: $userId, startDate: $startDate, endDate: $endDate) {
+query GetExpenses($startDate: DateTime, $endDate: DateTime) {
+    getExpenses(startDate: $startDate, endDate: $endDate) {
         id
         category {
             id
@@ -17,6 +17,16 @@ query GetExpenses($userId: Int!, $startDate: DateTime, $endDate: DateTime) {
         description
         amount
         name
+    }
+}
+
+query GetSuggestedExpenses($bankTransactionId: String!) {
+    getSuggestedExpenses(bankTransactionId: $bankTransactionId) {
+        amount
+        name
+        bankTransactionId
+        categoryId
+        description
     }
 }
 

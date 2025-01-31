@@ -10,6 +10,7 @@ import {DataTableRowActionState} from "@/types";
 import {Expense} from "@/app/(dashboard)/finance/expense/components/expense-table/types";
 import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import {ExpenseCategory} from "@/app/(dashboard)/finance/expense/components/category-list/types";
+import {MoneyTransferAmount} from "@/components/money/money-transfer-amount";
 
 interface GetExpenseColumnsProps {
     setRowAction: Dispatch<SetStateAction<DataTableRowActionState<Expense> | null>>
@@ -63,9 +64,7 @@ export const getExpenseColumns = ({setRowAction}: GetExpenseColumnsProps): Colum
         header: ({column}) => <DataTableColumnHeader column={column} title="Amount"/>,
         accessorKey: 'amount',
         cell: ({row: {original: {amount}}}) => (
-            <span className={cn("font-bold", amount > 0 ? "text-chart-2" : "text-chart-5")}>
-                {amount > 0 ? "+" : ""}<MoneyWithCurrency amount={amount}/>
-            </span>
+            <MoneyTransferAmount number={amount}/>
         ),
     },
     {

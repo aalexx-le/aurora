@@ -4,12 +4,16 @@ import { UpdateExpenseInput } from "./dto/update-expense.input";
 import { PrismaService } from "nestjs-prisma";
 import { BankTransactionService } from "../bank/transaction/transaction.service";
 import { GetExpenseArgs } from "./dto/get-expense.input";
+import { HttpService } from "@nestjs/axios";
+import { firstValueFrom } from "rxjs";
+import { Expense } from "../../entities/expense";
 
 @Injectable()
 export class ExpenseService {
     constructor(
         private readonly prismaService: PrismaService,
         private readonly bankTransactionService: BankTransactionService,
+        private readonly httpService: HttpService,
     ) {}
 
     async create(data: CreateExpenseInput) {
@@ -41,10 +45,10 @@ export class ExpenseService {
         });
     }
 
-    findMany(args: GetExpenseArgs) {
+    findMany(userId: number, args: GetExpenseArgs) {
         return this.prismaService.expense.findMany({
             where: {
-                userId: args.userId,
+                userId,
                 createdAt: {
                     gte: args.startDate,
                     lte: args.endDate,
@@ -150,5 +154,23 @@ export class ExpenseService {
         // });
 
         return 0;
+    }
+
+    async getSuggestions(userId: number, bankTransactionId: string) {
+        // const expense = await this.httpService.get();
+        const response = await firstValueFrom(
+            this.httpService
+                .get<Expense>("/expense/suggestion/", {
+                    baseURL: "http://0.0.0.0:8000",
+                    // headers: { Authorization: `Apikey ${apiKey}` },
+                    params: {
+                        userId,
+                        bankTransactionId,
+                    },
+                })
+                .pipe(),
+        );
+
+        return response.data;
     }
 }

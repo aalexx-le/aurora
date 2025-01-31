@@ -40,6 +40,7 @@ export default function TransactionSelect({
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
+                    disabled={true}
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}

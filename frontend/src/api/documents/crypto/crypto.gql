@@ -4,9 +4,16 @@ mutation CreateCryptoPortfolio($data: CreateCryptoPortfolioInput!) {
     }
 }
 
+mutation CreateOKXCryptoPortfolio($data: CreateOKXCryptoPortfolioInput!) {
+    createOKXCryptoPortfolio(data: $data) {
+        userId
+    }
+}
+
 query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) {
     getCryptoPortfolios(data: $data) {
         id
+        name
         exchanges
         tradingType
         investmentCategoryName
@@ -19,6 +26,11 @@ query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) 
             estimatedProfit
             remainingQty
             totalCostInQuoteQty
+            cryptoPortfolio {
+                id
+                exchanges
+                name
+            }
             assetInfo {
                 id
                 logo
@@ -30,6 +42,11 @@ query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) 
         balances {
             id
             balance
+            cryptoPortfolio {
+                id
+                exchanges
+                name
+            }
             assetInfo {
                 id
                 logo

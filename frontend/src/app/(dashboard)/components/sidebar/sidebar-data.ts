@@ -1,4 +1,5 @@
 import {
+    Bot,
     Frame,
     LifeBuoy,
     Map,
@@ -37,25 +38,18 @@ export const SIDEBAR_DATA = {
                 // },
             ],
         },
-        // {
-        //     title: "Models",
-        //     url: "#",
-        //     icon: Bot,
-        //     items: [
-        //         {
-        //             title: "Genesis",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Explorer",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Quantum",
-        //             url: "#",
-        //         },
-        //     ],
-        // },
+        {
+            title: "Agents",
+            url: "#",
+            icon: Bot,
+            isActive: true,
+            items: [
+                {
+                    title: "Chatbot",
+                    url: DASHBOARD_ROUTE.agent.chatbot.value,
+                },
+            ],
+        },
         // {
         //     title: "Documentation",
         //     url: "#",

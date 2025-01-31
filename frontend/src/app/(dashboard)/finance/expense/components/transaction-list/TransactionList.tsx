@@ -1,19 +1,28 @@
-import React from 'react';
-import {useAppSelector} from "@/state/hooks";
-import {useQuery} from "@apollo/client";
-import {GetBankTransactionsQuery, QueryGetBankTransactionsArgs} from "@/gql/graphql";
-import {GET_TRANSACTIONS} from "@/api/script/bank";
-import {useFilteredTransactions} from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
+import React, {useState} from 'react';
+import {
+    useFilteredTransactions
+} from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
 import TransactionItem from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionItem";
 import {CreateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/CreateExpenseSheet";
 import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import {
+    TransactionActionButton,
+    TransactionRowActionType,
+    TransactionRowActionUnionType
+} from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionActionButton";
+import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import {
+    AutoCreateExpenseSheet
+} from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
 
 interface IProps {
 }
 
 const TransactionList = ({}: IProps) => {
+    const [action, setAction] =
+        useState<TransactionRowActionUnionType | null>(null);
+    const [txn, setTxn] = useState<BankTransaction | null>(null);
     const data = useTransactionQuery()
-
     const transactions = useFilteredTransactions(data);
 
     return (
@@ -27,9 +36,31 @@ const TransactionList = ({}: IProps) => {
                 {transactions.map((txn) => (
                     <div key={txn.id} className="flex gap-4 items-center justify-between rounded-lg">
                         <TransactionItem transaction={txn}/>
-                        <CreateExpenseSheet initTransactionId={txn.id} />
+                        <TransactionActionButton
+                            row={txn}
+                            setAction={(t) => {
+                                setAction(t)
+                                setTxn(txn)
+                            }}
+                        />
                     </div>
                 ))}
+
+                {txn && (
+                    <>
+                        <AutoCreateExpenseSheet
+                            initTransactionId={txn.id}
+                            open={action === TransactionRowActionType.CREATE_FROM_AI_SUGGESTION}
+                            onOpenChange={() => setAction(null)}
+                        />
+                        <CreateExpenseSheet
+                            initTransactionId={txn.id}
+                            open={action === TransactionRowActionType.CREATE}
+                            onOpenChange={() => setAction(null)}
+                        />
+                    </>
+                )}
+
             </div>
         </div>
     );

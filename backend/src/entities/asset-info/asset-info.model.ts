@@ -3,6 +3,7 @@ import { ObjectType } from '@nestjs/graphql';
 import { AssetBalance } from '../asset-balance/asset-balance.model';
 import { AssetPrice } from '../asset-price/asset-price.model';
 import { HistoricalAssetProfit } from '../historical-asset-profit/historical-asset-profit.model';
+import { Trade } from '../trade/trade.model';
 
 @ObjectType()
 export class AssetInfo {
@@ -25,7 +26,7 @@ export class AssetInfo {
     @Field(() => String, {nullable:false})
     logo!: string;
 
-    @Field(() => String, {nullable:false,defaultValue:''})
+    @Field(() => String, {defaultValue:'',nullable:false})
     tag!: string;
 
     @Field(() => [AssetBalance], {nullable:true})
@@ -36,4 +37,7 @@ export class AssetInfo {
 
     @Field(() => [HistoricalAssetProfit], {nullable:true})
     historicalProfits?: Array<HistoricalAssetProfit>;
+
+    @Field(() => [Trade], {nullable:true})
+    trades?: Array<Trade>;
 }

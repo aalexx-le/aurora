@@ -8,9 +8,16 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum PortfolioStatus {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE"
+}
+
 export enum CEXExchanges {
     BINANCE = "BINANCE",
-    MEXC = "MEXC"
+    MEXC = "MEXC",
+    OKX = "OKX",
+    ALL = "ALL"
 }
 
 export enum TradingType {
@@ -21,6 +28,13 @@ export enum TradingType {
 export enum OtpPurpose {
     VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
     RESET_PASSWORD = "RESET_PASSWORD"
+}
+
+export enum CreateExecutionStatus {
+    QUEUE = "QUEUE",
+    PROCESSING = "PROCESSING",
+    FAILED = "FAILED",
+    SUCCESS = "SUCCESS"
 }
 
 export interface GetCryptoPortfolioInput {
@@ -53,11 +67,26 @@ export interface GetHistoricalAssetProfitInput {
     timeFrame: string;
 }
 
+export interface GetTradeInput {
+    cryptoPortfolioId?: Nullable<string>;
+    assetInfoId?: Nullable<string>;
+}
+
 export interface CreateCryptoPortfolioInput {
     userId: number;
+    name: string;
     exchanges: CEXExchanges;
     apiKey: string;
     secretKey: string;
+}
+
+export interface CreateOKXCryptoPortfolioInput {
+    userId: number;
+    name: string;
+    exchanges: CEXExchanges;
+    apiKey: string;
+    secretKey: string;
+    passphrase: string;
 }
 
 export interface LoginReqDto {
@@ -239,6 +268,20 @@ export interface HistoricalAssetProfit {
     cryptoPortfolio: CryptoPortfolio;
 }
 
+export interface Trade {
+    cryptoPortfolioId: string;
+    assetInfoId: string;
+    price: number;
+    qty: number;
+    quoteQty: number;
+    commission: number;
+    commissionAsset: string;
+    time: DateTime;
+    isBuyer: boolean;
+    cryptoPortfolio: CryptoPortfolio;
+    assetInfo: AssetInfo;
+}
+
 export interface AssetInfo {
     id: string;
     name: string;
@@ -250,6 +293,7 @@ export interface AssetInfo {
     assetBalances?: Nullable<AssetBalance[]>;
     assetPrices?: Nullable<AssetPrice[]>;
     historicalProfits?: Nullable<HistoricalAssetProfit[]>;
+    trades?: Nullable<Trade[]>;
 }
 
 export interface AssetBalance {
@@ -273,6 +317,8 @@ export interface HistoricalCryptoBalance {
 
 export interface CryptoPortfolio {
     userId: number;
+    name: string;
+    status: PortfolioStatus;
     exchanges: CEXExchanges;
     tradingType: TradingType;
     apiKey: string;
@@ -280,10 +326,14 @@ export interface CryptoPortfolio {
     updateTime?: Nullable<DateTime>;
     id: string;
     investmentCategoryName?: Nullable<string>;
+    parentPortfolioId?: Nullable<string>;
     balances: AssetBalance[];
     user: User;
     historicalAssetProfits?: Nullable<HistoricalAssetProfit[]>;
     historicalBalances?: Nullable<HistoricalCryptoBalance[]>;
+    trades?: Nullable<Trade[]>;
+    parentPortfolio?: Nullable<CryptoPortfolio>;
+    childPortfolios?: Nullable<CryptoPortfolio[]>;
     latestHistoricalBalances?: HistoricalCryptoBalance;
     latestAssetProfits: HistoricalAssetProfit[];
 }
@@ -316,6 +366,13 @@ export interface CreateCryptoRes {
     userId: number;
 }
 
+export interface CreatePortfolioExecution {
+    id: number;
+    time?: Nullable<DateTime>;
+    userId: number;
+    status: CreateExecutionStatus;
+}
+
 export interface AssetInfoOutput {
     id: string;
     name: string;
@@ -325,6 +382,7 @@ export interface AssetInfoOutput {
     logo: string;
     tag: string;
     historicalProfits?: Nullable<HistoricalAssetProfit[]>;
+    trades?: Nullable<Trade[]>;
     lastPrice: number;
 }
 
@@ -337,19 +395,23 @@ export interface TotalSpentAmountOutput {
 export interface IQuery {
     getMe(): User | Promise<User>;
     getCryptoPortfolios(data: GetCryptoPortfolioInput): CryptoPortfolio[] | Promise<CryptoPortfolio[]>;
+    getCreatePortfolioExecutions(userId: number): CreatePortfolioExecution[] | Promise<CreatePortfolioExecution[]>;
     getAssetInfo(data: GetAssetInfoInput): AssetInfo | Promise<AssetInfo>;
     getAssetPrices(data: GetAssetPriceInput, pagination: PaginationInput): AssetPrice[] | Promise<AssetPrice[]>;
     getHistoricalBalances(data: GetHistoricalBalanceInput, pagination: PaginationInput): HistoricalCryptoBalance[] | Promise<HistoricalCryptoBalance[]>;
     getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput, pagination: PaginationInput): HistoricalAssetProfit[] | Promise<HistoricalAssetProfit[]>;
+    getTrades(data: GetTradeInput): Trade[] | Promise<Trade[]>;
     getBankManagers(userId: number): BankManager[] | Promise<BankManager[]>;
     getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(userId: number, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
+    getSuggestedExpenses(bankTransactionId: string): Expense[] | Promise<Expense[]>;
     getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
     getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;
 }
 
 export interface IMutation {
     createCryptoPortfolio(data: CreateCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
+    createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
     login(data: LoginReqDto): LoginResDto | Promise<LoginResDto>;
     signup(data: CreateUserInput): SignupResDto | Promise<SignupResDto>;
     verifyAccount(data: VerifyDto): LoginResDto | Promise<LoginResDto>;

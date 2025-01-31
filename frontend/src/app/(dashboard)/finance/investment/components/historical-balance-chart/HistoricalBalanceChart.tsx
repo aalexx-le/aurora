@@ -26,9 +26,12 @@ export default function HistoricalBalanceChart({cryptoPortfolioId}: IProps) {
     const historicalData = useHistoricalBalanceQuery(cryptoPortfolioId, timeFrame);
     const chartConfig = useChartConfig(historicalData);
 
+    const dataMin = historicalData.reduce((acc, data) => Math.min(acc, data.estimatedBalance), Infinity);
+    const dataMax = historicalData.reduce((acc, data) => Math.max(acc, data.estimatedBalance), -Infinity);
+
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex-1 flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-xl font-bold text-muted-foreground tracking-wide">
                     Assets Analysis
@@ -65,7 +68,7 @@ export default function HistoricalBalanceChart({cryptoPortfolioId}: IProps) {
                             />
                             <YAxis
                                 type="number"
-                                domain={['dataMin', 'dataMax']}
+                                domain={[dataMin, dataMax]}
                                 tickLine={false}
                                 axisLine={false}
                                 tickFormatter={balanceFormatter}
