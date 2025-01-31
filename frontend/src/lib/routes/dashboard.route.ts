@@ -19,8 +19,8 @@ const DASHBOARD_ROUTE = {
     agent: {
         chatbot: {
             value: "/agent/chatbot",
-        }
-    }
+        },
+    },
 };
 
 export default DASHBOARD_ROUTE;

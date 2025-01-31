@@ -2,7 +2,7 @@
  * @see https://github.com/radix-ui/primitives/blob/main/packages/react/compose-refs/src/composeRefs.tsx
  */
 
-type PossibleRef<T> = React.Ref<T> | undefined
+type PossibleRef<T> = React.Ref<T> | undefined;
 
 /**
  * Set a given ref to a given value
@@ -10,12 +10,12 @@ type PossibleRef<T> = React.Ref<T> | undefined
  */
 function setRef<T>(ref: PossibleRef<T>, value: T) {
     if (typeof ref === "function") {
-        ref(value)
+        ref(value);
     } else if (ref !== null && ref !== undefined) {
-        ;(ref as React.MutableRefObject<T>).current = value
+        (ref as React.MutableRefObject<T>).current = value;
     }
 }
 
 export function composeRefs<T>(...refs: PossibleRef<T>[]) {
-    return (node: T) => refs.forEach((ref) => setRef(ref, node))
+    return (node: T) => refs.forEach((ref) => setRef(ref, node));
 }

@@ -1,8 +1,8 @@
-import { createParser } from "nuqs/server"
+import { createParser } from "nuqs/server";
 import { z } from "zod";
 import { dataTableConfig } from "@/lib/constants/data-table";
-import {Row} from "@tanstack/react-table";
-import {ExtendedSortingState, Filter} from "@/types";
+import { Row } from "@tanstack/react-table";
+import { ExtendedSortingState, Filter } from "@/types";
 
 export const sortingItemSchema = z.object({
     id: z.string(),
@@ -15,25 +15,28 @@ export const sortingItemSchema = z.object({
  * @returns A parser for TanStack Table sorting state.
  */
 export const getSortingStateParser = <TData>(
-    originalRow?: Row<TData>["original"]
+    originalRow?: Row<TData>["original"],
 ) => {
-    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
+    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null;
 
     return createParser<ExtendedSortingState<TData>>({
         parse: (value) => {
             try {
-                const parsed = JSON.parse(value)
-                const result = z.array(sortingItemSchema).safeParse(parsed)
+                const parsed = JSON.parse(value);
+                const result = z.array(sortingItemSchema).safeParse(parsed);
 
-                if (!result.success) return null
+                if (!result.success) return null;
 
-                if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
-                    return null
+                if (
+                    validKeys &&
+                    result.data.some((item) => !validKeys.has(item.id))
+                ) {
+                    return null;
                 }
 
-                return result.data as ExtendedSortingState<TData>
+                return result.data as ExtendedSortingState<TData>;
             } catch {
-                return null
+                return null;
             }
         },
         serialize: (value) => JSON.stringify(value),
@@ -41,10 +44,10 @@ export const getSortingStateParser = <TData>(
             a.length === b.length &&
             a.every(
                 (item, index) =>
-                    item.id === b[index]?.id && item.desc === b[index]?.desc
+                    item.id === b[index]?.id && item.desc === b[index]?.desc,
             ),
-    })
-}
+    });
+};
 
 export const filterSchema = z.object({
     id: z.string(),
@@ -60,23 +63,26 @@ export const filterSchema = z.object({
  * @returns A parser for transaction table filters state.
  */
 export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
-    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null
+    const validKeys = originalRow ? new Set(Object.keys(originalRow)) : null;
 
     return createParser<Filter<T>[]>({
         parse: (value) => {
             try {
-                const parsed = JSON.parse(value)
-                const result = z.array(filterSchema).safeParse(parsed)
+                const parsed = JSON.parse(value);
+                const result = z.array(filterSchema).safeParse(parsed);
 
-                if (!result.success) return null
+                if (!result.success) return null;
 
-                if (validKeys && result.data.some((item) => !validKeys.has(item.id))) {
-                    return null
+                if (
+                    validKeys &&
+                    result.data.some((item) => !validKeys.has(item.id))
+                ) {
+                    return null;
                 }
 
-                return result.data as Filter<T>[]
+                return result.data as Filter<T>[];
             } catch {
-                return null
+                return null;
             }
         },
         serialize: (value) => JSON.stringify(value),
@@ -87,7 +93,7 @@ export const getFiltersStateParser = <T>(originalRow?: Row<T>["original"]) => {
                     filter.id === b[index]?.id &&
                     filter.value === b[index]?.value &&
                     filter.type === b[index]?.type &&
-                    filter.operator === b[index]?.operator
+                    filter.operator === b[index]?.operator,
             ),
-    })
-}
+    });
+};

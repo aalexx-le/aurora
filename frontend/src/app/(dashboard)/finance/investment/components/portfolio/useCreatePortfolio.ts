@@ -1,11 +1,16 @@
-import {useMutation} from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import {
-    CreateCryptoPortfolioMutation, CreateCryptoPortfolioMutationVariables,
+    CreateCryptoPortfolioMutation,
+    CreateCryptoPortfolioMutationVariables,
     CreateOkxCryptoPortfolioMutation,
-    CreateOkxCryptoPortfolioMutationVariables
+    CreateOkxCryptoPortfolioMutationVariables,
 } from "@/gql/graphql";
-import {CREATE_CRYPTO_PORTFOLIO, CREATE_OKX_CRYPTO_PORTFOLIO, GET_CRYPTO_PORTFOLIOS} from "@/api/script/crypto/crypto";
-import {GET_CREATE_PORTFOLIO_EXECUTIONS} from "@/api/script/crypto/execution";
+import {
+    CREATE_CRYPTO_PORTFOLIO,
+    CREATE_OKX_CRYPTO_PORTFOLIO,
+    GET_CRYPTO_PORTFOLIOS,
+} from "@/api/script/crypto/crypto";
+import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/script/crypto/execution";
 
 export const useCreatePortfolio = () => {
     const [createPortfolio] = useMutation<
@@ -14,8 +19,10 @@ export const useCreatePortfolio = () => {
     >(CREATE_CRYPTO_PORTFOLIO, {
         awaitRefetchQueries: true,
         refetchQueries: [
-            GET_CRYPTO_PORTFOLIOS, "GetCryptoPortfolios",
-            GET_CREATE_PORTFOLIO_EXECUTIONS, "GetCreatePortfolioExecutions"
+            GET_CRYPTO_PORTFOLIOS,
+            "GetCryptoPortfolios",
+            GET_CREATE_PORTFOLIO_EXECUTIONS,
+            "GetCreatePortfolioExecutions",
         ],
     });
 
@@ -25,13 +32,15 @@ export const useCreatePortfolio = () => {
     >(CREATE_OKX_CRYPTO_PORTFOLIO, {
         awaitRefetchQueries: true,
         refetchQueries: [
-            GET_CRYPTO_PORTFOLIOS, "GetCryptoPortfolios",
-            GET_CREATE_PORTFOLIO_EXECUTIONS, "GetCreatePortfolioExecutions"
+            GET_CRYPTO_PORTFOLIOS,
+            "GetCryptoPortfolios",
+            GET_CREATE_PORTFOLIO_EXECUTIONS,
+            "GetCreatePortfolioExecutions",
         ],
     });
 
     return {
         createPortfolio,
-        createOKXPortfolio
-    }
-}
+        createOKXPortfolio,
+    };
+};

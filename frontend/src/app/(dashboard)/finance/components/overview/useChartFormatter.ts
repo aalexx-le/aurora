@@ -14,7 +14,7 @@ export const useChartFormatter = () => {
     );
     const balanceFormatter = useCallback(
         (balance: number | string) => formatCurrency(Number(balance), "VND"),
-        [formatCurrency],
+        [],
     );
 
     return { timeFormatterForTooltip, balanceFormatter, timeFormatter };
