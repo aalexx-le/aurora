@@ -26,6 +26,8 @@ const TransactionList = ({}: IProps) => {
     const data = useTransactionQuery()
     const transactions = useFilteredTransactions(data);
 
+    console.log({transactions, data})
+
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex justify-between items-center">

@@ -64,6 +64,7 @@ export class BankTransactionService {
     }
 
     async create(data: CreateBankTransactionInput) {
+        console.log({ data });
         return this.prisma.bankTransaction.create({
             data,
         });

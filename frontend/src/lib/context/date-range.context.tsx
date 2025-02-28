@@ -15,9 +15,16 @@ export const DateFilterProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const [dateRange, setDateRange] = useState<DateRange>(
+    const [dateRange, _setDateRange] = useState<DateRange>(
         getCurrentMonthDateRange(),
     );
+
+    const setDateRange = (newDateRange: DateRange) => {
+        if (newDateRange.to) {
+            newDateRange.to.setTime(newDateRange.to.getTime() - 1)
+            _setDateRange(newDateRange)
+        }
+    }
 
     return (
         <DateFilterContext.Provider value={{ dateRange, setDateRange }}>

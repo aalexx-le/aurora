@@ -12,8 +12,8 @@ export const CREATE_BANK_TRANSACTION = gql`
     }
 `;
 export const GET_BANK_TRANSACTIONS = gql`
-    query GetBankTransactions($userId: Float!) {
-        getBankTransactions(userId: $userId) {
+    query GetBankTransactions {
+        getBankTransactions {
             id
             amount
             spentAmount

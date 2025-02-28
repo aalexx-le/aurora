@@ -11,7 +11,12 @@ import { BankTransaction } from "src/entities/bank-transaction";
 import { BankAccountService } from "../account/account.service";
 import { CreateBankTransactionArgs } from "./dto/create-bank-transaction.input";
 import { BankTransactionService } from "./transaction.service";
+import { UseGuards } from "@nestjs/common";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
+import {AuthUser} from "../../../shared/decorators/auth-user.decorator";
+import {User} from "../../../entities/user";
 
+@UseGuards(JwtGuard)
 @Resolver(() => BankTransaction)
 export class BankTransactionResolver {
     constructor(
@@ -21,9 +26,9 @@ export class BankTransactionResolver {
 
     @Query(() => [BankTransaction], { name: "getBankTransactions" })
     getBankTransactions(
-        @Args("userId", { type: () => Number }) userId: number,
+        @AuthUser() user: User
     ) {
-        return this.bankTransactionService.findManyByUserId(userId);
+        return this.bankTransactionService.findManyByUserId(user.id);
     }
 
     @ResolveField("bank", () => BankAccount)

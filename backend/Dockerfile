@@ -29,8 +29,11 @@ ENV NODE_ENV=production
 RUN yarn --frozen-lockfile --production && yarn cache clean;
 
 
-FROM node:20.18-alpine3.20 AS production
+FROM node:20-slim AS production
 WORKDIR /app
+
+# Ensure proper permissions for app directory
+RUN chown -R node:node /app
 
 # Copy the bundled code from the builder stage
 COPY --from=build --chown=node:node /app/dist ./dist
@@ -39,6 +42,8 @@ COPY --from=build --chown=node:node /app/node_modules ./node_modules
 
 # Use the node user from the image
 USER node
+
+EXPOSE 5001
 
 # Start the server
 CMD ["node", "dist/src/main.js"]

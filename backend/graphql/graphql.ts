@@ -438,7 +438,7 @@ export interface IQuery {
     getTrades(data: GetTradeInput): Trade[] | Promise<Trade[]>;
     getBankManagers(): BankManager[] | Promise<BankManager[]>;
     getBankAccounts(): BankAccount[] | Promise<BankAccount[]>;
-    getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
+    getBankTransactions(): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
     getSuggestedExpenses(bankTransactionId: string): Expense[] | Promise<Expense[]>;
     getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
