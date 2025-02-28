@@ -6,10 +6,12 @@ import {
 } from "@reduxjs/toolkit";
 import authReducer from "@/state/slices/auth.slice";
 import cryptoReducer from "@/state/slices/crypto.slice";
+import bankReducer from "@/state/slices/bank.slice";
 
 const rootReducer = combineSlices({
     auth: authReducer,
     crypto: cryptoReducer,
+    bank: bankReducer,
 });
 
 export const makeStore = () =>

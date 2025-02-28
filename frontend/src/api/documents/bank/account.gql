@@ -1,0 +1,21 @@
+mutation CreateBankAccount($data: CreateBankAccountInput!) {
+    createBankAccount(data: $data) {
+        id
+        name
+        accountNumber
+        balance
+        createdAt
+    }
+}
+
+query GetBankAccounts {
+    getBankAccounts {
+        id
+        name
+        accountNumber
+        balance
+        fullName
+        createdAt
+        updatedAt
+    }
+}

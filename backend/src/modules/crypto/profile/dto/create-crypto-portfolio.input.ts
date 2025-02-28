@@ -15,7 +15,7 @@ import { OKXCryptoPortfolio } from "../../../../entities/okx-crypto-portfolio";
 @InputType()
 export class CreateCryptoPortfolioInput extends PickType(
     CryptoPortfolio,
-    ["userId", "name", "apiKey", "secretKey", "exchanges"],
+    ["name", "apiKey", "secretKey", "exchanges"],
     InputType,
 ) {}
 

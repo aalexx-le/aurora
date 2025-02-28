@@ -6,6 +6,7 @@ import { GetTransactionNetworkOutput } from "./dto/get-transaction-network.outpu
 import { firstValueFrom } from "rxjs";
 import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
 import { KafkaTopic } from "../../../shared/constants/kafka";
+import { CreateBankTransactionInput } from "./dto/create-bank-transaction.input";
 
 @Injectable()
 export class BankTransactionService {
@@ -24,7 +25,7 @@ export class BankTransactionService {
         });
     }
 
-    async findOne(bankTransactionId: string) {
+    async findOne(bankTransactionId: number) {
         return this.prisma.bankTransaction.findUnique({
             where: { id: bankTransactionId },
         });
@@ -53,11 +54,17 @@ export class BankTransactionService {
     }
 
     async updateOne(
-        bankTransactionId: string,
+        bankTransactionId: number,
         data: { spentAmount: number }, // TODO: update this interface if needed
     ) {
         return this.prisma.bankTransaction.update({
             where: { id: bankTransactionId },
+            data,
+        });
+    }
+
+    async create(data: CreateBankTransactionInput) {
+        return this.prisma.bankTransaction.create({
             data,
         });
     }

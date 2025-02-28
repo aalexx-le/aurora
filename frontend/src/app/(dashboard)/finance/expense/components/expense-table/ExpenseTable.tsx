@@ -33,7 +33,8 @@ import {DuplicateExpenseSheet} from "@/app/(dashboard)/finance/expense/component
 import {UpdateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/UpdateExpenseSheet";
 import {DeleteDialog} from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
 import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {GET_TRANSACTIONS} from "@/api/script/bank";
+
+import {GET_BANK_TRANSACTIONS} from "@/api/script/bank/transaction";
 
 interface IProps {
     expenses: Expense[];
@@ -49,7 +50,7 @@ export default function ExpenseTable({ expenses }: IProps) {
         RemoveExpenseMutation,
         MutationRemoveExpenseArgs
     >(REMOVE_EXPENSE, {
-        refetchQueries: [GET_EXPENSES, "GetExpenses", GET_TRANSACTIONS, "GetBankTransactions"],
+        refetchQueries: [GET_EXPENSES, "GetExpenses", GET_BANK_TRANSACTIONS, "GetBankTransactions"],
         awaitRefetchQueries: true,
     });
     const { data } = useQuery<

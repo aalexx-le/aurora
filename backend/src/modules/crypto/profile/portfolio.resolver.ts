@@ -15,7 +15,7 @@ import {
 } from "./dto/create-crypto-portfolio.input";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
-import { Inject } from "@nestjs/common";
+import { Inject, UseGuards } from "@nestjs/common";
 import { PortfolioEventListener } from "./portfolio-event-listener.service";
 import { GetCryptoPortfolioArgs } from "./dto/get-crypto-portfolio.input";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
@@ -23,9 +23,12 @@ import { AssetBalance } from "src/entities/asset-balance";
 import { CryptoPortfolio } from "src/entities/crypto-portfolio";
 import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
 import { CreatePortfolioExecution } from "src/entities/create-portfolio-execution";
-import { UserScalarFieldEnum } from "src/entities/user";
+import { User, UserScalarFieldEnum } from "src/entities/user";
 import { CEXExchanges } from "../../../entities/prisma";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
+import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
 
+@UseGuards(JwtGuard)
 @Resolver(() => CryptoPortfolio)
 export class CryptoPortfolioResolver {
     constructor(
@@ -34,18 +37,21 @@ export class CryptoPortfolioResolver {
     ) {}
 
     @Mutation(() => CreateCryptoRes, { name: "createCryptoPortfolio" })
-    create(@Args() args: CreateCryptoPortfolioArgs) {
-        this.cryptoPortfolioService.createPortfolio(args.data);
+    create(@AuthUser() user: User, @Args() args: CreateCryptoPortfolioArgs) {
+        this.cryptoPortfolioService.createPortfolio(user.id, args.data);
         return {
-            userId: args.data.userId,
+            userId: user.id,
         };
     }
 
     @Mutation(() => CreateCryptoRes, { name: "createOKXCryptoPortfolio" })
-    createOKX(@Args() args: CreateOKXCryptoPortfolioArgs) {
-        this.cryptoPortfolioService.createPortfolio(args.data);
+    createOKX(
+        @AuthUser() user: User,
+        @Args() args: CreateOKXCryptoPortfolioArgs,
+    ) {
+        this.cryptoPortfolioService.createPortfolio(user.id, args.data);
         return {
-            userId: args.data.userId,
+            userId: user.id,
         };
     }
 

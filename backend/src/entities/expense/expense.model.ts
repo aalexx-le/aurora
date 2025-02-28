@@ -27,8 +27,8 @@ export class Expense {
     @Field(() => Float, {nullable:false})
     amount!: number;
 
-    @Field(() => String, {nullable:false})
-    bankTransactionId!: string;
+    @Field(() => Int, {nullable:false})
+    bankTransactionId!: number;
 
     @Field(() => Date, {nullable:false})
     createdAt!: Date;

@@ -14,9 +14,12 @@ import { TotalSpentAmountOutput } from "./dto/total-spent-amount.output";
 export class ExpenseCategoryService {
     constructor(private readonly prismaService: PrismaService) {}
 
-    create(data: CreateExpenseCategoryInput) {
+    create(userId: number, data: CreateExpenseCategoryInput) {
         return this.prismaService.expenseCategory.create({
-            data,
+            data: {
+                ...data,
+                userId,
+            },
         });
     }
 

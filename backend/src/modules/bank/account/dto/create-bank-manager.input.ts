@@ -1,17 +1,24 @@
-import { ArgsType, Field, InputType, Int } from "@nestjs/graphql";
+import { ArgsType, Field, InputType, PickType } from "@nestjs/graphql";
 import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
+import { BankManager } from "../../../../entities/bank-manager";
+import { AutoBankManager } from "../../../../entities/auto-bank-manager";
 
 @InputType()
-export class CreateBankManagerInput {
-    @Field({ nullable: false })
-    name: string;
+export class CreateAutoBankManagerInput extends PickType(
+    AutoBankManager,
+    ["apiKey", "thirdParty"],
+    InputType,
+) {}
 
-    @Field(() => Int, { nullable: false })
-    userId: number;
-
-    @Field({ nullable: false })
-    apiKey: string;
+@InputType()
+export class CreateBankManagerInput extends PickType(
+    BankManager,
+    ["name"],
+    InputType,
+) {
+    @Field(() => CreateAutoBankManagerInput, { nullable: true })
+    autoBankManager?: CreateAutoBankManagerInput;
 }
 
 @ArgsType()

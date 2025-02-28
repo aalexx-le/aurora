@@ -138,6 +138,7 @@ export function DataTableFilterList<TData>({
         return filter
       })
 
+      table.setColumnFilters(updatedFilters);
       return updatedFilters
     })
   }

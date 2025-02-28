@@ -27,12 +27,9 @@ export class CryptoPortfolioService {
     ) {}
 
     async createPortfolio(
+        userId: number,
         createCryptoPortfolioInput: CreateCryptoPortfolioInput,
     ) {
-        createCryptoPortfolioInput.userId = Number(
-            createCryptoPortfolioInput.userId,
-        );
-
         // createCryptoPortfolioInput.secretKey =
         //     await this.encryptionService.generateEncryptedKey(
         //         createCryptoPortfolioInput.secretKey,
@@ -40,13 +37,14 @@ export class CryptoPortfolioService {
 
         const execution = await this.prisma.createPortfolioExecution.create({
             data: {
-                userId: createCryptoPortfolioInput.userId,
+                userId,
                 status: CreateExecutionStatus.QUEUE,
             },
         });
 
         // Ensure secretKey is properly encoded before sending
         const msgPayload = {
+            userId,
             ...createCryptoPortfolioInput,
             executionId: execution.id,
             secretKey: createCryptoPortfolioInput.secretKey, // Already encrypted string

@@ -10,9 +10,7 @@ import {
 import { Expense } from "src/entities/expense";
 
 @InputType()
-export class UpdateExpenseInput extends PartialType(
-    OmitType(CreateExpenseInput, ["userId"]),
-) {}
+export class UpdateExpenseInput extends PartialType(CreateExpenseInput) {}
 
 @ArgsType()
 export class UpdateExpenseArgs extends PickType(Expense, ["id"], ArgsType) {

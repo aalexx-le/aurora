@@ -2,6 +2,7 @@ export { Asset_price_1dScalarFieldEnum } from './asset-price-1-d-scalar-field.en
 export { Asset_price_1hScalarFieldEnum } from './asset-price-1-h-scalar-field.enum';
 export { Asset_price_1MScalarFieldEnum } from './asset-price-1-m-scalar-field.enum';
 export { Asset_price_5mScalarFieldEnum } from './asset-price-5-m-scalar-field.enum';
+export { AutoBankManagerThirdParty } from './auto-bank-manager-third-party.enum';
 export { CEXExchanges } from './cex-exchanges.enum';
 export { CreateExecutionStatus } from './create-execution-status.enum';
 export { Historical_asset_profit_1dScalarFieldEnum } from './historical-asset-profit-1-d-scalar-field.enum';

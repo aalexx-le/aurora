@@ -1,8 +1,16 @@
-import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import {
+    Args,
+    Mutation,
+    Parent,
+    Query,
+    ResolveField,
+    Resolver,
+} from "@nestjs/graphql";
 import { BankAccount } from "src/entities/bank-account";
 import { BankTransaction } from "src/entities/bank-transaction";
-import { BankTransactionService } from "./transaction.service";
 import { BankAccountService } from "../account/account.service";
+import { CreateBankTransactionArgs } from "./dto/create-bank-transaction.input";
+import { BankTransactionService } from "./transaction.service";
 
 @Resolver(() => BankTransaction)
 export class BankTransactionResolver {
@@ -21,5 +29,10 @@ export class BankTransactionResolver {
     @ResolveField("bank", () => BankAccount)
     bank(@Parent() bankTransaction: BankTransaction) {
         return this.bankAccountService.getBankAccount(bankTransaction.bankId);
+    }
+
+    @Mutation(() => BankTransaction, { name: "createBankTransaction" })
+    createOne(@Args() args: CreateBankTransactionArgs) {
+        return this.bankTransactionService.create(args.data);
     }
 }

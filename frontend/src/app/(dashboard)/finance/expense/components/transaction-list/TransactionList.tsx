@@ -1,19 +1,20 @@
-import React, {useState} from 'react';
 import {
-    useFilteredTransactions
-} from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
-import TransactionItem from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionItem";
-import {CreateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/CreateExpenseSheet";
-import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+    AutoCreateExpenseSheet
+} from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
+import { CreateExpenseSheet } from "@/app/(dashboard)/finance/expense/components/expense-table/CreateExpenseSheet";
 import {
     TransactionActionButton,
     TransactionRowActionType,
     TransactionRowActionUnionType
 } from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionActionButton";
-import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import TransactionItem from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionItem";
 import {
-    AutoCreateExpenseSheet
-} from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
+    useFilteredTransactions
+} from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { useState } from 'react';
+import CreateTransactionDialog from './CreateTransactionDialog';
 
 interface IProps {
 }
@@ -27,10 +28,11 @@ const TransactionList = ({}: IProps) => {
 
     return (
         <div className="flex flex-col gap-4 ">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-muted-foreground tracking-wide">
                     Transactions
                 </h2>
+                <CreateTransactionDialog />
             </div>
             <div className="flex flex-col gap-6">
                 {transactions.map((txn) => (
@@ -60,7 +62,6 @@ const TransactionList = ({}: IProps) => {
                         />
                     </>
                 )}
-
             </div>
         </div>
     );

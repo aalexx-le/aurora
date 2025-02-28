@@ -8,17 +8,17 @@ import React, {useState} from "react";
 import {GetBankTransactionsQuery, QueryGetBankTransactionsArgs,} from "@/gql/graphql";
 import {useQuery} from "@apollo/client";
 import {useAppSelector} from "@/state/hooks";
-import {GET_TRANSACTIONS} from "@/api/script/bank";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import moment from "moment/moment";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import {GET_BANK_TRANSACTIONS} from "@/api/script/bank/transaction";
 
 interface IProps {
-    selectedTransactionId: string;
-    setSelectedTransactionId: (transactionId: string) => void;
+    selectedTransactionId: number;
+    setSelectedTransactionId: (transactionId: number) => void;
 }
 
 export default function TransactionSelect({
@@ -31,7 +31,7 @@ export default function TransactionSelect({
     const selectedTransaction = transactions.find(
         (txn) => txn.id === selectedTransactionId,
     );
-    const onSelect = (id: string) => {
+    const onSelect = (id: number) => {
         setSelectedTransactionId(id);
         setOpen(false);
     };
@@ -67,8 +67,8 @@ export default function TransactionSelect({
                             {transactions.map((txn) => (
                                 <CommandItem
                                     key={txn.id}
-                                    value={txn.id}
-                                    onSelect={onSelect}
+                                    value={txn.id.toString()}
+                                    onSelect={(v) => onSelect(Number(v))}
                                 >
                                     <TransactionItem transaction={txn} />
                                 </CommandItem>

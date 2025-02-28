@@ -15,6 +15,8 @@ model CryptoPortfolio {
   historicalBalances     HistoricalCryptoBalance[]
   trades                 Trade[]
 
+  okxPortfolio OKXCryptoPortfolio?
+
   // New fields for aggregation
   parentPortfolioId String?
   parentPortfolio   CryptoPortfolio?  @relation("AggregatedPortfolios", fields: [parentPortfolioId], references: [id])
@@ -22,8 +24,9 @@ model CryptoPortfolio {
 }
 
 model OKXCryptoPortfolio {
-  id                String @id @default(uuid())
-  cryptoPortfolioId String @unique
+  id                String          @id @default(uuid())
+  cryptoPortfolioId String          @unique
+  cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
   passphrase        String
 }
 

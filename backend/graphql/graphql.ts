@@ -8,6 +8,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum AutoBankManagerThirdParty {
+    CASSO = "CASSO"
+}
+
 export enum PortfolioStatus {
     ACTIVE = "ACTIVE",
     INACTIVE = "INACTIVE"
@@ -73,7 +77,6 @@ export interface GetTradeInput {
 }
 
 export interface CreateCryptoPortfolioInput {
-    userId: number;
     name: string;
     exchanges: CEXExchanges;
     apiKey: string;
@@ -81,7 +84,6 @@ export interface CreateCryptoPortfolioInput {
 }
 
 export interface CreateOKXCryptoPortfolioInput {
-    userId: number;
     name: string;
     exchanges: CEXExchanges;
     apiKey: string;
@@ -109,17 +111,35 @@ export interface VerifyDto {
 
 export interface CreateBankManagerInput {
     name: string;
-    userId: number;
+    autoBankManager?: Nullable<CreateAutoBankManagerInput>;
+}
+
+export interface CreateAutoBankManagerInput {
     apiKey: string;
+    thirdParty: AutoBankManagerThirdParty;
+}
+
+export interface CreateBankAccountInput {
+    name: string;
+    bankManagerId: string;
+    accountName: string;
+    accountNumber: string;
+    balance: number;
+    fullName: string;
+}
+
+export interface CreateBankTransactionInput {
+    bankId: string;
+    amount: number;
+    description: string;
 }
 
 export interface CreateExpenseInput {
-    userId: number;
     categoryId: string;
     name: string;
     description?: Nullable<string>;
     amount: number;
-    bankTransactionId: string;
+    bankTransactionId: number;
     createdAt: DateTime;
 }
 
@@ -128,12 +148,11 @@ export interface UpdateExpenseInput {
     name?: Nullable<string>;
     description?: Nullable<string>;
     amount?: Nullable<number>;
-    bankTransactionId?: Nullable<string>;
+    bankTransactionId?: Nullable<number>;
     createdAt?: Nullable<DateTime>;
 }
 
 export interface CreateExpenseCategoryInput {
-    userId: number;
     name: string;
     description?: Nullable<string>;
     color: string;
@@ -192,7 +211,7 @@ export interface Expense {
     name: string;
     description?: Nullable<string>;
     amount: number;
-    bankTransactionId: string;
+    bankTransactionId: number;
     createdAt: DateTime;
     bankTransaction: BankTransaction;
     category: ExpenseCategory;
@@ -201,7 +220,7 @@ export interface Expense {
 }
 
 export interface BankTransaction {
-    id: string;
+    id: number;
     bankId: string;
     amount: number;
     description: string;
@@ -233,15 +252,23 @@ export interface BankAccount {
     historicalBalances?: Nullable<HistoricalBankBalance[]>;
 }
 
+export interface AutoBankManager {
+    id: string;
+    apiKey: string;
+    thirdParty: AutoBankManagerThirdParty;
+    bankManagerId: string;
+    bankManager: BankManager;
+}
+
 export interface BankManager {
     id: string;
+    userId: number;
     name: string;
     createdAt: DateTime;
     updatedAt: DateTime;
-    apiKey: string;
-    userId: number;
     banks: BankAccount[];
     user: User;
+    autoBankManager?: Nullable<AutoBankManager>;
 }
 
 export interface AssetPrice {
@@ -315,6 +342,13 @@ export interface HistoricalCryptoBalance {
     cryptoPortfolio: CryptoPortfolio;
 }
 
+export interface OKXCryptoPortfolio {
+    id: string;
+    cryptoPortfolioId: string;
+    passphrase: string;
+    cryptoPortfolio: CryptoPortfolio;
+}
+
 export interface CryptoPortfolio {
     userId: number;
     name: string;
@@ -332,6 +366,7 @@ export interface CryptoPortfolio {
     historicalAssetProfits?: Nullable<HistoricalAssetProfit[]>;
     historicalBalances?: Nullable<HistoricalCryptoBalance[]>;
     trades?: Nullable<Trade[]>;
+    okxPortfolio?: Nullable<OKXCryptoPortfolio>;
     parentPortfolio?: Nullable<CryptoPortfolio>;
     childPortfolios?: Nullable<CryptoPortfolio[]>;
     latestHistoricalBalances?: HistoricalCryptoBalance;
@@ -401,7 +436,8 @@ export interface IQuery {
     getHistoricalBalances(data: GetHistoricalBalanceInput, pagination: PaginationInput): HistoricalCryptoBalance[] | Promise<HistoricalCryptoBalance[]>;
     getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput, pagination: PaginationInput): HistoricalAssetProfit[] | Promise<HistoricalAssetProfit[]>;
     getTrades(data: GetTradeInput): Trade[] | Promise<Trade[]>;
-    getBankManagers(userId: number): BankManager[] | Promise<BankManager[]>;
+    getBankManagers(): BankManager[] | Promise<BankManager[]>;
+    getBankAccounts(): BankAccount[] | Promise<BankAccount[]>;
     getBankTransactions(userId: number): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
     getSuggestedExpenses(bankTransactionId: string): Expense[] | Promise<Expense[]>;
@@ -415,7 +451,9 @@ export interface IMutation {
     login(data: LoginReqDto): LoginResDto | Promise<LoginResDto>;
     signup(data: CreateUserInput): SignupResDto | Promise<SignupResDto>;
     verifyAccount(data: VerifyDto): LoginResDto | Promise<LoginResDto>;
-    createBank(data: CreateBankManagerInput): BankManager | Promise<BankManager>;
+    createBankManager(data: CreateBankManagerInput): BankManager | Promise<BankManager>;
+    createBankAccount(data: CreateBankAccountInput): BankAccount | Promise<BankAccount>;
+    createBankTransaction(data: CreateBankTransactionInput): BankTransaction | Promise<BankTransaction>;
     createExpense(data: CreateExpenseInput): Expense | Promise<Expense>;
     updateExpense(id: string, data: UpdateExpenseInput): Expense | Promise<Expense>;
     removeExpense(id: string): Expense | Promise<Expense>;
