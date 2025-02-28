@@ -1,5 +1,5 @@
-query GetBankTransactions($userId: Float!) {
-    getBankTransactions(userId: $userId) {
+query GetBankTransactions {
+    getBankTransactions {
         id
         amount
         spentAmount

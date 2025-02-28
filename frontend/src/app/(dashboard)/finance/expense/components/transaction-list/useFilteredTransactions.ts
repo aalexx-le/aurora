@@ -8,6 +8,7 @@ export const useFilteredTransactions = (transactions: BankTransaction[]) => {
         if (!dateRange.from && !dateRange.to) {
             return transactions;
         }
+        
         return transactions.filter((transaction: BankTransaction) => {
             const date = new Date(transaction.createdAt);
             if (dateRange.from && dateRange.to) {

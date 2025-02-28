@@ -7,7 +7,8 @@ import {
 export function getCurrentMonthDateRange(): DateRange {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    end.setTime(end.getTime() - 1);
     return {
         from: start,
         to: end,
