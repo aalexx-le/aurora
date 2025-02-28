@@ -1,9 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
-import { CreateBankManagerArgs } from "./dto/create-bank-manager.input";
+import {
+    CreateAutoBankManagerInput,
+    CreateBankManagerArgs,
+    CreateBankManagerInput,
+} from "./dto/create-bank-manager.input";
 import { PrismaService } from "nestjs-prisma";
 import { GetBankAccountNetworkOutput } from "./dto/get-bank-account-network.output";
+import { AutoBankManager } from "../../../entities/auto-bank-manager";
+import { CreateBankAccountInput } from "./dto/create-bank-account.input";
 
 @Injectable()
 export class BankAccountService {
@@ -20,9 +26,19 @@ export class BankAccountService {
         });
     }
 
-    async getBankAccounts(bankManagerId: string) {
+    async getBankAccountsByManagerId(bankManagerId: string) {
         return this.prisma.bankAccount.findMany({
             where: { bankManagerId },
+        });
+    }
+
+    async getBankAccounts(userId: number) {
+        return this.prisma.bankAccount.findMany({
+            where: {
+                bankManager: {
+                    userId,
+                },
+            },
         });
     }
 
@@ -32,34 +48,61 @@ export class BankAccountService {
         });
     }
 
-    async createBankManager(args: CreateBankManagerArgs) {
-        const { data } = await this.fetchBankAccounts(args.data.apiKey);
+    async createBankManager(userId: number, args: CreateBankManagerArgs) {
+        const autoBankManager: CreateAutoBankManagerInput =
+            args.data.autoBankManager;
 
-        const bankManagerId = data.user.id.toString();
-        const bankManager = await this.prisma.bankManager.create({
-            data: {
-                id: bankManagerId,
-                userId: args.data.userId,
-                name: args.data.name,
-                apiKey: args.data.apiKey,
-            },
-        });
+        if (autoBankManager) {
+            const { data } = await this.fetchBankAccounts(
+                autoBankManager.apiKey,
+            );
 
-        for (const account of data.bankAccs) {
-            await this.prisma.bankAccount.create({
+            const bankManagerId = data.user.id.toString();
+            const bankManager = await this.prisma.bankManager.create({
                 data: {
-                    id: account.id.toString(),
-                    fullName: account.bank.fullName,
-                    name: account.memo,
+                    id: bankManagerId,
+                    userId,
+                    name: args.data.name,
+                },
+            });
+
+            await this.prisma.autoBankManager.create({
+                data: {
                     bankManagerId,
-                    balance: account.balance,
-                    accountName: account.bankAccountName,
-                    accountNumber: account.bankSubAccId,
+                    apiKey: autoBankManager.apiKey,
+                    thirdParty: autoBankManager.thirdParty,
+                },
+            });
+
+            for (const account of data.bankAccs) {
+                await this.prisma.bankAccount.create({
+                    data: {
+                        id: account.id.toString(),
+                        fullName: account.bank.fullName,
+                        name: account.memo,
+                        bankManagerId,
+                        balance: account.balance,
+                        accountName: account.bankAccountName,
+                        accountNumber: account.bankSubAccId,
+                    },
+                });
+            }
+
+            return bankManager;
+        } else {
+            return this.prisma.bankManager.create({
+                data: {
+                    userId,
+                    name: args.data.name,
                 },
             });
         }
+    }
 
-        return bankManager;
+    async createBankAccount(data: CreateBankAccountInput) {
+        return this.prisma.bankAccount.create({
+            data,
+        });
     }
 
     private async fetchBankAccounts(
@@ -74,5 +117,11 @@ export class BankAccountService {
         );
 
         return response.data;
+    }
+
+    async getAutoBankManager(bankManagerId: string) {
+        return this.prisma.autoBankManager.findUnique({
+            where: { bankManagerId },
+        });
     }
 }

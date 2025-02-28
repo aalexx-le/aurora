@@ -9,6 +9,7 @@ import { User } from '../user/user.model';
 import { HistoricalAssetProfit } from '../historical-asset-profit/historical-asset-profit.model';
 import { HistoricalCryptoBalance } from '../historical-crypto-balance/historical-crypto-balance.model';
 import { Trade } from '../trade/trade.model';
+import { OKXCryptoPortfolio } from '../okx-crypto-portfolio/okx-crypto-portfolio.model';
 
 @ObjectType()
 export class CryptoPortfolio {
@@ -60,6 +61,9 @@ export class CryptoPortfolio {
 
     @Field(() => [Trade], {nullable:true})
     trades?: Array<Trade>;
+
+    @Field(() => OKXCryptoPortfolio, {nullable:true})
+    okxPortfolio?: OKXCryptoPortfolio | null;
 
     @Field(() => CryptoPortfolio, {nullable:true})
     parentPortfolio?: CryptoPortfolio | null;

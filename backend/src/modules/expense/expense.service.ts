@@ -16,7 +16,7 @@ export class ExpenseService {
         private readonly httpService: HttpService,
     ) {}
 
-    async create(data: CreateExpenseInput) {
+    async create(userId: number, data: CreateExpenseInput) {
         const transaction = await this.bankTransactionService.findOne(
             data.bankTransactionId,
         );
@@ -40,7 +40,10 @@ export class ExpenseService {
             });
 
             return txn.expense.create({
-                data,
+                data: {
+                    ...data,
+                    userId,
+                },
             });
         });
     }

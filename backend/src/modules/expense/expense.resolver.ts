@@ -55,8 +55,8 @@ export class ExpenseResolver {
     }
 
     @Mutation(() => Expense, { name: "createExpense" })
-    createOne(@Args() args: CreateExpenseArgs) {
-        return this.expenseService.create(args.data);
+    createOne(@AuthUser() user: User, @Args() args: CreateExpenseArgs) {
+        return this.expenseService.create(user.id, args.data);
     }
 
     @Mutation(() => Expense, { name: "updateExpense" })

@@ -20,17 +20,21 @@ export class BankTransactionCron {
     @Cron(CronExpression.EVERY_5_MINUTES)
     private async pollingTransactions() {
         this.logger.log("Polling transactions...");
-        const bankManagers = await this.prisma.bankManager.findMany();
+        const autoBankManagers = await this.prisma.autoBankManager.findMany();
 
-        for (const bankManager of bankManagers) {
+        for (const autoBankManager of autoBankManagers) {
             const lastTransaction = await this.prisma.bankTransaction.findFirst(
                 {
-                    where: { bank: { bankManagerId: bankManager.id } },
+                    where: {
+                        bank: { bankManagerId: autoBankManager.bankManagerId },
+                    },
                     orderBy: { createdAt: "desc" },
                 },
             );
 
-            const { data } = await this.fetchTransactions(bankManager.apiKey);
+            const { data } = await this.fetchTransactions(
+                autoBankManager.apiKey,
+            );
 
             const lastTransactionId: number = lastTransaction
                 ? Number(lastTransaction.id)
@@ -51,7 +55,7 @@ export class BankTransactionCron {
                 (r) => r.id > lastTransactionId,
             );
             this.logger.log(
-                `Process ${latestTransactions.length} bank transactions for bank manager ${bankManager.id}`,
+                `Process ${latestTransactions.length} bank transactions for auto bank manager ${autoBankManager.id}`,
             );
 
             for (const transaction of latestTransactions) {
@@ -59,7 +63,7 @@ export class BankTransactionCron {
                 const bankId = transaction.accountId.toString();
                 const txn_entity = await this.prisma.bankTransaction.create({
                     data: {
-                        id: transaction.id.toString(),
+                        id: transaction.id,
                         bankId,
                         amount: transaction.amount,
                         spentAmount: transaction.amount,

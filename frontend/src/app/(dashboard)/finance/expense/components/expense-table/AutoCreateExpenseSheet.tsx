@@ -25,7 +25,7 @@ import {Expense} from "@/app/(dashboard)/finance/expense/components/expense-tabl
 
 interface CreateExpenseSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
-    initTransactionId: string;
+    initTransactionId: number;
     showTrigger?: boolean;
 }
 

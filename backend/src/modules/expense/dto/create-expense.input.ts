@@ -4,7 +4,7 @@ import { Expense } from "src/entities/expense";
 @InputType()
 export class CreateExpenseInput extends OmitType(
     Expense,
-    ["id", "category", "user", "bankTransaction"],
+    ["id", "category", "user", "bankTransaction", "userId"],
     InputType,
 ) {}
 

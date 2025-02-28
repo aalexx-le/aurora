@@ -19,7 +19,12 @@ import { MonthlyTarget } from "src/entities/monthly-target";
 import { GetMonthlyTargetArgs } from "../monthly-target/dto/get-monthly-target.input";
 import { MonthlyTargetService } from "../monthly-target/monthly-target.service";
 import { TotalSpentAmountOutput } from "./dto/total-spent-amount.output";
+import { UseGuards } from "@nestjs/common";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
+import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
+import { User } from "../../../entities/user";
 
+@UseGuards(JwtGuard)
 @Resolver(() => ExpenseCategory)
 export class ExpenseCategoryResolver {
     constructor(
@@ -57,10 +62,11 @@ export class ExpenseCategoryResolver {
 
     @Mutation(() => ExpenseCategory, { name: "createExpenseCategory" })
     createOne(
+        @AuthUser() user: User,
         @Args()
         args: CreateExpenseCategoryArgs,
     ) {
-        return this.expenseCategoryService.create(args.data);
+        return this.expenseCategoryService.create(user.id, args.data);
     }
 
     @Mutation(() => ExpenseCategory, { name: "updateExpenseCategory" })

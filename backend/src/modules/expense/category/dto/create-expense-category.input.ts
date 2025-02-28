@@ -6,7 +6,7 @@ import { Type } from "class-transformer";
 @InputType()
 export class CreateExpenseCategoryInput extends OmitType(
     ExpenseCategory,
-    ["id", "expenses", "user", "monthlyTargets"] as const,
+    ["id", "expenses", "user", "monthlyTargets", "userId"] as const,
     InputType,
 ) {}
 

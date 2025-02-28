@@ -4,13 +4,21 @@
 
 Table BankManager {
   id String [pk]
+  userId Int [not null]
   name String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  apiKey String [not null]
-  userId Int [not null]
   banks BankAccount [not null]
   user User [not null]
+  autoBankManager AutoBankManager
+}
+
+Table AutoBankManager {
+  id String [pk]
+  apiKey String [not null]
+  thirdParty AutoBankManagerThirdParty [not null, default: 'CASSO']
+  bankManager BankManager [not null]
+  bankManagerId String [unique, not null]
 }
 
 Table BankAccount {
@@ -40,7 +48,7 @@ Table HistoricalBankBalance {
 }
 
 Table BankTransaction {
-  id String [pk]
+  id Int [pk, increment]
   bankId String [not null]
   amount Float [not null]
   description String [not null]
@@ -66,6 +74,7 @@ Table CryptoPortfolio {
   historicalAssetProfits HistoricalAssetProfit [not null]
   historicalBalances HistoricalCryptoBalance [not null]
   trades Trade [not null]
+  okxPortfolio OKXCryptoPortfolio
   parentPortfolioId String
   parentPortfolio CryptoPortfolio
   childPortfolios CryptoPortfolio [not null]
@@ -74,14 +83,8 @@ Table CryptoPortfolio {
 Table OKXCryptoPortfolio {
   id String [pk]
   cryptoPortfolioId String [unique, not null]
+  cryptoPortfolio CryptoPortfolio [not null]
   passphrase String [not null]
-}
-
-Table CreatePortfolioExecution {
-  id Int [pk, increment]
-  time DateTime [default: `now()`]
-  userId Int [not null]
-  status CreateExecutionStatus [not null, default: 'QUEUE']
 }
 
 Table CreatePortfolioExecution {
@@ -205,7 +208,7 @@ Table Expense {
   name String [not null]
   description String
   amount Float [not null]
-  bankTransactionId String [not null]
+  bankTransactionId Int [not null]
   createdAt DateTime [default: `now()`, not null]
   bankTransaction BankTransaction [not null]
   category ExpenseCategory [not null]
@@ -344,6 +347,10 @@ Table historical_asset_profit_1d {
   }
 }
 
+Enum AutoBankManagerThirdParty {
+  CASSO
+}
+
 Enum PortfolioStatus {
   ACTIVE
   INACTIVE
@@ -375,6 +382,8 @@ Enum OtpPurpose {
 
 Ref: BankManager.userId > User.id
 
+Ref: AutoBankManager.bankManagerId - BankManager.id
+
 Ref: BankAccount.bankManagerId > BankManager.id
 
 Ref: HistoricalBankBalance.bankAccountId > BankAccount.id
@@ -384,6 +393,8 @@ Ref: BankTransaction.bankId > BankAccount.id
 Ref: CryptoPortfolio.userId > User.id
 
 Ref: CryptoPortfolio.parentPortfolioId - CryptoPortfolio.id
+
+Ref: OKXCryptoPortfolio.cryptoPortfolioId - CryptoPortfolio.id
 
 Ref: AssetBalance.assetInfoId > AssetInfo.id
 

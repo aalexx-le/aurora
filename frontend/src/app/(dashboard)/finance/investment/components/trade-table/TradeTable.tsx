@@ -94,7 +94,7 @@ export default function TradeTable({trades}: IProps) {
         columns,
         pageCount: -1,
         filterFields,
-        enableAdvancedFilter: true,
+        enableAdvancedFilter: false,
         initialState: {
             sorting: [{ id: "time", desc: true }],
             // columnPinning: { right: ["actions"] },

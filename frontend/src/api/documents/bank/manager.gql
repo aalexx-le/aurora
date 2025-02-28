@@ -1,8 +1,12 @@
-query GetBank($userId: Int!) {
-    getBankManagers(userId: $userId) {
+query GetBankManagers {
+    getBankManagers {
+        id
         name
         createdAt
         updatedAt
+        autoBankManager {
+            thirdParty
+        }
         banks {
             name
             accountName
@@ -28,15 +32,10 @@ query GetBank($userId: Int!) {
     }
 }
 
-query GetBankTransactions($userId: Float!) {
-    getBankTransactions(userId: $userId) {
+mutation CreateBankManager($data: CreateBankManagerInput!) {
+    createBankManager(data: $data) {
         id
-        amount
-        spentAmount
+        name
         createdAt
-        description
-        bank {
-            name
-        }
     }
 }

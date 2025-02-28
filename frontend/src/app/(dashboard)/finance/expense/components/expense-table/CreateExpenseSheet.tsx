@@ -19,7 +19,7 @@ import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/
 
 interface CreateExpenseSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
-    initTransactionId: string;
+    initTransactionId: number;
     showTrigger?: boolean;
 }
 
@@ -97,7 +97,6 @@ export function CreateExpenseSheet({
                                 input.amount *
                                 (reviewTransaction.amount /
                                     Math.abs(reviewTransaction.amount)),
-                            userId: Number(user?.id),
                         },
                     },
                 });

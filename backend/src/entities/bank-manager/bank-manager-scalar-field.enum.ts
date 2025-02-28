@@ -2,11 +2,10 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum BankManagerScalarFieldEnum {
     id = "id",
+    userId = "userId",
     name = "name",
     createdAt = "createdAt",
-    updatedAt = "updatedAt",
-    apiKey = "apiKey",
-    userId = "userId"
+    updatedAt = "updatedAt"
 }
 
 

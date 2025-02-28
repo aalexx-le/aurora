@@ -13,7 +13,7 @@ import {
 import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/script/crypto/execution";
 
 export const useCreatePortfolio = () => {
-    const [createPortfolio] = useMutation<
+    const [createPortfolio, {loading: createPortfolioLoading}] = useMutation<
         CreateCryptoPortfolioMutation,
         CreateCryptoPortfolioMutationVariables
     >(CREATE_CRYPTO_PORTFOLIO, {
@@ -26,7 +26,7 @@ export const useCreatePortfolio = () => {
         ],
     });
 
-    const [createOKXPortfolio] = useMutation<
+    const [createOKXPortfolio, {loading: createOKXPortfolioLoading}] = useMutation<
         CreateOkxCryptoPortfolioMutation,
         CreateOkxCryptoPortfolioMutationVariables
     >(CREATE_OKX_CRYPTO_PORTFOLIO, {
@@ -42,5 +42,6 @@ export const useCreatePortfolio = () => {
     return {
         createPortfolio,
         createOKXPortfolio,
+        loading: createPortfolioLoading || createOKXPortfolioLoading,
     };
 };

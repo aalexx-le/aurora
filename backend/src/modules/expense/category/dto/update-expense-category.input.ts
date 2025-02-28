@@ -13,7 +13,7 @@ import { Type } from "class-transformer";
 
 @InputType()
 export class UpdateExpenseCategoryInput extends PartialType(
-    OmitType(CreateExpenseCategoryInput, ["userId"] as const),
+    CreateExpenseCategoryInput,
 ) {}
 
 @ArgsType()

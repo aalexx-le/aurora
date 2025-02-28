@@ -36,7 +36,7 @@ type Expense {
   name: String!
   description: String
   amount: Float!
-  bankTransactionId: String!
+  bankTransactionId: Int!
   createdAt: DateTime!
   bankTransaction: BankTransaction!
   category: ExpenseCategory!
@@ -45,7 +45,7 @@ type Expense {
 }
 
 type BankTransaction {
-  id: String!
+  id: Int!
   bankId: String!
   amount: Float!
   description: String!
@@ -77,15 +77,27 @@ type BankAccount {
   historicalBalances: [HistoricalBankBalance!]
 }
 
+type AutoBankManager {
+  id: String!
+  apiKey: String!
+  thirdParty: AutoBankManagerThirdParty!
+  bankManagerId: String!
+  bankManager: BankManager!
+}
+
+enum AutoBankManagerThirdParty {
+  CASSO
+}
+
 type BankManager {
   id: String!
+  userId: Int!
   name: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  apiKey: String!
-  userId: Int!
   banks: [BankAccount!]!
   user: User!
+  autoBankManager: AutoBankManager
 }
 
 type AssetPrice {
@@ -159,6 +171,13 @@ type HistoricalCryptoBalance {
   cryptoPortfolio: CryptoPortfolio!
 }
 
+type OKXCryptoPortfolio {
+  id: String!
+  cryptoPortfolioId: String!
+  passphrase: String!
+  cryptoPortfolio: CryptoPortfolio!
+}
+
 type CryptoPortfolio {
   userId: Int!
   name: String!
@@ -176,6 +195,7 @@ type CryptoPortfolio {
   historicalAssetProfits: [HistoricalAssetProfit!]
   historicalBalances: [HistoricalCryptoBalance!]
   trades: [Trade!]
+  okxPortfolio: OKXCryptoPortfolio
   parentPortfolio: CryptoPortfolio
   childPortfolios: [CryptoPortfolio!]
   latestHistoricalBalances(timeFrame: String!): HistoricalCryptoBalance!
@@ -274,7 +294,8 @@ type Query {
   getHistoricalBalances(data: GetHistoricalBalanceInput!, pagination: PaginationInput!): [HistoricalCryptoBalance!]!
   getHistoricalAssetProfits(data: GetHistoricalAssetProfitInput!, pagination: PaginationInput!): [HistoricalAssetProfit!]!
   getTrades(data: GetTradeInput!): [Trade!]!
-  getBankManagers(userId: Int!): [BankManager!]!
+  getBankManagers: [BankManager!]!
+  getBankAccounts: [BankAccount!]!
   getBankTransactions(userId: Float!): [BankTransaction!]!
   getExpenses(startDate: DateTime, endDate: DateTime): [Expense!]!
   getSuggestedExpenses(bankTransactionId: String!): [Expense!]!
@@ -323,7 +344,9 @@ type Mutation {
   login(data: LoginReqDto!): LoginResDto!
   signup(data: CreateUserInput!): SignupResDto!
   verifyAccount(data: VerifyDto!): LoginResDto!
-  createBank(data: CreateBankManagerInput!): BankManager!
+  createBankManager(data: CreateBankManagerInput!): BankManager!
+  createBankAccount(data: CreateBankAccountInput!): BankAccount!
+  createBankTransaction(data: CreateBankTransactionInput!): BankTransaction!
   createExpense(data: CreateExpenseInput!): Expense!
   updateExpense(id: String!, data: UpdateExpenseInput!): Expense!
   removeExpense(id: String!): Expense!
@@ -336,7 +359,6 @@ type Mutation {
 }
 
 input CreateCryptoPortfolioInput {
-  userId: Int!
   name: String! = ""
   exchanges: CEXExchanges! = BINANCE
   apiKey: String!
@@ -344,7 +366,6 @@ input CreateCryptoPortfolioInput {
 }
 
 input CreateOKXCryptoPortfolioInput {
-  userId: Int!
   name: String! = ""
   exchanges: CEXExchanges! = BINANCE
   apiKey: String!
@@ -372,17 +393,35 @@ input VerifyDto {
 
 input CreateBankManagerInput {
   name: String!
-  userId: Int!
+  autoBankManager: CreateAutoBankManagerInput
+}
+
+input CreateAutoBankManagerInput {
   apiKey: String!
+  thirdParty: AutoBankManagerThirdParty! = CASSO
+}
+
+input CreateBankAccountInput {
+  name: String!
+  bankManagerId: String!
+  accountName: String!
+  accountNumber: String!
+  balance: Float!
+  fullName: String!
+}
+
+input CreateBankTransactionInput {
+  bankId: String!
+  amount: Float!
+  description: String!
 }
 
 input CreateExpenseInput {
-  userId: Int!
   categoryId: String!
   name: String!
   description: String
   amount: Float!
-  bankTransactionId: String!
+  bankTransactionId: Int!
   createdAt: DateTime!
 }
 
@@ -391,12 +430,11 @@ input UpdateExpenseInput {
   name: String
   description: String
   amount: Float
-  bankTransactionId: String
+  bankTransactionId: Int
   createdAt: DateTime
 }
 
 input CreateExpenseCategoryInput {
-  userId: Int!
   name: String!
   description: String
   color: String!

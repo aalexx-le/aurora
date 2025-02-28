@@ -25,7 +25,7 @@ model Expense {
   name              String
   description       String?
   amount            Float
-  bankTransactionId String
+  bankTransactionId Int
   createdAt         DateTime        @default(now())
   bankTransaction   BankTransaction @relation(fields: [bankTransactionId], references: [id])
   category          ExpenseCategory @relation(fields: [categoryId], references: [id])

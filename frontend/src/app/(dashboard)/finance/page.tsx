@@ -1,9 +1,7 @@
 "use client";
 
-import {Expense, GetBankQuery, GetExpensesQuery, QueryGetBankManagersArgs, QueryGetExpensesArgs,} from "@/gql/graphql";
+import {Expense, GetExpensesQuery, QueryGetExpensesArgs,} from "@/gql/graphql";
 import {useQuery} from "@apollo/client";
-import {useAppSelector} from "@/state/hooks";
-import {GET_BANKS} from "@/api/script/bank";
 import {Skeleton} from "@/components/ui/skeleton";
 import React from "react";
 
@@ -13,6 +11,7 @@ import {DateFilterProvider,} from "@/lib/context/date-range.context";
 import OverviewTab from "@/app/(dashboard)/finance/components/overview/OverviewTab";
 import {BankManager} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import {useFilteredExpenses} from "@/app/(dashboard)/finance/expense/components/expense-table/useFilteredExpenses";
+import {useBankManagersQuery} from "@/app/(dashboard)/finance/components/bank-manager-select/useBankManagersQuery";
 
 interface IProps {
     bankManagers: BankManager[];
@@ -26,14 +25,7 @@ function FinancePage({bankManagers, expenses}: IProps) {
 }
 
 function FinancePageContainer() {
-    const {user} = useAppSelector((state) => state.auth.state);
-
-    const {data: bankManagerData, loading: bankManagerLoading} = useQuery<
-        GetBankQuery,
-        QueryGetBankManagersArgs
-    >(GET_BANKS, {
-        variables: {userId: Number(user?.id || 0)},
-    });
+    const {loading: bankManagerLoading, bankManagers} = useBankManagersQuery();
 
     const {
         data: expenseData,
@@ -49,7 +41,7 @@ function FinancePageContainer() {
 
     return (
         <FinancePage
-            bankManagers={bankManagerData?.getBankManagers ?? []}
+            bankManagers={bankManagers}
             expenses={expenses}
         />
     );

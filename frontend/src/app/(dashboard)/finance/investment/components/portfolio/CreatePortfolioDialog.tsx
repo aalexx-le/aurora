@@ -1,229 +1,193 @@
+import { CREATE_CRYPTO_PORTFOLIO, GET_CRYPTO_PORTFOLIOS } from "@/api/script/crypto/crypto";
+import { CreateDialog } from "@/components/create-dialog";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from '@/components/ui/input';
+import { CexExchanges } from "@/gql/graphql";
+import { CreateCryptoPortfolioInput, createCryptoPortfolioSchema } from "@/lib/schema/cryptoPortfolio";
+import { useAppSelector } from "@/state/hooks";
+import { useMutation } from '@apollo/client';
+import { useForm } from "react-hook-form";
+import { ExchangeSelect } from "./ExchangeSelect";
+import {zodResolver} from "@hookform/resolvers/zod";
 import {Button} from "@/components/ui/button";
 import {Plus} from "lucide-react";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {Input} from "@/components/ui/input";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useState} from "react";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {CexExchanges, CreateCryptoPortfolioMutation, MutationCreateCryptoPortfolioArgs,} from "@/gql/graphql";
-import {useMutation} from "@apollo/client";
-import {CREATE_CRYPTO_PORTFOLIO, GET_CRYPTO_PORTFOLIOS} from "@/api/script/crypto/crypto";
-import {useAppSelector} from "@/state/hooks";
-import ButtonWithLoading from "@/components/ui/button-with-loading";
-import {CreateCryptoPortfolioInput, createCryptoPortfolioSchema} from "@/lib/schema/cryptoPortfolio";
-import {ExchangeSelect} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
-import {GET_CREATE_PORTFOLIO_EXECUTIONS} from "@/api/script/crypto/execution";
 import {useCreatePortfolio} from "@/app/(dashboard)/finance/investment/components/portfolio/useCreatePortfolio";
+import {DialogDescription} from "@/components/ui/dialog";
 
-interface IProps {
+const defaultValues: CreateCryptoPortfolioInput = {
+  apiKey: "",
+  secretKey: "",
+  exchanges: CexExchanges.Binance,
 }
 
-export default function CreatePortfolioDialog({}: IProps) {
-    const {
-        state: {user},
-    } = useAppSelector((state) => state.auth);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const form = useForm<CreateCryptoPortfolioInput>({
-        defaultValues: {
-            exchanges: CexExchanges.Binance,
+const CreatePortfolioDialog = () => {
+  const form = useForm<CreateCryptoPortfolioInput>({
+    resolver: zodResolver(createCryptoPortfolioSchema),
+    defaultValues
+  });
+  const reviewExchanges = form.watch("exchanges");
+
+  const {createPortfolio, createOKXPortfolio, loading} = useCreatePortfolio()
+
+  const handleSubmit = async (data: CreateCryptoPortfolioInput) => {
+    if (data.exchanges == CexExchanges.Okx) {
+      await createOKXPortfolio({
+        variables: {
+          data: {
+            ...data,
+            exchanges: data.exchanges as CexExchanges,
+            passphrase: data.passphrase as string,
+          },
         },
-        resolver: zodResolver(createCryptoPortfolioSchema),
-    });
-    const {setError, getValues, setValue, watch} = form;
-    const reviewExchanges = watch("exchanges");
-    const {createPortfolio, createOKXPortfolio} = useCreatePortfolio()
-
-    async function onSubmit(createPortfolioDto: CreateCryptoPortfolioInput) {
-        try {
-            if (!user) return;
-            setLoading(true);
-
-            // TODO: check to connect to binance successfully
-            // const client = new MainClient({
-            //     api_key: createPortfolioDto.apiKey,
-            //     api_secret: createPortfolioDto.secretKey
-            // })
-            // // const client = Binance({
-            // //     apiKey: createPortfolioDto.apiKey,
-            // //     apiSecret: createPortfolioDto.secretKey
-            // // })
-            // const transaction = await client.getAccountTradeList()
-            // console.log({transaction})
-            // const res = await login({ variables: { transaction: loginDto }});
-            // if (!res.transaction) throw new Error("Login failed.");
-            //
-            // dispatch(authActions.loginWithPassword(loginDto));
-            //
-            // router.push(DASHBOARD_ROUTE.value)
-            console.log({createPortfolioDto})
-            if (createPortfolioDto.exchanges == CexExchanges.Okx) {
-                await createOKXPortfolio({
-                    variables: {
-                        data: {
-                            ...createPortfolioDto,
-                            exchanges: createPortfolioDto.exchanges as CexExchanges,
-                            userId: Number(user.id),
-                            passphrase: createPortfolioDto.passphrase as string,
-                        },
-                    },
-                });
-            }
-            else {
-                await createPortfolio({
-                    variables: {
-                        data: {
-                            ...createPortfolioDto,
-                            exchanges: createPortfolioDto.exchanges as CexExchanges,
-                            userId: Number(user.id),
-                        },
-                    },
-                });
-            }
-
-            setOpenDialog(false);
-        } catch (error) {
-            setError("apiKey", {message: "Cannot connect to your API"});
-        } finally {
-            setLoading(false);
-        }
+      });
     }
+    else {
+      await createPortfolio({
+        variables: {
+          data: {
+            ...data,
+            exchanges: data.exchanges as CexExchanges,
+          },
+        },
+      });
+    }
+  };
 
-    return (
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setOpenDialog(true)}
-                >
-                    <Plus className="h-4 w-4"/>
-                </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Add Crypto Profile</DialogTitle>
-                    <DialogDescription className="flex items-center">
-                        How get API keys?
-                        <Button asChild variant="link">
-                            <a
-                                target="_blank"
-                                href={
-                                    "https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072"
-                                }
-                            >
-                                binance
-                            </a>
-                        </Button>
-                    </DialogDescription>
-                </DialogHeader>
-                <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4"
-                        autoComplete="off"
-                    >
-                        <FormField
-                            control={form.control}
-                            name="exchanges"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Exchanges
-                                    </FormLabel>
-                                    <FormControl>
-                                        <ExchangeSelect
-                                            selectedExchanges={getValues("exchanges")}
-                                            setSelectedExchanges={(v) =>
-                                                setValue("exchanges", v)
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Portfolio Name
-                                        <span className="text-muted-foreground"> (optional)</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="apiKey"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        API Key
-                                        <span className="text-destructive"> (require)</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="secretKey"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Secret Key
-                                        <span className="text-destructive"> (require)</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input {...field} type="password"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        {reviewExchanges == CexExchanges.Okx && <FormField
-                            control={form.control}
-                            name="passphrase"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Passphrase
-                                        <span className="text-destructive"> (require)</span>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input {...field} type="password"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />}
-                        <DialogFooter>
-                            <ButtonWithLoading type="submit" loading={loading}>
-                                Add
-                            </ButtonWithLoading>
-                        </DialogFooter>
-                    </form>
-                </Form>
-            </DialogContent>
-        </Dialog>
-    );
-}
+  return (
+    <CreateDialog<CreateCryptoPortfolioInput>
+      title="New Portfolio"
+      description={
+        <DialogDescription className="flex items-center">
+          How get API keys?
+          <Button asChild variant="link">
+            <a
+                target="_blank"
+                href={
+                  "https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072"
+                }
+            >
+              binance
+            </a>
+          </Button>
+        </DialogDescription>
+      }
+      form={form}
+      formSchema={createCryptoPortfolioSchema}
+      defaultValues={defaultValues}
+      onSubmit={handleSubmit}
+      loading={loading}
+      triggerButton={
+        <Button
+            variant="outline"
+            size="icon"
+        >
+          <Plus className="h-4 w-4"/>
+        </Button>
+      }
+    >
+      {(form) => (
+        <>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Portfolio Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Portfolio name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+              control={form.control}
+              name="exchanges"
+              render={({field}) => (
+                  <FormItem>
+                    <FormLabel>
+                      Exchanges
+                    </FormLabel>
+                    <FormControl>
+                      <ExchangeSelect
+                          selectedExchanges={form.getValues("exchanges")}
+                          setSelectedExchanges={(v) =>
+                              form.setValue("exchanges", v)
+                          }
+                      />
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="name"
+              render={({field}) => (
+                  <FormItem>
+                    <FormLabel>
+                      Portfolio Name
+                      <span className="text-muted-foreground"> (optional)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="apiKey"
+              render={({field}) => (
+                  <FormItem>
+                    <FormLabel>
+                      API Key
+                      <span className="text-destructive"> (require)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+              )}
+          />
+          <FormField
+              control={form.control}
+              name="secretKey"
+              render={({field}) => (
+                  <FormItem>
+                    <FormLabel>
+                      Secret Key
+                      <span className="text-destructive"> (require)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password"/>
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+              )}
+          />
+          {reviewExchanges === CexExchanges.Okx && <FormField
+              control={form.control}
+              name="passphrase"
+              render={({field}) => (
+                  <FormItem>
+                    <FormLabel>
+                      Passphrase
+                      <span className="text-destructive"> (require)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} type="password"/>
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+              )}
+          />}
+        </>
+      )}
+    </CreateDialog>
+  );
+};
+
+export default CreatePortfolioDialog;
