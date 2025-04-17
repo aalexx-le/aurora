@@ -1,7 +1,6 @@
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {Separator} from "@/components/ui/separator";
 import DashBoardSidebar from "@/app/(dashboard)/components/sidebar/dashboard-sidebar";
-import {ThemeSwitcher} from "@/app/home/components/header/ThemeSwitcher";
 import React from "react";
 
 export function Sidebar({
@@ -18,7 +17,6 @@ export function Sidebar({
                         <div className="flex items-center gap-2">
                             <SidebarTrigger />
                             <Separator orientation="vertical" className="mr-2 h-4" />
-                            <ThemeSwitcher/>
                         </div>
                     </header>
                     <div className="flex flex-col gap-2 md:gap-4 flex-grow items-stretch">

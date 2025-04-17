@@ -1,31 +1,128 @@
 import {
+    RefreshTokenMutation,
+    RefreshTokenMutationVariables,
+} from "@/gql/graphql";
+import { Cookie } from "@/lib/utils/cookie";
+import {
     ApolloClient,
     ApolloLink,
     HttpLink,
     InMemoryCache,
+    Observable,
+    fromPromise,
     split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { getCookie } from "cookies-next";
-import { AuthParams } from "@/lib/constants/params";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { createClient } from "graphql-ws";
+import { REFRESH_TOKEN_MUTATION } from "./script/auth/auth";
+import AUTH_ROUTE from "@/lib/routes/auth.route";
+import { createErrorLink } from "@/lib/apollo/error-link";
+import { logError } from "@/lib/utils/error-utils";
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors)
-        graphQLErrors.map(({ message, locations, path }) => {
-            console.log(
-                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-            );
-            console.log(locations?.[0].toString());
+// Creates a new client without auth for the refresh token request
+const createRefreshClient = () => {
+    return new ApolloClient({
+        link: new HttpLink({
+            uri:
+                process.env.GRAPHQL_API_SERVER ||
+                "http://localhost:5001/graphql",
+        }),
+        cache: new InMemoryCache(),
+    });
+};
+
+// Function to refresh the token
+const refreshToken = async () => {
+    const refreshToken = Cookie.getRefreshToken();
+
+    if (!refreshToken) {
+        throw new Error("No refresh token available");
+    }
+
+    try {
+        const refreshClient = createRefreshClient();
+
+        const { data } = await refreshClient.mutate<
+            RefreshTokenMutation,
+            RefreshTokenMutationVariables
+        >({
+            mutation: REFRESH_TOKEN_MUTATION,
+            variables: {
+                data: { refreshToken },
+            },
         });
 
-    if (networkError) console.log(`[Network error]: ${networkError}`);
+        if (!data?.refreshToken) {
+            throw new Error("Failed to refresh token");
+        }
+
+        Cookie.saveTokens({
+            accessToken: data.refreshToken.accessToken,
+            refreshToken: data.refreshToken.refreshToken,
+            expiresIn: data.refreshToken.expiresIn,
+        });
+
+        return data.refreshToken.accessToken;
+    } catch (error) {
+        // Clear tokens on refresh failure
+        Cookie.clearTokens();
+        logError(error, { operation: "refreshToken" });
+        throw error;
+    }
+};
+
+// Authentication error link to handle token refresh
+const authErrorLink = onError(({ graphQLErrors, operation, forward }) => {
+    if (graphQLErrors) {
+        for (const error of graphQLErrors) {
+            const { message, extensions } = error;
+
+            // Handle authentication errors
+            if (
+                extensions?.code === "UNAUTHENTICATED" ||
+                message.includes("Unauthorized")
+            ) {
+                // Try refreshing the token
+                return fromPromise(
+                    refreshToken().catch((error) => {
+                        // Redirect to login page on refresh failure
+                        if (typeof window !== "undefined") {
+                            window.location.href = AUTH_ROUTE.value;
+                        }
+                        throw error;
+                    }),
+                ).flatMap((accessToken) => {
+                    // Retry the operation with the new token
+                    operation.setContext(({ headers = {} }) => ({
+                        headers: {
+                            ...headers,
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }));
+
+                    return forward(operation);
+                });
+            }
+        }
+    }
+
+    // Let the operation continue
+    return forward(operation);
 });
 
-const httpLink = new HttpLink({ uri: process.env.API_SERVER });
+// Create our custom error link for general error handling
+const errorLink = createErrorLink((error) => {
+    // This callback will be called for all errors that aren't handled by the authErrorLink
+    console.log("Error handled by custom error link:", error);
+    // You could also dispatch to a global error state here
+});
+
+const httpLink = new HttpLink({
+    uri: process.env.GRAPHQL_API_SERVER || "http://localhost:5001/graphql",
+});
 
 const authLink = setContext((operation, previousContext) => {
     const { headers, type } = previousContext;
@@ -33,14 +130,23 @@ const authLink = setContext((operation, previousContext) => {
         return previousContext;
     }
 
-    //You access token to make call
-    const accessToken = getCookie(AuthParams.ACCESS_TOKEN);
+    // Check if token is expired before making a request
+    if (Cookie.isTokenExpired()) {
+        // If we have a refresh token, let the error link handle the refresh
+        // Otherwise, just proceed (the operation will fail and redirect to login)
+        if (!Cookie.getRefreshToken()) {
+            Cookie.clearTokens();
+        }
+    }
+
+    // Get the access token
+    const accessToken = Cookie.getAccessToken();
     if (accessToken) {
         return {
             ...previousContext,
             headers: {
                 ...headers,
-                Authorization: "Bearer " + accessToken,
+                Authorization: `Bearer ${accessToken}`,
             },
         };
     }
@@ -50,8 +156,13 @@ const authLink = setContext((operation, previousContext) => {
 
 const wsLink = new GraphQLWsLink(
     createClient({
-        url: process.env.SUBSCRIPTION_SERVER || "ws://localhost:5000/graphql",
-        connectionParams: {},
+        url: process.env.SUBSCRIPTION_SERVER || "ws://localhost:5001/graphql",
+        connectionParams: () => {
+            const accessToken = Cookie.getAccessToken();
+            return accessToken
+                ? { Authorization: `Bearer ${accessToken}` }
+                : {};
+        },
         retryAttempts: Infinity,
         shouldRetry: () => true,
         keepAlive: 10000,
@@ -71,8 +182,19 @@ const link = split(
 );
 
 const client = new ApolloClient({
-    link: ApolloLink.from([authLink, errorLink, link]),
+    link: ApolloLink.from([authLink, authErrorLink, errorLink, link]),
     cache: new InMemoryCache(),
+    defaultOptions: {
+        watchQuery: {
+            errorPolicy: "all",
+        },
+        query: {
+            errorPolicy: "all",
+        },
+        mutate: {
+            errorPolicy: "all",
+        },
+    },
 });
 
 export default client;

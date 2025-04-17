@@ -1,18 +1,15 @@
-import { CREATE_CRYPTO_PORTFOLIO, GET_CRYPTO_PORTFOLIOS } from "@/api/script/crypto/crypto";
-import { CreateDialog } from "@/components/create-dialog";
+import { useCreatePortfolio } from "@/app/(dashboard)/finance/investment/components/portfolio/useCreatePortfolio";
+import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { Button } from "@/components/ui/button";
+import { DialogDescription } from "@/components/ui/dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
 import { CexExchanges } from "@/gql/graphql";
 import { CreateCryptoPortfolioInput, createCryptoPortfolioSchema } from "@/lib/schema/cryptoPortfolio";
-import { useAppSelector } from "@/state/hooks";
-import { useMutation } from '@apollo/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { ExchangeSelect } from "./ExchangeSelect";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Button} from "@/components/ui/button";
-import {Plus} from "lucide-react";
-import {useCreatePortfolio} from "@/app/(dashboard)/finance/investment/components/portfolio/useCreatePortfolio";
-import {DialogDescription} from "@/components/ui/dialog";
 
 const defaultValues: CreateCryptoPortfolioInput = {
   apiKey: "",
@@ -54,7 +51,7 @@ const CreatePortfolioDialog = () => {
   };
 
   return (
-    <CreateDialog<CreateCryptoPortfolioInput>
+    <CreateOrUpdateDialog<CreateCryptoPortfolioInput>
       title="New Portfolio"
       description={
         <DialogDescription className="flex items-center">
@@ -87,19 +84,6 @@ const CreatePortfolioDialog = () => {
     >
       {(form) => (
         <>
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Portfolio Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Portfolio name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
               control={form.control}
               name="exchanges"
@@ -186,7 +170,7 @@ const CreatePortfolioDialog = () => {
           />}
         </>
       )}
-    </CreateDialog>
+    </CreateOrUpdateDialog>
   );
 };
 

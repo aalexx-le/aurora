@@ -3,7 +3,7 @@ import {
     GetSuggestedExpensesQuery,
     GetSuggestedExpensesQueryVariables,
 } from "@/gql/graphql";
-import { GET_SUGGESTED_EXPENSES } from "@/api/script/expense";
+import { GET_SUGGESTED_EXPENSES } from "@/api/script/expense/expense";
 import { useEffect } from "react";
 import { CreateExpenseInput } from "@/lib/schema/expense";
 import { UseFormReturn } from "react-hook-form";
@@ -16,7 +16,9 @@ export const useAISuggestExpenses = (
         GetSuggestedExpensesQueryVariables
     >(GET_SUGGESTED_EXPENSES, {
         variables: {
-            bankTransactionId: form.getValues("bankTransactionId"),
+            data: {
+                bankTransactionId: form.getValues("bankTransactionId"),
+            },
         },
     });
 

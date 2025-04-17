@@ -3,44 +3,63 @@ import {
     Injectable,
     UnauthorizedException,
 } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { User } from "src/entities/user";
-import { UserService } from "../user/user.service";
-import * as Bcrypt from "bcrypt";
 import { ConfigService } from "@nestjs/config";
-import { VerifyDto } from "./dto/verify.dto";
-import { OtpPurpose } from "../../entities/prisma";
+import * as Bcrypt from "bcrypt";
+import { User } from "src/entities/user";
 import { TOTP as otpGenerator } from "totp-generator";
-import { CreateUserInput } from "../user/dto/create-user.input";
+import { OtpPurpose } from "../../entities/prisma";
+import {
+    CreateUserInput,
+    CreateUserInputWithoutOTP,
+} from "../user/dto/create-user.input";
+import { UserService } from "../user/user.service";
+import { VerifyDto } from "./dto/verify.dto";
+import { TokenPair, TokenService } from "./token.service";
+import { LoginReqDto } from "./dto/login.dto";
+import { UserWithoutSensitiveFields } from "../../entities/user/user-without-sensitive-fields";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private jwtService: JwtService,
+        private tokenService: TokenService,
         private userService: UserService,
         private configService: ConfigService,
     ) {}
 
-    async getAccessToken(user: User): Promise<string> {
-        return this.jwtService.sign(
-            {
-                userId: user.id,
-            },
-            { expiresIn: this.configService.get("JWT_AT_EXP_TIME") },
-        );
+    async getTokenPair(user: UserWithoutSensitiveFields): Promise<TokenPair> {
+        return this.tokenService.generateTokenPair(user);
     }
 
-    async getRefreshToken(user: User): Promise<string> {
-        return this.jwtService.sign(
-            {
-                userId: user.id,
-            },
-            { expiresIn: this.configService.get("JWT_RT_EXP_TIME") },
-        );
+    /**
+     * Generate a new token pair using a refresh token
+     *
+     * @param refreshToken - The refresh token to use
+     * @returns A new token pair
+     */
+    async refreshTokens(refreshToken: string): Promise<TokenPair> {
+        const userId =
+            await this.tokenService.validateRefreshToken(refreshToken);
+        const user = await this.userService.findById(userId);
+
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
+
+        // Revoke the old refresh token
+        await this.tokenService.revokeRefreshToken(userId, refreshToken);
+
+        // Generate a new token pair
+        return this.tokenService.generateTokenPair(user);
     }
 
-    async createAuthUser(signupDto: CreateUserInput) {
-        const existingUser = await this.userService.findByAccount(
+    /**
+     * Create a new user account
+     *
+     * @param signupDto - The data for the new user
+     * @returns The created user
+     */
+    async createAuthUser(signupDto: CreateUserInputWithoutOTP): Promise<User> {
+        const existingUser = await this.userService.findByEmailWithPassword(
             signupDto.email,
         );
         if (existingUser)
@@ -59,6 +78,13 @@ export class AuthService {
         return newUser;
     }
 
+    /**
+     * Verify a user account using an OTP
+     *
+     * @param user - The user to verify
+     * @param verifyDto - The verification data
+     * @returns A token pair
+     */
     async verifyRegisterAccount(user: User, verifyDto: VerifyDto) {
         if (!user.otp) throw new ForbiddenException();
 
@@ -68,14 +94,22 @@ export class AuthService {
         if (verifyDto.otp !== user.otp)
             throw new UnauthorizedException("Your input otp is not correct");
 
-        const accessToken = await this.getAccessToken(user);
-        const refreshToken = await this.getRefreshToken(user);
+        const tokens = await this.tokenService.generateTokenPair(user);
 
         await this.userService.update(user.id, { otp: null, otpPurpose: null });
 
         return {
-            accessToken,
-            refreshToken,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
         };
+    }
+
+    /**
+     * Logout a user by revoking all their tokens
+     *
+     * @param userId - The ID of the user to logout
+     */
+    async logout(userId: number): Promise<void> {
+        await this.tokenService.revokeAllUserTokens(userId);
     }
 }

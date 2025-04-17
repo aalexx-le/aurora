@@ -1,6 +1,6 @@
-import { Expense } from "@/app/dashboard/finance/bank-management/components/expense/expense-table/types";
 import { useDateFilterContext } from "@/lib/context/date-range.context";
 import { useMemo } from "react";
+import { Expense } from "./types";
 
 export const useFilteredExpenses = (expenses: Expense[]) => {
     const { dateRange } = useDateFilterContext();

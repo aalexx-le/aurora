@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {GET_MONTHLY_TARGETS} from "@/api/script/expense-category";
+import {GET_MONTHLY_TARGETS} from "@/api/script/expense/expense-category";
 import {useQuery} from "@apollo/client";
 import {GetMonthlyTargetsQuery, QueryGetMonthlyTargetsArgs} from "@/gql/graphql";
 

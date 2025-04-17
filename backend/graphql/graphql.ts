@@ -29,6 +29,13 @@ export enum TradingType {
     SPOT = "SPOT"
 }
 
+export enum RecurrenceType {
+    DAILY = "DAILY",
+    WEEKLY = "WEEKLY",
+    MONTHLY = "MONTHLY",
+    YEARLY = "YEARLY"
+}
+
 export enum OtpPurpose {
     VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
     RESET_PASSWORD = "RESET_PASSWORD"
@@ -39,10 +46,6 @@ export enum CreateExecutionStatus {
     PROCESSING = "PROCESSING",
     FAILED = "FAILED",
     SUCCESS = "SUCCESS"
-}
-
-export interface GetCryptoPortfolioInput {
-    userId: number;
 }
 
 export interface GetAssetInfoInput {
@@ -76,6 +79,10 @@ export interface GetTradeInput {
     assetInfoId?: Nullable<string>;
 }
 
+export interface SuggestExpenseInput {
+    bankTransactionId: number;
+}
+
 export interface CreateCryptoPortfolioInput {
     name: string;
     exchanges: CEXExchanges;
@@ -107,6 +114,10 @@ export interface CreateUserInput {
 export interface VerifyDto {
     otp: string;
     otpPurpose: OtpPurpose;
+}
+
+export interface RefreshTokenInputDto {
+    refreshToken: string;
 }
 
 export interface CreateBankManagerInput {
@@ -175,6 +186,51 @@ export interface UpdateMonthlyTargetInput {
     month?: Nullable<number>;
     year?: Nullable<number>;
     target?: Nullable<number>;
+}
+
+export interface CreateEventInput {
+    name: string;
+    description?: Nullable<string>;
+    startDate: DateTime;
+    endDate: DateTime;
+    allDay: boolean;
+    color?: Nullable<string>;
+    categoryId: number;
+    reminderMinutes?: Nullable<number>;
+    recurrence?: Nullable<CreateRecurrenceInput>;
+}
+
+export interface CreateRecurrenceInput {
+    type: RecurrenceType;
+    interval: number;
+    daysOfWeek?: Nullable<string>;
+    dayOfMonth?: Nullable<number>;
+    weekOfMonth?: Nullable<number>;
+    dayOfWeek?: Nullable<number>;
+    endDate?: Nullable<DateTime>;
+    endCount?: Nullable<number>;
+}
+
+export interface UpdateEventInput {
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    startDate?: Nullable<DateTime>;
+    endDate?: Nullable<DateTime>;
+    allDay?: Nullable<boolean>;
+    color?: Nullable<string>;
+    categoryId?: Nullable<number>;
+    reminderMinutes?: Nullable<number>;
+    recurrence?: Nullable<CreateRecurrenceInput>;
+}
+
+export interface CreateEventCategoryInput {
+    name: string;
+    color: string;
+}
+
+export interface UpdateEventCategoryInput {
+    name?: Nullable<string>;
+    color?: Nullable<string>;
 }
 
 export interface GetHistoricalBalancesInput {
@@ -373,6 +429,49 @@ export interface CryptoPortfolio {
     latestAssetProfits: HistoricalAssetProfit[];
 }
 
+export interface Recurrence {
+    id: number;
+    type: RecurrenceType;
+    interval: number;
+    daysOfWeek?: Nullable<string>;
+    dayOfMonth?: Nullable<number>;
+    weekOfMonth?: Nullable<number>;
+    dayOfWeek?: Nullable<number>;
+    endDate?: Nullable<DateTime>;
+    endCount?: Nullable<number>;
+    eventId: number;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    event: Event;
+}
+
+export interface EventCategory {
+    id: number;
+    name: string;
+    color: string;
+    userId: number;
+    user: User;
+    events?: Nullable<Event[]>;
+}
+
+export interface Event {
+    id: number;
+    name: string;
+    description?: Nullable<string>;
+    startDate: DateTime;
+    endDate: DateTime;
+    allDay: boolean;
+    color?: Nullable<string>;
+    userId: number;
+    categoryId: number;
+    reminderMinutes?: Nullable<number>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    recurrence?: Nullable<Recurrence>;
+    user: User;
+    category: EventCategory;
+}
+
 export interface User {
     id: number;
     email: string;
@@ -384,6 +483,8 @@ export interface User {
     cryptoPortfolios?: Nullable<CryptoPortfolio[]>;
     expenses?: Nullable<Expense[]>;
     expenseCategories?: Nullable<ExpenseCategory[]>;
+    events?: Nullable<Event[]>;
+    eventCategories?: Nullable<EventCategory[]>;
     cryptoProfiles: CryptoPortfolio;
 }
 
@@ -392,13 +493,15 @@ export interface LoginResDto {
     refreshToken: string;
 }
 
+export interface RefreshTokenResponseDto {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+}
+
 export interface SignupResDto {
     accessToken: string;
     refreshToken: string;
-}
-
-export interface CreateCryptoRes {
-    userId: number;
 }
 
 export interface CreatePortfolioExecution {
@@ -406,6 +509,10 @@ export interface CreatePortfolioExecution {
     time?: Nullable<DateTime>;
     userId: number;
     status: CreateExecutionStatus;
+}
+
+export interface CreateCryptoRes {
+    userId: number;
 }
 
 export interface AssetInfoOutput {
@@ -429,7 +536,7 @@ export interface TotalSpentAmountOutput {
 
 export interface IQuery {
     getMe(): User | Promise<User>;
-    getCryptoPortfolios(data: GetCryptoPortfolioInput): CryptoPortfolio[] | Promise<CryptoPortfolio[]>;
+    getCryptoPortfolios(): CryptoPortfolio[] | Promise<CryptoPortfolio[]>;
     getCreatePortfolioExecutions(userId: number): CreatePortfolioExecution[] | Promise<CreatePortfolioExecution[]>;
     getAssetInfo(data: GetAssetInfoInput): AssetInfo | Promise<AssetInfo>;
     getAssetPrices(data: GetAssetPriceInput, pagination: PaginationInput): AssetPrice[] | Promise<AssetPrice[]>;
@@ -440,9 +547,11 @@ export interface IQuery {
     getBankAccounts(): BankAccount[] | Promise<BankAccount[]>;
     getBankTransactions(): BankTransaction[] | Promise<BankTransaction[]>;
     getExpenses(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Expense[] | Promise<Expense[]>;
-    getSuggestedExpenses(bankTransactionId: string): Expense[] | Promise<Expense[]>;
-    getExpenseCategories(userId?: Nullable<number>, name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
+    getSuggestedExpenses(data: SuggestExpenseInput): Expense[] | Promise<Expense[]>;
+    getExpenseCategories(name?: Nullable<string>, startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): ExpenseCategory[] | Promise<ExpenseCategory[]>;
     getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;
+    getEvents(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Event[] | Promise<Event[]>;
+    getEventCategories(): EventCategory[] | Promise<EventCategory[]>;
 }
 
 export interface IMutation {
@@ -451,9 +560,12 @@ export interface IMutation {
     login(data: LoginReqDto): LoginResDto | Promise<LoginResDto>;
     signup(data: CreateUserInput): SignupResDto | Promise<SignupResDto>;
     verifyAccount(data: VerifyDto): LoginResDto | Promise<LoginResDto>;
+    refreshToken(data: RefreshTokenInputDto): RefreshTokenResponseDto | Promise<RefreshTokenResponseDto>;
+    logout(): boolean | Promise<boolean>;
     createBankManager(data: CreateBankManagerInput): BankManager | Promise<BankManager>;
     createBankAccount(data: CreateBankAccountInput): BankAccount | Promise<BankAccount>;
     createBankTransaction(data: CreateBankTransactionInput): BankTransaction | Promise<BankTransaction>;
+    removeBankTransaction(id: number): BankTransaction | Promise<BankTransaction>;
     createExpense(data: CreateExpenseInput): Expense | Promise<Expense>;
     updateExpense(id: string, data: UpdateExpenseInput): Expense | Promise<Expense>;
     removeExpense(id: string): Expense | Promise<Expense>;
@@ -463,10 +575,16 @@ export interface IMutation {
     removeExpenseCategory(id: string): ExpenseCategory | Promise<ExpenseCategory>;
     createMonthlyTarget(data: CreateMonthlyTargetInput): MonthlyTarget | Promise<MonthlyTarget>;
     updateMonthlyTarget(id: string, data: UpdateMonthlyTargetInput): MonthlyTarget | Promise<MonthlyTarget>;
+    createEvent(data: CreateEventInput): Event | Promise<Event>;
+    updateEvent(id: number, data: UpdateEventInput): Event | Promise<Event>;
+    removeEvent(id: number): Event | Promise<Event>;
+    createEventCategory(data: CreateEventCategoryInput): EventCategory | Promise<EventCategory>;
+    updateEventCategory(id: number, data: UpdateEventCategoryInput): EventCategory | Promise<EventCategory>;
+    removeEventCategory(id: number): EventCategory | Promise<EventCategory>;
 }
 
 export interface ISubscription {
-    portfolioCreated(data: GetCryptoPortfolioInput): CryptoPortfolio | Promise<CryptoPortfolio>;
+    portfolioCreated(): CryptoPortfolio | Promise<CryptoPortfolio>;
     newAssetPrice1m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
     newAssetPrice5m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
     newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;

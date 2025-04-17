@@ -4,7 +4,7 @@ import {type Table} from "@tanstack/react-table"
 
 import {useMutation} from "@apollo/client";
 import {MutationRemoveExpensesArgs, RemoveExpensesMutation} from "@/gql/graphql";
-import {GET_EXPENSES, REMOVE_EXPENSES} from "@/api/script/expense";
+import {GET_EXPENSES, REMOVE_EXPENSES} from "@/api/script/expense/expense";
 import {toast} from "@/hooks/use-toast";
 import {useState} from "react";
 import {DeleteDialog} from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";

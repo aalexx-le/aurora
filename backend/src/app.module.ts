@@ -2,19 +2,20 @@ import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_FILTER } from "@nestjs/core";
 import { GraphQLModule } from "@nestjs/graphql";
+import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
 import { PrismaModule } from "nestjs-prisma";
 import { join } from "path";
-import { AuthModule } from "./modules/auth/auth.module";
-import { UserModule } from "./modules/user/user.module";
-import { CryptoModule } from "./modules/crypto/crypto.module";
-import { BankModule } from "./modules/bank/bank.module";
-import { ExpenseModule } from "./modules/expense/expense.module";
 import "src/instrument";
-import { SentryGlobalFilter, SentryModule } from "@sentry/nestjs/setup";
-import { APP_FILTER } from "@nestjs/core";
 import { AppController } from "./app.controller";
+import { AuthModule } from "./modules/auth/auth.module";
+import { BankModule } from "./modules/bank/bank.module";
+import { CryptoModule } from "./modules/crypto/crypto.module";
+import { EventModule } from "./modules/event/event.module";
+import { ExpenseModule } from "./modules/expense/expense.module";
 import { HealthModule } from "./modules/health/health.module";
+import { UserModule } from "./modules/user/user.module";
 
 @Module({
     imports: [
@@ -76,6 +77,7 @@ import { HealthModule } from "./modules/health/health.module";
         CryptoModule,
         BankModule,
         ExpenseModule,
+        EventModule,
         HealthModule,
     ],
     controllers: [AppController],

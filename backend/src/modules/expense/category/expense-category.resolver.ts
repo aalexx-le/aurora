@@ -32,8 +32,8 @@ export class ExpenseCategoryResolver {
         private readonly monthlyTargetService: MonthlyTargetService,
     ) {}
     @Query(() => [ExpenseCategory], { name: "getExpenseCategories" })
-    findMany(@Args() args: GetExpenseCategoryArgs) {
-        return this.expenseCategoryService.findMany(args);
+    findMany(@AuthUser() user: User, @Args() args: GetExpenseCategoryArgs) {
+        return this.expenseCategoryService.findMany(user.id, args);
     }
 
     @ResolveField("countExpenses", () => Int)

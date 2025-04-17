@@ -64,17 +64,24 @@ export class ExpenseService {
     }
 
     async update(id: string, data: UpdateExpenseInput) {
-        const transaction = await this.bankTransactionService.findOne(
-            data.bankTransactionId,
-        );
-        const previousExpense = await this.prismaService.expense.findUnique({
-            where: { id },
-        });
-        const previousTransaction = await this.bankTransactionService.findOne(
-            previousExpense.bankTransactionId,
-        );
+        if (data.bankTransactionId === undefined) {
+            return this.prismaService.expense.update({
+                where: { id },
+                data,
+            });
+        }
 
         return this.prismaService.$transaction(async (txn) => {
+            const transaction = await this.bankTransactionService.findOne(
+                data.bankTransactionId,
+            );
+            const previousExpense = await this.prismaService.expense.findUnique({
+                where: { id },
+            });
+            const previousTransaction = await this.bankTransactionService.findOne(
+                previousExpense.bankTransactionId,
+            );
+
             const isDifferentTransaction =
                 data.bankTransactionId !== previousExpense.bankTransactionId;
 
@@ -159,7 +166,7 @@ export class ExpenseService {
         return 0;
     }
 
-    async getSuggestions(userId: number, bankTransactionId: string) {
+    async getSuggestions(userId: number, bankTransactionId: number) {
         // const expense = await this.httpService.get();
         const response = await firstValueFrom(
             this.httpService

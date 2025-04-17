@@ -1,3 +1,4 @@
+import { Inject, UseGuards } from "@nestjs/common";
 import {
     Args,
     Mutation,
@@ -7,26 +8,24 @@ import {
     Resolver,
     Subscription,
 } from "@nestjs/graphql";
-import { CryptoPortfolioService } from "./portfolio.service";
+import { PubSub } from "graphql-subscriptions";
+import { AssetBalance } from "src/entities/asset-balance";
+import { CreatePortfolioExecution } from "src/entities/create-portfolio-execution";
+import { CryptoPortfolio } from "src/entities/crypto-portfolio";
+import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
+import { User } from "src/entities/user";
+import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
+import { CEXExchanges } from "../../../entities/prisma";
+import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
+import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
 import {
     CreateCryptoPortfolioArgs,
     CreateCryptoRes,
     CreateOKXCryptoPortfolioArgs,
 } from "./dto/create-crypto-portfolio.input";
-import { PubSub } from "graphql-subscriptions";
-import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
-import { Inject, UseGuards } from "@nestjs/common";
 import { PortfolioEventListener } from "./portfolio-event-listener.service";
-import { GetCryptoPortfolioArgs } from "./dto/get-crypto-portfolio.input";
-import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
-import { AssetBalance } from "src/entities/asset-balance";
-import { CryptoPortfolio } from "src/entities/crypto-portfolio";
-import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
-import { CreatePortfolioExecution } from "src/entities/create-portfolio-execution";
-import { User, UserScalarFieldEnum } from "src/entities/user";
-import { CEXExchanges } from "../../../entities/prisma";
-import { JwtGuard } from "../../auth/guards/jwt.guard";
-import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
+import { CryptoPortfolioService } from "./portfolio.service";
 
 @UseGuards(JwtGuard)
 @Resolver(() => CryptoPortfolio)
@@ -56,17 +55,20 @@ export class CryptoPortfolioResolver {
     }
 
     @Query(() => [CryptoPortfolio], { name: "getCryptoPortfolios" })
-    async get(@Args() args: GetCryptoPortfolioArgs) {
-        return this.cryptoPortfolioService.findPortfolios(args.data.userId);
+    async get(@AuthUser() user: User) {
+        return this.cryptoPortfolioService.findPortfolios(user.id);
     }
 
     @Subscription(() => CryptoPortfolio, {
         name: PortfolioEventListener.CREATE_SUCCESS_PAYLOAD_NAME,
-        filter: (payload, variables: GetCryptoPortfolioArgs) =>
-            payload[PortfolioEventListener.CREATE_SUCCESS_PAYLOAD_NAME]
-                .userId === variables.data.userId,
+        filter: (payload, variables, context) => {
+            const portfolioUserId =
+                payload[PortfolioEventListener.CREATE_SUCCESS_PAYLOAD_NAME].userId;
+            const subscriberUserId = context.user?.id;
+            return portfolioUserId === subscriberUserId;
+        },
     })
-    onProfileCreated(@Args() _: GetCryptoPortfolioArgs) {
+    onProfileCreated() {
         return this.pubSub.asyncIterator(
             SubscriptionEvent.CRYPTO_PORTFOLIO_CREATED,
         );

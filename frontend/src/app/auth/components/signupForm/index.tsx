@@ -1,23 +1,28 @@
 import Link from "next/link";
 
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {useForm} from "react-hook-form";
-import {SignupMutation, SignupMutationVariables,} from "@/gql/graphql";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useAppDispatch, useAppSelector} from "@/state/hooks";
-import {useRouter} from "next/navigation";
-import {authActions} from "@/state/slices/auth.slice";
-import {useMutation} from "@apollo/client";
-import {SIGNUP_MUTATION} from "@/api/script/auth";
-import AUTH_ROUTE from "@/lib/routes/auth.route";
-import {GraphQLError} from "graphql/error";
+import { SIGNUP_MUTATION } from "@/api/script/auth/auth";
+import { TABS } from "@/app/auth/page";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
-import {signupSchema, SignupSchemaType} from "@/lib/schema/signup";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { SignupMutation, SignupMutationVariables, } from "@/gql/graphql";
+import AUTH_ROUTE from "@/lib/routes/auth.route";
+import { signupSchema, SignupSchemaType } from "@/lib/schema/signup";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import { authActions } from "@/state/slices/auth.slice";
+import { useMutation } from "@apollo/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { GraphQLError } from "graphql/error";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { GoogleButton } from "../GoogleButton";
 
-export function SignupForm() {
+interface SignupFormProps {
+    setActiveTab: (tab: string) => void;
+}
+
+export function SignupForm({ setActiveTab }: SignupFormProps) {
     const form = useForm<SignupSchemaType>({
         resolver: zodResolver(signupSchema),
         defaultValues: {
@@ -63,7 +68,7 @@ export function SignupForm() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Signup</CardTitle>
+                <CardTitle>Sign up</CardTitle>
                 <CardDescription>
                     Ready to join? Please enter your details and start journey
                     with us.
@@ -161,14 +166,20 @@ export function SignupForm() {
                         >
                             OR
                         </div>
-                        <Button variant="outline" className="w-full">
-                            Login with Google
-                        </Button>
+                        <GoogleButton 
+                            className="mt-2"
+                        >
+                            Sign up with Google
+                        </GoogleButton>
+
 
                         <div className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
-                            <Link href="#" className="underline">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link href="#" className="underline" onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab(TABS.LOGIN);
+                            }}>
+                                Login
                             </Link>
                         </div>
                     </form>

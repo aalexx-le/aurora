@@ -4,7 +4,7 @@ import { ExpenseCategory } from "src/entities/expense-category";
 @ArgsType()
 export class GetExpenseCategoryArgs extends PickType(
     PartialType(ExpenseCategory),
-    ["userId", "name"],
+    ["name"],
     ArgsType,
 ) {
     @Field(() => Date, { nullable: true })

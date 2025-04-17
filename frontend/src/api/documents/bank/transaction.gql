@@ -20,3 +20,11 @@ mutation CreateBankTransaction($data: CreateBankTransactionInput!) {
         bankId
     }
 }
+
+mutation RemoveBankTransaction($id: Int!) {
+    removeBankTransaction(id: $id) {
+        id
+        amount
+        description
+    }
+}

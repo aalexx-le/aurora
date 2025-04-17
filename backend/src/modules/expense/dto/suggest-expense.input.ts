@@ -1,7 +1,15 @@
-import { ArgsType, Field } from "@nestjs/graphql";
+import { ArgsType, Field, InputType, PickType } from "@nestjs/graphql";
+import { Expense } from "../../../entities/expense";
+
+@InputType()
+export class SuggestExpenseInput extends PickType(
+    Expense,
+    ["bankTransactionId"] as const,
+    InputType,
+) {}
 
 @ArgsType()
 export class SuggestExpenseArgs {
-    @Field(() => String, { nullable: false })
-    bankTransactionId: string;
+    @Field(() => SuggestExpenseInput)
+    data!: SuggestExpenseInput;
 }

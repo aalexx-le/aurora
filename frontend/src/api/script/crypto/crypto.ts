@@ -33,11 +33,8 @@ export const CREATE_OKX_CRYPTO_PORTFOLIO = gql`
 `;
 
 export const GET_CRYPTO_PORTFOLIOS = gql`
-    query GetCryptoPortfolios(
-        $data: GetCryptoPortfolioInput!
-        $timeFrame: String!
-    ) {
-        getCryptoPortfolios(data: $data) {
+    query GetCryptoPortfolios($timeFrame: String!) {
+        getCryptoPortfolios {
             id
             name
             exchanges

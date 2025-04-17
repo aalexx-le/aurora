@@ -1,41 +1,63 @@
-import React, {useEffect} from "react";
-import {useQuery} from "@apollo/client";
-import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables,} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
-import {Skeleton} from "@/components/ui/skeleton";
-import {useAppSelector} from "@/state/hooks";
-import {useDateFilterContext,} from "@/lib/context/date-range.context";
-import {Expense} from "@/app/(dashboard)/finance/expense/components/expense-table/types";
+import { GET_EXPENSE_CATEGORIES } from "@/api/script/expense/expense-category";
 import DateFilter from "@/app/(dashboard)/finance/expense/components/date-filter/DateFilter";
+import { ResetDateFilterButton } from "@/app/(dashboard)/finance/expense/components/date-filter/ResetDateFilterButton";
 import ExpenseTable from "@/app/(dashboard)/finance/expense/components/expense-table/ExpenseTable";
-import {ResetDateFilterButton} from "@/app/(dashboard)/finance/expense/components/date-filter/ResetDateFilterButton";
+import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables, } from "@/gql/graphql";
+import { useDateFilterContext, } from "@/lib/context/date-range.context";
+import { useAppSelector } from "@/state/hooks";
+import { useQuery } from "@apollo/client";
+import { memo, Suspense, useEffect, useMemo } from "react";
 
 interface IProps {
     expenses: Expense[];
 }
 
-export default function ExpenseTab({ expenses }: IProps) {
+// Memoized components to prevent unnecessary re-renders
+const MemoizedExpenseTable = memo(ExpenseTable);
+
+// Full screen skeleton component for expense table
+const ExpenseTableSkeleton = () => (
+    <Skeleton className="h-[calc(100vh-12rem)] w-full rounded-md" />
+);
+
+function ExpenseTab({ expenses }: IProps) {
     const { user } = useAppSelector((state) => state.auth.state);
     const { dateRange } = useDateFilterContext();
-    const { loading, data, refetch } = useQuery<
+    
+    // Optimize query with fetchPolicy and add error handling
+    const { loading, data, refetch, error } = useQuery<
         GetExpenseCategoriesQuery,
         GetExpenseCategoriesQueryVariables
     >(GET_EXPENSE_CATEGORIES, {
-        variables: {
-            userId: Number(user?.id),
-        },
+        fetchPolicy: 'cache-and-network',
+        notifyOnNetworkStatusChange: true,
+        errorPolicy: 'all',
     });
 
     useEffect(() => {
         refetch({
-            userId: Number(user?.id),
             startDate: dateRange?.from,
             endDate: dateRange?.to,
         });
     }, [dateRange, user, refetch]);
 
+    // Memoize expenses to prevent unnecessary re-renders
+    const memoizedExpenses = useMemo(() => expenses, [expenses]);
+
+    // Show error state if query fails
+    if (error) {
+        return (
+            <div className="p-4 rounded-md bg-red-50 border border-red-200">
+                <h3 className="text-red-800 font-medium">Error loading expense data</h3>
+                <p className="text-red-600 text-sm">{error.message}</p>
+            </div>
+        );
+    }
+
     if (loading) {
-        return <Skeleton className="w-full h-full" />;
+        return <ExpenseTableSkeleton />;
     }
 
     return (
@@ -45,8 +67,13 @@ export default function ExpenseTab({ expenses }: IProps) {
                 <ResetDateFilterButton />
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
-                <ExpenseTable expenses={expenses} />
+                <Suspense fallback={<ExpenseTableSkeleton />}>
+                    <MemoizedExpenseTable expenses={memoizedExpenses} />
+                </Suspense>
             </div>
         </div>
     );
 }
+
+// Export memoized component to prevent unnecessary re-renders
+export default memo(ExpenseTab);

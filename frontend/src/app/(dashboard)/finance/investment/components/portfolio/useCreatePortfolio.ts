@@ -13,7 +13,7 @@ import {
 import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/script/crypto/execution";
 
 export const useCreatePortfolio = () => {
-    const [createPortfolio, {loading: createPortfolioLoading}] = useMutation<
+    const [createPortfolio, { loading: createPortfolioLoading }] = useMutation<
         CreateCryptoPortfolioMutation,
         CreateCryptoPortfolioMutationVariables
     >(CREATE_CRYPTO_PORTFOLIO, {
@@ -26,18 +26,19 @@ export const useCreatePortfolio = () => {
         ],
     });
 
-    const [createOKXPortfolio, {loading: createOKXPortfolioLoading}] = useMutation<
-        CreateOkxCryptoPortfolioMutation,
-        CreateOkxCryptoPortfolioMutationVariables
-    >(CREATE_OKX_CRYPTO_PORTFOLIO, {
-        awaitRefetchQueries: true,
-        refetchQueries: [
-            GET_CRYPTO_PORTFOLIOS,
-            "GetCryptoPortfolios",
-            GET_CREATE_PORTFOLIO_EXECUTIONS,
-            "GetCreatePortfolioExecutions",
-        ],
-    });
+    const [createOKXPortfolio, { loading: createOKXPortfolioLoading }] =
+        useMutation<
+            CreateOkxCryptoPortfolioMutation,
+            CreateOkxCryptoPortfolioMutationVariables
+        >(CREATE_OKX_CRYPTO_PORTFOLIO, {
+            awaitRefetchQueries: true,
+            refetchQueries: [
+                GET_CRYPTO_PORTFOLIOS,
+                "GetCryptoPortfolios",
+                GET_CREATE_PORTFOLIO_EXECUTIONS,
+                "GetCreatePortfolioExecutions",
+            ],
+        });
 
     return {
         createPortfolio,

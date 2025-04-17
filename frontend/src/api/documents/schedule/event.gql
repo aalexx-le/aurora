@@ -1,0 +1,56 @@
+query GetEvents($startDate: DateTime, $endDate: DateTime) {
+    getEvents(startDate: $startDate, endDate: $endDate) {
+      id
+      name
+      startDate
+      endDate
+      allDay
+      color
+      description
+      category {
+        id
+        name
+        color
+      }
+      recurrence {
+        type
+        interval
+        daysOfWeek
+        dayOfMonth
+        weekOfMonth
+        dayOfWeek
+        endDate
+        endCount
+      }
+    }
+  }
+
+mutation CreateEvent($data: CreateEventInput!) {
+  createEvent(data: $data) {
+    id
+    name
+    startDate
+    endDate
+    category {
+      id
+    }
+    recurrence {
+      id
+    }
+  }
+}
+
+mutation UpdateEvent($id: Int!, $data: UpdateEventInput!) {
+  updateEvent(id: $id, data: $data) {
+    id
+    name
+    startDate
+    endDate
+  }
+}
+
+mutation RemoveEvent($id: Int!) {
+  removeEvent(id: $id) {
+    id
+  }
+} 

@@ -2,7 +2,7 @@ import {cn} from "@/lib/utils";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import {useQuery} from "@apollo/client";
 import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
 import {useAppSelector} from "@/state/hooks";
 import {useEffect, useState} from "react";
 import {Convert} from "easy-currencies";

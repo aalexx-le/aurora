@@ -1,3 +1,7 @@
+import { GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { GET_BANK_TRANSACTIONS, REMOVE_BANK_TRANSACTION } from "@/api/script/bank/transaction";
+import { GET_EXPENSES } from "@/api/script/expense/expense";
 import {
     AutoCreateExpenseSheet
 } from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
@@ -12,7 +16,10 @@ import {
     useFilteredTransactions
 } from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
 import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { DeleteDialog } from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
 import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { RemoveBankTransactionMutation, RemoveBankTransactionMutationVariables } from "@/gql/graphql";
+import { useMutation } from "@apollo/client";
 import { useState } from 'react';
 import CreateTransactionDialog from './CreateTransactionDialog';
 
@@ -25,6 +32,18 @@ const TransactionList = ({}: IProps) => {
     const [txn, setTxn] = useState<BankTransaction | null>(null);
     const data = useTransactionQuery()
     const transactions = useFilteredTransactions(data);
+    const [removeTransaction] = useMutation<RemoveBankTransactionMutation, RemoveBankTransactionMutationVariables>(REMOVE_BANK_TRANSACTION, {
+        refetchQueries: [GET_BANK_TRANSACTIONS, GET_BANK_MANAGERS, GET_BANK_ACCOUNTS, GET_EXPENSES],
+    });
+
+    const handleDelete = async () => {
+        if (txn) {
+            await removeTransaction({
+                variables: { id: txn.id }
+            });
+            setTxn(null);
+        }
+    };
 
     console.log({transactions, data})
 
@@ -61,6 +80,13 @@ const TransactionList = ({}: IProps) => {
                             initTransactionId={txn.id}
                             open={action === TransactionRowActionType.CREATE}
                             onOpenChange={() => setAction(null)}
+                        />
+                        <DeleteDialog
+                            open={action === TransactionRowActionType.DELETE}
+                            onOpenChange={() => setTxn(null)}
+                            rows={[txn]}
+                            showTrigger={false}
+                            onDelete={handleDelete}
                         />
                     </>
                 )}

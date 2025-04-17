@@ -1,5 +1,5 @@
-import {z} from "zod";
-import {AutoBankManagerThirdParty} from "@/gql/graphql";
+import { z } from "zod";
+import { AutoBankManagerThirdParty } from "@/gql/graphql";
 
 export const createBankManagerSchema = z
     .object({
@@ -8,17 +8,23 @@ export const createBankManagerSchema = z
         apiKey: z.string().optional(),
         thirdParty: z.nativeEnum(AutoBankManagerThirdParty),
     })
-    .refine(data => {
-        return !(data.isAuto && !data.apiKey);
-    }, {
-        message: "API key is required for auto bank manager",
-        path: ["apiKey"],
-    })
-    .refine(data => {
-        return !(data.isAuto && !data.thirdParty);
-    }, {
-        message: "Third party is required for auto bank manager",
-        path: ["thirdParty"],
-    })
+    .refine(
+        (data) => {
+            return !(data.isAuto && !data.apiKey);
+        },
+        {
+            message: "API key is required for auto bank manager",
+            path: ["apiKey"],
+        },
+    )
+    .refine(
+        (data) => {
+            return !(data.isAuto && !data.thirdParty);
+        },
+        {
+            message: "Third party is required for auto bank manager",
+            path: ["thirdParty"],
+        },
+    );
 
-export type CreateBankManagerInput = z.infer<typeof createBankManagerSchema>; 
+export type CreateBankManagerInput = z.infer<typeof createBankManagerSchema>;

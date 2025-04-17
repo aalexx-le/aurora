@@ -7,7 +7,7 @@ import {CreateMonthlyTargetInput, createMonthlyTargetSchema} from "@/lib/schema/
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useMutation} from "@apollo/client";
 import {CreateMonthlyTargetMutation, MutationCreateMonthlyTargetArgs} from "@/gql/graphql";
-import {CREATE_MONTHLY_TARGET, GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {CREATE_MONTHLY_TARGET, GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
 import {useToast} from "@/hooks/use-toast";
 import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
 import CurrencyInput from "@/components/ui/currency-input";

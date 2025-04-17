@@ -9,6 +9,8 @@ model User {
   cryptoPortfolios  CryptoPortfolio[]
   expenses          Expense[]
   expenseCategories ExpenseCategory[]
+  events          Event[]
+  eventCategories EventCategory[]
 }
 
 enum OtpPurpose {

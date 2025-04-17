@@ -5,7 +5,7 @@ import {
 import BankSummary from "@/app/(dashboard)/finance/components/bank-summary/BankSummary";
 import {useQuery} from "@apollo/client";
 import {CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
 import {useAppSelector} from "@/state/hooks";
 import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-summary/InvestmentSummary";
 import {useCryptoPortfoliosQuery} from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
@@ -16,15 +16,9 @@ interface IProps {
 }
 
 export default function OverviewTab({bankManagers}: IProps) {
-    const {user} = useAppSelector((state) => state.auth.state);
-
     const {
         data,
-    } = useQuery<GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables>(GET_EXPENSE_CATEGORIES, {
-        variables: {
-            userId: Number(user?.id),
-        },
-    });
+    } = useQuery<GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables>(GET_EXPENSE_CATEGORIES);
     const categories = data?.getExpenseCategories ?? [];
 
     const {loading, portfolios} = useCryptoPortfoliosQuery()

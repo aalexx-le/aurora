@@ -21,7 +21,7 @@ export function CategoryBadge({category, className, targetAmount}: IProps) {
             className={cn("w-min p-2 rounded-full border-2 shadow-sm", "relative overflow-hidden rounded-full",)}
             style={{
                 borderColor: category.color,
-                filter: `drop-shadow(0 0 2px ${category.color})`,
+                // filter: `drop-shadow(0 0 2px ${category.color})`,
             }}
         >
             {targetAmount && <div className="absolute top-0 left-0 h-full w-full flex-1 bg-primary transition-all"

@@ -1,15 +1,17 @@
-import { CREATE_BANK_ACCOUNT } from "@/api/script/bank/account";
-import { CreateDialog } from "@/components/create-dialog";
+import { CREATE_BANK_ACCOUNT, GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { BankInfo, VietNamBankSelect } from "@/app/(dashboard)/finance/bank/components/bank-select/BankSelect";
+import BankManagerSelect from "@/app/(dashboard)/finance/components/bank-manager-select/BankManagerSelect";
+import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
+import { CreateBankAccountMutation, CreateBankAccountMutationVariables } from "@/gql/graphql";
 import { CreateBankAccountInput, createBankAccountSchema } from "@/lib/schema/bankAccount";
 import { useMutation } from '@apollo/client';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
-import BankManagerSelect from "@/app/(dashboard)/finance/components/bank-manager-select/BankManagerSelect";
-import BankAccountSelect from "./BankAccountSelect";
 
 interface CreateBankAccountDialogProps {
 }
@@ -31,11 +33,8 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
         }
     });
 
-    const [createAccount, { loading }] = useMutation(CREATE_BANK_ACCOUNT, {
-        // refetchQueries: [{
-        //     query: GET_BANK_ACCOUNTS,
-        //     variables: { bankManagerId }
-        // }],
+    const [createAccount, { loading }] = useMutation<CreateBankAccountMutation, CreateBankAccountMutationVariables>(CREATE_BANK_ACCOUNT, {
+        refetchQueries: [GET_BANK_MANAGERS, GET_BANK_ACCOUNTS],
         awaitRefetchQueries: true,
     });
 
@@ -50,8 +49,13 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
         });
     };
 
+    const handleBankSelect = (bankInfo: BankInfo) => {
+        form.setValue("name", bankInfo.name);
+        form.setValue("fullName", bankInfo.fullName);
+    };
+
     return (
-        <CreateDialog<CreateBankAccountInput>
+        <CreateOrUpdateDialog<CreateBankAccountInput>
             title="New Bank Account"
             form={form}
             formSchema={createBankAccountSchema}
@@ -61,9 +65,9 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
             triggerButton={
                 <Button
                     variant="outline"
-                    size="icon"
                 >
-                    <Plus className="size-4" />
+                    Bank Account
+                    <Plus className="size-4 ml-2" />
                 </Button>
             }
         >
@@ -91,9 +95,12 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Bank Name</FormLabel>
+                                <FormLabel>Bank</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Vietin" {...field} />
+                                    <VietNamBankSelect
+                                        selectedBank={form.getValues("name")}
+                                        setSelectedBank={handleBankSelect}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -101,6 +108,7 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
                     />
                     <FormField
                         control={form.control}
+                        disabled
                         name="fullName"
                         render={({ field }) => (
                             <FormItem>
@@ -159,8 +167,8 @@ const CreateBankAccountDialog = ({ }: CreateBankAccountDialogProps) => {
                     />
                 </>
             )}
-        </CreateDialog>
+        </CreateOrUpdateDialog>
     );
 };
 
-export default CreateBankAccountDialog; 
+export default CreateBankAccountDialog;

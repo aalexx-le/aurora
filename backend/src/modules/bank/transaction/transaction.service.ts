@@ -1,11 +1,7 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { HttpService } from "@nestjs/axios";
-import { PrismaService } from "nestjs-prisma";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { GetTransactionNetworkOutput } from "./dto/get-transaction-network.output";
-import { firstValueFrom } from "rxjs";
 import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
-import { KafkaTopic } from "../../../shared/constants/kafka";
+import { HttpService } from "@nestjs/axios";
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "nestjs-prisma";
 import { CreateBankTransactionInput } from "./dto/create-bank-transaction.input";
 
 @Injectable()
@@ -64,9 +60,59 @@ export class BankTransactionService {
     }
 
     async create(data: CreateBankTransactionInput) {
-        console.log({ data });
-        return this.prisma.bankTransaction.create({
-            data,
+        return this.prisma.$transaction(async (prisma) => {
+            const bankAccount = await prisma.bankAccount.findUnique({
+                where: { id: data.bankId },
+            });
+
+            const newBalance = bankAccount.balance + data.amount;
+
+            if (newBalance < 0) {
+                throw new Error("Insufficient balance");
+            }
+
+            await prisma.bankAccount.update({
+                where: { id: data.bankId },
+                data: {
+                    balance: newBalance,
+                },
+            });
+
+            return prisma.bankTransaction.create({
+                data: {
+                    ...data,
+                    spentAmount: data.amount,
+                },
+            });
+        });
+    }
+
+    async remove(id: number) {
+        return this.prisma.$transaction(async (prisma) => {
+            const transaction = await prisma.bankTransaction.findUnique({
+                where: { id },
+            });
+
+            const bankAccount = await prisma.bankAccount.findUnique({
+                where: { id: transaction.bankId },
+            });
+
+            const newBalance = bankAccount.balance - transaction.amount;
+
+            await prisma.bankAccount.update({
+                where: { id: transaction.bankId },
+                data: { balance: newBalance },
+            });
+
+            await prisma.expense.deleteMany({
+                where: {
+                    bankTransactionId: id,
+                },
+            });
+
+            return prisma.bankTransaction.delete({
+                where: { id },
+            });
         });
     }
 }

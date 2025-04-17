@@ -15,6 +15,11 @@ const AUTH_ROUTE = {
     forgotPassword: {
         value: "/auth/forgot-password",
     },
+    callback: {
+        google: {
+            value: "/auth/callback/google",
+        },
+    },
 };
 
 export default AUTH_ROUTE;

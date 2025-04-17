@@ -40,7 +40,7 @@ export class ExpenseResolver {
     suggestOne(@AuthUser() user: User, @Args() args: SuggestExpenseArgs) {
         return this.expenseService.getSuggestions(
             user.id,
-            args.bankTransactionId,
+            args.data.bankTransactionId,
         );
     }
 

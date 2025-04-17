@@ -1,31 +1,31 @@
 "use client";
 
-import * as React from "react";
-import {useEffect, useMemo, useState, useTransition} from "react";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {useMutation} from "@apollo/client";
-import {Button} from "@/components/ui/button";
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet";
-import {CreateExpenseInput, createExpenseSchema} from "@/lib/schema/expense";
-import {CreateExpenseMutation, MutationCreateExpenseArgs,} from "@/gql/graphql";
-import {CREATE_EXPENSE, GET_EXPENSES} from "@/api/script/expense";
-import {useToast} from "@/hooks/use-toast";
-import {useAppSelector} from "@/state/hooks";
-import {PlusIcon} from "@radix-ui/react-icons";
-import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/script/expense/expense";
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
-import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { CreateExpenseMutation, MutationCreateExpenseArgs, } from "@/gql/graphql";
+import { useToast } from "@/hooks/use-toast";
+import { CreateExpenseInput, createExpenseSchema } from "@/lib/schema/expense";
+import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
+import { useAppSelector } from "@/state/hooks";
+import { useMutation } from "@apollo/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from "react";
+import { useEffect, useMemo, useTransition } from "react";
+import { useForm } from "react-hook-form";
 
 interface CreateExpenseSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
     initTransactionId: number;
     showTrigger?: boolean;
+    selectedDate?: Date | null;
 }
 
 export function CreateExpenseSheet({
                                        initTransactionId,
                                        showTrigger = true,
+                                       selectedDate = null,
                                        ...props
                                    }: CreateExpenseSheetProps) {
     const [isPending, startTransition] = useTransition();
@@ -50,8 +50,8 @@ export function CreateExpenseSheet({
         description: "",
         amount: 0,
         bankTransactionId: initTransactionId,
-        createdAt: new Date(),
-    }), [initTransactionId]);
+        createdAt: selectedDate || new Date(),
+    }), [initTransactionId, selectedDate]);
 
     const form = useForm<CreateExpenseInput>({
         resolver: zodResolver(createExpenseSchema),
@@ -66,10 +66,10 @@ export function CreateExpenseSheet({
         [transactions, reviewTransactionId]
     );
 
-    // Reset form when click on another transaction
+    // Reset form when click on another transaction or when selected date changes
     useEffect(() => {
         reset(defaultValues);
-    }, [initTransactionId, reset, defaultValues]);
+    }, [initTransactionId, selectedDate, reset, defaultValues]);
 
     function onSubmit(input: CreateExpenseInput) {
         startTransition(async () => {

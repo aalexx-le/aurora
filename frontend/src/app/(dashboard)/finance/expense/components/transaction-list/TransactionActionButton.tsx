@@ -1,8 +1,8 @@
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import React, {Dispatch, SetStateAction} from "react";
-import {DotsHorizontalIcon, PlusIcon} from "@radix-ui/react-icons";
-import {DataTableRowActionState, DataTableRowActionType} from "@/types";
+import {DotsHorizontalIcon, PlusIcon, TrashIcon} from "@radix-ui/react-icons";
+import {DataTableRowActionType} from "@/types";
 import {CreateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/CreateExpenseSheet";
 import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 
@@ -52,7 +52,13 @@ export function TransactionActionButton<RData>({row, setAction}: IProps<RData>) 
                     <PlusIcon />
                     Create Expense
                 </DropdownMenuItem>
-                {/*<DropdownMenuSeparator/>*/}
+                <DropdownMenuItem
+                    className="flex gap-2"
+                    onSelect={() => setAction(TransactionRowActionType.DELETE)}
+                >
+                    <TrashIcon/>
+                    Delete
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

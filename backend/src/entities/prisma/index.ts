@@ -14,6 +14,7 @@ export { NullsOrder } from './nulls-order.enum';
 export { OtpPurpose } from './otp-purpose.enum';
 export { PortfolioStatus } from './portfolio-status.enum';
 export { QueryMode } from './query-mode.enum';
+export { RecurrenceType } from './recurrence-type.enum';
 export { SortOrder } from './sort-order.enum';
 export { TradingType } from './trading-type.enum';
 export { TransactionIsolationLevel } from './transaction-isolation-level.enum';

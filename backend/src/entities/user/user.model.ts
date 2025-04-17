@@ -6,6 +6,8 @@ import { BankManager } from '../bank-manager/bank-manager.model';
 import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
 import { Expense } from '../expense/expense.model';
 import { ExpenseCategory } from '../expense-category/expense-category.model';
+import { Event } from '../event/event.model';
+import { EventCategory } from '../event-category/event-category.model';
 
 @ObjectType()
 export class User {
@@ -39,4 +41,10 @@ export class User {
 
     @Field(() => [ExpenseCategory], {nullable:true})
     expenseCategories?: Array<ExpenseCategory>;
+
+    @Field(() => [Event], {nullable:true})
+    events?: Array<Event>;
+
+    @Field(() => [EventCategory], {nullable:true})
+    eventCategories?: Array<EventCategory>;
 }

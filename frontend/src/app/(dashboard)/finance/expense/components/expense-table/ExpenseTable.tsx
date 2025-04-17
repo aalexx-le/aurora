@@ -10,7 +10,7 @@ import {
 import React, {useMemo, useState} from "react";
 import {useMutation, useQuery} from "@apollo/client";
 import {DataTableAdvancedFilterField, DataTableRowActionState, DataTableRowActionType,} from "@/types";
-import {GET_EXPENSES, REMOVE_EXPENSE} from "@/api/script/expense";
+import {GET_EXPENSES, REMOVE_EXPENSE} from "@/api/script/expense/expense";
 import {useToast} from "@/hooks/use-toast";
 import {DataTableToolbar} from "@/components/data-table/data-table-toolbar";
 import {
@@ -19,7 +19,7 @@ import {
     MutationRemoveExpenseArgs,
     RemoveExpenseMutation,
 } from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
 import {useAppSelector} from "@/state/hooks";
 import {useDateFilterContext} from "@/lib/context/date-range.context";
 import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
@@ -45,7 +45,6 @@ export default function ExpenseTable({ expenses }: IProps) {
         useState<DataTableRowActionState<Expense> | null>(null);
     const { toast } = useToast();
     const { dateRange } = useDateFilterContext();
-    const { user } = useAppSelector((state) => state.auth.state);
     const [removeExpense] = useMutation<
         RemoveExpenseMutation,
         MutationRemoveExpenseArgs
@@ -58,7 +57,6 @@ export default function ExpenseTable({ expenses }: IProps) {
         GetExpenseCategoriesQueryVariables
     >(GET_EXPENSE_CATEGORIES, {
         variables: {
-            userId: Number(user?.id),
             startDate: dateRange?.from,
             endDate: dateRange?.to,
         },
@@ -69,13 +67,14 @@ export default function ExpenseTable({ expenses }: IProps) {
         () => getExpenseColumns({ setRowAction }),
         [setRowAction],
     );
+    const responsiveHideColumns = useMemo(() => ["description", "createdAt"], [])
 
     const filterFields: DataTableAdvancedFilterField<Expense>[] = [
         {
-            id: "description",
-            label: "Description",
+            id: "name",
+            label: "Name",
             type: "text",
-            placeholder: "Search by description",
+            placeholder: "Search by name",
         },
         {
             id: "category",
@@ -139,7 +138,7 @@ export default function ExpenseTable({ expenses }: IProps) {
             <DataTable table={table}>
                 <DataTableToolbar table={table} filterFields={filterFields}>
                     <ExpenseTableToolbarActions table={table} />
-                    <DataTableViewOptions table={table} responsiveHideColumns={["description", "createdAt"]}/>
+                    <DataTableViewOptions table={table} responsiveHideColumns={responsiveHideColumns}/>
                 </DataTableToolbar>
             </DataTable>
             {rowAction && (

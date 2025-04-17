@@ -17,7 +17,7 @@ export function GradientPicker({
                                    popupAlign,
                                    className,
                                }: {
-    background: string
+    background?: string
     setBackground: (background: string) => void
     popupAlign?: typeof ALIGN_OPTIONS[number]
     className?: string
@@ -60,6 +60,7 @@ export function GradientPicker({
     ]
 
     const defaultTab = useMemo(() => {
+        if (!background) return 'solid'
         if (background.includes('url')) return 'image'
         if (background.includes('gradient')) return 'gradient'
         return 'solid'

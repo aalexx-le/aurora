@@ -1,6 +1,7 @@
 import psycopg
 from airflow.models.connection import Connection
 
+
 def get_connection():
     conn_from_airflow = Connection.get_connection_from_secrets("xela_db")
     print(conn_from_airflow.get_uri())

@@ -1,5 +1,4 @@
 import {ColumnDef} from "@tanstack/react-table";
-import {BankTransaction} from "@/app/dashboard/finance/bank-management/components/transaction-table/types";
 import moment from "moment";
 import {cn} from "@/lib/utils";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
@@ -8,6 +7,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {DataTableRowAction} from "@/components/data-table/data-table-row-action";
 import {Dispatch, SetStateAction} from "react";
 import {DataTableRowActionState} from "@/types";
+import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 
 
 interface GetTransactionColumnsProps {
