@@ -5,7 +5,7 @@ import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
 import React, {useState} from "react";
 import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
 import {useQuery} from "@apollo/client";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense-category";
+import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
 import {useAppSelector} from "@/state/hooks";
 import CategoryAvatar from "@/app/(dashboard)/finance/expense/components/category-list/CategoryAvatar";
 import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";

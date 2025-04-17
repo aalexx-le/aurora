@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet";
 import {CreateExpenseInput, createExpenseSchema} from "@/lib/schema/expense";
 import {MutationUpdateExpenseArgs, UpdateExpenseMutation,} from "@/gql/graphql";
-import {GET_EXPENSES, UPDATE_EXPENSE} from "@/api/script/expense";
+import {GET_EXPENSES, UPDATE_EXPENSE} from "@/api/script/expense/expense";
 import {useToast} from "@/hooks/use-toast";
 import {PlusIcon} from "@radix-ui/react-icons";
 import {getGraphqlErrorMessage} from "@/lib/utils/graphql";

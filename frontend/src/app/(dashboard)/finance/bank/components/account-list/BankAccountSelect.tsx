@@ -14,6 +14,7 @@ import {GetBankAccountsQuery, GetBankAccountsQueryVariables} from "@/gql/graphql
 import {MoneyTransferAmount} from "@/components/money/money-transfer-amount";
 import {MoneyAnimated} from "@/components/money/money-animated";
 import {BankAccount} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { BANK_INFOS } from "../bank-select/BankSelect";
 
 interface BankAccountSelectProps {
     selectedAccountId: string;
@@ -92,10 +93,12 @@ export default function BankAccountSelect({
 }
 
 function BankAccountItem({ account }: { account: BankAccount }) {
+    const bankInfo = BANK_INFOS.find(b => b.name === account.name);
+    
     return (
         <div className="flex items-center gap-2 w-full">
             <Avatar className="w-6 h-6">
-                <AvatarImage src="https://www.vietinbank.vn/web/global/vtb-logo.png" />
+                <AvatarImage src={bankInfo?.logo} />
                 <AvatarFallback>{account.name[0]}</AvatarFallback>
             </Avatar>
             
@@ -118,4 +121,4 @@ function BankAccountItem({ account }: { account: BankAccount }) {
             </div>
         </div>
     );
-} 
+}

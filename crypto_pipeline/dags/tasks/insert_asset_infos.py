@@ -13,7 +13,13 @@ import re
 def fetch_symbol_infos(symbol_list: List[str]) -> List[dict]:
     cmk_session = get_cmk_session()
     
-    symbol_list = list(filter(lambda s: 'LD' not in s, symbol_list))
+    def modify_symbol(symbol: str) -> str:
+        if symbol.startswith('LD'):
+            return symbol.replace('LD', '')
+        return symbol
+    
+    symbol_list = list(map(modify_symbol, symbol_list))
+    # symbol_list = list(filter(lambda s: 'LD' not in s, symbol_list))
     
     response = cmk_session.get(COINMARKETCAP_URL + '/v2/cryptocurrency/info', params={'symbol': ','.join(symbol_list)})
     coin_prices = json.loads(response.text)
@@ -65,8 +71,8 @@ def insert_asset_infos(symbol_infos: List[dict]) -> dict:
             
             cursor.execute(INSERT_ASSET_PROFILE, data)
             
-            inserted_symbol_id_map[info['symbol']] = data['id']
+            inserted_symbol_id_map[info['symbol']] = str(data['id'])
         
-        conn.commit()
+            conn.commit()
         
     return inserted_symbol_id_map

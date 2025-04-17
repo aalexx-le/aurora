@@ -28,10 +28,11 @@ export type AnalyseData = {
     name: string;
     fill: string;
     tag: string;
+    exchange: string;
     exchangeLogo: string;
 }
 
-const MIN_THRESHOLD = 1;
+const MIN_THRESHOLD = 0.1;
 
 export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: IProps) {
     const [analyseData, setAnalyseData] = useState<AnalyseData[]>([]);
@@ -50,30 +51,32 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
                     name: b.assetInfo.symbol,
                     fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
                     tag: b.assetInfo.tag,
+                    exchange: b.cryptoPortfolio.exchanges,
                     exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
                 })))
 
-            const usdtBalances = balances.filter(b => b.assetInfo.symbol === 'USDT');
-            const mapUSDTBalances = await Promise.all(usdtBalances
-                .map(async b => ({
-                    assetId: b.assetInfo.id,
-                    invest: b.balance,
-                    price: b.assetInfo.lastPrice,
-                    remainingQty: b.balance,
-                    estimatedProfit: 0,
-                    profitPercent: 0,
-                    name: b.assetInfo.symbol,
-                    fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
-                    tag: b.assetInfo.tag,
-                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
-                })))
-
-            mapBalances.push(...mapUSDTBalances);
+            // const usdtBalances = balances.filter(b => b.assetInfo.symbol === 'USDT');
+            // const mapUSDTBalances = await Promise.all(usdtBalances
+            //     .map(async b => ({
+            //         assetId: b.assetInfo.id,
+            //         invest: b.balance,
+            //         price: b.assetInfo.lastPrice,
+            //         remainingQty: b.balance,
+            //         estimatedProfit: 0,
+            //         profitPercent: 0,
+            //         name: b.assetInfo.symbol,
+            //         fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
+            //         tag: b.assetInfo.tag,
+            //         exchange: b.cryptoPortfolio.exchanges,
+            //         exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
+            //     })))
+            //
+            // mapBalances.push(...mapUSDTBalances);
 
             const sortedBalances = mapBalances.sort((a, b) => b.invest - a.invest);
 
             const filteredBalances = sortedBalances
-                // .filter(b => b.remainingQty > -10);
+                .filter(b => b.remainingQty > MIN_THRESHOLD);
 
             const hideSymbols = ["BNB", "BTC"];
 

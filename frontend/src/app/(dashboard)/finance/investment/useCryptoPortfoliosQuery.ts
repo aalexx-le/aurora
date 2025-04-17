@@ -7,13 +7,11 @@ import { GET_CRYPTO_PORTFOLIOS } from "@/api/script/crypto/crypto";
 import { useAppSelector } from "@/state/hooks";
 
 export const useCryptoPortfoliosQuery = () => {
-    const { user } = useAppSelector((state) => state.auth.state);
     const { data, loading } = useQuery<
         GetCryptoPortfoliosQuery,
         GetCryptoPortfoliosQueryVariables
     >(GET_CRYPTO_PORTFOLIOS, {
         variables: {
-            data: { userId: Number(user?.id || 0) },
             timeFrame: "1 day",
         },
     });

@@ -1,20 +1,17 @@
-import {ChevronsUpDown} from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 
-import {cn} from "@/lib/utils";
-import {Button} from "@/components/ui/button";
-import {Command, CommandEmpty, CommandInput, CommandItem, CommandList,} from "@/components/ui/command";
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
-import React, {useState} from "react";
-import {GetBankTransactionsQuery, QueryGetBankTransactionsArgs,} from "@/gql/graphql";
-import {useQuery} from "@apollo/client";
-import {useAppSelector} from "@/state/hooks";
+import { BANK_INFOS } from "@/app/(dashboard)/finance/bank/components/bank-select/BankSelect";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList, } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import moment from "moment/moment";
-import {ScrollArea} from "@/components/ui/scroll-area";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
-import {useTransactionQuery} from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
-import {GET_BANK_TRANSACTIONS} from "@/api/script/bank/transaction";
+import React, { useState } from "react";
 
 interface IProps {
     selectedTransactionId: number;
@@ -25,7 +22,6 @@ export default function TransactionSelect({
     selectedTransactionId,
     setSelectedTransactionId,
 }: IProps) {
-    const { user } = useAppSelector((state) => state.auth.state);
     const [open, setOpen] = useState(false);
     const transactions = useTransactionQuery()
     const selectedTransaction = transactions.find(
@@ -40,7 +36,6 @@ export default function TransactionSelect({
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
-                    disabled={true}
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
@@ -92,6 +87,9 @@ const TransactionItem = ({
     avatarClassname,
     displayDescription = true,
 }: ITransactionItemProps) => {
+    // Find the bank info based on transaction's bank ID
+    const bankInfo = BANK_INFOS.find(bank => bank.name === transaction.bank.name);
+    
     return (
         <div
             className={cn(
@@ -100,8 +98,8 @@ const TransactionItem = ({
             )}
         >
             <Avatar className={cn("w-6 h-6", avatarClassname)}>
-                <AvatarImage src="https://sanfactory.vn/wp-content/uploads/2023/10/logo-vietinbank-3.png" />
-                <AvatarFallback>B</AvatarFallback>
+                <AvatarImage src={bankInfo?.logo} />
+                <AvatarFallback>{bankInfo?.name?.[0] || transaction.bankId?.[0] || "B"}</AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col">

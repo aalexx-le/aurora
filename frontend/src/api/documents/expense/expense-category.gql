@@ -1,6 +1,6 @@
 # queries and mutations for the expense category
-query GetExpenseCategories($userId: Int!, $name: String, $startDate: DateTime, $endDate: DateTime, $month: Int, $year: Int) {
-    getExpenseCategories(userId: $userId, name: $name) {
+query GetExpenseCategories($name: String, $startDate: DateTime, $endDate: DateTime, $month: Int, $year: Int) {
+    getExpenseCategories(name: $name) {
         color
         description
         name

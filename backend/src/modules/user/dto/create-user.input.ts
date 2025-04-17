@@ -7,14 +7,28 @@ import { User } from "src/entities/user";
 @InputType()
 export class CreateUserInput extends OmitType(
     User,
-    ["id", "cryptoPortfolios", "expenseCategories", "bankManager", "expenses"],
+    [
+        "id",
+        "cryptoPortfolios",
+        "expenseCategories",
+        "bankManager",
+        "expenses",
+        "events",
+        "eventCategories",
+    ],
     InputType,
 ) {}
+
+@InputType()
+export class CreateUserInputWithoutOTP extends OmitType(CreateUserInput, [
+    "otp",
+    "otpPurpose",
+]) {}
 
 @ArgsType()
 export class CreateUserArgs {
     @Field(() => CreateUserInput, { nullable: false })
     @Type(() => GetAssetInfoInput)
     @ValidateNested()
-    data!: CreateUserInput;
+    data!: CreateUserInputWithoutOTP;
 }

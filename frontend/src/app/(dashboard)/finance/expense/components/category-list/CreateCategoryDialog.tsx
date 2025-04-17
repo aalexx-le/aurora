@@ -1,21 +1,16 @@
-import React, {useState} from 'react';
-import {useMutation} from '@apollo/client';
-import {CREATE_EXPENSE_CATEGORY, GET_EXPENSE_CATEGORIES} from '@/api/script/expense-category';
-import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {Textarea} from '@/components/ui/textarea';
-import {PlusIcon} from '@radix-ui/react-icons';
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {CreateExpenseCategoryInput, createExpenseCategorySchema} from "@/lib/schema/expenseCategory";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {GradientPicker} from "@/components/ui/color-picker";
-import {CreateExpenseCategoryMutation, MutationCreateExpenseCategoryArgs} from "@/gql/graphql";
-import {useAppSelector} from "@/state/hooks";
-import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {ExpenseCategory} from "@/app/(dashboard)/finance/expense/components/category-list/types";
-import {CreateDialog} from "@/components/create-dialog";
+import { CREATE_EXPENSE_CATEGORY, GET_EXPENSE_CATEGORIES } from '@/api/script/expense/expense-category';
+import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
+import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
+import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { GradientPicker } from "@/components/ui/color-picker";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { CreateExpenseCategoryMutation, MutationCreateExpenseCategoryArgs } from "@/gql/graphql";
+import { CreateExpenseCategoryInput, createExpenseCategorySchema } from "@/lib/schema/expenseCategory";
+import { useMutation } from '@apollo/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface IProps {
 }
@@ -45,7 +40,7 @@ const CreateCategoryDialog = ({}: IProps) => {
     };
 
     return (
-        <CreateDialog<CreateExpenseCategoryInput>
+        <CreateOrUpdateDialog<CreateExpenseCategoryInput>
             title="New Category"
             form={form}
             formSchema={createExpenseCategorySchema}
@@ -108,7 +103,7 @@ const CreateCategoryDialog = ({}: IProps) => {
                     )}
                 </>
             )}
-        </CreateDialog>
+        </CreateOrUpdateDialog>
     );
 };
 

@@ -1,18 +1,16 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
-import {useRouter} from "next/navigation";
-import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
-import {useMemo} from "react";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
-import HistoricalBalanceChart
-    from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/HistoricalBalanceChart";
-import {CryptoPortfolio} from "@/app/(dashboard)/finance/investment/types";
 import {
     MiniAssetProfitLineChart
 } from "@/app/(dashboard)/finance/investment/components/asset-table/MiniAssetProfitLineChart";
-import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context";
-import {formatCurrency} from "@/lib/utils/currency/format-currency";
+import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { CryptoPortfolio } from "@/app/(dashboard)/finance/investment/types";
+import MoneyWithCurrency from "@/components/money/money-with-currency";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
+import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
+import { formatCurrency } from "@/lib/utils/currency/format-currency";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 interface IProps {
     portfolios: CryptoPortfolio[];
@@ -24,7 +22,8 @@ export default function AssetTable({portfolios}: IProps) {
             .map((portfolio) =>
                 portfolio.balances.map(b => ({
                     ...b,
-                    portfolioId: portfolio.id
+                    portfolioId: portfolio.id,
+                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
                 })
             )).flat();
 
@@ -71,10 +70,18 @@ export default function AssetTable({portfolios}: IProps) {
                             <TableCell
                                 className="p-4 cursor-pointer"
                             >
-                                <Avatar>
-                                    <AvatarImage src={asset.assetInfo.logo}/>
-                                    <AvatarFallback>CN</AvatarFallback>
-                                </Avatar>
+                                <div className="relative w-10 h-10">
+                                    <Avatar className="absolute inset-0">
+                                        <AvatarImage src={asset.assetInfo.logo}/>
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                    {asset.exchangeLogo && (
+                                        <Avatar className="absolute -top-1 -right-1 w-5 h-5">
+                                            <AvatarImage src={asset.exchangeLogo} alt="Exchange" />
+                                            <AvatarFallback>EX</AvatarFallback>
+                                        </Avatar>
+                                    )}
+                                </div>
                             </TableCell>
                             <TableCell>{asset.assetInfo.symbol}</TableCell>
                             <TableCell>

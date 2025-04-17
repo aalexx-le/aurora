@@ -69,7 +69,7 @@ export function DeleteDialog<TData>({
                 {showTrigger ? (
                     <DialogTrigger asChild>
                         {triggerButton ?? (
-                            <Button variant="outline" size="sm" onClick={() => props.onOpenChange?.(true)}>
+                            <Button variant="destructive" onClick={() => props.onOpenChange?.(true)}>
                                 <Trash className="mr-2 size-4" aria-hidden="true" />
                                 Delete ({rows.length})
                             </Button>

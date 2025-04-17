@@ -10,8 +10,8 @@ mutation CreateOKXCryptoPortfolio($data: CreateOKXCryptoPortfolioInput!) {
     }
 }
 
-query GetCryptoPortfolios($data: GetCryptoPortfolioInput!, $timeFrame: String!) {
-    getCryptoPortfolios(data: $data) {
+query GetCryptoPortfolios($timeFrame: String!) {
+    getCryptoPortfolios {
         id
         name
         exchanges

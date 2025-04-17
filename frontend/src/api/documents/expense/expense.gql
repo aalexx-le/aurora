@@ -20,8 +20,8 @@ query GetExpenses($startDate: DateTime, $endDate: DateTime) {
     }
 }
 
-query GetSuggestedExpenses($bankTransactionId: String!) {
-    getSuggestedExpenses(bankTransactionId: $bankTransactionId) {
+query GetSuggestedExpenses($data: SuggestExpenseInput!) {
+    getSuggestedExpenses(data: $data) {
         amount
         name
         bankTransactionId

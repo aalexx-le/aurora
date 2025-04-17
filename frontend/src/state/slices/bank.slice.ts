@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {BankManager} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 
 interface BankState {
     bankManager: BankManager | null;

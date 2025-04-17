@@ -7,7 +7,7 @@ import {
     CreateExpenseMutation,
     MutationCreateExpenseArgs,
 } from "@/gql/graphql";
-import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/script/expense";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/script/expense/expense";
 import { useAppSelector } from "@/state/hooks";
 import { useToast } from "@/hooks/use-toast";
 

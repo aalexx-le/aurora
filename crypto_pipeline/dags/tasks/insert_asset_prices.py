@@ -2,6 +2,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 
+import ccxt
 import pytz
 from airflow.decorators import task
 from binance.client import Client
@@ -37,7 +38,13 @@ def get_symbol_id_map():
 def insert_latest_prices(symbol_id_map: dict):
     conn = get_connection()
     binance_client = Client()
-    mexc_client = Spot("", "")
+    mexc = ccxt.mexc({
+        'enableRateLimit': True,
+        'options': {
+            'recvWindow': 60000,
+            'adjustForTimeDifference': True,
+        }
+    })
     
     start_time = datetime.now()
     
@@ -65,12 +72,13 @@ def insert_latest_prices(symbol_id_map: dict):
                     'volume': 1
                 }
             else:
-                
                 prices = []
                 try:
-                    prices = binance_client.get_klines(symbol=symbol + 'USDT', interval=Client.KLINE_INTERVAL_1MINUTE, startTime=start_timestamp_in_ms) 
+                    prices = binance_client.get_klines(symbol=symbol + 'USDT', interval=Client.KLINE_INTERVAL_1MINUTE, startTime=start_timestamp_in_ms, limit=1) 
                 except Exception as e:
-                    prices = mexc_client.market.klines(symbol + "USDT", Interval.ONE_MIN, start_ms=start_timestamp_in_ms, limit=1)
+                    ohlcv = mexc.fetch_ohlcv(symbol + "/USDT", '1m', since=start_timestamp_in_ms, limit=1)
+                    if ohlcv:
+                        prices = [ohlcv[0]]
                     
                 finally:
                     for price in prices:

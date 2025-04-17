@@ -1,19 +1,16 @@
-import {CREATE_BANK_MANAGER, GET_BANK_MANAGERS} from "@/api/script/bank/manager";
-import {CreateDialog} from "@/components/create-dialog";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from '@/components/ui/input';
-import {CreateBankManagerInput, createBankManagerSchema} from "@/lib/schema/bankManager";
-import {useAppSelector} from "@/state/hooks";
-import {useMutation} from '@apollo/client';
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {AutoBankManagerThirdParty, CreateBankManagerMutation, CreateBankManagerMutationVariables} from "@/gql/graphql";
-import {Checkbox} from "@/components/ui/checkbox";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {ExchangeSelect} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
-import {ThirdPartySelect} from "@/app/(dashboard)/finance/components/third-party-select/ThirdPartySelect";
-import {Button} from "@/components/ui/button";
-import {Plus} from "lucide-react";
+import { CREATE_BANK_MANAGER, GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { ThirdPartySelect } from "@/app/(dashboard)/finance/components/third-party-select/ThirdPartySelect";
+import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from '@/components/ui/input';
+import { AutoBankManagerThirdParty, CreateBankManagerMutation, CreateBankManagerMutationVariables } from "@/gql/graphql";
+import { CreateBankManagerInput, createBankManagerSchema } from "@/lib/schema/bankManager";
+import { useMutation } from '@apollo/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 const defaultValues: CreateBankManagerInput = {
     name: "",
@@ -43,7 +40,7 @@ const CreateBankManagerDialog = () => {
     };
 
     return (
-        <CreateDialog<CreateBankManagerInput>
+        <CreateOrUpdateDialog<CreateBankManagerInput>
             title="New Bank Manager"
             form={form}
             formSchema={createBankManagerSchema}
@@ -53,9 +50,9 @@ const CreateBankManagerDialog = () => {
             triggerButton={
                 <Button
                     variant="outline"
-                    size="icon"
                 >
-                    <Plus className="size-4"/>
+                    Bank Manager
+                    <Plus className="size-4 ml-2"/>
                 </Button>
             }
         >
@@ -131,7 +128,7 @@ const CreateBankManagerDialog = () => {
                     )}
                 </>
             )}
-        </CreateDialog>
+        </CreateOrUpdateDialog>
     );
 };
 

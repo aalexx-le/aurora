@@ -27,4 +27,28 @@ def get_all_query_sql_script(table: str, fields: List[str]):
         table=sql.Identifier(table),
         field=sql.SQL(',  ').join(map(sql.Identifier, fields))
     )
+    
+    
+UPDATE_SQL_SCRIPT = 'UPDATE {table} SET {assignments} WHERE {condition}'
+
+def get_update_sql_script(table: str, fields: List[str], condition: str):
+    """
+    Generates a parameterized SQL UPDATE script.
+
+    Args:
+        table: The name of the table to update.
+        fields: A list of fields to update.
+        condition: The WHERE clause condition for the update.
+
+    Returns:
+        A psycopg2.sql.SQL object representing the parameterized UPDATE script.
+    """
+    assignments = sql.SQL(', ').join(
+        sql.SQL("{} = %s").format(sql.Identifier(field)) for field in fields
+    )
+    return sql.SQL(UPDATE_SQL_SCRIPT).format(
+        table=sql.Identifier(table),
+        assignments=assignments,
+        condition=sql.SQL(condition)
+    )
 

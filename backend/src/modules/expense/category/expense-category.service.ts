@@ -31,10 +31,10 @@ export class ExpenseCategoryService {
         });
     }
 
-    findMany(input: GetExpenseCategoryArgs) {
+    findMany(userId: number, input: GetExpenseCategoryArgs) {
         const args: Prisma.ExpenseCategoryFindManyArgs<DefaultArgs> = {
             where: {
-                userId: input.userId,
+                userId,
             },
         };
 

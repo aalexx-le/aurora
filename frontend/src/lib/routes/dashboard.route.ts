@@ -1,4 +1,5 @@
 const DASHBOARD_ROUTE = {
+    value: "/dashboard",
     finance: {
         value: "/finance",
         expense: {
@@ -15,6 +16,9 @@ const DASHBOARD_ROUTE = {
             value: (assetInfoId: string) =>
                 `/finance/asset-price/${assetInfoId}`,
         },
+    },
+    schedule: {
+        value: "/schedule",
     },
     agent: {
         chatbot: {

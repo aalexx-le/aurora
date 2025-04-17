@@ -181,6 +181,53 @@ Table HistoricalAssetProfit {
   }
 }
 
+Table Event {
+  id Int [pk, increment]
+  name String [not null]
+  description String
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  allDay Boolean [not null, default: false]
+  color String
+  recurrence Recurrence
+  userId Int [not null]
+  user User [not null]
+  categoryId Int [not null]
+  category EventCategory [not null]
+  reminderMinutes Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Recurrence {
+  id Int [pk, increment]
+  type RecurrenceType [not null]
+  interval Int [not null, default: 1]
+  daysOfWeek String
+  dayOfMonth Int
+  weekOfMonth Int
+  dayOfWeek Int
+  endDate DateTime
+  endCount Int
+  eventId Int [unique, not null]
+  event Event [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table EventCategory {
+  id Int [pk, increment]
+  name String [not null]
+  color String [not null]
+  userId Int [not null]
+  user User [not null]
+  events Event [not null]
+
+  indexes {
+    (name, userId) [unique]
+  }
+}
+
 Table ExpenseCategory {
   id String [pk]
   userId Int [not null]
@@ -226,6 +273,8 @@ Table User {
   cryptoPortfolios CryptoPortfolio [not null]
   expenses Expense [not null]
   expenseCategories ExpenseCategory [not null]
+  events Event [not null]
+  eventCategories EventCategory [not null]
 }
 
 Table asset_price_5m {
@@ -375,6 +424,13 @@ Enum CEXExchanges {
   ALL
 }
 
+Enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
 Enum OtpPurpose {
   VERIFY_ACCOUNT
   RESET_PASSWORD
@@ -411,6 +467,14 @@ Ref: HistoricalCryptoBalance.cryptoPortfolioId > CryptoPortfolio.id
 Ref: HistoricalAssetProfit.assetInfoId > AssetInfo.id
 
 Ref: HistoricalAssetProfit.cryptoPortfolioId > CryptoPortfolio.id
+
+Ref: Event.userId > User.id
+
+Ref: Event.categoryId > EventCategory.id
+
+Ref: Recurrence.eventId - Event.id [delete: Cascade]
+
+Ref: EventCategory.userId > User.id
 
 Ref: ExpenseCategory.userId > User.id
 

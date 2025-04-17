@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import {
     GetCryptoPortfoliosQuery,
-    QueryGetCryptoPortfoliosArgs,
+    GetCryptoPortfoliosQueryVariables,
 } from "@/gql/graphql";
 import { GET_CRYPTO_PORTFOLIOS } from "@/api/script/crypto/crypto";
 import { useEffect, useMemo, useState } from "react";
@@ -9,12 +9,11 @@ import { useAppSelector } from "@/state/hooks";
 import { Convert } from "easy-currencies";
 
 export const useTotalInvestmentBalance = () => {
-    const { user } = useAppSelector((state) => state.auth.state);
     const { data, loading } = useQuery<
         GetCryptoPortfoliosQuery,
-        QueryGetCryptoPortfoliosArgs
+        GetCryptoPortfoliosQueryVariables
     >(GET_CRYPTO_PORTFOLIOS, {
-        variables: { data: { userId: Number(user?.id) } },
+        variables: { timeFrame: "1 day" },
     });
     const totalBalance = useMemo(() => {
         const balances: number[] =

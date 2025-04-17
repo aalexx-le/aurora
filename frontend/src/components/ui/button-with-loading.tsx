@@ -1,29 +1,24 @@
-import {Button, buttonVariants} from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import React from "react";
 import {Loader2} from "lucide-react";
-import type {VariantProps} from "class-variance-authority";
-import {cn} from "@/lib/utils";
+import type {ButtonProps} from "@/components/ui/button";
 
-interface IProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof buttonVariants> {
-    loading: boolean;
-    children: React.ReactNode;
+interface ButtonWithLoadingProps extends ButtonProps {
+    readonly loading: boolean;
 }
 
 export default function ButtonWithLoading({
     loading,
     children,
     className,
-    variant,
-    size,
-    asChild = false,
+    disabled,
     ...props
-}: IProps) {
+}: ButtonWithLoadingProps) {
     return (
         <Button
-            disabled={loading}
-            className={cn(buttonVariants({ variant, size, className }))}
+            disabled={disabled || loading}
+            className={className}
+            {...props}
         >
             {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             {children}

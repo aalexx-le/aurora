@@ -6,17 +6,19 @@ import {Tooltip, TooltipContent, TooltipTrigger,} from "@/components/ui/tooltip"
 import moment from "moment";
 import React from "react";
 import {BankTransaction} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import {BANK_INFOS} from "@/app/(dashboard)/finance/bank/components/bank-select/BankSelect";
 
 interface IProps {
     transaction: BankTransaction;
 }
 
 export default function TransactionItem({ transaction }: IProps) {
+    const bankLogo = BANK_INFOS.find((bank) => bank.name === transaction.bank.name)?.logo;
     return (
         <div className="flex items-center gap-4">
             <Avatar>
-                <AvatarImage src="https://sanfactory.vn/wp-content/uploads/2023/10/logo-vietinbank-3.png" />
-                <AvatarFallback>B</AvatarFallback>
+                <AvatarImage src={bankLogo} />
+                <AvatarFallback>{transaction.bank.name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex gap-6 items-center flex-1 overflow-hidden">
                 <Tooltip delayDuration={0}>

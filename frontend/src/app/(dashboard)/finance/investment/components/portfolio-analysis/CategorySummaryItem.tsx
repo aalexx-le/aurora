@@ -1,17 +1,17 @@
-import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
 import {
     getSubscriptNewHistoricalProfitHook,
     getSubscriptNewHistoricalProfitResult
 } from "@/api/script/crypto/asset-profit";
-import {TimeframeEnum} from "@/lib/utils/date-time/timeframe.enum";
-import {useEffect, useState} from "react";
-import {useAppSelector} from "@/state/hooks";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import { AnalyseData } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
-import {cn} from "@/lib/utils";
-import {MoneyAnimated} from "@/components/money/money-animated";
-import {AnalyseData} from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useEffect, useState } from "react";
+import {CexExchanges} from "@/gql/graphql";
 
 
 interface IProps {
@@ -33,6 +33,7 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
     });
     const newHistoricalProfit = getSubscriptNewHistoricalProfitResult(newData);
     const [aggregatedData, setAggregatedData] = useState<AnalyseData>(data);
+    const shouldShowProfitPercent = !isNaN(aggregatedData.profitPercent) && aggregatedData.profitPercent !== 0;
 
     useEffect(() => {
         if (!newHistoricalProfit) {
@@ -55,10 +56,10 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
             <Tooltip delayDuration={0}>
                 <TooltipTrigger className="text-start">
                     <div className="flex items-center gap-2">
-                        <Avatar className="size-4">
+                        {aggregatedData.exchange !== CexExchanges.All && <Avatar className="size-4">
                             <AvatarImage src={aggregatedData.exchangeLogo}/>
                             <AvatarFallback>{aggregatedData.name}</AvatarFallback>
-                        </Avatar>
+                        </Avatar>}
                         <div className="size-3 rounded-sm"
                              style={{backgroundColor: aggregatedData.fill}}/>
                         <div className="flex gap-1 items-center">
@@ -67,7 +68,9 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
                             <MoneyAnimated className="text-muted-foreground text-sm" number={aggregatedData.invest / totalInvest * 100} isPercent/>
 
                             <MoneyUpDownAnimated className="text-sm" number={aggregatedData.estimatedProfit}/>
-                            <MoneyUpDownAnimated className="text-sm" number={aggregatedData.profitPercent} isPercent/>
+                            {shouldShowProfitPercent && (
+                                <MoneyUpDownAnimated className="text-sm" number={aggregatedData.profitPercent} isPercent/>
+                            )}
                         </div>
                     </div>
                 </TooltipTrigger>

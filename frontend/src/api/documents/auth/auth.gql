@@ -8,11 +8,25 @@ mutation Signup($data: CreateUserInput!) {
 mutation Login($data: LoginReqDto!) {
     login(data: $data) {
         accessToken
+        refreshToken
     }
 }
 
 mutation VerifyAccount($data: VerifyDto!) {
     verifyAccount(data: $data) {
         accessToken
+        refreshToken
     }
+}
+
+mutation RefreshToken($data: RefreshTokenInputDto!) {
+    refreshToken(data: $data) {
+        accessToken
+        refreshToken
+        expiresIn
+    }
+}
+
+mutation Logout {
+    logout
 }

@@ -1,5 +1,6 @@
 import {
     Args,
+    Int,
     Mutation,
     Parent,
     Query,
@@ -13,8 +14,8 @@ import { CreateBankTransactionArgs } from "./dto/create-bank-transaction.input";
 import { BankTransactionService } from "./transaction.service";
 import { UseGuards } from "@nestjs/common";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
-import {AuthUser} from "../../../shared/decorators/auth-user.decorator";
-import {User} from "../../../entities/user";
+import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
+import { User } from "../../../entities/user";
 
 @UseGuards(JwtGuard)
 @Resolver(() => BankTransaction)
@@ -25,9 +26,7 @@ export class BankTransactionResolver {
     ) {}
 
     @Query(() => [BankTransaction], { name: "getBankTransactions" })
-    getBankTransactions(
-        @AuthUser() user: User
-    ) {
+    getBankTransactions(@AuthUser() user: User) {
         return this.bankTransactionService.findManyByUserId(user.id);
     }
 
@@ -39,5 +38,10 @@ export class BankTransactionResolver {
     @Mutation(() => BankTransaction, { name: "createBankTransaction" })
     createOne(@Args() args: CreateBankTransactionArgs) {
         return this.bankTransactionService.create(args.data);
+    }
+
+    @Mutation(() => BankTransaction, { name: "removeBankTransaction" })
+    async removeTransaction(@Args("id", { type: () => Int }) id: number) {
+        return this.bankTransactionService.remove(id);
     }
 }

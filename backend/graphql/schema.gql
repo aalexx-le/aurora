@@ -219,6 +219,56 @@ enum TradingType {
   SPOT
 }
 
+type Recurrence {
+  id: Int!
+  type: RecurrenceType!
+  interval: Int!
+  daysOfWeek: String
+  dayOfMonth: Int
+  weekOfMonth: Int
+  dayOfWeek: Int
+  endDate: DateTime
+  endCount: Int
+  eventId: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  event: Event!
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+type EventCategory {
+  id: Int!
+  name: String!
+  color: String!
+  userId: Int!
+  user: User!
+  events: [Event!]
+}
+
+type Event {
+  id: Int!
+  name: String!
+  description: String
+  startDate: DateTime!
+  endDate: DateTime!
+  allDay: Boolean!
+  color: String
+  userId: Int!
+  categoryId: Int!
+  reminderMinutes: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  recurrence: Recurrence
+  user: User!
+  category: EventCategory!
+}
+
 type User {
   id: Int!
   email: String!
@@ -230,6 +280,8 @@ type User {
   cryptoPortfolios: [CryptoPortfolio!]
   expenses: [Expense!]
   expenseCategories: [ExpenseCategory!]
+  events: [Event!]
+  eventCategories: [EventCategory!]
   cryptoProfiles: CryptoPortfolio!
 }
 
@@ -243,13 +295,15 @@ type LoginResDto {
   refreshToken: String!
 }
 
+type RefreshTokenResponseDto {
+  accessToken: String!
+  refreshToken: String!
+  expiresIn: Float!
+}
+
 type SignupResDto {
   accessToken: String!
   refreshToken: String!
-}
-
-type CreateCryptoRes {
-  userId: Float!
 }
 
 type CreatePortfolioExecution {
@@ -264,6 +318,10 @@ enum CreateExecutionStatus {
   PROCESSING
   FAILED
   SUCCESS
+}
+
+type CreateCryptoRes {
+  userId: Float!
 }
 
 type AssetInfoOutput {
@@ -287,7 +345,7 @@ type TotalSpentAmountOutput {
 
 type Query {
   getMe: User!
-  getCryptoPortfolios(data: GetCryptoPortfolioInput!): [CryptoPortfolio!]!
+  getCryptoPortfolios: [CryptoPortfolio!]!
   getCreatePortfolioExecutions(userId: Float!): [CreatePortfolioExecution!]!
   getAssetInfo(data: GetAssetInfoInput!): AssetInfo!
   getAssetPrices(data: GetAssetPriceInput!, pagination: PaginationInput!): [AssetPrice!]!
@@ -298,13 +356,11 @@ type Query {
   getBankAccounts: [BankAccount!]!
   getBankTransactions: [BankTransaction!]!
   getExpenses(startDate: DateTime, endDate: DateTime): [Expense!]!
-  getSuggestedExpenses(bankTransactionId: String!): [Expense!]!
-  getExpenseCategories(userId: Int, name: String, startDate: DateTime, endDate: DateTime): [ExpenseCategory!]!
+  getSuggestedExpenses(data: SuggestExpenseInput!): [Expense!]!
+  getExpenseCategories(name: String, startDate: DateTime, endDate: DateTime): [ExpenseCategory!]!
   getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
-}
-
-input GetCryptoPortfolioInput {
-  userId: Int!
+  getEvents(startDate: DateTime, endDate: DateTime): [Event!]!
+  getEventCategories: [EventCategory!]!
 }
 
 input GetAssetInfoInput {
@@ -338,15 +394,22 @@ input GetTradeInput {
   assetInfoId: String
 }
 
+input SuggestExpenseInput {
+  bankTransactionId: Int!
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
   createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput!): CreateCryptoRes!
   login(data: LoginReqDto!): LoginResDto!
   signup(data: CreateUserInput!): SignupResDto!
   verifyAccount(data: VerifyDto!): LoginResDto!
+  refreshToken(data: RefreshTokenInputDto!): RefreshTokenResponseDto!
+  logout: Boolean!
   createBankManager(data: CreateBankManagerInput!): BankManager!
   createBankAccount(data: CreateBankAccountInput!): BankAccount!
   createBankTransaction(data: CreateBankTransactionInput!): BankTransaction!
+  removeBankTransaction(id: Int!): BankTransaction!
   createExpense(data: CreateExpenseInput!): Expense!
   updateExpense(id: String!, data: UpdateExpenseInput!): Expense!
   removeExpense(id: String!): Expense!
@@ -356,6 +419,12 @@ type Mutation {
   removeExpenseCategory(id: String!): ExpenseCategory!
   createMonthlyTarget(data: CreateMonthlyTargetInput!): MonthlyTarget!
   updateMonthlyTarget(id: String!, data: UpdateMonthlyTargetInput!): MonthlyTarget!
+  createEvent(data: CreateEventInput!): Event!
+  updateEvent(id: Int!, data: UpdateEventInput!): Event!
+  removeEvent(id: Int!): Event!
+  createEventCategory(data: CreateEventCategoryInput!): EventCategory!
+  updateEventCategory(id: Int!, data: UpdateEventCategoryInput!): EventCategory!
+  removeEventCategory(id: Int!): EventCategory!
 }
 
 input CreateCryptoPortfolioInput {
@@ -389,6 +458,10 @@ input CreateUserInput {
 input VerifyDto {
   otp: String!
   otpPurpose: OtpPurpose!
+}
+
+input RefreshTokenInputDto {
+  refreshToken: String!
 }
 
 input CreateBankManagerInput {
@@ -459,8 +532,53 @@ input UpdateMonthlyTargetInput {
   target: Float
 }
 
+input CreateEventInput {
+  name: String!
+  description: String
+  startDate: DateTime!
+  endDate: DateTime!
+  allDay: Boolean! = false
+  color: String
+  categoryId: Int!
+  reminderMinutes: Int
+  recurrence: CreateRecurrenceInput
+}
+
+input CreateRecurrenceInput {
+  type: RecurrenceType!
+  interval: Int! = 1
+  daysOfWeek: String
+  dayOfMonth: Int
+  weekOfMonth: Int
+  dayOfWeek: Int
+  endDate: DateTime
+  endCount: Int
+}
+
+input UpdateEventInput {
+  name: String
+  description: String
+  startDate: DateTime
+  endDate: DateTime
+  allDay: Boolean = false
+  color: String
+  categoryId: Int
+  reminderMinutes: Int
+  recurrence: CreateRecurrenceInput
+}
+
+input CreateEventCategoryInput {
+  name: String!
+  color: String!
+}
+
+input UpdateEventCategoryInput {
+  name: String
+  color: String
+}
+
 type Subscription {
-  portfolioCreated(data: GetCryptoPortfolioInput!): CryptoPortfolio!
+  portfolioCreated: CryptoPortfolio!
   newAssetPrice1m(data: GetAssetPriceInput!): AssetPrice!
   newAssetPrice5m(data: GetAssetPriceInput!): AssetPrice!
   newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!

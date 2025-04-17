@@ -150,7 +150,7 @@ def add_historical_asset_profit(
                 # logging.info("Symbol: " + symbol)
                 # logging.info("timestamp: " + str(latest_asset_profit.time))
                 # logging.info(trades)
-
+                logging.info(trades)
                 total_cost_usdt, remaining_qty, _current_profit_usdt = calculate_all_time_profit(
                     trades, latest_price
                 )

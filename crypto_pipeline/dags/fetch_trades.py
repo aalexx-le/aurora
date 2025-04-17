@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List
 from uuid import uuid4
 
+import ccxt
 import okx.Account as OKXAccountClient
 import okx.Trade as OKXTradeClient
 import pytz
@@ -15,19 +16,19 @@ from graphql_client.enums import CEXExchanges
 from mexc_api.spot import Spot as MexcClient
 from psycopg import Connection
 from psycopg.rows import class_row, dict_row
-from sql.fetch_trades import INSERT_TRADE, GET_LATEST_TRADES
+from sql.fetch_trades import GET_LATEST_TRADES, INSERT_TRADE
 from sql.update_crypto_portfolio import GET_ASSET_SYMBOL
 from tasks.get_cex_account import get_cex_account
 from tasks.get_crypto_portfolio import get_crypto_portfolio
 from tasks.get_latest_asset_profit import get_latest_asset_profits
 from tasks.get_prices import (convert_to_asset_id_map, convert_to_price_map,
-                             get_latest_price)
+                              get_latest_price)
 from tasks.index import TaskName
 from tasks.update_asset_balances import update_asset_balances
 from utils.connection import get_connection
-from utils.data_model import (AccountBalances, CEXAccount, LatestTrade,
+from utils.data_model import (AccountBalances, CEXAccount,
                               CryptoPortfolioForCalculation, LatestAssetPrice,
-                              LatestAssetProfit, Trade)
+                              LatestAssetProfit, LatestTrade, Trade)
 
 sys.path.insert(0, "/root/airflow/dags/utils")
 
@@ -114,18 +115,25 @@ def get_trades_from_cex(crypto_portfolio: CryptoPortfolioForCalculation, latest_
     
     try:
         if crypto_portfolio.exchanges == CEXExchanges.MEXC:
-            mexc_client = MexcClient(crypto_portfolio.api_key, crypto_portfolio.secret_key)
-            trades = mexc_client.account.get_trades(
-                symbol=symbol + "USDT",
-                start_ms=latest_timestamp_in_ms
-            ) 
+            mexc = ccxt.mexc({
+                'apiKey': crypto_portfolio.api_key,
+                'secret': crypto_portfolio.secret_key,
+                'enableRateLimit': True,
+                'options': {
+                    'recvWindow': 60000,
+                    'adjustForTimeDifference': True,
+                }
+            })
+            trades = mexc.fetch_my_trades(
+                symbol=symbol + "/USDT",
+                since=latest_timestamp_in_ms
+            )
             
             trades = create_trades(
                 symbol_id, 
                 trades, 
                 crypto_portfolio
             )
-            
             
         elif crypto_portfolio.exchanges == CEXExchanges.OKX:
             okx_client = OKXTradeClient.TradeAPI(

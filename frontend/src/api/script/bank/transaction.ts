@@ -25,3 +25,11 @@ export const GET_BANK_TRANSACTIONS = gql`
         }
     }
 `;
+
+export const REMOVE_BANK_TRANSACTION = gql`
+    mutation RemoveBankTransaction($id: Int!) {
+        removeBankTransaction(id: $id) {
+            id
+        }
+    }
+`;

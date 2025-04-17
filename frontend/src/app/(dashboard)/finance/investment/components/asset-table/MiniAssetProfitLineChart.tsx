@@ -6,6 +6,7 @@ import {
     AssetProfitLineChart
 } from "@/app/(dashboard)/finance/investment/components/asset-profit-line-chart/AssetProfitLineChart";
 import {ResponsiveContainer} from "recharts";
+import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
 
 interface IProps {
     cryptoPortfolioId: string;
@@ -28,6 +29,19 @@ export function MiniAssetProfitLineChart({cryptoPortfolioId, assetInfoId}: IProp
             },
         }
     );
+
+    const profitData = data?.getHistoricalAssetProfits ?? [];
+
+    if (profitData.length === 1) {
+        return (
+            <div className="flex justify-center">
+                <div className="">
+                    <MoneyUpDownAnimated number={profitData[0].estimatedProfit}/>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <ResponsiveContainer>
             <AssetProfitLineChart profitData={data?.getHistoricalAssetProfits ?? []} minimal={true}/>

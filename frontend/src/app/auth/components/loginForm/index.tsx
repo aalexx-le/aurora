@@ -2,20 +2,25 @@
 
 import Link from "next/link";
 
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
-import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useAppDispatch, useAppSelector} from "@/state/hooks";
-import {authActions} from "@/state/slices/auth.slice";
+import { GoogleButton } from '@/app/auth/components/GoogleButton';
+import { useSubmitError } from "@/app/auth/components/signupForm/useSubmitError";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
-import {useSubmitError} from "@/app/auth/components/signupForm/useSubmitError";
-import {loginSchema, LoginSchemaType} from "@/lib/schema/login";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import AUTH_ROUTE from "@/lib/routes/auth.route";
+import { loginSchema, LoginSchemaType } from "@/lib/schema/login";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import { authActions } from "@/state/slices/auth.slice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {TABS} from "@/app/auth/page";
 
+interface LoginFormProps {
+    setActiveTab: (tab: string) => void;
+}
 
-export function LoginForm() {
+export function LoginForm({ setActiveTab }: LoginFormProps) {
     const form = useForm<LoginSchemaType>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -35,6 +40,10 @@ export function LoginForm() {
         await dispatch(authActions.loginWithPassword(loginDto));
         await dispatch(authActions.loginWithToken());
     }
+    
+    const handleGoogleError = (errorMsg: string) => {
+        setError('root', { message: errorMsg });
+    };
 
     return (
         <Card>
@@ -109,13 +118,18 @@ export function LoginForm() {
                         >
                             OR
                         </div>
-                        <Button variant="outline" className="w-full">
-                            Login with Google
-                        </Button>
+                        <GoogleButton 
+                            className="mt-2"
+                            onError={handleGoogleError}
+                        />
 
+                        
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}
-                            <Link href="#" className="underline">
+                            <Link href="#" className="underline" onClick={(e) => {
+                                e.preventDefault();
+                                setActiveTab(TABS.SIGNUP);
+                            }}>
                                 Sign up
                             </Link>
                         </div>

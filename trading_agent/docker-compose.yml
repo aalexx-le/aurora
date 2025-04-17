@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mlflow:
+    image: bitnami/mlflow:latest
+    container_name: mlflow-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow:/mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlflow/mlflow.db
+    command: mlflow server --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --host 0.0.0.0
+    networks:
+      - mlops-network
+
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pen-training
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./model_checkpoints:/app/model_checkpoints
+    env_file:
+      - .env
+    depends_on:
+      - mlflow
+    networks:
+      - mlops-network
+
+networks:
+  mlops-network:
+    driver: bridge 

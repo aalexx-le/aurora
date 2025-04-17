@@ -1,0 +1,24 @@
+FROM timescale/timescaledb-ha:pg16
+
+# Copy the data directory from the host to the container
+COPY ./xela_timeseries-data /home/postgres/pgdata/data
+
+# become root
+USER root
+
+# Set the correct permissions for the data directory
+RUN chown -R postgres:postgres /home/postgres/pgdata/data && \
+    chmod 700 /home/postgres/pgdata/data
+
+# Create missing PostgreSQL folders
+WORKDIR /home/postgres/pgdata/data
+RUN mkdir -p pg_tblspc
+RUN mkdir -p pg_replslot
+RUN mkdir -p pg_twophase
+RUN mkdir -p pg_stat
+RUN mkdir -p pg_commit_ts
+RUN mkdir -p pg_logical/snapshots
+RUN mkdir -p pg_logical/mappings
+
+# Ensure proper ownership for all created directories
+RUN chown -R postgres:postgres /home/postgres/pgdata/data

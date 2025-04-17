@@ -6,17 +6,18 @@ from enum import Enum
 from typing import List
 from uuid import uuid4
 
+import ccxt
 import okx.Account as OKXAccount
 import pandas as pd
 import psycopg
 from binance.client import Client as BinanceClient
 from dotenv import load_dotenv
 from graphql_client.enums import CEXExchanges
-from mexc_api.spot import Spot as MexcClient
 from psycopg import sql
 from psycopg.rows import class_row
 from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from tasks.exchange_strategies import ExchangeContext
 from utils.calculation import (calc_change_in_balance, calc_estimated_balance,
                                calculate_all_time_profit)
 from utils.connection import get_connection
@@ -98,6 +99,7 @@ class CryptoPortfolioCreator:
         self.conn = get_connection()
         self.cursor = self.conn.cursor()
         self.producer = producer
+        self.exchange_context = ExchangeContext()
         
     def create(self, payload) -> None:
         api_key = payload['apiKey']
@@ -118,25 +120,13 @@ class CryptoPortfolioCreator:
         self.cursor.execute(UPDATE_EXECUTION_STATUS, (CreateExecutionStatus.PROCESSING.value, execution_id))
         self.conn.commit()
         
-        account = None
         try:
-            if exchanges == CEXExchanges.MEXC:
-                mexc_client = MexcClient(api_key, secret_key)
-                info = mexc_client.account.get_account_info()
-                info['updateTime'] = datetime.now()
-                account = CEXAccount(**info)
-            elif exchanges == CEXExchanges.OKX:
-                passphrase = payload['passphrase']
-                okx_client = OKXAccount.AccountAPI(api_key, secret_key, passphrase, use_server_time=False, flag="0")
-                account = CEXAccount(updateTime=datetime.now(), balances=[])
-                data = okx_client.get_account_balance()['data']
-                for balance in data[0]['details']:
-                    account.balances.append(AccountBalances(asset=balance['ccy'], free=balance['availBal'], locked=balance['frozenBal']))
-            else:
-                binance_client = BinanceClient(api_key, secret_key)
-                info = binance_client.get_account(recvWindow=60000, omitZeroBalances='true')
-                info['updateTime'] = datetime.now()
-                account = CEXAccount(**info)
+            account = self.exchange_context.fetch_account(
+                exchange=exchanges,
+                api_key=api_key,
+                secret_key=secret_key,
+                passphrase=payload.get('passphrase') if exchanges == CEXExchanges.OKX else None
+            )
         except Exception as e:
             logging.error(e)
             logging.error("Failed to fetch account info, change status to FAILED")

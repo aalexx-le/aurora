@@ -69,6 +69,7 @@ export function CreatedDateSelect({
                     onDayClick={() => setIsOpen(false)}
                     mode="single"
                     captionLayout="dropdown"
+                    
                     selected={selectedCreatedDate}
                     onSelect={(selectedDate) => {
                         const [hours, minutes] = time?.split(":");

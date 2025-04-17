@@ -1,5 +1,6 @@
 import {
     Bot,
+    Calendar,
     Frame,
     LifeBuoy,
     Map,
@@ -32,11 +33,13 @@ export const SIDEBAR_DATA = {
                     title: "Investment",
                     url: DASHBOARD_ROUTE.finance.investment.value,
                 },
-                // {
-                //     title: "Asset Price",
-                //     url: DASHBOARD_ROUTE.finance.investment.value,
-                // },
             ],
+        },
+        {
+            title: "Schedule",
+            url: DASHBOARD_ROUTE.schedule.value,
+            icon: Calendar,
+            isActive: false,
         },
         {
             title: "Agents",
@@ -50,29 +53,6 @@ export const SIDEBAR_DATA = {
                 },
             ],
         },
-        // {
-        //     title: "Documentation",
-        //     url: "#",
-        //     icon: BookOpen,
-        //     items: [
-        //         {
-        //             title: "Introduction",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Get Started",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Tutorials",
-        //             url: "#",
-        //         },
-        //         {
-        //             title: "Changelog",
-        //             url: "#",
-        //         },
-        //     ],
-        // },
         {
             title: "Settings",
             url: "#",
@@ -82,18 +62,6 @@ export const SIDEBAR_DATA = {
                     title: "Appearance",
                     url: SETTING_ROUTE.appearance.value,
                 },
-                // {
-                //     title: "Team",
-                //     url: "#",
-                // },
-                // {
-                //     title: "Billing",
-                //     url: "#",
-                // },
-                // {
-                //     title: "Limits",
-                //     url: "#",
-                // },
             ],
         },
     ],

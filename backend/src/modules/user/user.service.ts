@@ -26,10 +26,14 @@ export class UserService {
         return this.prismaService.user.findUnique({ where: { id: userId } });
     }
 
-    async findByAccount(email: string): Promise<LoginReqDto> {
+    async findByEmailWithPassword(email: string): Promise<LoginReqDto> {
         return this.prismaService.user.findUnique({
             where: { email },
             select: { id: true, email: true, password: true },
         });
+    }
+
+    async findByEmail(email: string): Promise<User> {
+        return this.prismaService.user.findUnique({ where: { email } });
     }
 }

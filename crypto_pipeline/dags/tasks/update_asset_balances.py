@@ -64,7 +64,7 @@ def update_asset_balances(
                 if asset_id is None:
                     continue
                 
-                logging.info("Add balance for " + str(owning_coin) + " with id " + str(asset_id))
+                logging.info("Add balance for " + str(owning_coin) + " with id " + str(asset_id) + " and balance " + str(owning_coin.free) + " and locked " + str(owning_coin.locked))
 
                 data = {
                     "id": uuid4(),

@@ -1,19 +1,18 @@
-import {CREATE_BANK_TRANSACTION, GET_BANK_TRANSACTIONS} from "@/api/script/bank/transaction";
-import {CreateDialog} from "@/components/create-dialog";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from '@/components/ui/input';
-import {Textarea} from '@/components/ui/textarea';
-import {CreateBankTransactionMutation, CreateBankTransactionMutationVariables} from "@/gql/graphql";
-import {CreateBankTransactionInput, createBankTransactionSchema} from "@/lib/schema/bankTransaction";
-import {useAppSelector} from "@/state/hooks";
-import {useMutation} from '@apollo/client';
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
+import { GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { CREATE_BANK_TRANSACTION, GET_BANK_TRANSACTIONS } from "@/api/script/bank/transaction";
 import BankAccountSelect from "@/app/(dashboard)/finance/bank/components/account-list/BankAccountSelect";
-import {cn} from "@/lib/utils";
+import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
 import CurrencyInput from "@/components/ui/currency-input";
-import * as React from "react";
-import {Switch} from "@/components/ui/switch";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from '@/components/ui/textarea';
+import { CreateBankTransactionMutation, CreateBankTransactionMutationVariables } from "@/gql/graphql";
+import { CreateBankTransactionInput, createBankTransactionSchema } from "@/lib/schema/bankTransaction";
+import { cn } from "@/lib/utils";
+import { useMutation } from '@apollo/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 interface IProps {
 }
@@ -33,7 +32,7 @@ const CreateTransactionDialog = ({}: IProps) => {
     const isTransfer = form.watch('isTransfer');
 
     const [createTransaction, {loading}] = useMutation<CreateBankTransactionMutation, CreateBankTransactionMutationVariables>(CREATE_BANK_TRANSACTION, {
-        refetchQueries: [GET_BANK_TRANSACTIONS, 'GetBankTransactions'],
+        refetchQueries: [GET_BANK_TRANSACTIONS, 'GetBankTransactions', GET_BANK_MANAGERS, GET_BANK_ACCOUNTS],
         awaitRefetchQueries: true,
     });
 
@@ -43,14 +42,14 @@ const CreateTransactionDialog = ({}: IProps) => {
                 data: {
                     bankId: data.bankId,
                     description: data.description,
-                    amount: Number(data.amount)
+                    amount: data.isTransfer ? -data.amount : data.amount,
                 }
             }
         });
     };
 
     return (
-        <CreateDialog<CreateBankTransactionInput>
+        <CreateOrUpdateDialog<CreateBankTransactionInput>
             title="New Transaction"
             form={form}
             formSchema={createBankTransactionSchema}
@@ -136,7 +135,7 @@ const CreateTransactionDialog = ({}: IProps) => {
                     />
                 </>
             )}
-        </CreateDialog>
+        </CreateOrUpdateDialog>
     );
 };
 

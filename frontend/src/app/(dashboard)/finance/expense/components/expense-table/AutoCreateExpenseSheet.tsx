@@ -1,27 +1,21 @@
 "use client";
 
-import * as React from "react";
-import {useEffect, useMemo, useTransition} from "react";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {useMutation} from "@apollo/client";
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,} from "@/components/ui/sheet";
-import {CreateExpenseInput, createExpenseSchema} from "@/lib/schema/expense";
-import {CreateExpenseMutation, MutationCreateExpenseArgs,} from "@/gql/graphql";
-import {CREATE_EXPENSE, GET_EXPENSES} from "@/api/script/expense";
-import {useToast} from "@/hooks/use-toast";
-import {useAppSelector} from "@/state/hooks";
-import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
-import {useAISuggestExpenses} from "@/app/(dashboard)/finance/expense/components/expense-table/useAISuggestedExpenses";
-import {useReviewTransaction} from "@/app/(dashboard)/finance/expense/components/expense-table/useReviewTransaction";
-import {useSubmitForm} from "@/app/(dashboard)/finance/expense/components/expense-table/useSubmitForm";
-import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
-import {cn} from "@/lib/utils";
+import { useAISuggestExpenses } from "@/app/(dashboard)/finance/expense/components/expense-table/useAISuggestedExpenses";
+import { useReviewTransaction } from "@/app/(dashboard)/finance/expense/components/expense-table/useReviewTransaction";
+import { useSubmitForm } from "@/app/(dashboard)/finance/expense/components/expense-table/useSubmitForm";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
-import {MenuItem, Menu, MenuContent} from "@radix-ui/react-menu";
-import {Button} from "@/components/ui/button";
-import {Expense} from "@/app/(dashboard)/finance/expense/components/expense-table/types";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, } from "@/components/ui/sheet";
+import { CreateExpenseInput, createExpenseSchema } from "@/lib/schema/expense";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as React from "react";
+import { useEffect, useMemo, useTransition } from "react";
+import { useForm } from "react-hook-form";
 
 interface CreateExpenseSheetProps
     extends React.ComponentPropsWithRef<typeof Sheet> {
@@ -65,24 +59,57 @@ export function AutoCreateExpenseSheet({
                 <SheetHeader className="text-left">
                     <SheetTitle>AI Suggest Expense</SheetTitle>
                     <SheetDescription>
-                        Adjust the details to match your desired expense
+                        Select a suggestion or adjust the details to match your desired expense
                     </SheetDescription>
                 </SheetHeader>
-                <ScrollArea className="w-96 whitespace-nowrap rounded-md border">
-                    <div className="flex flex-row">
-                        {suggestedExpenses.map((exp, i) => (
-                            <div key={i} className="flex flex-col p-4 text-sm hover:cursor-pointer hover:bg-muted" onClick={() => form.reset(exp as CreateExpenseInput)}>
-                                <span className="truncate font-medium">
-                                    {exp.name}
-                                </span>
-                                <span className={cn("font-bold", exp.amount > 0 ? "text-chart-2" : "text-chart-5")}>
-                                    {exp.amount > 0 ? "+" : ""}<MoneyWithCurrency amount={exp.amount}/>
-                                </span>
+                
+                {suggestedExpenses.length > 0 ? (
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-medium text-muted-foreground">Suggested Expenses</h3>
+                        <ScrollArea className="h-[180px] w-full rounded-md border">
+                            <div className="grid grid-cols-1 gap-2 p-2">
+                                {suggestedExpenses.map((exp, i) => (
+                                    <Card 
+                                        key={i} 
+                                        className={cn(
+                                            "transition-all duration-200 hover:shadow-md hover:border-primary/50 cursor-pointer",
+                                            "border-2",
+                                            JSON.stringify(form.getValues()) === JSON.stringify(exp) && "border-primary"
+                                        )}
+                                        onClick={() => form.reset(exp as CreateExpenseInput)}
+                                    >
+                                        <CardContent className="p-3">
+                                            <div className="flex justify-between items-start">
+                                                <div className="space-y-1">
+                                                    <h4 className="font-medium truncate max-w-[200px]">{exp.name}</h4>
+                                                    {exp.description && (
+                                                        <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                                            {exp.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <span className={cn(
+                                                    "font-bold text-base", 
+                                                    exp.amount > 0 ? "text-chart-2" : "text-chart-5"
+                                                )}>
+                                                    {exp.amount > 0 ? "+" : ""}
+                                                    <MoneyWithCurrency amount={exp.amount} />
+                                                </span>
+                                            </div>
+                                            
+                                        </CardContent>
+                                    </Card>
+                                ))}
                             </div>
-                        ))}
+                            <ScrollBar orientation="vertical" />
+                        </ScrollArea>
                     </div>
-                    <ScrollBar orientation="horizontal"/>
-                </ScrollArea>
+                ) : (
+                    <div className="flex items-center justify-center h-[100px] border rounded-md bg-muted/20">
+                        <p className="text-sm text-muted-foreground">No suggestions available</p>
+                    </div>
+                )}
+                
                 <ExpenseForm
                     form={form}
                     transaction={reviewTransaction}
