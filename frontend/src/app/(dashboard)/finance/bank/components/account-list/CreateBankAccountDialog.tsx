@@ -1,8 +1,8 @@
-import { CREATE_BANK_ACCOUNT, GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
-import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { CREATE_BANK_ACCOUNT, GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
 import { BankInfo, VietNamBankSelect } from "@/app/(dashboard)/finance/bank/components/bank-select/BankSelect";
 import BankManagerSelect from "@/app/(dashboard)/finance/components/bank-manager-select/BankManagerSelect";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';

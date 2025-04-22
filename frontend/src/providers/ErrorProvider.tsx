@@ -114,17 +114,6 @@ interface ErrorProviderProps {
 const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
 
 /**
- * Hook for using the error context
- */
-export function useError(): ErrorContextType {
-  const context = useContext(ErrorContext);
-  if (!context) {
-    throw new Error('useError must be used within an ErrorProvider');
-  }
-  return context;
-}
-
-/**
  * Provider component for error handling
  */
 export function ErrorProvider({

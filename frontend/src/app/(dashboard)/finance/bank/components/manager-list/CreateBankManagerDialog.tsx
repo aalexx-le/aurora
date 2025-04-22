@@ -1,6 +1,6 @@
-import { CREATE_BANK_MANAGER, GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { CREATE_BANK_MANAGER, GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
 import { ThirdPartySelect } from "@/app/(dashboard)/finance/components/third-party-select/ThirdPartySelect";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

@@ -1,30 +1,30 @@
 "use client";
 
-import { useEventCalendar } from "@/lib/context/calendar-context";
 import {
-  DateSelectArg,
-  EventChangeArg,
-  EventClickArg,
-  EventInput,
+    DateSelectArg,
+    EventChangeArg,
+    EventClickArg,
+    EventInput,
 } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { useEventCalendar } from "../../event-calendar-provider";
 import "./event-calendar.css";
 
-import { GET_EVENTS, UPDATE_EVENT } from "@/api/script/schedule/event";
+import { GET_EVENTS, UPDATE_EVENT } from "@/api/scripts/schedule/event";
 import { Card } from "@/components/ui/card";
 import { UpdateEventMutation, UpdateEventMutationVariables } from "@/gql/graphql";
 import { useToast } from "@/hooks/use-toast";
 import { getDateFromMinutes } from "@/lib/utils/calendar/calendar-utils";
-import { earliestTime } from "@/lib/utils/calendar/data";
+import { CalendarView, EARLIEST_TIME } from "@/lib/utils/calendar/data";
 import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
 import { useMutation } from "@apollo/client";
 import { useRef, useState } from "react";
 import EventCategoryList from "../event-category-list/EventCategoryList";
-import { EventCalendarSkeleton } from "../skeletons";
+import EventRecurrenceList from "../event-recurrence-list/EventRecurrenceList";
 import DayHeader from "./DayHeader";
 import DayRender from "./DayRender";
 import EventCalendarNav from "./event-calendar-nav";
@@ -34,10 +34,9 @@ import { UpdateEventDialog } from "./UpdateEventDialog";
 
 interface IProps {
     events: EventInput[];
-    loading?: boolean;
 }
 
-function EventCalendarContent({events, loading = false}: IProps) {
+function EventCalendarContent({ events }: IProps) {
     const {
         setEventAddOpen,
         setEventEditOpen,
@@ -48,11 +47,11 @@ function EventCalendarContent({events, loading = false}: IProps) {
         viewedDate
     } = useEventCalendar();
 
-    const {toast} = useToast();
+    const { toast } = useToast();
 
     const calendarRef = useRef<FullCalendar | null>(null);
     const [selectedEvent, setSelectedEvent] = useState<Event | undefined>();
-
+    
     // Set up the update event mutation
     const [updateEvent] = useMutation<UpdateEventMutation, UpdateEventMutationVariables>(
         UPDATE_EVENT,
@@ -101,23 +100,32 @@ function EventCalendarContent({events, loading = false}: IProps) {
     };
 
     const handleDateClick = (info: DateClickArg) => {
-        const endTime = new Date(info.date.getTime() + 30 * 60 * 1000); // 30 minutes between start and end time
-
-        setEventAddStartTime(info.date);
-        setEventAddEndTime(endTime);
+        if (currentView === CalendarView.DayGridMonth) {
+            const startDate = new Date(info.date);
+            startDate.setHours(7, 0, 0, 0);
+            setEventAddStartTime(startDate);
+            const endDate = new Date(info.date);
+            endDate.setHours(8, 0, 0, 0);
+            setEventAddEndTime(endDate);
+        }
+        else {
+            const endTime = new Date(info.date.getTime() + 30 * 60 * 1000); // 30 minutes between 
+            setEventAddStartTime(info.date);
+            setEventAddEndTime(endTime);
+        }
 
         setEventAddOpen(true);
     }
 
     const handleEventContent = (eventInfo: any) => {
-        return <EventItem info={eventInfo}/>;
+        return <EventItem info={eventInfo} />;
     };
 
-    const earliestHour = getDateFromMinutes(earliestTime)
+    const earliestHour = getDateFromMinutes(EARLIEST_TIME)
         .getHours()
         .toString()
         .padStart(2, "0");
-    const earliestMin = getDateFromMinutes(earliestTime)
+    const earliestMin = getDateFromMinutes(EARLIEST_TIME)
         .getMinutes()
         .toString()
         .padStart(2, "0");
@@ -132,67 +140,65 @@ function EventCalendarContent({events, loading = false}: IProps) {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-6 lg:gap-4">
-                <EventCategoryList/>
+            <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-4">
+                <div className="space-y-4">
+                    <EventCategoryList />
+                    {/* <Suspense fallback={<div className="p-4 animate-pulse h-48 bg-muted rounded-lg"></div>}> */}
+                    <EventRecurrenceList />
+                    {/* </Suspense> */}
+                </div>
+                <Card className="col-span-4 overflow-hidden mb-5">
+                    <FullCalendar
+                        events={events}
+                        ref={calendarRef}
+                        timeZone="local"
+                        plugins={[
+                            dayGridPlugin,
+                            timeGridPlugin,
+                            interactionPlugin,
+                            listPlugin,
+                        ]}
+                        weekNumberCalculation="ISO"
+                        weekends={true}
+                        firstDay={1}
+                        initialView={currentView}
+                        initialDate={viewedDate}
+                        headerToolbar={false}
+                        slotMinTime={calendarEarliestTime}
+                        allDaySlot={true}
+                        displayEventEnd={true}
+                        windowResizeDelay={0}
 
-                {loading ? (
-                    <div className="col-span-5">
-                        <EventCalendarSkeleton/>
-                    </div>
-                ) : (
-                    <Card className="col-span-5 overflow-hidden">
-                        <FullCalendar
-                            events={events}
-                            ref={calendarRef}
-                            timeZone="local"
-                            plugins={[
-                                dayGridPlugin,
-                                timeGridPlugin,
-                                interactionPlugin,
-                                listPlugin,
-                            ]}
-                            weekends={true}
-                            firstDay={1}
-                            initialView={currentView}
-                            initialDate={viewedDate}
-                            headerToolbar={false}
-                            slotMinTime={calendarEarliestTime}
-                            allDaySlot={false}
-                            displayEventEnd={true}
-                            windowResizeDelay={0}
-
-                            slotLabelFormat={{
-                                hour: "numeric",
-                                minute: "2-digit",
-                                hour12: true,
-                            }}
-                            eventTimeFormat={{
-                                hour: "numeric",
-                                minute: "2-digit",
-                                hour12: true,
-                            }}
-                            contentHeight={"auto"}
-                            expandRows={true}
-                            dayCellContent={(dayInfo) => <DayRender info={dayInfo}/>}
-                            eventContent={handleEventContent}
-                            dayHeaderContent={(headerInfo) => <DayHeader info={headerInfo}/>}
-                            eventClick={(eventInfo) => handleEventClick(eventInfo)}
-                            eventChange={(eventInfo) => handleEventChange(eventInfo)}
-                            select={handleDateSelect}
-                            datesSet={({view}) => setViewedDate(new Date(view.currentStart))}
-                            dateClick={(eventInfo) => handleDateClick(eventInfo)}
-                            nowIndicator
-                            droppable
-                            editable
-                            eventStartEditable
-                        />
-                    </Card>
-                )}
-
+                        slotLabelFormat={{
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                        }}
+                        eventTimeFormat={{
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                        }}
+                        contentHeight={"auto"}
+                        expandRows={true}
+                        dayCellContent={(dayInfo) => <DayRender info={dayInfo} />}
+                        eventContent={handleEventContent}
+                        dayHeaderContent={(headerInfo) => <DayHeader info={headerInfo} />}
+                        eventClick={(eventInfo) => handleEventClick(eventInfo)}
+                        eventChange={(eventInfo) => handleEventChange(eventInfo)}
+                        select={handleDateSelect}
+                        datesSet={({ view }) => setViewedDate(new Date(view.currentStart))}
+                        dateClick={(eventInfo) => handleDateClick(eventInfo)}
+                        nowIndicator
+                        droppable
+                        editable
+                        eventStartEditable
+                    />
+                </Card>
             </div>
-            
+
             {selectedEvent && (
-                <UpdateEventDialog event={selectedEvent}/>
+                <UpdateEventDialog event={selectedEvent} />
             )}
         </div>
     );

@@ -1,15 +1,15 @@
 "use client";
 
-import { GET_EVENTS, UPDATE_EVENT } from "@/api/script/schedule/event";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { GET_EVENTS, UPDATE_EVENT } from "@/api/scripts/schedule/event";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Dialog } from "@/components/ui/dialog";
 import { UpdateEventMutation, UpdateEventMutationVariables } from "@/gql/graphql";
-import { useEventCalendar } from "@/lib/context/calendar-context";
 import { CreateEventInput, createEventSchema } from "@/lib/schema/event";
 import { useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useEventCalendar } from "../../event-calendar-provider";
 import { DeleteEventDialog } from "./DeleteEventDialog";
 import { getEventForm } from "./getEventForm";
 import { Event } from "./types";
@@ -32,6 +32,16 @@ export function UpdateEventDialog({ event }: UpdateEventDialogProps) {
     allDay: event.allDay,
     categoryId: event.category.id,
     color: event.color || '',
+    recurrence: event.recurrence ? {
+      type: event.recurrence.type,
+      interval: event.recurrence.interval,
+      daysOfWeek: event.recurrence.daysOfWeek || undefined,
+      dayOfMonth: event.recurrence.dayOfMonth || undefined,
+      weekOfMonth: event.recurrence.weekOfMonth || undefined,
+      dayOfWeek: event.recurrence.dayOfWeek || undefined,
+      endDate: event.recurrence.endDate ? new Date(event.recurrence.endDate) : undefined,
+      endCount: event.recurrence.endCount || undefined,
+    } : undefined
   }), [event]);
 
   const form = useForm<CreateEventInput>({
@@ -67,7 +77,7 @@ export function UpdateEventDialog({ event }: UpdateEventDialogProps) {
       ]}
       isUpdate
     >
-      {getEventForm}
+      {(form) => getEventForm(form)}
     </CreateOrUpdateDialog>
   );
 }

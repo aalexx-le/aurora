@@ -75,12 +75,15 @@ export class ExpenseService {
             const transaction = await this.bankTransactionService.findOne(
                 data.bankTransactionId,
             );
-            const previousExpense = await this.prismaService.expense.findUnique({
-                where: { id },
-            });
-            const previousTransaction = await this.bankTransactionService.findOne(
-                previousExpense.bankTransactionId,
+            const previousExpense = await this.prismaService.expense.findUnique(
+                {
+                    where: { id },
+                },
             );
+            const previousTransaction =
+                await this.bankTransactionService.findOne(
+                    previousExpense.bankTransactionId,
+                );
 
             const isDifferentTransaction =
                 data.bankTransactionId !== previousExpense.bankTransactionId;

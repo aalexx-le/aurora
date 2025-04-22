@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: message-broker
+  labels:
+    app.kubernetes.io/name: message-broker
+    app.kubernetes.io/part-of: xela
+spec:
+  serviceName: message-broker
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: message-broker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: message-broker
+        app.kubernetes.io/part-of: xela
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:7.3.0
+        ports:
+        - containerPort: 9092
+          name: kafka
+        - containerPort: 29092
+          name: kafka-ext
+        env:
+        - name: KAFKA_BROKER_ID
+          value: "1"
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zookeeper:22181"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://message-broker:9092,PLAINTEXT_INTERNAL://message-broker:29092"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
+          value: "1"
+        - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+          value: "1"
+        - name: KAFKA_ADVERTISED_HOST_NAME
+          value: "message-broker"
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/kafka/data
+        readinessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 60
+          periodSeconds: 15
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi 

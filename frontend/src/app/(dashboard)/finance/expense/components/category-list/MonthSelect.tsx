@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+import { GET_MONTHLY_TARGETS } from "@/api/scripts/expense/expense-category";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -9,10 +10,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {Button} from "@/components/ui/button";
-import {GET_MONTHLY_TARGETS} from "@/api/script/expense/expense-category";
-import {useQuery} from "@apollo/client";
-import {GetMonthlyTargetsQuery, QueryGetMonthlyTargetsArgs} from "@/gql/graphql";
+import { GetMonthlyTargetsQuery, QueryGetMonthlyTargetsArgs } from "@/gql/graphql";
+import { useQuery } from "@apollo/client";
+import * as React from "react";
 
 interface MonthSelectProps {
     selectedMonth: number;

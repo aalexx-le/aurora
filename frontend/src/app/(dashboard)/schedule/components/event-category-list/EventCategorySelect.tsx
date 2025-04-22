@@ -1,4 +1,4 @@
-import { GET_EVENT_CATEGORIES } from "@/api/script/schedule/event-category";
+import { GET_EVENT_CATEGORIES } from "@/api/scripts/schedule/event-category";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GetEventCategoriesQuery, GetEventCategoriesQueryVariables } from "@/gql/graphql";
 import { useQuery } from "@apollo/client";
 import { ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
 import { CreateEventCategoryDialog } from "./CreateEventCategoryDialog";
 import { EventCategoryBadge } from "./EventCategoryBadge";
-import { GetEventCategoriesQuery, GetEventCategoriesQueryVariables } from "@/gql/graphql";
 
 interface EventCategorySelectProps {
   selectedCategoryId: number | null;
@@ -48,7 +48,7 @@ export function EventCategorySelect({
             className="w-full justify-between gap-2"
           >
             {selectedCategory ? (
-              <EventCategoryBadge category={selectedCategory} />
+              <EventCategoryBadge category={selectedCategory} className="border-none shadow-none" />
             ) : (
               "Select category"
             )}
@@ -71,7 +71,7 @@ export function EventCategorySelect({
                       value={String(category.id)}
                       onSelect={handleSelect}
                     >
-                      <EventCategoryBadge category={category} />
+                      <EventCategoryBadge category={category} className="border-none shadow-none" />
                     </CommandItem>
                   ))}
                 </CommandGroup>

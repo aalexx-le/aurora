@@ -1,10 +1,10 @@
-import { useQuery } from "@apollo/client";
-import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
 import {
     GET_ASSET,
     getSubscriptNewAssetPriceHook,
     getSubscriptNewAssetPriceResult,
-} from "@/api/script/crypto/crypto";
+} from "@/api/scripts/crypto/crypto";
+import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
+import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
 
 const getAbbreviatedTimeFrame = (timeFrame: string) => {

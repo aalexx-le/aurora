@@ -7,13 +7,14 @@ model Event {
   allDay          Boolean          @default(false)
   color           String?          
   
-  recurrence      Recurrence?      
+  recurrenceId    Int?
+  recurrence      EventRecurrence?       @relation(fields: [recurrenceId], references: [id], onDelete: Cascade)
   
   userId          Int    
   user            User             @relation(fields: [userId], references: [id])
   
   categoryId      Int
-  category        EventCategory   @relation(fields: [categoryId], references: [id])
+  category        EventCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   
   reminderMinutes Int?
   
@@ -24,7 +25,7 @@ model Event {
   @@index([startDate]) 
 }
 
-model Recurrence {
+model EventRecurrence {
   id              Int           @id @default(autoincrement())
   type            RecurrenceType   
   interval        Int              @default(1) 
@@ -38,9 +39,11 @@ model Recurrence {
   
   endDate         DateTime?        
   endCount        Int?             
-  
-  eventId         Int           @unique
-  event           Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  events          Event[]
+
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id])
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -60,6 +63,7 @@ model EventCategory {
 
   userId      Int    
   user        User      @relation(fields: [userId], references: [id])
+
   events      Event[]
 
   @@unique([name, userId]) 

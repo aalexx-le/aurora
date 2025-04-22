@@ -1,10 +1,6 @@
+import { GET_TRADES } from "@/api/scripts/crypto/trade";
+import { GetTradesQuery, GetTradesQueryVariables } from "@/gql/graphql";
 import { useQuery } from "@apollo/client";
-import {
-    CexExchanges,
-    GetTradesQuery,
-    GetTradesQueryVariables,
-} from "@/gql/graphql";
-import { GET_TRADES } from "@/api/script/crypto/trade";
 
 export const useTradeQuery = (
     cryptoPortfolioId: string,

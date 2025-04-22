@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: xela-dev
+  labels:
+    name: xela-dev
+    environment: development 

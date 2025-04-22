@@ -1,9 +1,9 @@
-import { useQuery } from "@apollo/client";
+import { GET_BANK_TRANSACTIONS } from "@/api/scripts/bank/transaction";
 import {
     GetBankTransactionsQuery,
     GetBankTransactionsQueryVariables,
 } from "@/gql/graphql";
-import { GET_BANK_TRANSACTIONS } from "@/api/script/bank/transaction";
+import { useQuery } from "@apollo/client";
 
 export const useTransactionQuery = () => {
     const { data } = useQuery<

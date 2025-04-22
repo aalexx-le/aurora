@@ -1,0 +1,22 @@
+{
+  "eventId": "evt_01jrznr1ynbv2qzy26qjgygwab",
+  "notificationId": "ntf_01jrznr23mkqvd9wk6pcv4tpkp",
+  "eventType": "address.created",
+  "occurredAt": "2025-04-16T16:08:38.101327Z",
+  "data": {
+    "id": "add_01jrznr1n3dqnqhyztt59x8cke",
+    "customerId": "ctm_01jrwv2d89ya6gzvvbjezc4wv0",
+    "description": null,
+    "firstLine": null,
+    "secondLine": null,
+    "city": null,
+    "postalCode": null,
+    "region": null,
+    "countryCode": "VN",
+    "customData": null,
+    "status": "active",
+    "createdAt": "2025-04-16T16:08:37.795Z",
+    "updatedAt": "2025-04-16T16:08:37.795Z",
+    "importMeta": null
+  }
+}

@@ -61,34 +61,38 @@ export default function EventItem({ info }: EventItemProps) {
       <Button
         variant="default"
         size="icon"
-        className="w-6 h-6 absolute p-0 top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="w-6 h-6 absolute p-0 top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={handleDuplicate}
       >
         <CopyIcon/>
       </Button>
       {info.view.type === "dayGridMonth" ? (
         <div
-          style={{ backgroundColor: info.backgroundColor }}
+          style={{ background: info.backgroundColor }}
           className={`flex flex-col rounded-md w-full p-2 line-clamp-1 text-[0.5rem] sm:text-[0.6rem] md:text-xs`}
         >
           <div className="flex justify-between items-start">
-            <p className="font-semibold text-gray-950 line-clamp-1 w-11/12">
+            <p className="font-semibold text-gray-950 truncate">
               {event.title}
             </p>
           </div>
-          <p className="text-gray-800">{startTimeStr}</p>
-          <p className="text-gray-800">{endTimeStr}</p>
+          {/* <p className="text-gray-800">{startTimeStr}</p>
+          <p className="text-gray-800">{endTimeStr}</p> */}
         </div>
       ) : (
-        <div className="flex flex-col p-1 text-[0.5rem] sm:text-[0.6rem] md:text-xs">
+        <div
+          className={`flex flex-col rounded-md w-full p-1 line-clamp-1 text-[0.5rem] sm:text-[0.6rem] md:text-xs`}
+        >
           <div className="flex justify-between items-start">
-            <p className="font-semibold w-full text-gray-950">
+            <p className="font-semibold text-gray-950 truncate">
               {event.title}
             </p>
           </div>
           {timeDifference > 30 && (
             <p className="text-gray-800 line-clamp-1">{`${startTimeStr} - ${endTimeStr}`}</p>
           )}
+          {/* <p className="text-gray-800">{startTimeStr}</p>
+          <p className="text-gray-800">{endTimeStr}</p> */}
         </div>
       )}
     </div>

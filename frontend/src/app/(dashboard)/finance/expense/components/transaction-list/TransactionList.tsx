@@ -1,7 +1,7 @@
-import { GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
-import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
-import { GET_BANK_TRANSACTIONS, REMOVE_BANK_TRANSACTION } from "@/api/script/bank/transaction";
-import { GET_EXPENSES } from "@/api/script/expense/expense";
+import { GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
+import { GET_BANK_TRANSACTIONS, REMOVE_BANK_TRANSACTION } from "@/api/scripts/bank/transaction";
+import { GET_EXPENSES } from "@/api/scripts/expense/expense";
 import {
     AutoCreateExpenseSheet
 } from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
@@ -16,8 +16,8 @@ import {
     useFilteredTransactions
 } from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
 import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
-import { DeleteDialog } from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
 import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { DeleteDialog } from "@/components/crud/delete-dialog";
 import { RemoveBankTransactionMutation, RemoveBankTransactionMutationVariables } from "@/gql/graphql";
 import { useMutation } from "@apollo/client";
 import { useState } from 'react';

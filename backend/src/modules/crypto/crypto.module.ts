@@ -1,34 +1,30 @@
-import { Module } from "@nestjs/common";
-import { CryptoPortfolioService } from "./profile/portfolio.service";
-import { CryptoPortfolioResolver } from "./profile/portfolio.resolver";
+import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
+import { Module, Scope } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PubSub } from "graphql-subscriptions";
-import { CryptoBalanceResolver } from "./profile/balance.resolver";
-import { PortfolioEventListener } from "./profile/portfolio-event-listener.service";
+import { ConnectionStringParser } from "connection-string-parser";
+import { PgPubSubModule } from "nestjs-pg-pubsub";
+import { EncryptionService } from "../../shared/encryption.service";
+import { CryptoAssetInfoResolver } from "./asset/asset-info.resolver";
+import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
 import { CryptoAssetPriceResolver } from "./asset/asset-price.resolver";
 import { CryptoAssetService } from "./asset/asset.service";
-import { CryptoAssetInfoResolver } from "./asset/asset-info.resolver";
-import { PgPubSubModule } from "nestjs-pg-pubsub";
-import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
-import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
-import { ConnectionStringParser } from "connection-string-parser";
-import { HistoricalBalanceResolver } from "./profile/historical-balance.resolver";
-import { HistoricalAssetProfitResolver } from "./profile/historical-asset-profit.resolver";
-import { HistoricalCryptoBalanceEventListener } from "./profile/historical-balance.event-listener";
-import { HistoricalAssetProfitEventListener } from "./profile/historical-asset-profit.event-listener";
-import { EncryptionService } from "../../shared/encryption.service";
 import { TradeResolver } from "./asset/trade.resolver";
-
-const SUBSCRIPTION_PUB_SUB_PROVIDER = {
-    provide: "SUBSCRIPTION_PUB_SUB",
-    useValue: new PubSub(),
-};
+import { CryptoBalanceResolver } from "./portfolio/balance.resolver";
+import { HistoricalAssetProfitEventListener } from "./portfolio/historical-asset-profit.event-listener";
+import { HistoricalAssetProfitResolver } from "./portfolio/historical-asset-profit.resolver";
+import { HistoricalCryptoBalanceEventListener } from "./portfolio/historical-balance.event-listener";
+import { HistoricalBalanceResolver } from "./portfolio/historical-balance.resolver";
+import { PortfolioEventListener } from "./portfolio/portfolio-event-listener.service";
+import { CryptoPortfolioResolver } from "./portfolio/portfolio.resolver";
+import { CryptoPortfolioService } from "./portfolio/portfolio.service";
+import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
 
 @Module({
     imports: [
         PgPubSubModule.registerAsync({
             useFactory: (configService: ConfigService) => {
                 const db_url = configService.get("DATABASE_URL");
+
                 const connectionStringParser = new ConnectionStringParser({
                     scheme: "postgresql",
                     hosts: [],
@@ -115,7 +111,11 @@ const SUBSCRIPTION_PUB_SUB_PROVIDER = {
         CryptoAssetInfoResolver,
         CryptoAssetPriceResolver,
         HistoricalBalanceResolver,
-        HistoricalAssetProfitResolver,
+        {
+            provide: HistoricalAssetProfitResolver,
+            useClass: HistoricalAssetProfitResolver,
+            scope: Scope.DEFAULT,
+        },
         TradeResolver,
 
         CryptoPortfolioService,

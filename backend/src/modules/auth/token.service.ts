@@ -3,10 +3,8 @@ import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import Redis from "ioredis";
-import { User } from "src/entities/user";
-import { TokenPayload } from "./dto/token-payload.dto";
-import { LoginReqDto } from "./dto/login.dto";
 import { UserWithoutSensitiveFields } from "../../entities/user/user-without-sensitive-fields";
+import { TokenPayload } from "./dto/token-payload.dto";
 
 export interface TokenPair {
     accessToken: string;
@@ -29,14 +27,17 @@ export class TokenService {
         this.accessTokenExpiration =
             parseInt(
                 this.configService
-                    .get<string>("JWT_AT_EXP_TIME", "15m")
-                    .replace("m", "") || "15",
-            ) * 60;
+                    .get<string>("JWT_AT_EXP_TIME", "1d")
+                    .replace("d", "") || "15",
+            ) *
+            24 *
+            60 *
+            60;
 
         this.refreshTokenExpiration =
             parseInt(
                 this.configService
-                    .get<string>("JWT_RT_EXP_TIME", "7d")
+                    .get<string>("JWT_RT_EXP_TIME", "30d")
                     .replace("d", "") || "7",
             ) *
             24 *
@@ -44,6 +45,13 @@ export class TokenService {
             60;
 
         this.redis = this.redisService.getOrThrow();
+
+        this.logger.debug(
+            `accessTokenExpiration: ${this.accessTokenExpiration}`,
+        );
+        this.logger.debug(
+            `refreshTokenExpiration: ${this.refreshTokenExpiration}`,
+        );
     }
 
     /**
@@ -68,7 +76,7 @@ export class TokenService {
         });
 
         // Store refresh token in Redis
-        const refreshTokenKey = `refresh:${user.id}:${refreshToken.substring(0, 20)}`;
+        const refreshTokenKey = `auth:refresh:${user.id}:${refreshToken}`;
         await this.redis.set(
             refreshTokenKey,
             JSON.stringify({ refreshToken, userId: user.id }),
@@ -96,19 +104,19 @@ export class TokenService {
             const payload = this.jwtService.verify<TokenPayload>(refreshToken);
             const userId = payload.userId;
 
-            // Check if the token exists in Redis
-            const tokenPattern = `refresh:${userId}:*`;
-            const keys = await this.redis.keys(tokenPattern);
+            // Get the token prefix which was used when storing the token
+            const refreshTokenKey = `refresh:${userId}:${refreshToken}`;
 
-            for (const key of keys) {
-                const storedData = await this.redis.get(key);
-                if (storedData) {
-                    const { refreshToken: storedToken } = JSON.parse(
-                        storedData,
-                    ) as { refreshToken: string; userId: number };
-                    if (storedToken === refreshToken) {
-                        return userId;
-                    }
+            // Check if the token exists in Redis
+            const storedData = await this.redis.get(refreshTokenKey);
+
+            this.logger.debug(`storedData: ${storedData}`);
+            if (storedData) {
+                const { refreshToken: storedToken } = JSON.parse(
+                    storedData,
+                ) as { refreshToken: string; userId: number };
+                if (storedToken === refreshToken) {
+                    return userId;
                 }
             }
 
@@ -127,9 +135,9 @@ export class TokenService {
      * @param userId - The user ID to revoke tokens for
      */
     async revokeAllUserTokens(userId: number): Promise<void> {
-        const tokenPattern = `refresh:${userId}:*`;
+        const tokenPattern = `auth:refresh:${userId}:*`;
         const keys = await this.redis.keys(tokenPattern);
-
+        this.logger.debug(`keys: ${keys}`);
         if (keys.length > 0) {
             await this.redis.del(...keys);
         }
@@ -145,19 +153,17 @@ export class TokenService {
         userId: number,
         refreshToken: string,
     ): Promise<void> {
-        const tokenPattern = `refresh:${userId}:*`;
-        const keys = await this.redis.keys(tokenPattern);
+        const refreshTokenKey = `refresh:${userId}:${refreshToken}`;
 
-        for (const key of keys) {
-            const storedData = await this.redis.get(key);
-            if (storedData) {
-                const { refreshToken: storedToken } = JSON.parse(
-                    storedData,
-                ) as { refreshToken: string; userId: number };
-                if (storedToken === refreshToken) {
-                    await this.redis.del(key);
-                    break;
-                }
+        // Check if the specific token exists and delete it
+        const storedData = await this.redis.get(refreshTokenKey);
+        if (storedData) {
+            const { refreshToken: storedToken } = JSON.parse(storedData) as {
+                refreshToken: string;
+                userId: number;
+            };
+            if (storedToken === refreshToken) {
+                await this.redis.del(refreshTokenKey);
             }
         }
     }

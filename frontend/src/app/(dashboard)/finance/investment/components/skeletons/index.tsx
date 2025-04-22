@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * Displays a placeholder UI while portfolio data is loading
  */
 export const PortfolioSkeleton = () => (
-  <div className="rounded-md border p-4 space-y-4">
+  <div className="flex flex-col rounded-md border p-4 gap-4">
     <div className="flex justify-between items-center">
       <Skeleton className="h-8 w-40" />
       <Skeleton className="h-8 w-24" />
@@ -100,8 +100,8 @@ export const AssetTableSkeleton = () => (
  * Skeleton loader for chart components
  * Displays a placeholder UI while chart data is loading
  */
-export const ChartSkeleton = () => (
-  <div className="rounded-md border p-4 space-y-4">
+export const BalanceChartSkeleton = () => (
+  <div className="flex-1 rounded-md border p-4 space-y-4">
     <div className="flex justify-between items-center">
       <Skeleton className="h-6 w-40" />
       <div className="flex space-x-2">
@@ -114,69 +114,65 @@ export const ChartSkeleton = () => (
 );
 
 /**
- * Skeleton loader for the balance pie chart component
- * Displays a placeholder UI while pie chart data is loading
- */
-export const BalancePieChartSkeleton = () => (
-  <div className="rounded-md border p-4 space-y-4">
-    <div className="flex justify-between items-center">
-      <Skeleton className="h-6 w-40" />
-      <Skeleton className="h-8 w-24" />
-    </div>
-    <div className="flex justify-center">
-      <Skeleton className="h-[250px] w-[250px] rounded-full" />
-    </div>
-    <div className="grid grid-cols-2 gap-2">
-      {Array(4).fill(0).map((_, i) => (
-        <div key={i} className="flex items-center space-x-2">
-          <Skeleton className="h-4 w-4 rounded-full" />
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-4 w-16 ml-auto" />
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-/**
- * Skeleton loader for the timeframe select component
- * Displays a placeholder UI while timeframe options are loading
- */
-export const TimeframeSelectSkeleton = () => (
-  <div className="flex space-x-2">
-    {Array(4).fill(0).map((_, i) => (
-      <Skeleton key={i} className="h-8 w-16 rounded-md" />
-    ))}
-  </div>
-);
-
-/**
- * Skeleton loader for the currency select component
- * Displays a placeholder UI while currency options are loading
- */
-export const CurrencySelectSkeleton = () => (
-  <div className="flex items-center space-x-2">
-    <Skeleton className="h-6 w-24" />
-    <Skeleton className="h-8 w-24 rounded-md" />
-  </div>
-);
-
-/**
  * Skeleton loader for the portfolio analysis component
  * Displays a placeholder UI while analysis data is loading
  */
 export const PortfolioAnalysisSkeleton = () => (
-  <div className="rounded-md border p-4 space-y-4">
-    <Skeleton className="h-6 w-40" />
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {Array(6).fill(0).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-8 w-full" />
-        </div>
-      ))}
+  <div className="flex-1 rounded-md border">
+    <div className="p-4 flex justify-between items-center border-b">
+      <Skeleton className="h-6 w-40" />
+      <Skeleton className="h-6 w-6 rounded-full" /> {/* Question mark icon */}
+    </div>
+    <div className="p-4 flex flex-col lg:flex-row items-center justify-between">
+      {/* Left side: Pie chart */}
+      <div className="flex-1 flex flex-col items-center mb-6 lg:mb-0">
+        <Skeleton className="h-[250px] w-[250px] rounded-full" />
+      </div>
+      
+      {/* Right side: Category summary */}
+      <div className="flex-1 flex flex-col gap-4">
+        {/* Category items */}
+        {Array(2).fill(0).map((_, i) => (
+          <div key={i} className="space-y-2">
+            {/* Category header/button */}
+            <Skeleton className="h-8 w-full rounded-md" />
+            
+            {/* Collapsed content */}
+            <div className="space-y-2 px-4">
+              {Array(3).fill(0).map((_, j) => (
+                <div key={j} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-5 w-5 rounded-full" /> {/* Icon or avatar */}
+                    <Skeleton className="h-4 w-24" /> {/* Name */}
+                  </div>
+                  <Skeleton className="h-4 w-16" /> {/* Value */}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
+);
+
+/**
+ * Skeleton loader for the portfolio header section
+ * Displays a placeholder UI for PortfolioSelect, CreatePortfolioDialog, and CurrencySelect
+ */
+export const PortfolioHeaderSkeleton = () => (
+  <>
+    {/* Portfolio Select Skeleton */}
+    <Skeleton className="h-10 w-40 rounded-md" />
+    
+    {/* Create Portfolio Button Skeleton */}
+    <Skeleton className="h-10 w-10 rounded-md" />
+    
+    {/* Currency Select Skeleton (auto-aligned to right) */}
+    <div className="ml-auto">
+      <Skeleton className="h-10 w-40 rounded-md" />
+    </div>
+  </>
 );
 
 /**
@@ -184,26 +180,18 @@ export const PortfolioAnalysisSkeleton = () => (
  * Combines multiple skeleton components for a complete loading state
  */
 export const InvestmentPageSkeleton = () => (
-  <div className="space-y-8">
-    <div className="flex justify-between items-center">
-      <Skeleton className="h-10 w-48" />
-      <div className="flex space-x-4">
-        <TimeframeSelectSkeleton />
-        <CurrencySelectSkeleton />
-      </div>
+  <div className="space-y-4">
+    <div className="flex gap-4">
+      <PortfolioHeaderSkeleton />
     </div>
     
     <PortfolioSkeleton />
     
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <ChartSkeleton />
-      <BalancePieChartSkeleton />
+    <div className="flex gap-4">
+      <BalanceChartSkeleton />
+      <PortfolioAnalysisSkeleton />
     </div>
-    
-    <PortfolioAnalysisSkeleton />
-    
+  
     <AssetTableSkeleton />
-    
-    <TradeTableSkeleton />
   </div>
 ); 

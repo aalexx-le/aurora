@@ -1,0 +1,29 @@
+query GetMembershipPlans {
+  getMembershipPlans {
+    id
+    name
+    description
+    createdAt
+    updatedAt
+    prices {
+      id
+      billingCycle {
+        frequency
+        interval
+      }
+      trialPeriod {
+        frequency
+        interval
+      }
+      unitPrice {
+        amount
+        currencyCode
+      }
+    }
+    membershipFeatures {
+      feature {
+        type
+      }
+    }
+  }
+} 

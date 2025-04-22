@@ -4,7 +4,7 @@ import { GetExpensesQuery, QueryGetExpensesArgs } from "@/gql/graphql";
 import { useQuery } from "@apollo/client";
 import { Suspense, lazy } from "react";
 
-import { GET_EXPENSES } from "@/api/script/expense/expense";
+import { GET_EXPENSES } from "@/api/scripts/expense/expense";
 import { useBankManagersQuery } from "@/app/(dashboard)/finance/components/bank-manager-select/useBankManagersQuery";
 import {
     FinancePageSkeleton

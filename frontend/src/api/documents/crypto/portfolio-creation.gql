@@ -1,0 +1,8 @@
+subscription OnPortfolioCreationStatus {
+    onCreatePortfolioExecution {
+        id
+        userId
+        status
+        time
+    }
+} 

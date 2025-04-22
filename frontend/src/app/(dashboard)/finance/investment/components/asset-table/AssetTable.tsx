@@ -40,10 +40,6 @@ export default function AssetTable({portfolios}: IProps) {
         router.push(DASHBOARD_ROUTE.finance.investment.assetProfit.value(portfolioId, assetInfoId))
     }
 
-    if (!assetList || !assetList?.length) {
-        return <></>;
-    }
-
     return (
         <div className="flex-1 h-min rounded-lg border shadow-sm overflow-hidden">
             <Table className="p-4">

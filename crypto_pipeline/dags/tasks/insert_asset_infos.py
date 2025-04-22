@@ -9,6 +9,8 @@ from utils.coinmarketcap import COINMARKETCAP_URL, get_cmk_session
 from utils.connection import get_connection
 import re
 
+logger = logging.getLogger(__name__)
+
 @task(task_id="fetch_asset_infos")
 def fetch_symbol_infos(symbol_list: List[str]) -> List[dict]:
     cmk_session = get_cmk_session()
@@ -32,13 +34,13 @@ def fetch_symbol_infos(symbol_list: List[str]) -> List[dict]:
         if match:
             invalid_symbols_string = match.group(1)
             invalid_symbols = set(invalid_symbols_string.split(','))
-            print(invalid_symbols)
+            logger.warning(f"Invalid symbols found: {invalid_symbols}")
             
             valid_symbols = set(symbol_list) - invalid_symbols
             response = cmk_session.get(COINMARKETCAP_URL + '/v2/cryptocurrency/info', params={'symbol': ','.join(valid_symbols)})
             coin_prices = json.loads(response.text)
         else:
-            print("No invalid symbols found in the error message.")
+            logger.warning("No invalid symbols found in the error message.")
     
     if 'data' in coin_prices:
         symbol_infos = []

@@ -4,4 +4,7 @@ mexc-api
 python-okx
 ccxt==4.4.70
 apache-airflow-providers-apache-kafka
-confluent-kafka
+confluent-kafka==2.3.0
+kafka-python
+aiokafka==0.8.1
+asyncio==3.4.3

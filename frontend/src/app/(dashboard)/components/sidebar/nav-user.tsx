@@ -25,7 +25,7 @@ export function NavUser() {
     const router = useRouter();
 
     const onLogout = async () => {
-        await dispatch(authActions.logout());
+        await dispatch(authActions.logoutUser());
         router.push(AUTH_ROUTE.value);
     };
 

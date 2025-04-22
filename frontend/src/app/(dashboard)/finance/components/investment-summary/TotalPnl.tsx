@@ -1,14 +1,11 @@
-import {cn} from "@/lib/utils";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
-import {useQuery} from "@apollo/client";
-import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
-import {useAppSelector} from "@/state/hooks";
-import {useEffect, useState} from "react";
-import {Convert} from "easy-currencies";
-import {useConvertCurrency} from "@/lib/hooks/use-convert-currency";
-import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
-import {MoneyAnimated} from "@/components/money/money-animated";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
+import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
+import { useAppSelector } from "@/state/hooks";
+import { useQuery } from "@apollo/client";
+import { Convert } from "easy-currencies";
+import { useEffect, useState } from "react";
 
 interface IProps {
     currentBalance: number;

@@ -2,6 +2,7 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["views", "prismaSchemaFolder"]
   binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  // output          = "../client"
 }
 
 generator nestgraphql {
@@ -11,10 +12,6 @@ generator nestgraphql {
   emitBlocks      = ["models", "enums"]
   reExport        = "Directories"
   noTypeId        = "true"
-}
-
-generator dbml {
-  provider = "prisma-dbml-generator"
 }
 
 datasource db {

@@ -2,9 +2,10 @@
 
 import {
     AssetTableSkeleton,
-    ChartSkeleton,
+    BalanceChartSkeleton,
     InvestmentPageSkeleton,
     PortfolioAnalysisSkeleton,
+    PortfolioHeaderSkeleton,
     PortfolioSkeleton
 } from "@/app/(dashboard)/finance/investment/components/skeletons";
 import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
@@ -35,7 +36,7 @@ function InvestmentPage({portfolios}: IProps) {
         <ConvertCurrencyProvider baseCurrency="USD">
             <div className="flex flex-1 flex-col gap-4">
                 <div className="flex gap-4">
-                    <Suspense fallback={<div className="flex space-x-2"><PortfolioSkeleton /></div>}>
+                    <Suspense fallback={<PortfolioHeaderSkeleton />}>
                         <PortfolioSelect portfolios={portfolios} />
                         <CreatePortfolioDialog/>
                         <div className="ml-auto">
@@ -55,7 +56,7 @@ function InvestmentPage({portfolios}: IProps) {
                         </Suspense>
                     </div>
                     <div className="flex gap-4">
-                        <Suspense fallback={<ChartSkeleton />}>
+                        <Suspense fallback={<BalanceChartSkeleton />}>
                             <HistoricalBalanceChart cryptoPortfolioId={portfolio.id}/>
                         </Suspense>
 

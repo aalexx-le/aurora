@@ -1,12 +1,12 @@
+import authReducer from "@/state/slices/auth.slice";
+import bankReducer from "@/state/slices/bank.slice";
+import cryptoReducer from "@/state/slices/crypto.slice";
 import {
     Action,
     combineSlices,
     configureStore,
     ThunkAction,
 } from "@reduxjs/toolkit";
-import authReducer from "@/state/slices/auth.slice";
-import cryptoReducer from "@/state/slices/crypto.slice";
-import bankReducer from "@/state/slices/bank.slice";
 
 const rootReducer = combineSlices({
     auth: authReducer,

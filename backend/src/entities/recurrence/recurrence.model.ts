@@ -43,6 +43,6 @@ export class Recurrence {
     @Field(() => Date, {nullable:false})
     updatedAt!: Date;
 
-    @Field(() => Event, {nullable:false})
-    event?: Event;
+    @Field(() => [Event], {nullable:true})
+    events?: Array<Event>;
 }

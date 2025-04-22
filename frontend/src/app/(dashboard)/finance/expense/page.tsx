@@ -1,26 +1,26 @@
 "use client";
 
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     GetBankManagersQuery,
     GetBankManagersQueryVariables,
     GetExpensesQuery,
     QueryGetExpensesArgs
 } from "@/gql/graphql";
-import {useQuery} from "@apollo/client";
-import {lazy, Suspense, useMemo} from "react";
+import { useQuery } from "@apollo/client";
+import { lazy, Suspense, useMemo } from "react";
 
-import {GET_BANK_MANAGERS} from "@/api/script/bank/manager";
-import {GET_EXPENSES} from "@/api/script/expense/expense";
+import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
+import { GET_EXPENSES } from "@/api/scripts/expense/expense";
 import {
     CalendarTabSkeleton,
     ExpenseTabSkeleton,
     TransactionTabSkeleton
 } from "@/app/(dashboard)/finance/expense/components/skeletons";
-import {BankManager} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
-import {ConvertCurrencyProvider} from "@/lib/context/convert-currency.context";
-import {DateFilterProvider, useDateFilterContext,} from "@/lib/context/date-range.context";
-import {Expense} from "./components/expense-table/types";
+import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
+import { DateFilterProvider, useDateFilterContext, } from "@/lib/context/date-range.context";
+import { Expense } from "./components/expense-table/types";
 
 // Lazy load tab components for code splitting
 const TransactionTab = lazy(() => import("@/app/(dashboard)/finance/expense/tabs/transaction/TransactionTab"));
@@ -49,29 +49,24 @@ function ExpensePage({bankManagers, expenses, loading}: IProps) {
                 <TabsTrigger value={TABS.EXPENSE}>{TABS.EXPENSE}</TabsTrigger>
                 <TabsTrigger value={TABS.CALENDAR}>{TABS.CALENDAR}</TabsTrigger>
             </TabsList>
-            <Suspense fallback={
-                <>
-                    <TabsContent value={TABS.TRANSACTION}>
-                        <TransactionTabSkeleton/>
-                    </TabsContent>
-                    <TabsContent value={TABS.EXPENSE}>
-                        <ExpenseTabSkeleton/>
-                    </TabsContent>
-                    <TabsContent value={TABS.CALENDAR}>
-                        <CalendarTabSkeleton/>
-                    </TabsContent>
-                </>
-            }>
-                <TabsContent value={TABS.TRANSACTION}>
-                    <TransactionTab bankManagers={bankManagers}/>
-                </TabsContent>
-                <TabsContent value={TABS.EXPENSE}>
-                    <ExpenseTab expenses={expenses}/>
-                </TabsContent>
-                <TabsContent value={TABS.CALENDAR}>
-                    <ExpenseCalendarTab/>
-                </TabsContent>
-            </Suspense>
+            
+            <TabsContent value={TABS.TRANSACTION}>
+                <Suspense fallback={<TransactionTabSkeleton />}>
+                    <TransactionTab bankManagers={bankManagers} />
+                </Suspense>
+            </TabsContent>
+            
+            <TabsContent value={TABS.EXPENSE}>
+                <Suspense fallback={<ExpenseTabSkeleton />}>
+                    <ExpenseTab expenses={expenses} />
+                </Suspense>
+            </TabsContent>
+            
+            <TabsContent value={TABS.CALENDAR}>
+                <Suspense fallback={<CalendarTabSkeleton />}>
+                    <ExpenseCalendarTab />
+                </Suspense>
+            </TabsContent>
         </Tabs>
     );
 }

@@ -4,8 +4,8 @@ import { RefObject } from "react";
 export type calendarRef = RefObject<FullCalendar | null>;
 
 // setting earliest / latest available time in minutes since Midnight
-export const earliestTime = 360;
-export const latestTime = 1440;
+export const EARLIEST_TIME = 360;
+export const LATEST_TIME = 1440;
 
 export enum CalendarView {
     DayGridMonth = "dayGridMonth",

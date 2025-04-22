@@ -1,19 +1,16 @@
-import { ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
+import { BankAccount } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_BANK_ACCOUNTS } from "@/api/script/bank/account";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
+import { GetBankAccountsQuery, GetBankAccountsQueryVariables } from "@/gql/graphql";
+import { useQuery } from "@apollo/client";
+import { ChevronsUpDown } from "lucide-react";
 import moment from "moment/moment";
-import {GetBankAccountsQuery, GetBankAccountsQueryVariables} from "@/gql/graphql";
-import {MoneyTransferAmount} from "@/components/money/money-transfer-amount";
-import {MoneyAnimated} from "@/components/money/money-animated";
-import {BankAccount} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { useState } from "react";
 import { BANK_INFOS } from "../bank-select/BankSelect";
 
 interface BankAccountSelectProps {

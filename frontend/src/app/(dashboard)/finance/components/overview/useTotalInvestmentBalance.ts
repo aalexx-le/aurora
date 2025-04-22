@@ -1,12 +1,11 @@
-import { useQuery } from "@apollo/client";
+import { GET_CRYPTO_PORTFOLIOS } from "@/api/scripts/crypto/crypto";
 import {
     GetCryptoPortfoliosQuery,
     GetCryptoPortfoliosQueryVariables,
 } from "@/gql/graphql";
-import { GET_CRYPTO_PORTFOLIOS } from "@/api/script/crypto/crypto";
-import { useEffect, useMemo, useState } from "react";
-import { useAppSelector } from "@/state/hooks";
+import { useQuery } from "@apollo/client";
 import { Convert } from "easy-currencies";
+import { useEffect, useMemo, useState } from "react";
 
 export const useTotalInvestmentBalance = () => {
     const { data, loading } = useQuery<

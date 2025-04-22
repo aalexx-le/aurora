@@ -8,6 +8,7 @@ export enum EventScalarFieldEnum {
     endDate = "endDate",
     allDay = "allDay",
     color = "color",
+    recurrenceId = "recurrenceId",
     userId = "userId",
     categoryId = "categoryId",
     reminderMinutes = "reminderMinutes",

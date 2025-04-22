@@ -1,0 +1,93 @@
+model MembershipSubscription {
+  id                    String                  @id @default(uuid())
+  userId                Int 
+  planId                String
+
+  status                MembershipSubscriptionStatus
+  startDate             DateTime             @default(now())
+  endDate               DateTime             
+
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  user                  User                 @relation(fields: [userId], references: [id])
+  plan                  MembershipPlan     @relation(fields: [planId], references: [id])
+  paymentTransactions   PaymentTransaction[]
+}
+
+model MembershipPlan {
+  id             String           @id
+
+  name           String
+  description    String?
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  subscriptions  MembershipSubscription[]
+  prices         MembershipPrice[]
+  membershipFeatures       MembershipFeature[]
+}
+
+model MembershipPrice {
+  id             String           @id
+  planId         String
+
+  billingCycleId Int?
+  trialPeriodId  Int?
+  unitPriceId    Int
+  status         PriceStatus    @default(active)
+  createdAt      DateTime       @default(now())
+
+  billingCycle   TimePeriod?    @relation("BillingCycle", fields: [billingCycleId], references: [id])
+  trialPeriod    TimePeriod?    @relation("TrialPeriod", fields: [trialPeriodId], references: [id])
+  unitPrice      UnitPrice      @relation(fields: [unitPriceId], references: [id])
+
+  plan           MembershipPlan   @relation(fields: [planId], references: [id])
+}
+
+model MembershipFeature {
+  id             Int           @id @default(autoincrement())
+  planId         String
+  featureId      Int
+
+  plan           MembershipPlan   @relation(fields: [planId], references: [id])
+  feature        Feature          @relation(fields: [featureId], references: [id])
+}
+
+model TimePeriod {
+  id             Int           @id @default(autoincrement())
+  interval        Interval    
+  frequency       Int 
+
+  billingCycles  MembershipPrice[]   @relation("BillingCycle")
+  trialPeriods   MembershipPrice[]   @relation("TrialPeriod")
+}
+
+model UnitPrice {
+  id             Int           @id @default(autoincrement())
+  amount         String        
+  currencyCode   String 
+
+  prices     MembershipPrice[]
+}
+
+enum MembershipSubscriptionStatus {
+  active
+  canceled
+  past_due
+  paused
+  trialing
+}
+
+enum Interval {
+  day
+  week
+  month
+  year
+}
+
+enum PriceStatus {
+  active
+  archived
+}

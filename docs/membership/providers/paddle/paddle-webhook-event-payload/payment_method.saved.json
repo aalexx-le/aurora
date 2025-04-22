@@ -1,0 +1,15 @@
+{
+  "eventId": "evt_01jrznrkeb5xapvmqtyffrynt3",
+  "notificationId": "ntf_01jrznrkjj3bpc7t4kz58zewyj",
+  "eventType": "payment_method.saved",
+  "occurredAt": "2025-04-16T16:08:56.011446Z",
+  "data": {
+    "id": "paymtd_01jrznrfsdjwf52msgg8m07csr",
+    "customerId": "ctm_01jrwv2d89ya6gzvvbjezc4wv0",
+    "addressId": "add_01jrznr1n3dqnqhyztt59x8cke",
+    "type": "card",
+    "origin": "subscription",
+    "savedAt": "2025-04-16T16:08:55.723015Z",
+    "updatedAt": "2025-04-16T16:08:55.723015Z"
+  }
+}

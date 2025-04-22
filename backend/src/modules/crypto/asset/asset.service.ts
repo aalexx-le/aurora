@@ -1,14 +1,13 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "nestjs-prisma";
-import { DataInterval } from "./enum/data-interval";
-import { GetAssetPriceInput } from "./dto/get-asset-price.input";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { Injectable } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
-import { PaginationInput } from "../../../shared/pagination/pagination.args";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { PrismaService } from "nestjs-prisma";
 import { AssetPrice } from "src/entities/asset-price";
+import { PaginationInput } from "../../../shared/pagination/pagination.args";
 import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
+import { GetAssetPriceInput } from "./dto/get-asset-price.input";
 import { GetTradeInput } from "./dto/get-trade.input";
-import { Trade } from "../../../entities/trade";
+import { DataInterval } from "./enum/data-interval";
 
 @Injectable()
 export class CryptoAssetService {

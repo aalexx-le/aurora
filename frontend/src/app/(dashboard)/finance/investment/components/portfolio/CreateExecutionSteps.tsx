@@ -1,10 +1,9 @@
+import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/scripts/crypto/execution";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Timeline from "@/components/ui/timeline";
-import {GET_CREATE_PORTFOLIO_EXECUTIONS} from "@/api/script/crypto/execution";
-import {useQuery} from "@apollo/client";
-import {GetCreatePortfolioExecutionsQuery, GetCreatePortfolioExecutionsQueryVariables} from "@/gql/graphql";
-import {useAppSelector} from "@/state/hooks";
-import React from "react";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import { GetCreatePortfolioExecutionsQuery, GetCreatePortfolioExecutionsQueryVariables } from "@/gql/graphql";
+import { useAppSelector } from "@/state/hooks";
+import { useQuery } from "@apollo/client";
 
 
 export function CreateExecutionSteps() {

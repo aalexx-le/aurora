@@ -1,20 +1,20 @@
 "use client";
 
-import React, {useEffect, useMemo} from 'react';
-import {useMutation} from '@apollo/client';
-import {GET_EXPENSE_CATEGORIES, UPDATE_EXPENSE_CATEGORY} from '@/api/script/expense/expense-category';
-import {CreateOrUpdateDialog} from '@/components/create-or-update-dialog';
-import {Input} from '@/components/ui/input';
-import {Textarea} from '@/components/ui/textarea';
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm, UseFormReturn} from "react-hook-form";
-import {CreateExpenseCategoryInput, createExpenseCategorySchema} from "@/lib/schema/expenseCategory";
-import {FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {GradientPicker} from "@/components/ui/color-picker";
-import {MutationUpdateExpenseCategoryArgs, UpdateExpenseCategoryMutation} from "@/gql/graphql";
-import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {ExpenseCategory} from "@/app/(dashboard)/finance/expense/components/category-list/types";
-import {Dialog} from '@/components/ui/dialog';
+import { GET_EXPENSE_CATEGORIES, UPDATE_EXPENSE_CATEGORY } from '@/api/scripts/expense/expense-category';
+import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
+import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
+import { CreateOrUpdateDialog } from '@/components/crud/create-or-update-dialog';
+import { GradientPicker } from "@/components/ui/color-picker";
+import { Dialog } from '@/components/ui/dialog';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { MutationUpdateExpenseCategoryArgs, UpdateExpenseCategoryMutation } from "@/gql/graphql";
+import { CreateExpenseCategoryInput, createExpenseCategorySchema } from "@/lib/schema/expenseCategory";
+import { useMutation } from '@apollo/client';
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useMemo } from 'react';
+import { useForm, UseFormReturn } from "react-hook-form";
 
 interface IProps extends React.ComponentPropsWithoutRef<typeof Dialog> {
     category: ExpenseCategory | null;

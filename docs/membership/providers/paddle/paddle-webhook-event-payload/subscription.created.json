@@ -1,0 +1,94 @@
+{
+  "eventId": "evt_01jrznrjmzpve4sba59acz1jbn",
+  "notificationId": "ntf_01jrznrjscqm0mhjjgmnk9n8qa",
+  "eventType": "subscription.created",
+  "occurredAt": "2025-04-16T16:08:55.199108Z",
+  "data": {
+    "id": "sub_01jrznrj631nkn5d0zv9xamf1y",
+    "status": "trialing",
+    "transactionId": "txn_01jrznqnta3j1v672vn90ar493",
+    "customerId": "ctm_01jrwv2d89ya6gzvvbjezc4wv0",
+    "addressId": "add_01jrznr1n3dqnqhyztt59x8cke",
+    "businessId": null,
+    "currencyCode": "USD",
+    "createdAt": "2025-04-16T16:08:54.723Z",
+    "updatedAt": "2025-04-16T16:08:54.723Z",
+    "startedAt": "2025-04-16T16:08:54.714Z",
+    "firstBilledAt": null,
+    "nextBilledAt": "2027-10-16T16:08:54.714Z",
+    "pausedAt": null,
+    "canceledAt": null,
+    "discount": null,
+    "collectionMode": "automatic",
+    "billingDetails": null,
+    "currentBillingPeriod": {
+      "startsAt": "2025-04-16T16:08:54.714Z",
+      "endsAt": "2027-10-16T16:08:54.714Z"
+    },
+    "billingCycle": {
+      "interval": "month",
+      "frequency": 1
+    },
+    "scheduledChange": null,
+    "items": [
+      {
+        "status": "trialing",
+        "quantity": 1,
+        "recurring": true,
+        "createdAt": "2025-04-16T16:08:54.723Z",
+        "updatedAt": "2025-04-16T16:08:54.723Z",
+        "previouslyBilledAt": null,
+        "nextBilledAt": "2027-10-16T16:08:54.714Z",
+        "trialDates": {
+          "startsAt": "2025-04-16T16:08:54.714Z",
+          "endsAt": "2027-10-16T16:08:54.714Z"
+        },
+        "price": {
+          "id": "pri_01jrvqer5trtw4jjt4kq6ej4vq",
+          "productId": "pro_01jrvq6c09rptdjf02q8nmc0c1",
+          "description": "Annual Subscription",
+          "type": "standard",
+          "name": "Monthly",
+          "billingCycle": {
+            "interval": "month",
+            "frequency": 1
+          },
+          "trialPeriod": {
+            "interval": "month",
+            "frequency": 30
+          },
+          "taxMode": "account_setting",
+          "unitPrice": {
+            "amount": "1500",
+            "currencyCode": "USD"
+          },
+          "unitPriceOverrides": [],
+          "quantity": {
+            "minimum": 1,
+            "maximum": 1
+          },
+          "status": "active",
+          "customData": null,
+          "importMeta": null
+        },
+        "product": {
+          "id": "pro_01jrvq6c09rptdjf02q8nmc0c1",
+          "name": "Pro",
+          "type": "standard",
+          "description": null,
+          "taxCategory": "standard",
+          "imageUrl": null,
+          "customData": null,
+          "status": "active",
+          "createdAt": "2025-04-15T03:16:57.993Z",
+          "updatedAt": "2025-04-15T03:16:57.993Z",
+          "importMeta": null
+        }
+      }
+    ],
+    "customData": {
+      "userId": 1
+    },
+    "importMeta": null
+  }
+}

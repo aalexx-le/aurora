@@ -7,7 +7,10 @@ import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
 import { Expense } from '../expense/expense.model';
 import { ExpenseCategory } from '../expense-category/expense-category.model';
 import { Event } from '../event/event.model';
+import { EventRecurrence } from '../event-recurrence/event-recurrence.model';
 import { EventCategory } from '../event-category/event-category.model';
+import { MembershipSubscription } from '../membership-subscription/membership-subscription.model';
+import { PaymentMethod } from '../payment-method/payment-method.model';
 
 @ObjectType()
 export class User {
@@ -45,6 +48,15 @@ export class User {
     @Field(() => [Event], {nullable:true})
     events?: Array<Event>;
 
+    @Field(() => [EventRecurrence], {nullable:true})
+    eventRecurrences?: Array<EventRecurrence>;
+
     @Field(() => [EventCategory], {nullable:true})
     eventCategories?: Array<EventCategory>;
+
+    @Field(() => [MembershipSubscription], {nullable:true})
+    memberships?: Array<MembershipSubscription>;
+
+    @Field(() => [PaymentMethod], {nullable:true})
+    paymentMethods?: Array<PaymentMethod>;
 }

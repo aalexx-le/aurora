@@ -219,7 +219,7 @@ enum TradingType {
   SPOT
 }
 
-type Recurrence {
+type EventRecurrence {
   id: Int!
   type: RecurrenceType!
   interval: Int!
@@ -229,10 +229,11 @@ type Recurrence {
   dayOfWeek: Int
   endDate: DateTime
   endCount: Int
-  eventId: Int!
+  userId: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
-  event: Event!
+  events: [Event!]!
+  user: User!
 }
 
 enum RecurrenceType {
@@ -259,14 +260,164 @@ type Event {
   endDate: DateTime!
   allDay: Boolean!
   color: String
+  recurrenceId: Int
   userId: Int!
   categoryId: Int!
   reminderMinutes: Int
   createdAt: DateTime!
   updatedAt: DateTime!
-  recurrence: Recurrence
+  recurrence: EventRecurrence
   user: User!
   category: EventCategory!
+}
+
+type TimePeriod {
+  id: Int!
+  interval: Interval!
+  frequency: Int!
+  billingCycles: [MembershipPrice!]
+  trialPeriods: [MembershipPrice!]
+}
+
+enum Interval {
+  day
+  week
+  month
+  year
+}
+
+type UnitPrice {
+  id: Int!
+  amount: String!
+  currencyCode: String!
+  prices: [MembershipPrice!]
+}
+
+type MembershipPrice {
+  id: String!
+  planId: String!
+  billingCycleId: Int
+  trialPeriodId: Int
+  unitPriceId: Int!
+  status: PriceStatus!
+  createdAt: DateTime!
+  billingCycle: TimePeriod
+  trialPeriod: TimePeriod
+  unitPrice: UnitPrice!
+  plan: MembershipPlan!
+}
+
+enum PriceStatus {
+  active
+  archived
+}
+
+type Feature {
+  id: Int!
+  type: FeatureType!
+  membershipFeatures: [MembershipFeature!]
+}
+
+enum FeatureType {
+  CRYPTO
+  EXPENSE
+}
+
+type MembershipFeature {
+  id: Int!
+  planId: String!
+  featureId: Int!
+  plan: MembershipPlan!
+  feature: Feature!
+}
+
+type MembershipPlan {
+  id: String!
+  name: String!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  subscriptions: [MembershipSubscription!]
+  prices: [MembershipPrice!]!
+  membershipFeatures: [MembershipFeature!]!
+}
+
+type PaddlePaymentTransaction {
+  id: Int!
+  paymentTransactionId: Int!
+  paymentTransaction: PaymentTransaction!
+}
+
+type PaymentTransaction {
+  id: Int!
+  membershipSubscriptionId: String!
+  userId: Int!
+  amount: Decimal!
+  currency: String!
+  status: PaymentStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  paddlePaymentTransaction: PaddlePaymentTransaction
+  membershipSubscription: MembershipSubscription!
+}
+
+"""An arbitrary-precision Decimal type"""
+scalar Decimal
+
+enum PaymentStatus {
+  authorized
+  authorized_flagged
+  canceled
+  captured
+  error
+  action_required
+  pending_no_action_required
+  created
+  unknown
+  dropped
+}
+
+type MembershipSubscription {
+  id: String!
+  userId: Int!
+  planId: String!
+  status: MembershipSubscriptionStatus!
+  startDate: DateTime!
+  endDate: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  plan: MembershipPlan!
+  paymentTransactions: [PaymentTransaction!]!
+}
+
+enum MembershipSubscriptionStatus {
+  active
+  canceled
+  past_due
+  paused
+  trialing
+}
+
+type PaddlePaymentMethod {
+  id: Int!
+  paymentMethodId: Int!
+  customerId: String!
+  addressId: String
+  businessId: String
+  paymentMethod: PaymentMethod!
+}
+
+type PaymentMethod {
+  id: Int!
+  userId: Int!
+  provider: PaymentProvider!
+  user: User!
+  paddlePaymentMethod: PaddlePaymentMethod
+}
+
+enum PaymentProvider {
+  PADDLE
 }
 
 type User {
@@ -281,7 +432,10 @@ type User {
   expenses: [Expense!]
   expenseCategories: [ExpenseCategory!]
   events: [Event!]
+  eventRecurrences: [EventRecurrence!]
   eventCategories: [EventCategory!]
+  memberships: [MembershipSubscription!]
+  paymentMethods: [PaymentMethod!]
   cryptoProfiles: CryptoPortfolio!
 }
 
@@ -306,6 +460,19 @@ type SignupResDto {
   refreshToken: String!
 }
 
+type AssetInfoOutput {
+  id: String!
+  name: String!
+  symbol: String!
+  category: String!
+  desc: String!
+  logo: String!
+  tag: String!
+  historicalProfits: [HistoricalAssetProfit!]
+  trades: [Trade!]
+  lastPrice: Float!
+}
+
 type CreatePortfolioExecution {
   id: Int!
   time: DateTime
@@ -322,19 +489,6 @@ enum CreateExecutionStatus {
 
 type CreateCryptoRes {
   userId: Float!
-}
-
-type AssetInfoOutput {
-  id: String!
-  name: String!
-  symbol: String!
-  category: String!
-  desc: String!
-  logo: String!
-  tag: String!
-  historicalProfits: [HistoricalAssetProfit!]
-  trades: [Trade!]
-  lastPrice: Float!
 }
 
 type TotalSpentAmountOutput {
@@ -361,6 +515,19 @@ type Query {
   getMonthlyTargets(categoryId: String!, month: Int, year: Int): [MonthlyTarget!]!
   getEvents(startDate: DateTime, endDate: DateTime): [Event!]!
   getEventCategories: [EventCategory!]!
+  getRecurrenceTemplates: [EventRecurrence!]!
+  getRecurrenceTemplate(id: Int!): EventRecurrence!
+  getMembershipPlans: [MembershipPlan!]!
+  getMembershipPlan(id: String!): MembershipPlan!
+  getMembershipPrices: [MembershipPrice!]!
+  getMembershipPrice(id: String!): MembershipPrice!
+  getMembershipPricesByPlan(planId: String!): [MembershipPrice!]!
+  getFeatures: [Feature!]!
+  getFeature(id: Int!): Feature!
+  myActiveMembershipSubscriptions: [MembershipSubscription!]!
+  myMembershipSubscriptions: [MembershipSubscription!]!
+  getPaymentMethod(data: GetPaymentMethodDto!): PaymentMethod
+  getPaymentMethods: [PaymentMethod!]!
 }
 
 input GetAssetInfoInput {
@@ -398,6 +565,10 @@ input SuggestExpenseInput {
   bankTransactionId: Int!
 }
 
+input GetPaymentMethodDto {
+  id: Int
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
   createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput!): CreateCryptoRes!
@@ -425,6 +596,27 @@ type Mutation {
   createEventCategory(data: CreateEventCategoryInput!): EventCategory!
   updateEventCategory(id: Int!, data: UpdateEventCategoryInput!): EventCategory!
   removeEventCategory(id: Int!): EventCategory!
+  updateRecurrenceTemplate(id: Int!, data: UpdateEventRecurrenceInput!): EventRecurrence!
+  deleteRecurrenceTemplate(id: Int!): EventRecurrence!
+  cancelPaddleSubscription(id: String!): MembershipSubscription!
+  reactivatePaddleSubscription(
+    id: String!
+
+    """How to handle failed transactions (retry or ignore)"""
+    handlePastDueTransactions: String
+  ): MembershipSubscription!
+  createMembershipPlan(data: CreatePlanDto!): MembershipPlan!
+  updateMembershipPlan(id: String!, data: UpdatePlanDto!): MembershipPlan!
+  deleteMembershipPlan(id: String!): Boolean!
+  createMembershipPrice(data: CreatePriceDto!): MembershipPrice!
+  updateMembershipPrice(id: String!, data: UpdatePriceDto!): MembershipPrice!
+  deleteMembershipPrice(id: String!): Boolean!
+  createFeature(data: CreateFeatureDto!): Feature!
+  updateFeature(id: Int!, data: UpdateFeatureDto!): Feature!
+  deleteFeature(id: Int!): Feature!
+  createMembershipSubscription(data: CreateSubscriptionDto!): MembershipSubscription!
+  updateMembershipSubscription(id: String!, data: UpdateSubscriptionDto!): MembershipSubscription!
+  deleteMembershipSubscription(id: String!): Boolean!
 }
 
 input CreateCryptoPortfolioInput {
@@ -539,6 +731,7 @@ input CreateEventInput {
   endDate: DateTime!
   allDay: Boolean! = false
   color: String
+  recurrenceId: Int
   categoryId: Int!
   reminderMinutes: Int
   recurrence: CreateRecurrenceInput
@@ -562,9 +755,9 @@ input UpdateEventInput {
   endDate: DateTime
   allDay: Boolean = false
   color: String
+  recurrenceId: Int
   categoryId: Int
   reminderMinutes: Int
-  recurrence: CreateRecurrenceInput
 }
 
 input CreateEventCategoryInput {
@@ -577,14 +770,85 @@ input UpdateEventCategoryInput {
   color: String
 }
 
+input UpdateEventRecurrenceInput {
+  type: RecurrenceType
+  interval: Int = 1
+  daysOfWeek: String
+  dayOfMonth: Int
+  weekOfMonth: Int
+  dayOfWeek: Int
+  endDate: DateTime
+  endCount: Int
+  userId: Int
+}
+
+input CreatePlanDto {
+  name: String!
+  description: String
+  featureIds: [Float!]
+}
+
+input UpdatePlanDto {
+  name: String
+  description: String
+}
+
+input CreatePriceDto {
+  planId: String!
+  billingCycle: TimePeriodInput
+  trialPeriod: TimePeriodInput
+  unitPrice: UnitPriceInput!
+  status: String! = "active"
+}
+
+input TimePeriodInput {
+  interval: String!
+  frequency: Int!
+}
+
+input UnitPriceInput {
+  amount: String!
+  currencyCode: String!
+}
+
+input UpdatePriceDto {
+  billingCycleId: Int
+  trialPeriodId: Int
+  unitPriceId: Int
+  status: String
+}
+
+input CreateFeatureDto {
+  type: FeatureType!
+}
+
+input UpdateFeatureDto {
+  type: FeatureType
+}
+
+input CreateSubscriptionDto {
+  userId: Int!
+  planId: String!
+  status: String!
+  startDate: DateTime
+  endDate: DateTime!
+}
+
+input UpdateSubscriptionDto {
+  planId: String
+  status: String
+  endDate: DateTime
+}
+
 type Subscription {
-  portfolioCreated: CryptoPortfolio!
+  onCreatePortfolioExecution: CreatePortfolioExecution!
   newAssetPrice1m(data: GetAssetPriceInput!): AssetPrice!
   newAssetPrice5m(data: GetAssetPriceInput!): AssetPrice!
   newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
   newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
   newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
   newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
+  onMembershipSubscriptionUpdated: MembershipSubscription!
 }
 
 input GetHistoricalBalancesInput {

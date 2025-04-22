@@ -1,59 +1,26 @@
-import React, {useState} from "react";
-import {useMutation} from "@apollo/client";
-import {GET_EXPENSE_CATEGORIES, REMOVE_EXPENSE_CATEGORY,} from "@/api/script/expense/expense-category";
-import {MutationRemoveExpenseCategoryArgs, RemoveExpenseCategoryMutation,} from "@/gql/graphql"
-import {ExpenseCategory} from "@/app/(dashboard)/finance/expense/components/category-list/types";
-import {useToast} from "@/hooks/use-toast";
-import {DataTableRowActionType} from "@/types";
-import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context";
-import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
+import { CategoryActionButton } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryActionButton";
+import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import CreateCategoryDialog from "@/app/(dashboard)/finance/expense/components/category-list/CreateCategoryDialog";
-import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {UpdateCategoryDialog} from "@/app/(dashboard)/finance/expense/components/category-list/UpdateCategoryDialog";
-import {DeleteDialog} from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
-import {CreateMonthlyTargetDialog} from "@/app/(dashboard)/finance/expense/components/category-list/CreateMonthlyTargetDialog";
-import {useDateFilterContext} from "@/lib/context/date-range.context";
-import {CategoryActionButton} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryActionButton";
+import { CreateMonthlyTargetDialog } from "@/app/(dashboard)/finance/expense/components/category-list/CreateMonthlyTargetDialog";
+import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
+import { UpdateCategoryDialog } from "@/app/(dashboard)/finance/expense/components/category-list/UpdateCategoryDialog";
+import { useDeleteExpenseCategoryMutation } from "@/app/(dashboard)/finance/expense/components/category-list/useDeleteExpenseCategoryMutation";
+import { DeleteDialog } from "@/components/crud/delete-dialog";
+import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
+import { useDateFilterContext } from "@/lib/context/date-range.context";
+import { DataTableRowActionType } from "@/types";
+import { useState } from "react";
 
 interface IProps {
     categories: ExpenseCategory[];
 }
 
 const ExpenseCategoryList = ({categories}: IProps) => {
-    const {toast} = useToast()
     const {dateRange} = useDateFilterContext();
     const [action, setAction] = useState<DataTableRowActionType | null>(null);
     const [category, setCategory] = useState<ExpenseCategory | null>(null);
     const {formatCurrency} = useConvertCurrencyContext();
-    const [removeCategory] = useMutation<
-        RemoveExpenseCategoryMutation,
-        MutationRemoveExpenseCategoryArgs
-    >(REMOVE_EXPENSE_CATEGORY, {
-        refetchQueries: [GET_EXPENSE_CATEGORIES, "GetExpenseCategories"],
-        awaitRefetchQueries: true,
-        onError: (error) => {
-            toast({
-                title: "Error",
-                description: 'Cannot delete category because it is being used in expense',
-                variant: "destructive",
-                duration: 5000
-            })
-        }
-    });
-
-    const handleDeleteCategory = (id: string) => async () => {
-        try {
-            await removeCategory({
-                variables: {id},
-            });
-        } catch (e) {
-            toast({
-                title: "Error",
-                description: getGraphqlErrorMessage(e),
-                variant: "destructive"
-            })
-        }
-    };
+    const { handleDeleteCategory } = useDeleteExpenseCategoryMutation();
 
     return (
         <div className="grid xs:grid-cols-1 gap-4">

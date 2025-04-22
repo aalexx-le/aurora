@@ -1,7 +1,7 @@
 import { Field } from '@nestjs/graphql';
 import { ObjectType } from '@nestjs/graphql';
 import { Int } from '@nestjs/graphql';
-import { Recurrence } from '../recurrence/recurrence.model';
+import { EventRecurrence } from '../event-recurrence/event-recurrence.model';
 import { User } from '../user/user.model';
 import { EventCategory } from '../event-category/event-category.model';
 
@@ -29,6 +29,9 @@ export class Event {
     @Field(() => String, {nullable:true})
     color!: string | null;
 
+    @Field(() => Int, {nullable:true})
+    recurrenceId!: number | null;
+
     @Field(() => Int, {nullable:false})
     userId!: number;
 
@@ -44,8 +47,8 @@ export class Event {
     @Field(() => Date, {nullable:false})
     updatedAt!: Date;
 
-    @Field(() => Recurrence, {nullable:true})
-    recurrence?: Recurrence | null;
+    @Field(() => EventRecurrence, {nullable:true})
+    recurrence?: EventRecurrence | null;
 
     @Field(() => User, {nullable:false})
     user?: User;

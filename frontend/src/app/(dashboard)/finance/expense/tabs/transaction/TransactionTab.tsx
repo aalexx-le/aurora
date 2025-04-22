@@ -1,4 +1,4 @@
-import { GET_EXPENSE_CATEGORIES } from "@/api/script/expense/expense-category";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
 import CreateBankAccountDialog from "@/app/(dashboard)/finance/bank/components/account-list/CreateBankAccountDialog";
 import CreateBankManagerDialog from "@/app/(dashboard)/finance/bank/components/manager-list/CreateBankManagerDialog";
 import BankManagerSelect from "@/app/(dashboard)/finance/components/bank-manager-select/BankManagerSelect";
@@ -107,7 +107,7 @@ function TransactionTab({bankManagers}: IProps) {
                         <CategorySkeleton />
                     ) : (
                         <>
-                            <MemoizedCategoryPieChart categories={categories}/>
+                            <CategoryPieChart categories={categories}/>
                             <MemoizedCategoryList categories={categories}/>
                         </>
                     )}

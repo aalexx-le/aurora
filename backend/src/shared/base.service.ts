@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
@@ -16,15 +16,12 @@ export class BaseCrudService<
     DeleteArg,
     DeleteManyArg,
 > {
-    private readonly logger = new Logger(BaseCrudService.name);
-
     constructor(protected prisma: PrismaService) {}
 
     async findFirst(args: FindFirstArg): Promise<T | null> {
         try {
             return await this.prisma[this.getModelName()].findFirst(args);
         } catch (e) {
-            this.logger.error(e);
             return undefined;
         }
     }

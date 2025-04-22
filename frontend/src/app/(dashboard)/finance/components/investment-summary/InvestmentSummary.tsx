@@ -1,19 +1,10 @@
 'use client';
 
-import {cn} from "@/lib/utils";
-import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {TotalPnl} from "@/app/(dashboard)/finance/components/investment-summary/TotalPnl";
-import {getSubscriptNewHistoricalBalanceHook, getSubscriptNewHistoricalBalanceResult} from "@/api/script/crypto/crypto";
-import {useEffect, useMemo, useState} from "react";
-import {TimeframeEnum} from "@/lib/utils/date-time/timeframe.enum";
-import {getAbbreviatedTimeFrame} from "@/lib/utils/date-time/get-currency-month-date-range";
-import {MoneyAnimated} from "@/components/money/money-animated";
-import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
-import {useAppSelector} from "@/state/hooks";
-import {Skeleton} from "@/components/ui/skeleton";
-import {CryptoPortfolio} from "@/app/(dashboard)/finance/investment/types";
+import { TotalPnl } from "@/app/(dashboard)/finance/components/investment-summary/TotalPnl";
+import { CryptoPortfolio } from "@/app/(dashboard)/finance/investment/types";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface IProps {
     portfolio: CryptoPortfolio;

@@ -14,7 +14,10 @@ export class CreateUserInput extends OmitType(
         "bankManager",
         "expenses",
         "events",
+        "eventRecurrences",
         "eventCategories",
+        "memberships",
+        "paymentMethods",
     ],
     InputType,
 ) {}

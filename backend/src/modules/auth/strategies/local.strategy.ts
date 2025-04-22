@@ -23,9 +23,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     async validate(email: string, password: string): Promise<LoginReqDto> {
         const user = await this.useService.findByEmailWithPassword(email);
-
-        console.log("user", user);
-        this.logger.debug(`validate() email: ${email}, password: ${password}`);
         if (!user) throw new NotFoundException("Account not found");
 
         const isMatch = await Bcrypt.compare(password, user.password);

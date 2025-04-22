@@ -1,0 +1,60 @@
+model PaymentMethod {
+  id       Int             @id @default(autoincrement())
+  userId   Int
+  provider PaymentProvider
+
+  user                User                 @relation(fields: [userId], references: [id])
+  paddlePaymentMethod PaddlePaymentMethod?
+}
+
+model PaddlePaymentMethod {
+  id              Int @id @default(autoincrement())
+  paymentMethodId Int @unique
+
+  customerId String @unique
+  addressId          String? @unique
+  businessId         String? @unique
+
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+}
+
+model PaymentTransaction {
+  id                       Int @id @default(autoincrement())
+  membershipSubscriptionId String
+  userId                   Int // Denormalized for easier querying
+
+  amount   Decimal       @db.Decimal(10, 2)
+  currency String
+  status   PaymentStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paddlePaymentTransaction PaddlePaymentTransaction?
+  membershipSubscription   MembershipSubscription    @relation(fields: [membershipSubscriptionId], references: [id])
+}
+
+model PaddlePaymentTransaction {
+  id Int @id @default(autoincrement())
+
+  paymentTransactionId Int @unique
+
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentStatus {
+  authorized
+  authorized_flagged
+  canceled
+  captured
+  error
+  action_required
+  pending_no_action_required
+  created
+  unknown
+  dropped
+}
+
+enum PaymentProvider {
+  PADDLE
+}

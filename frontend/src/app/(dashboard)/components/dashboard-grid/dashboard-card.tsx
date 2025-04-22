@@ -1,5 +1,6 @@
 'use client';
 
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -24,11 +25,9 @@ export const DashboardCard = ({
   return (
     <Link
       href={href}
-      className={cn(
-        "group flex flex-col p-6 bg-card backdrop-blur-sm rounded-xl border shadow-lg transition-all duration-300 hover:bg-accent h-full",
-        className
-      )}
     >
+      <Card className="p-4 duration-300 hover:bg-accent">
+
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xl font-semibold text-card-foreground">{title}</h3>
         <div className={cn("p-2 rounded-full bg-muted text-muted-foreground", iconClassName)}>
@@ -41,6 +40,7 @@ export const DashboardCard = ({
         </div>
       </div>
       <p className="text-sm text-muted-foreground mt-4">{description}</p>
+      </Card>
     </Link>
   );
 };

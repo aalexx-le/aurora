@@ -1,9 +1,9 @@
-import { useQuery } from "@apollo/client";
+import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
 import {
     GetBankManagersQuery,
     GetBankManagersQueryVariables,
 } from "@/gql/graphql";
-import { GET_BANK_MANAGERS } from "@/api/script/bank/manager";
+import { useQuery } from "@apollo/client";
 
 export const useBankManagersQuery = () => {
     const { data, loading } = useQuery<
