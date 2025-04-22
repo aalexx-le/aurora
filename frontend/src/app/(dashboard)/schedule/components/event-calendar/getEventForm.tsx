@@ -22,7 +22,7 @@ import { RecurrenceInput } from "@/lib/schema/eventRecurrence";
 
 
 // If recurrenceForm is not provided, the recurrence options will not be shown
-export const getEventForm = (eventForm: UseFormReturn<CreateEventInput>, recurrenceForm?: UseFormReturn<RecurrenceInput>) => {
+export const GetEventForm = (eventForm: UseFormReturn<CreateEventInput>, recurrenceForm?: UseFormReturn<RecurrenceInput>) => {
     const [hasRecurrence, setHasRecurrence] = useState(false);
     const [recurrenceSummary, setRecurrenceSummary] = useState("");
 

@@ -6,7 +6,4 @@ resources:
   - secrets.yaml
   - deployments/backend.yaml
   - deployments/frontend.yaml
-  - deployments/ai-server.yaml
-  - deployments/embedding-consumer.yaml
-  - deployments/crypto-portfolio-consumer.yaml
   - statefulsets/database.yaml 

@@ -2,17 +2,17 @@
 
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
+import { RecurrenceType } from "@/gql/graphql";
 import { CreateEventInput, createEventSchema } from "@/lib/schema/event";
+import { RecurrenceInput, recurrenceSchema } from "@/lib/schema/eventRecurrence";
 import { CalendarView } from "@/lib/utils/calendar/data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useEventCalendar } from "../../event-calendar-provider";
-import { getEventForm } from "./getEventForm";
+import { GetEventForm } from "./getEventForm";
 import { useCreateEvent } from "./useCreateEvent";
-import { RecurrenceType } from "@/gql/graphql";
-import { RecurrenceInput, recurrenceSchema } from "@/lib/schema/eventRecurrence";
 
 interface CreateEventDialogProps {
 }
@@ -28,7 +28,7 @@ export function CreatEventDialog({}: CreateEventDialogProps) {
     endDate: eventAddEndTime,
     allDay: false,
     categoryId: 0,
-  }), []);
+  }), [eventAddStartTime, eventAddEndTime]);
 
   const recurrenceDefaultValues = useMemo<RecurrenceInput>(() => ({
     type: RecurrenceType.Daily,
@@ -91,7 +91,7 @@ export function CreatEventDialog({}: CreateEventDialogProps) {
       }
       form={eventForm}
     >
-      {(form) => getEventForm(form, recurrenceForm)}
+      {(form) => GetEventForm(form, recurrenceForm)}
     </CreateOrUpdateDialog>
   );
 }

@@ -1,4 +1,38 @@
 services:
+  frontend:
+    container_name: frontend
+    image: registry.gitlab.com/nnaaaa/xela/web:latest
+    ports:
+      - "3000:3000"
+    environment:
+      API_SERVER: http://backend:5002/graphql
+      SUBSCRIPTION_SERVER: ws://backend:5002/graphql
+    networks:
+      - xela
+
+  backend:
+    container_name: backend
+    image: registry.gitlab.com/nnaaaa/xela/server:latest
+    ports:
+      - "5001:5001"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: ${NODE_ENV}
+      MESSAGE_BROKER_URL: message_broker:${MESSAGE_BROKER_PORT}
+      SUBSCRIPTION_PATH: ${SUBSCRIPTION_PATH}
+      OTP_KEY: ${OTP_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_AT_EXP_TIME: ${JWT_AT_EXP_TIME}
+      JWT_RT_EXP_TIME: ${JWT_RT_EXP_TIME}
+      BANK_API_URL: ${BANK_API_URL}
+      SENTRY_AUTH_TOKEN: ${BACKEND_SENTRY_AUTH_TOKEN}
+      CRYPTO_PORTFOLIO_MASTER_KEY: ${CRYPTO_PORTFOLIO_MASTER_KEY}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - xela
+
   database:
     container_name: database
     image: timescale/timescaledb-ha:pg16

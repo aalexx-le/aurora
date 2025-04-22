@@ -111,7 +111,7 @@ When adding a new service:
 1. Create the deployment in `base/deployments/`
 2. Create the service in `base/services/`
 3. Add appropriate resource configurations in each environment's patches
-4. Update the kustomization files to include the new resources
+4. Update the kustomization files to include the new resources 
 5. If the service requires environment variables, add them to the ConfigMap or Secret as appropriate
 
 ## Adding New Environment Variables

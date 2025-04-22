@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useExpenseCalendar } from "@/lib/context/calendar-context";
 import {
   changeCalendarView,
   goNext,
@@ -12,6 +11,7 @@ import {
 import { calendarRef as calendarRefType, CalendarView } from "@/lib/utils/calendar/data";
 import FullCalendar from "@fullcalendar/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useExpenseCalendar } from "./expense-calendar-provider";
 
 // Month names for display
 const monthNames = [

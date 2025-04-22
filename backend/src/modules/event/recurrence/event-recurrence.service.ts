@@ -68,9 +68,7 @@ export class EventRecurrenceService {
         // Generate all occurrence dates
         const occurrences = rule.all();
 
-        this.logger.log(
-            `Generated ${occurrences.length} event occurrences`,
-        );
+        this.logger.log(`Generated ${occurrences.length} event occurrences`);
 
         // Create events for each occurrence
         let firstEvent = null;
@@ -110,7 +108,7 @@ export class EventRecurrenceService {
                 firstEvent = event;
             }
         }
-        
+
         // Return dummy event to satisfy the resolver
         return firstEvent;
     }
@@ -134,11 +132,17 @@ export class EventRecurrenceService {
     private parseDaysOfWeek(daysOfWeek: string): number[] {
         if (!daysOfWeek) return [];
 
-        const dayList = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU];
+        const dayList = [
+            RRule.MO,
+            RRule.TU,
+            RRule.WE,
+            RRule.TH,
+            RRule.FR,
+            RRule.SA,
+            RRule.SU,
+        ];
 
-        return daysOfWeek
-            .split(",")
-            .map((day) => dayList[day]);
+        return daysOfWeek.split(",").map((day) => dayList[day]);
     }
 
     async findAll(userId: number) {

@@ -4,7 +4,7 @@ import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
 import { ErrorDisplay, ErrorSeverity } from '@/components/error-ui/ErrorDisplay';
 import { initGlobalErrorHandler } from '@/lib/error/global-error-handler';
 import { logError, parseError } from '@/lib/utils/error-utils';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 
 /**
  * Interface for the error context
@@ -174,7 +174,7 @@ export function ErrorProvider({
     // Auto-dismiss the error if configured
     if (autoDismiss) {
       setTimeout(() => {
-        clearError(id);
+        setErrors((prevErrors) => prevErrors.filter((error) => error.id !== id));
       }, autoDismissTimeout);
     }
 

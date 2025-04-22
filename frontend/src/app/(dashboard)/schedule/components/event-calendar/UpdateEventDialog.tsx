@@ -11,7 +11,7 @@ import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useEventCalendar } from "../../event-calendar-provider";
 import { DeleteEventDialog } from "./DeleteEventDialog";
-import { getEventForm } from "./getEventForm";
+import { GetEventForm } from "./getEventForm";
 import { Event } from "./types";
 
 interface UpdateEventDialogProps extends React.ComponentPropsWithoutRef<typeof Dialog>  {
@@ -77,7 +77,7 @@ export function UpdateEventDialog({ event }: UpdateEventDialogProps) {
       ]}
       isUpdate
     >
-      {(form) => getEventForm(form)}
+      {(form) => GetEventForm(form)}
     </CreateOrUpdateDialog>
   );
 }

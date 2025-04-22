@@ -3,7 +3,7 @@
 import { GET_PAYMENT_METHODS } from "@/api/scripts/payment/payment";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables, MembershipSubscription, PaymentProvider } from "@/gql/graphql";
+import { GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables, PaymentProvider } from "@/gql/graphql";
 import { useAppSelector } from "@/state/hooks";
 import { useQuery } from "@apollo/client";
 import { usePaddleCheckout } from "../subcription-form/usePaddleCheckout";
@@ -60,7 +60,7 @@ export function SubscriptionList() {
         <CardHeader>
           <CardTitle>No Subscriptions</CardTitle>
           <CardDescription>
-            You don't have any subscriptions yet.
+            You don&apos;t have any subscriptions yet.
           </CardDescription>
         </CardHeader>
       </Card>

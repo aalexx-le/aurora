@@ -9,7 +9,10 @@ import { EventRecurrenceService } from "./recurrence/event-recurrence.service";
 export class EventService {
     private readonly logger = new Logger(EventService.name);
 
-    constructor(private readonly prisma: PrismaService, private readonly eventRecurrenceService: EventRecurrenceService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly eventRecurrenceService: EventRecurrenceService,
+    ) {}
 
     async create(userId: number, data: CreateEventInput) {
         const { recurrence, ...eventData } = data;
@@ -22,8 +25,7 @@ export class EventService {
                     userId,
                 },
             });
-        }
-        else {
+        } else {
             return this.eventRecurrenceService.create(userId, data);
         }
     }

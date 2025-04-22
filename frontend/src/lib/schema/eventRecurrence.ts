@@ -1,7 +1,6 @@
 import { RecurrenceType } from "@/gql/graphql";
 import { z } from "zod";
 
-
 // Define recurrence schema
 export const recurrenceSchema = z.object({
     type: z.nativeEnum(RecurrenceType),
@@ -13,6 +12,5 @@ export const recurrenceSchema = z.object({
     endDate: z.date().optional(),
     endCount: z.number().int().min(1).optional(),
 });
-
 
 export type RecurrenceInput = z.infer<typeof recurrenceSchema>;

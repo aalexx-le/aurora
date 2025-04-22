@@ -1,6 +1,7 @@
 import { GetRecurrenceTemplatesQuery } from "@/gql/graphql";
 
-export type EventRecurrence = GetRecurrenceTemplatesQuery["getRecurrenceTemplates"][number];
+export type EventRecurrence =
+    GetRecurrenceTemplatesQuery["getRecurrenceTemplates"][number];
 
 export enum RecurrenceActionType {
     CREATE = "create",

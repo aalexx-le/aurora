@@ -2,24 +2,23 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MembershipSubscriptionStatus } from "@/gql/graphql";
 import { Calendar, Clock, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { MembershipSubscription } from "../../types";
-import { formatDate, getStatusColor, isButtonDisabled } from "../../utils/subscription-helpers";
+import { formatDate, getStatusColor } from "../../utils/subscription-helpers";
 import { TransactionList } from "./TransactionList";
 
 type SubscriptionCardProps = {
@@ -112,7 +111,7 @@ export const SubscriptionCard = ({
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This will schedule your subscription to be canceled at the end of your current billing period. 
-              You'll continue to have full access to all features until then. 
+              You&apos;ll continue to have full access to all features until then. 
               Your subscription status will update automatically once the cancellation is processed.
             </AlertDialogDescription>
           </AlertDialogHeader>

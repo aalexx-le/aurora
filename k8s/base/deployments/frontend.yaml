@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: ${REGISTRY_URL}/xela-frontend:latest
+        image: ${REGISTRY_URL}/web:latest
         ports:
         - containerPort: 3000
           name: http

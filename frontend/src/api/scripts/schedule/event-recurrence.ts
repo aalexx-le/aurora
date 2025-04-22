@@ -55,7 +55,10 @@ export const GET_EVENT_RECURRENCE = gql`
 `;
 
 export const UPDATE_EVENT_RECURRENCE = gql`
-    mutation UpdateRecurrenceTemplate($id: Int!, $data: UpdateEventRecurrenceInput!) {
+    mutation UpdateRecurrenceTemplate(
+        $id: Int!
+        $data: UpdateEventRecurrenceInput!
+    ) {
         updateRecurrenceTemplate(id: $id, data: $data) {
             id
             type
@@ -79,4 +82,4 @@ export const DELETE_EVENT_RECURRENCE = gql`
             id
         }
     }
-`; 
+`;

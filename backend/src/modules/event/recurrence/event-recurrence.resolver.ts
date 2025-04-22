@@ -1,5 +1,13 @@
 import { UseGuards } from "@nestjs/common";
-import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import {
+    Args,
+    Int,
+    Mutation,
+    Parent,
+    Query,
+    ResolveField,
+    Resolver,
+} from "@nestjs/graphql";
 import { Event } from "src/entities/event";
 import { EventRecurrence } from "src/entities/event-recurrence";
 import { User } from "src/entities/user";
@@ -39,7 +47,9 @@ export class EventRecurrenceResolver {
 
     @ResolveField(() => [Event], { name: "events" })
     async getEvents(@Parent() eventRecurrence: EventRecurrence) {
-        const event = await this.eventService.findOneByRecurrenceId(eventRecurrence.id);
+        const event = await this.eventService.findOneByRecurrenceId(
+            eventRecurrence.id,
+        );
         return event ? [event] : [];
     }
 }

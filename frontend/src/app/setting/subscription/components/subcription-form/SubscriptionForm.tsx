@@ -70,7 +70,7 @@ export function SubscriptionForm() {
     const checkoutOptions = {
       items: [
         {
-          priceId: selectedPrice?.id!,
+          priceId: selectedPrice?.id ?? "",
           quantity: 1,
         },
       ],
@@ -158,7 +158,7 @@ export function SubscriptionForm() {
                             const currentPlanId = form.getValues("planId");
                             const plan = data?.getMembershipPlans.find(p => p.id === currentPlanId);
                             const price = plan?.prices.find(p => p.billingCycle?.interval === newInterval);
-                            form.setValue("priceId", price?.id!);
+                            form.setValue("priceId", price?.id ?? "");
                           }}
                         />
                       </FormControl>

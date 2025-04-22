@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: ${REGISTRY_URL}/xela-backend:latest
+        image: ${REGISTRY_URL}/server:latest
         ports:
         - containerPort: 5001
         envFrom:

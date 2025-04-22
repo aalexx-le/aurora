@@ -11,24 +11,3 @@ metadata:
   name: frontend
 spec:
   replicas: 1
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ai-server
-spec:
-  replicas: 1
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: embedding-consumer
-spec:
-  replicas: 1
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: crypto-portfolio-consumer
-spec:
-  replicas: 1 
