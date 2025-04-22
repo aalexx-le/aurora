@@ -1,13 +1,13 @@
+import { UseGuards } from "@nestjs/common";
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { CryptoPortfolio } from "../../../entities/crypto-portfolio";
+import { Trade } from "../../../entities/trade";
+import { User } from "../../../entities/user";
+import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
+import { JwtGuard } from "../../auth/guards/jwt.guard";
+import { CryptoPortfolioService } from "../portfolio/portfolio.service";
 import { CryptoAssetService } from "./asset.service";
 import { GetTradeInput } from "./dto/get-trade.input";
-import { Trade } from "../../../entities/trade";
-import { UseGuards } from "@nestjs/common";
-import { JwtGuard } from "../../auth/guards/jwt.guard";
-import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
-import { User } from "../../../entities/user";
-import { CryptoPortfolio } from "../../../entities/crypto-portfolio";
-import { CryptoPortfolioService } from "../profile/portfolio.service";
 
 @UseGuards(JwtGuard)
 @Resolver(() => Trade)

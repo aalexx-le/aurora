@@ -1,0 +1,12 @@
+model Feature {
+  id             Int           @id @default(autoincrement())
+  type           FeatureType
+
+  membershipFeatures MembershipFeature[]
+}
+
+enum FeatureType {
+  CRYPTO
+  EXPENSE
+}
+

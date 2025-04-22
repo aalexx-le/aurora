@@ -1,7 +1,7 @@
 "use client";
 
-import { GET_EVENT_CATEGORIES, UPDATE_EVENT_CATEGORY } from "@/api/script/schedule/event-category";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { GET_EVENT_CATEGORIES, UPDATE_EVENT_CATEGORY } from "@/api/scripts/schedule/event-category";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { GradientPicker } from "@/components/ui/color-picker";
 import { Dialog } from "@/components/ui/dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";

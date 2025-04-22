@@ -3,6 +3,9 @@ const SETTING_ROUTE = {
     appearance: {
         value: "/setting/appearance",
     },
+    subscription: {
+        value: "/setting/subscription",
+    },
 };
 
 export default SETTING_ROUTE;

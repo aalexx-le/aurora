@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-server
+spec:
+  selector:
+    matchLabels:
+      app: ai-server
+  template:
+    metadata:
+      labels:
+        app: ai-server
+    spec:
+      containers:
+      - name: ai-server
+        image: ${REGISTRY_URL}/xela-ai-server:latest
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: xela-config
+        - secretRef:
+            name: xela-secrets 

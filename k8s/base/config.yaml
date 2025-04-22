@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xela-config
+data:
+  NODE_ENV: "development"
+  API_SERVER: "http://localhost:5001/graphql"
+  SUBSCRIPTION_SERVER: "ws://localhost:5001/graphql"
+  SUBSCRIPTION_PATH: "/graphql"
+  CASSANDRA_CLUSTER_NAME: "xela_cluster"
+  CASSANDRA_DATACENTER: "datacenter1"
+  MESSAGE_BROKER_PORT: "9092" 

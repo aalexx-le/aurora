@@ -1,15 +1,15 @@
-import { CreateExpenseInput } from "@/lib/schema/expense";
-import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
-import { UseFormReturn } from "react-hook-form";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/scripts/expense/expense";
 import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
-import { useMutation } from "@apollo/client";
 import {
     CreateExpenseMutation,
     MutationCreateExpenseArgs,
 } from "@/gql/graphql";
-import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/script/expense/expense";
-import { useAppSelector } from "@/state/hooks";
 import { useToast } from "@/hooks/use-toast";
+import { CreateExpenseInput } from "@/lib/schema/expense";
+import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
+import { useAppSelector } from "@/state/hooks";
+import { useMutation } from "@apollo/client";
+import { UseFormReturn } from "react-hook-form";
 
 export const useSubmitForm = (
     form: UseFormReturn<CreateExpenseInput>,

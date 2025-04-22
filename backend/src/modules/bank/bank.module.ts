@@ -1,14 +1,14 @@
+import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
+import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { ScheduleModule } from "@nestjs/schedule";
+import { BankAccountResolver } from "./account/account.resolver";
 import { BankAccountService } from "./account/account.service";
 import { BankManagerResolver } from "./account/manager.resolver";
-import { HttpModule } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { BankAccountResolver } from "./account/account.resolver";
-import { BankTransactionResolver } from "./transaction/transaction.resolver";
-import { ScheduleModule } from "@nestjs/schedule";
-import { BankTransactionService } from "./transaction/transaction.service";
-import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
 import { BankTransactionCron } from "./transaction/transaction.cron";
+import { BankTransactionResolver } from "./transaction/transaction.resolver";
+import { BankTransactionService } from "./transaction/transaction.service";
 
 const CassoHttpModule = HttpModule.registerAsync({
     useFactory: (configService: ConfigService) => ({

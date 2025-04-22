@@ -1,0 +1,176 @@
+{
+  "eventId": "evt_01jrznrk363ne4xnjq970m17dw",
+  "notificationId": "ntf_01jrznrk8fw2wns4d469c1csrw",
+  "eventType": "transaction.completed",
+  "occurredAt": "2025-04-16T16:08:55.654938Z",
+  "data": {
+    "id": "txn_01jrznqnta3j1v672vn90ar493",
+    "status": "completed",
+    "customerId": "ctm_01jrwv2d89ya6gzvvbjezc4wv0",
+    "addressId": "add_01jrznr1n3dqnqhyztt59x8cke",
+    "businessId": null,
+    "customData": {
+      "userId": 1
+    },
+    "currencyCode": "USD",
+    "origin": "web",
+    "subscriptionId": "sub_01jrznrj631nkn5d0zv9xamf1y",
+    "invoiceId": null,
+    "invoiceNumber": null,
+    "collectionMode": "automatic",
+    "discountId": null,
+    "billingDetails": null,
+    "billingPeriod": {
+      "startsAt": "2025-04-16T16:08:54.714Z",
+      "endsAt": "2027-10-16T16:08:54.714Z"
+    },
+    "items": [
+      {
+        "price": {
+          "id": "pri_01jrvqer5trtw4jjt4kq6ej4vq",
+          "productId": "pro_01jrvq6c09rptdjf02q8nmc0c1",
+          "description": "Annual Subscription",
+          "type": "standard",
+          "name": "Monthly",
+          "billingCycle": {
+            "interval": "month",
+            "frequency": 1
+          },
+          "trialPeriod": {
+            "interval": "month",
+            "frequency": 30
+          },
+          "taxMode": "account_setting",
+          "unitPrice": {
+            "amount": "1500",
+            "currencyCode": "USD"
+          },
+          "unitPriceOverrides": [],
+          "quantity": {
+            "minimum": 1,
+            "maximum": 1
+          },
+          "status": "active",
+          "createdAt": "2025-04-15T03:21:32.602404Z",
+          "updatedAt": "2025-04-16T15:33:03.476518Z",
+          "customData": null,
+          "importMeta": null
+        },
+        "quantity": 1,
+        "proration": null
+      }
+    ],
+    "details": {
+      "taxRatesUsed": [
+        {
+          "taxRate": "0.1111",
+          "totals": {
+            "subtotal": "0",
+            "discount": "0",
+            "tax": "0",
+            "total": "0"
+          }
+        }
+      ],
+      "totals": {
+        "subtotal": "0",
+        "discount": "0",
+        "tax": "0",
+        "total": "0",
+        "credit": "0",
+        "creditToBalance": "0",
+        "balance": "0",
+        "grandTotal": "0",
+        "fee": "0",
+        "earnings": "0",
+        "currencyCode": "USD"
+      },
+      "adjustedTotals": {
+        "subtotal": "0",
+        "tax": "0",
+        "total": "0",
+        "grandTotal": "0",
+        "fee": "0",
+        "earnings": "0",
+        "currencyCode": "USD"
+      },
+      "payoutTotals": {
+        "subtotal": "0",
+        "discount": "0",
+        "tax": "0",
+        "total": "0",
+        "credit": "0",
+        "creditToBalance": "0",
+        "balance": "0",
+        "grandTotal": "0",
+        "fee": "0",
+        "earnings": "0",
+        "currencyCode": "USD"
+      },
+      "adjustedPayoutTotals": null,
+      "lineItems": [
+        {
+          "id": "txnitm_01jrznr1yp1yc7hkxrhn2hyrar",
+          "priceId": "pri_01jrvqer5trtw4jjt4kq6ej4vq",
+          "quantity": 1,
+          "proration": null,
+          "taxRate": "0.1111",
+          "unitTotals": {
+            "subtotal": "0",
+            "discount": "0",
+            "tax": "0",
+            "total": "0"
+          },
+          "totals": {
+            "subtotal": "0",
+            "discount": "0",
+            "tax": "0",
+            "total": "0"
+          },
+          "product": {
+            "id": "pro_01jrvq6c09rptdjf02q8nmc0c1",
+            "name": "Pro",
+            "type": "standard",
+            "description": null,
+            "taxCategory": "standard",
+            "imageUrl": null,
+            "customData": null,
+            "status": "active",
+            "createdAt": "2025-04-15T03:16:57.993Z",
+            "updatedAt": "2025-04-15T03:16:57.993Z",
+            "importMeta": null
+          }
+        }
+      ]
+    },
+    "payments": [
+      {
+        "paymentAttemptId": "060fba14-3505-4d77-964a-0cbde9222b6d",
+        "paymentMethodId": "paymtd_01jrznrfsdjwf52msgg8m07csr",
+        "storedPaymentMethodId": "b9d38c5c-d3b0-4011-8c78-c589b743b81f",
+        "amount": "0",
+        "status": "authorized",
+        "errorCode": null,
+        "methodDetails": {
+          "type": "card",
+          "card": {
+            "type": "visa",
+            "last4": "4242",
+            "expiryMonth": 1,
+            "expiryYear": 2033,
+            "cardholderName": "ANH LE"
+          }
+        },
+        "createdAt": "2025-04-16T16:08:52.286886Z",
+        "capturedAt": null
+      }
+    ],
+    "checkout": {
+      "url": "https://localhost/?_ptxn=txn_01jrznqnta3j1v672vn90ar493"
+    },
+    "createdAt": "2025-04-16T16:08:25.726119Z",
+    "updatedAt": "2025-04-16T16:08:55.195888935Z",
+    "billedAt": "2025-04-16T16:08:54.30569Z",
+    "revisedAt": null
+  }
+}

@@ -1,34 +1,22 @@
 "use client";
 
-import { GET_EVENTS } from "@/api/script/schedule/event";
+import { GET_EVENTS } from "@/api/scripts/schedule/event";
 import {
-    SchedulePageSkeleton
+  mapEventFromEntityToInput
+} from "@/app/(dashboard)/schedule/components/event-calendar/mapEventFromEntityToInput";
+import {
+  SchedulePageSkeleton
 } from "@/app/(dashboard)/schedule/components/skeletons";
 import { GetEventsQuery, GetEventsQueryVariables } from "@/gql/graphql";
-import { EventCalendarProvider, useEventCalendar } from '@/lib/context/calendar-context';
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { DateFilterProvider } from "@/lib/context/date-range.context";
-import { useQuery } from "@apollo/client";
-import { EventInput } from '@fullcalendar/core';
-import { lazy, Suspense, useMemo } from 'react';
-import {
-    mapEventFromEntityToInput
-} from "@/app/(dashboard)/schedule/components/event-calendar/mapEventFromEntityToInput";
+import { useSuspenseQuery } from "@apollo/client";
+import { Suspense, useMemo } from 'react';
+import EventCalendar from "./components/event-calendar/event-calendar";
+import { EventCalendarProvider, useEventCalendar } from "./event-calendar-provider";
 
-// Lazy load components
-const EventCalendar = lazy(() => import('./components/event-calendar/event-calendar'));
-
-// Simple presentational component
-const SchedulePage = ({ events, loading }: { events: EventInput[], loading: boolean }) => (
-  <div className="h-[calc(100vh-76px)] p-4">
-    <Suspense fallback={<SchedulePageSkeleton />}>
-      <EventCalendar events={events} loading={loading}/>
-    </Suspense>
-  </div>
-);
-
-// Container component with data fetching logic
-const SchedulePageContainer = () => {
+// Data fetching wrapper component that maintains a stable event state
+const SchedulePage = () => {
   // Get date range based on current view and date
   const { getDateRangeForView } = useEventCalendar();
   const { startDate, endDate } = useMemo(
@@ -36,23 +24,32 @@ const SchedulePageContainer = () => {
     [getDateRangeForView]
   );
   
-  // Fetch events
-  const { data, loading } = useQuery<GetEventsQuery, GetEventsQueryVariables>(
+  // Use suspense query with better caching strategy
+  const { data } = useSuspenseQuery<GetEventsQuery, GetEventsQueryVariables>(
     GET_EVENTS, 
     {
       variables: { startDate, endDate },
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-and-network', // Use cache first, then update in background
       skip: !startDate || !endDate,
     }
   );
 
   // Map to calendar format
-  const events = useMemo(
+  const currentEvents = useMemo(
     () => mapEventFromEntityToInput(data?.getEvents ?? []), 
     [data]
   );
 
-  return <SchedulePage events={events} loading={loading}/>;
+  return <EventCalendar events={currentEvents} />;
+};
+
+// Container component with Suspense boundary only for initial load
+const SchedulePageContainer = () => {
+  return (
+    <Suspense fallback={<SchedulePageSkeleton />}>
+      <SchedulePage />
+    </Suspense>
+  );
 };
 
 // Root component with providers

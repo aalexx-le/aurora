@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { LoggerService, Module } from "@nestjs/common";
 import { ExpenseService } from "./expense.service";
 import { ExpenseResolver } from "./expense.resolver";
 import { ExpenseCategoryService } from "./category/expense-category.service";
@@ -12,10 +12,6 @@ import { ConfigService } from "@nestjs/config";
 
 const AIServerHttpModule = HttpModule.registerAsync({
     useFactory: (configService: ConfigService) => {
-        console.log(
-            "AI_API_SERVER_URL",
-            configService.get("AI_API_SERVER_URL"),
-        );
         return {
             baseURL: configService.get("AI_API_SERVER_URL"),
         };

@@ -1,14 +1,10 @@
-import { GET_EXPENSE_CATEGORIES } from "@/api/script/expense/expense-category";
+import { useExpenseCategoriesQuery } from "@/app/(dashboard)/finance/expense/components/category-list/useExpenseCategoriesQuery";
 import DateFilter from "@/app/(dashboard)/finance/expense/components/date-filter/DateFilter";
 import { ResetDateFilterButton } from "@/app/(dashboard)/finance/expense/components/date-filter/ResetDateFilterButton";
 import ExpenseTable from "@/app/(dashboard)/finance/expense/components/expense-table/ExpenseTable";
 import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables, } from "@/gql/graphql";
-import { useDateFilterContext, } from "@/lib/context/date-range.context";
-import { useAppSelector } from "@/state/hooks";
-import { useQuery } from "@apollo/client";
-import { memo, Suspense, useEffect, useMemo } from "react";
+import { memo, Suspense, useMemo } from "react";
 
 interface IProps {
     expenses: Expense[];
@@ -23,25 +19,7 @@ const ExpenseTableSkeleton = () => (
 );
 
 function ExpenseTab({ expenses }: IProps) {
-    const { user } = useAppSelector((state) => state.auth.state);
-    const { dateRange } = useDateFilterContext();
-    
-    // Optimize query with fetchPolicy and add error handling
-    const { loading, data, refetch, error } = useQuery<
-        GetExpenseCategoriesQuery,
-        GetExpenseCategoriesQueryVariables
-    >(GET_EXPENSE_CATEGORIES, {
-        fetchPolicy: 'cache-and-network',
-        notifyOnNetworkStatusChange: true,
-        errorPolicy: 'all',
-    });
-
-    useEffect(() => {
-        refetch({
-            startDate: dateRange?.from,
-            endDate: dateRange?.to,
-        });
-    }, [dateRange, user, refetch]);
+    const { loading, error } = useExpenseCategoriesQuery();
 
     // Memoize expenses to prevent unnecessary re-renders
     const memoizedExpenses = useMemo(() => expenses, [expenses]);

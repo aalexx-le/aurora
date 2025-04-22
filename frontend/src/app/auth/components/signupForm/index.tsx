@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SIGNUP_MUTATION } from "@/api/script/auth/auth";
+import { SIGNUP_MUTATION } from "@/api/scripts/auth/auth";
 import { TABS } from "@/app/auth/page";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
@@ -55,8 +55,8 @@ export function SignupForm({ setActiveTab }: SignupFormProps) {
             );
             await dispatch(authActions.loginWithToken());
             router.push(AUTH_ROUTE.verifyAccount.value);
-        } catch (error: GraphQLError) {
-            if (error?.message === "Account already exists") {
+        } catch (error: unknown) {
+            if (error instanceof GraphQLError && error?.message === "Account already exists") {
                 setError("email", {
                     type: "manual",
                     message: "Account already exists",

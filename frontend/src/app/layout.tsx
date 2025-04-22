@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Providers from "../components/providers";
+import Providers from "../providers";
 import "./globals.css";
 // import Header from "@/app/home/components/header";
 
@@ -51,6 +51,7 @@ export default function RootLayout({
         <html lang="en" data-theme="light" suppressHydrationWarning={true}>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex flex-col box-border`}
+                suppressHydrationWarning={true}
             >
                 <Providers>
                   <ScrollArea>

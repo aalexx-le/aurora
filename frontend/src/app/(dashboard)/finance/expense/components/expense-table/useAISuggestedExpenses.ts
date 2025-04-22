@@ -1,11 +1,11 @@
-import { useQuery } from "@apollo/client";
+import { GET_SUGGESTED_EXPENSES } from "@/api/scripts/expense/expense";
 import {
     GetSuggestedExpensesQuery,
     GetSuggestedExpensesQueryVariables,
 } from "@/gql/graphql";
-import { GET_SUGGESTED_EXPENSES } from "@/api/script/expense/expense";
-import { useEffect } from "react";
 import { CreateExpenseInput } from "@/lib/schema/expense";
+import { useQuery } from "@apollo/client";
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 
 export const useAISuggestExpenses = (

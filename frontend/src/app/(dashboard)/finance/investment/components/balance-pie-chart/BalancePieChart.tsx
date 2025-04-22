@@ -1,11 +1,10 @@
 "use client"
 
-import {Label, Pie, PieChart, ResponsiveContainer} from "recharts"
-import {ChartContainer, ChartTooltip, ChartTooltipContent,} from "@/components/ui/chart"
-import {AnalyseData} from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
-import {useCallback} from "react";
-import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context";
-import {formatCurrency} from "@/lib/utils/currency/format-currency";
+import { AnalyseData } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, } from "@/components/ui/chart";
+import { formatCurrency } from "@/lib/utils/currency/format-currency";
+import { useCallback } from "react";
+import { Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 interface IProps {
     data: AnalyseData[]
@@ -21,7 +20,7 @@ export function BalancePieChart({data}: IProps) {
     const totalSymbols = data.filter(b => b.invest > MIN_THRESHOLD).length;
 
     return (
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height={300} minHeight={250}>
             <ChartContainer config={{}} className="min-h-[10rem] min-w-[10rem] aspect-square">
                 <PieChart>
                     <ChartTooltip

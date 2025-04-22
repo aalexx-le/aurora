@@ -12,6 +12,17 @@ mutation Login($data: LoginReqDto!) {
     }
 }
 
+query GetMe {
+    getMe {
+        email
+        id
+        name
+        otp
+        otpPurpose
+    }
+}
+
+
 mutation VerifyAccount($data: VerifyDto!) {
     verifyAccount(data: $data) {
         accessToken

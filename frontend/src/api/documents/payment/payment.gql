@@ -1,0 +1,12 @@
+query GetPaymentMethods {
+    getPaymentMethods {
+        id
+        provider
+        paddlePaymentMethod {
+            id
+            customerId
+            addressId
+            businessId
+        }
+    }
+}

@@ -1,0 +1,5 @@
+# Crypto Pipeline
+
+- [ ] Monitoring airflow https://www.youtube.com/watch?v=x7oRfH4ig54
+- [ ] Fix creating event recurrence for weekly (deal with UTC and timezone offset)
+- [ ] Fix CreateEventDialog - input is focus incorrectly

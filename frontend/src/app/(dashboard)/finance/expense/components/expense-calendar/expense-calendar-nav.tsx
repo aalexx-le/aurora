@@ -38,15 +38,14 @@ export default function ExpenseCalendarNav({ calendarRef }: ExpenseCalendarNavPr
     setCurrentView 
   } = useExpenseCalendar();
   
-  // Helper function for navigation
   const handleNavigation = (navFunction: (ref: calendarRefType) => void) => {
-    navFunction(calendarRef as calendarRefType);
-    updateViewedDate(calendarRef as calendarRefType, setViewedDate);
+    navFunction(calendarRef);
+    updateViewedDate(calendarRef, setViewedDate);
   };
 
-  // Helper function for view changes
   const handleViewChange = (view: CalendarView) => {
-    changeCalendarView(calendarRef as calendarRefType, view, setCurrentView, setViewedDate);
+    changeCalendarView(calendarRef, view, setCurrentView);
+    updateViewedDate(calendarRef, setViewedDate);
   };
 
   return (

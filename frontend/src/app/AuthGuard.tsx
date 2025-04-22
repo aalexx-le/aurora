@@ -1,10 +1,10 @@
-import {useAppDispatch, useAppSelector} from "@/state/hooks";
-import {usePathname, useRouter} from "next/navigation";
-import React, {useLayoutEffect} from "react";
+import { AuthParams } from "@/lib/constants/params";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
-import {authActions} from "@/state/slices/auth.slice";
-import {getCookie} from "cookies-next";
-import {AuthParams} from "@/lib/constants/params";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import { authActions } from "@/state/slices/auth.slice";
+import { getCookie } from "cookies-next";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useLayoutEffect } from "react";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
     const {
@@ -19,6 +19,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     useLayoutEffect(() => {
         const fn = async () => {
             const accessToken = getCookie(AuthParams.ACCESS_TOKEN);
+
+            if (!accessToken) {
+                router.push(AUTH_ROUTE.value);
+                return;
+            }
+
             if (!loading) {
                 if (!user && accessToken) {
                     await dispatch(authActions.loginWithToken());

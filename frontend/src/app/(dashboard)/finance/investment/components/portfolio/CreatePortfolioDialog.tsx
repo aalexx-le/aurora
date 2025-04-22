@@ -1,5 +1,5 @@
 import { useCreatePortfolio } from "@/app/(dashboard)/finance/investment/components/portfolio/useCreatePortfolio";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
 import { DialogDescription } from "@/components/ui/dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -24,7 +24,7 @@ const CreatePortfolioDialog = () => {
   });
   const reviewExchanges = form.watch("exchanges");
 
-  const {createPortfolio, createOKXPortfolio, loading} = useCreatePortfolio()
+  const {createPortfolio, createOKXPortfolio, loading} = useCreatePortfolio();
 
   const handleSubmit = async (data: CreateCryptoPortfolioInput) => {
     if (data.exchanges == CexExchanges.Okx) {

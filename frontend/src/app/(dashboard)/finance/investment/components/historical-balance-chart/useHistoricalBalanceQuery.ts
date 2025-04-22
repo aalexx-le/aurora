@@ -1,17 +1,17 @@
-import { useQuery } from "@apollo/client";
-import {
-    GetHistoricalBalancesQuery,
-    GetHistoricalBalancesQueryVariables,
-} from "@/gql/graphql";
 import {
     GET_HISTORICAL_BALANCE,
     getSubscriptNewHistoricalBalanceHook,
     getSubscriptNewHistoricalBalanceResult,
-} from "@/api/script/crypto/crypto";
-import { useEffect, useMemo, useState } from "react";
+} from "@/api/scripts/crypto/crypto";
 import { HistoricalCryptoBalance } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/types";
+import {
+    GetHistoricalBalancesQuery,
+    GetHistoricalBalancesQueryVariables,
+} from "@/gql/graphql";
 import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useQuery } from "@apollo/client";
+import { useEffect, useMemo, useState } from "react";
 
 export const useHistoricalBalanceQuery = (
     cryptoPortfolioId: string,

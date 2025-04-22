@@ -13,6 +13,62 @@ services:
     networks:
       - xela
 
+  cassandra:
+    container_name: logger
+    image: bitnami/cassandra:4.1
+    ports:
+      - "9042:9042"
+    volumes:
+      - logger-data:/bitnami
+    environment:
+      - CASSANDRA_CLUSTER_NAME=${CASSANDRA_CLUSTER_NAME:-xela_cluster}
+      - CASSANDRA_DATACENTER=${CASSANDRA_DATACENTER:-datacenter1}
+      - CASSANDRA_ENDPOINT_SNITCH=${CASSANDRA_ENDPOINT_SNITCH:-SimpleSnitch}
+      - CASSANDRA_USER=${CASSANDRA_USERNAME:-logger}
+      - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD:-logger}
+    restart: unless-stopped
+    networks:
+      - xela
+
+  cassandra-web:
+    container_name: logger-web
+    image: ipushc/cassandra-web
+    ports:
+      - "3002:8080"
+    environment:
+      - CASSANDRA_HOST=logger
+      - CASSANDRA_PORT=9042
+    restart: unless-stopped
+    networks:
+      - xela
+    depends_on:
+      - cassandra
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-redis}"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - xela
+
+  redisinsight:
+    container_name: redisinsight
+    image: redislabs/redisinsight:latest
+    ports:
+      - "8001:8001"
+    volumes:
+      - redisinsight-data:/db
+    restart: unless-stopped
+    networks:
+      - xela
+    depends_on:
+      - redis
+
   ai_server:
     container_name: ai_serverr
     image: ai_server
@@ -143,6 +199,9 @@ volumes:
   mongoconfig:
   timeseries-data:
   vector-stores-data:
+  redis-data:
+  redisinsight-data:
+  cassandra-data:
 
 networks:
   xela:

@@ -1,51 +1,79 @@
 "use client";
 
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";
-import { useEventCalendar } from "@/lib/context/calendar-context";
 import { CreateEventInput, createEventSchema } from "@/lib/schema/event";
+import { CalendarView } from "@/lib/utils/calendar/data";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useEventCalendar } from "../../event-calendar-provider";
 import { getEventForm } from "./getEventForm";
 import { useCreateEvent } from "./useCreateEvent";
+import { RecurrenceType } from "@/gql/graphql";
+import { RecurrenceInput, recurrenceSchema } from "@/lib/schema/eventRecurrence";
 
 interface CreateEventDialogProps {
 }
 
 export function CreatEventDialog({}: CreateEventDialogProps) {
-  const { eventAddOpen, setEventAddOpen, eventAddStartTime, eventAddEndTime } = useEventCalendar();
+  const { eventAddOpen, setEventAddOpen, eventAddStartTime, eventAddEndTime, currentView, setEventAddStartTime, setEventAddEndTime } = useEventCalendar();
   const [createEvent] = useCreateEvent()
 
-  const defaultValues = useMemo<CreateEventInput>(() => ({
+  const eventDefaultValues = useMemo<CreateEventInput>(() => ({
     name: "",
     description: "",
     startDate: eventAddStartTime,
     endDate: eventAddEndTime,
     allDay: false,
     categoryId: 0,
-    // recurrence: ""
-  }), [eventAddStartTime, eventAddEndTime]);
+  }), []);
 
-  const form = useForm<CreateEventInput>({
+  const recurrenceDefaultValues = useMemo<RecurrenceInput>(() => ({
+    type: RecurrenceType.Daily,
+    interval: 1,
+  }), []);
+
+  const eventForm = useForm<CreateEventInput>({
     resolver: zodResolver(createEventSchema),
-    defaultValues
+    defaultValues: eventDefaultValues
   });
 
-  useEffect(() => {
-    if (eventAddOpen) {
-      form.reset(defaultValues);
-    }
-  }, [eventAddOpen, defaultValues, form]);
+  const recurrenceForm = useForm<RecurrenceInput>({
+    resolver: zodResolver(recurrenceSchema),
+    defaultValues: recurrenceDefaultValues
+  });
+
+  // useEffect(() => {
+  //   if (eventAddOpen) {
+  //     eventForm.reset(eventDefaultValues);
+  //   }
+  // }, [eventAddOpen, eventDefaultValues, eventForm]);
+
+  // useEffect(() => {
+  //   if (eventAddOpen) {
+  //     recurrenceForm.reset(recurrenceDefaultValues);
+  //   }
+  // }, [eventAddOpen, recurrenceDefaultValues, recurrenceForm]);
 
   const handleSubmit = async (data: CreateEventInput) => {
+    const recurrence = recurrenceForm.getValues();
     await createEvent({
-      variables: { data: {
-        ...data
-      }}
+      variables: { data: { ...data, recurrence } }
     })
   };
+
+  const handleAddEvent = () => {
+    if (currentView === CalendarView.DayGridMonth) {
+      const startDate = new Date();
+      startDate.setHours(0, 0, 0, 0);
+      setEventAddStartTime(startDate);
+      const endDate = new Date();
+      endDate.setHours(23, 59, 59, 999);
+      setEventAddEndTime(endDate);
+    }
+  }
 
   return (
     <CreateOrUpdateDialog<CreateEventInput>
@@ -53,17 +81,17 @@ export function CreatEventDialog({}: CreateEventDialogProps) {
       onOpenChange={setEventAddOpen}
       title="Add Event"
       formSchema={createEventSchema}
-      defaultValues={defaultValues}
+      defaultValues={eventDefaultValues}
       onSubmit={handleSubmit}
       triggerButton={
-        <Button>
+        <Button onClick={handleAddEvent}>
           <PlusIcon/>
           <p>Add Event</p>
         </Button>
       }
-      form={form}
+      form={eventForm}
     >
-      {getEventForm}
+      {(form) => getEventForm(form, recurrenceForm)}
     </CreateOrUpdateDialog>
   );
 }

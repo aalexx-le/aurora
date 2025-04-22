@@ -8,15 +8,11 @@ import * as Bcrypt from "bcrypt";
 import { User } from "src/entities/user";
 import { TOTP as otpGenerator } from "totp-generator";
 import { OtpPurpose } from "../../entities/prisma";
-import {
-    CreateUserInput,
-    CreateUserInputWithoutOTP,
-} from "../user/dto/create-user.input";
+import { UserWithoutSensitiveFields } from "../../entities/user/user-without-sensitive-fields";
+import { CreateUserInputWithoutOTP } from "../user/dto/create-user.input";
 import { UserService } from "../user/user.service";
 import { VerifyDto } from "./dto/verify.dto";
 import { TokenPair, TokenService } from "./token.service";
-import { LoginReqDto } from "./dto/login.dto";
-import { UserWithoutSensitiveFields } from "../../entities/user/user-without-sensitive-fields";
 
 @Injectable()
 export class AuthService {

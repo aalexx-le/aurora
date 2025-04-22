@@ -2,28 +2,28 @@ import {
     Inject,
     Injectable,
     Logger,
+    LoggerService,
     OnModuleDestroy,
     OnModuleInit,
 } from "@nestjs/common";
-import { InjectPgSubscriber, PgSubscriber } from "nestjs-pg-pubsub";
-import { PortfolioEventListener } from "../profile/portfolio-event-listener.service";
-import { DatabaseEvent } from "../../../shared/constants/database.event";
-import { AssetPrice } from "src/entities/asset-price";
 import { PubSub } from "graphql-subscriptions";
+import { InjectPgSubscriber, PgSubscriber } from "nestjs-pg-pubsub";
+import { AssetPrice } from "src/entities/asset-price";
+import { DatabaseEvent } from "../../../shared/constants/database.event";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
 
 @Injectable()
 export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
+    private readonly logger = new Logger(AssetPriceEventListener.name);
+
     public static readonly NEW_ASSET_PRICE_1m_PAYLOAD_NAME = "newAssetPrice1m";
     public static readonly NEW_ASSET_PRICE_5m_PAYLOAD_NAME = "newAssetPrice5m";
-    private readonly logger = new Logger(PortfolioEventListener.name);
 
     constructor(
         @InjectPgSubscriber() private readonly pgSubscriber: PgSubscriber,
         @Inject("SUBSCRIPTION_PUB_SUB") private readonly pubSub: PubSub,
-    ) {
-        // IMPORTANT - need this line to respond to events
-    }
+    ) {}
+
     onModuleDestroy(): any {
         this.pgSubscriber.unlistenAll().then(() => {});
     }

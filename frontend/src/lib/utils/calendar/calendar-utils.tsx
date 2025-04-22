@@ -55,10 +55,10 @@ export const setView = (
 
 // Update viewedDate from calendar
 export const updateViewedDate = (calendarRef: calendarRef, setViewedDate: (date: Date) => void) => {
-  if (calendarRef.current) {
-    const newDate = calendarRef.current.getApi().getDate();
-    setViewedDate(new Date(newDate));
-  }
+    const newDate = calendarRef.current?.getApi().getDate();
+    if (newDate) {
+      setViewedDate(new Date(newDate));
+    }
 };
 
 // Combined function for view change and date update
@@ -66,11 +66,9 @@ export const changeCalendarView = (
   calendarRef: calendarRef,
   viewName: CalendarView,
   setCurrentView: (view: CalendarView) => void,
-  setViewedDate: (date: Date) => void
 ) => {
   setCurrentView(viewName);
   calendarRef.current?.getApi().changeView(viewName);
-  updateViewedDate(calendarRef, setViewedDate);
 };
 
 // Helper for time calculations

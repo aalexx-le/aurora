@@ -1,15 +1,14 @@
-import {BankManager} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import BankSummary from "@/app/(dashboard)/finance/components/bank-summary/BankSummary";
+import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-summary/InvestmentSummary";
 import {
     ExpenseRatioBarChart
 } from "@/app/(dashboard)/finance/expense/components/income-expense-ratio-bar-chart/ExpenseRatioBarChart";
-import BankSummary from "@/app/(dashboard)/finance/components/bank-summary/BankSummary";
-import {useQuery} from "@apollo/client";
-import {CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
-import {useAppSelector} from "@/state/hooks";
-import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-summary/InvestmentSummary";
-import {useCryptoPortfoliosQuery} from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
-import {ConvertCurrencyProvider} from "@/lib/context/convert-currency.context";
+import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
+import { CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
+import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
+import { useQuery } from "@apollo/client";
 
 interface IProps {
     bankManagers: BankManager[];

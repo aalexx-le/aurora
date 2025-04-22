@@ -1,0 +1,72 @@
+query GetRecurrenceTemplates {
+  getRecurrenceTemplates {
+    id
+    type
+    interval
+    daysOfWeek
+    dayOfMonth
+    weekOfMonth
+    dayOfWeek
+    endDate
+    endCount
+    userId
+    createdAt
+    updatedAt
+    events {
+      id
+      name
+      description
+      startDate
+      endDate
+      allDay
+      color
+      categoryId
+      reminderMinutes
+      category {
+        id
+        name
+        color
+      }
+    }
+  }
+}
+
+query GetRecurrenceTemplate($id: Int!) {
+  getRecurrenceTemplate(id: $id) {
+    id
+    type
+    interval
+    daysOfWeek
+    dayOfMonth
+    weekOfMonth
+    dayOfWeek
+    endDate
+    endCount
+    userId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateRecurrenceTemplate($id: Int!, $data: UpdateEventRecurrenceInput!) {
+  updateRecurrenceTemplate(id: $id, data: $data) {
+    id
+    type
+    interval
+    daysOfWeek
+    dayOfMonth
+    weekOfMonth
+    dayOfWeek
+    endDate
+    endCount
+    userId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteRecurrenceTemplate($id: Int!) {
+  deleteRecurrenceTemplate(id: $id) {
+    id
+  }
+} 

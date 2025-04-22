@@ -1,7 +1,7 @@
 import { DatabaseEvent } from "./database.event";
 
 export enum SubscriptionEvent {
-    CRYPTO_PORTFOLIO_CREATED = "crypto-portfolio-created",
+    CRYPTO_PORTFOLIO_CREATION_STATUS = "crypto-portfolio-creation-status",
 
     ASSET_PRICE_1m_INSERTED = DatabaseEvent.ASSET_PRICE_1m_INSERT,
     ASSET_PRICE_5m_INSERTED = DatabaseEvent.ASSET_PRICE_5m_INSERT,
@@ -11,4 +11,6 @@ export enum SubscriptionEvent {
 
     HISTORICAL_ASSET_PROFIT_1m_INSERTED = DatabaseEvent.HISTORICAL_ASSET_PROFIT_1m_INSERT,
     HISTORICAL_ASSET_PROFIT_1h_INSERTED = DatabaseEvent.HISTORICAL_ASSET_PROFIT_1h_INSERT,
+
+    MEMBERSHIP_SUBSCRIPTION_UPDATED = "membership-subscription-updated",
 }

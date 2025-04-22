@@ -3,7 +3,7 @@
 import ContentSection from '../components/content-section'
 import {AppearanceForm} from "@/app/setting/appearance/appearance-form";
 
-export default function SettingsAppearance() {
+export default function AppearancePage() {
     return (
         <ContentSection
             title='Appearance'

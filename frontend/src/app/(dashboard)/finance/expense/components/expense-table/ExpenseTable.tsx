@@ -1,4 +1,28 @@
-import {DataTable} from "@/components/data-table/data-table";
+import { GET_EXPENSES, REMOVE_EXPENSE } from "@/api/scripts/expense/expense";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
+import { DuplicateExpenseSheet } from "@/app/(dashboard)/finance/expense/components/expense-table/DuplicateExpenseSheet";
+import { getExpenseColumns } from "@/app/(dashboard)/finance/expense/components/expense-table/expenseColumns";
+import {
+    ExpenseTableToolbarActions
+} from "@/app/(dashboard)/finance/expense/components/expense-table/ExpenseTableToolbarActions";
+import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
+import { UpdateExpenseSheet } from "@/app/(dashboard)/finance/expense/components/expense-table/UpdateExpenseSheet";
+import { DeleteDialog } from "@/components/crud/delete-dialog";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import {
+    GetExpenseCategoriesQuery,
+    GetExpenseCategoriesQueryVariables,
+    MutationRemoveExpenseArgs,
+    RemoveExpenseMutation,
+} from "@/gql/graphql";
+import { useToast } from "@/hooks/use-toast";
+import { useDateFilterContext } from "@/lib/context/date-range.context";
+import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
+import { DataTableAdvancedFilterField, DataTableRowActionState, DataTableRowActionType, } from "@/types";
+import { useMutation, useQuery } from "@apollo/client";
 import {
     ColumnFiltersState,
     getCoreRowModel,
@@ -7,34 +31,9 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import React, {useMemo, useState} from "react";
-import {useMutation, useQuery} from "@apollo/client";
-import {DataTableAdvancedFilterField, DataTableRowActionState, DataTableRowActionType,} from "@/types";
-import {GET_EXPENSES, REMOVE_EXPENSE} from "@/api/script/expense/expense";
-import {useToast} from "@/hooks/use-toast";
-import {DataTableToolbar} from "@/components/data-table/data-table-toolbar";
-import {
-    GetExpenseCategoriesQuery,
-    GetExpenseCategoriesQueryVariables,
-    MutationRemoveExpenseArgs,
-    RemoveExpenseMutation,
-} from "@/gql/graphql";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
-import {useAppSelector} from "@/state/hooks";
-import {useDateFilterContext} from "@/lib/context/date-range.context";
-import {getGraphqlErrorMessage} from "@/lib/utils/graphql";
-import {DataTableViewOptions} from "@/components/data-table/data-table-view-options";
-import {Expense} from "@/app/(dashboard)/finance/expense/components/expense-table/types";
-import {getExpenseColumns} from "@/app/(dashboard)/finance/expense/components/expense-table/expenseColumns";
-import {
-    ExpenseTableToolbarActions
-} from "@/app/(dashboard)/finance/expense/components/expense-table/ExpenseTableToolbarActions";
-import {DuplicateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/DuplicateExpenseSheet";
-import {UpdateExpenseSheet} from "@/app/(dashboard)/finance/expense/components/expense-table/UpdateExpenseSheet";
-import {DeleteDialog} from "@/app/(dashboard)/finance/expense/components/transaction-table/DeleteDialog";
-import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
+import { useMemo, useState } from "react";
 
-import {GET_BANK_TRANSACTIONS} from "@/api/script/bank/transaction";
+import { GET_BANK_TRANSACTIONS } from "@/api/scripts/bank/transaction";
 
 interface IProps {
     expenses: Expense[];

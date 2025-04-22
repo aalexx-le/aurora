@@ -1,7 +1,7 @@
 "use client";
 
-import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/script/expense/expense";
-import { GET_EXPENSE_CATEGORIES } from "@/api/script/expense/expense-category";
+import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/scripts/expense/expense";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
 import ExpenseCategoryList from "@/app/(dashboard)/finance/expense/components/category-list/ExpenseCategoryList";
 import CategoryPieChart from "@/app/(dashboard)/finance/expense/components/category-pie-chart/CategoryPieChart";
 import DayHeader from "@/app/(dashboard)/schedule/components/event-calendar/DayHeader";
@@ -9,14 +9,13 @@ import DayRender from "@/app/(dashboard)/schedule/components/event-calendar/DayR
 import { Card } from "@/components/ui/card";
 import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables, GetExpensesQuery, GetExpensesQueryVariables, UpdateExpenseMutation, UpdateExpenseMutationVariables } from "@/gql/graphql";
 import { useToast } from "@/hooks/use-toast";
-import { ExpenseCalendarProvider, useExpenseCalendar } from "@/lib/context/calendar-context";
 import { CalendarView } from "@/lib/utils/calendar/data";
 import { getGraphqlErrorMessage } from "@/lib/utils/graphql";
 import { DataTableRowActionType } from "@/types";
 import { useMutation, useQuery } from "@apollo/client";
 import {
-  EventChangeArg,
-  EventClickArg
+    EventChangeArg,
+    EventClickArg
 } from "@fullcalendar/core/index.js";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
@@ -31,6 +30,7 @@ import ExpenseCalendarNav from "./expense-calendar-nav";
 import "./expense-calendar.css";
 import ExpenseEventItem from "./ExpenseEventItem";
 import { mapExpenseToEventInput } from "./mapExpenseToEventInput";
+import { ExpenseCalendarProvider, useExpenseCalendar } from "./expense-calendar-provider";
 
 // Main component that uses the context
 function ExpenseCalendarContent() {

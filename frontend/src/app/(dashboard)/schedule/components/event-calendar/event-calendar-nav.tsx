@@ -16,7 +16,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useEventCalendar } from "@/lib/context/calendar-context";
 import { cn } from "@/lib/utils";
 import {
   changeCalendarView,
@@ -41,6 +40,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { CreatEventDialog } from "./CreateEventDialog";
+import { useEventCalendar } from "../../event-calendar-provider";
 
 interface EventCalendarNavProps {
   calendarRef: calendarRef;
@@ -70,11 +70,11 @@ const viewOptions = [
 
 export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps) {
   const { currentView, setCurrentView, viewedDate, setViewedDate } = useEventCalendar();
-  
+
   // Dropdown state
   const [daySelectOpen, setDaySelectOpen] = useState(false);
   const [monthSelectOpen, setMonthSelectOpen] = useState(false);
-  
+
   // Date values
   const selectedMonth = viewedDate.getMonth() + 1;
   const selectedDay = viewedDate.getDate();
@@ -82,13 +82,11 @@ export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps)
   const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
   const dayOptions = generateDaysInMonth(daysInMonth);
 
-  // Helper function for navigation
   const handleNavigation = (navFunction: (ref: calendarRef) => void) => {
     navFunction(calendarRef);
     updateViewedDate(calendarRef, setViewedDate);
   };
   
-  // Helper for date selection
   const handleDateSelection = (
     handler: (ref: calendarRef, date: Date, value: string) => void,
     value: string,
@@ -99,6 +97,11 @@ export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps)
     closeDropdown();
   };
 
+  const handleViewChange = (view: CalendarView) => {
+    changeCalendarView(calendarRef, view, setCurrentView);
+    updateViewedDate(calendarRef, setViewedDate);
+  };
+
   // Get current view configuration
   const currentViewConfig = viewOptions.find(v => v.value === currentView) || viewOptions[2];
 
@@ -106,7 +109,7 @@ export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps)
     <div className="flex flex-wrap min-w-full gap-3">
       <div className="flex flex-row space-x-1">
         {/* Navigation buttons */}
-        <Button variant="ghost" size="icon" onClick={() => handleNavigation(goPrev)}>
+        <Button variant="secondary" size="icon" onClick={() => handleNavigation(goPrev)}>
           <ChevronLeft/>
         </Button>
 
@@ -192,12 +195,29 @@ export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps)
         />
 
         {/* Next button */}
-        <Button variant="ghost" size="icon" onClick={() => handleNavigation(goNext)}>
+        <Button variant="secondary" size="icon" onClick={() => handleNavigation(goNext)}>
           <ChevronRight/>
         </Button>
       </div>
 
       <div className="flex flex-wrap gap-3 justify-center">
+        {/* View selector tabs */}
+        <Tabs defaultValue={CalendarView.DayGridMonth}>
+          <TabsList>
+            {viewOptions.map(view => (
+              <TabsTrigger
+                key={view.value}
+                value={view.value}
+                onClick={() => handleViewChange(view.value)}
+                className={`space-x-1 flex-1`}
+              >
+                {view.icon}
+                <p className="text-xs md:text-sm">{view.label}</p>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
         {/* Today/This Week/This Month button */}
         <Button
           className="w-[90px] text-xs md:text-sm"
@@ -206,25 +226,9 @@ export default function EventCalendarNav({ calendarRef }: EventCalendarNavProps)
         >
           {currentViewConfig.todayLabel}
         </Button>
+      </div>
 
-        {/* View selector tabs */}
-        <Tabs defaultValue={CalendarView.DayGridMonth}>
-          <TabsList className="flex w-44 md:w-64">
-            {viewOptions.map(view => (
-              <TabsTrigger
-                key={view.value}
-                value={view.value}
-                onClick={() => changeCalendarView(calendarRef, view.value, setCurrentView, setViewedDate)}
-                className={`space-x-1 ${currentView === view.value ? "w-1/2" : "w-1/4"}`}
-              >
-                {view.icon}
-                {currentView === view.value && <p className="text-xs md:text-sm">{view.label}</p>}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        {/* Add event button */}
+      <div className="ml-auto">
         <CreatEventDialog />
       </div>
     </div>

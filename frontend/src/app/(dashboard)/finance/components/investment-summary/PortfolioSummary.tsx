@@ -1,18 +1,15 @@
 'use client';
 
-import {cn} from "@/lib/utils";
-import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {TotalPnl} from "@/app/(dashboard)/finance/components/investment-summary/TotalPnl";
-import {getSubscriptNewHistoricalBalanceHook, getSubscriptNewHistoricalBalanceResult} from "@/api/script/crypto/crypto";
-import React, {useEffect, useMemo} from "react";
-import {TimeframeEnum} from "@/lib/utils/date-time/timeframe.enum";
-import {getAbbreviatedTimeFrame} from "@/lib/utils/date-time/get-currency-month-date-range";
-import {MoneyAnimated} from "@/components/money/money-animated";
-import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { getSubscriptNewHistoricalBalanceHook, getSubscriptNewHistoricalBalanceResult } from "@/api/scripts/crypto/crypto";
+import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
+import { getAbbreviatedTimeFrame } from "@/lib/utils/date-time/get-currency-month-date-range";
+import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useMemo } from "react";
 
 interface IProps {
     portfolio: GetCryptoPortfoliosQuery["getCryptoPortfolios"][number];

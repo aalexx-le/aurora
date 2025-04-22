@@ -6,6 +6,7 @@ from airflow.decorators import task
 from tasks.insert_asset_prices import get_symbol_id_map, insert_latest_prices 
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 default_args = {
@@ -14,13 +15,7 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=1),
 }
-
-@task(task_id='fetch_asset_price')
-def fetch_asset_price():
-    print("a")
     
-    
-
 with DAG(
         dag_id="fetch_asset_prices",
         default_args=default_args,

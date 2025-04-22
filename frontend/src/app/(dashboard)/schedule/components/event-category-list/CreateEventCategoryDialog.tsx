@@ -1,5 +1,5 @@
-import { CREATE_EVENT_CATEGORY, GET_EVENT_CATEGORIES } from "@/api/script/schedule/event-category";
-import { CreateOrUpdateDialog } from "@/components/create-or-update-dialog";
+import { CREATE_EVENT_CATEGORY, GET_EVENT_CATEGORIES } from "@/api/scripts/schedule/event-category";
+import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { GradientPicker } from "@/components/ui/color-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { EventCategoryBadge } from "./EventCategoryBadge";
-
-const createEventCategorySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  color: z.string().min(1, "Color is required"),
-});
-
-type CreateEventCategoryInput = z.infer<typeof createEventCategorySchema>;
+import { CreateEventCategoryInput, createEventCategorySchema } from "@/lib/schema/eventCategory";
 
 export function CreateEventCategoryDialog() {
   const defaultValues: CreateEventCategoryInput = {

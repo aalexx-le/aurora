@@ -1,11 +1,11 @@
-import { Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
-import { UserService } from "./user.service";
-import { User } from "../../entities/user";
 import { UseGuards } from "@nestjs/common";
-import { JwtGuard } from "../auth/guards/jwt.guard";
-import { AuthUser } from "../../shared/decorators/auth-user.decorator";
-import { CryptoPortfolioService } from "../crypto/profile/portfolio.service";
+import { Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { CryptoPortfolio } from "../../entities/crypto-portfolio";
+import { User } from "../../entities/user";
+import { AuthUser } from "../../shared/decorators/auth-user.decorator";
+import { JwtGuard } from "../auth/guards/jwt.guard";
+import { CryptoPortfolioService } from "../crypto/portfolio/portfolio.service";
+import { UserService } from "./user.service";
 
 @UseGuards(JwtGuard)
 @Resolver(() => User)

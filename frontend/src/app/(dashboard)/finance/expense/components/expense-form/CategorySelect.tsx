@@ -1,17 +1,17 @@
-import {ChevronsUpDown} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command";
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
-import React, {useState} from "react";
-import {GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables} from "@/gql/graphql";
-import {useQuery} from "@apollo/client";
-import {GET_EXPENSE_CATEGORIES} from "@/api/script/expense/expense-category";
-import {useAppSelector} from "@/state/hooks";
+import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
 import CategoryAvatar from "@/app/(dashboard)/finance/expense/components/category-list/CategoryAvatar";
-import {CategoryBadge} from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
-import {useDateFilterContext} from "@/lib/context/date-range.context";
-import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context";
-import {ScrollArea} from "@/components/ui/scroll-area";
+import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
+import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
+import { useDateFilterContext } from "@/lib/context/date-range.context";
+import { useAppSelector } from "@/state/hooks";
+import { useQuery } from "@apollo/client";
+import { ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
 
 interface IProps {
     selectedCategoryId: string;

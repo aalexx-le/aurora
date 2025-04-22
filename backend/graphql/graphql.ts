@@ -36,6 +36,48 @@ export enum RecurrenceType {
     YEARLY = "YEARLY"
 }
 
+export enum Interval {
+    day = "day",
+    week = "week",
+    month = "month",
+    year = "year"
+}
+
+export enum PriceStatus {
+    active = "active",
+    archived = "archived"
+}
+
+export enum FeatureType {
+    CRYPTO = "CRYPTO",
+    EXPENSE = "EXPENSE"
+}
+
+export enum PaymentStatus {
+    authorized = "authorized",
+    authorized_flagged = "authorized_flagged",
+    canceled = "canceled",
+    captured = "captured",
+    error = "error",
+    action_required = "action_required",
+    pending_no_action_required = "pending_no_action_required",
+    created = "created",
+    unknown = "unknown",
+    dropped = "dropped"
+}
+
+export enum MembershipSubscriptionStatus {
+    active = "active",
+    canceled = "canceled",
+    past_due = "past_due",
+    paused = "paused",
+    trialing = "trialing"
+}
+
+export enum PaymentProvider {
+    PADDLE = "PADDLE"
+}
+
 export enum OtpPurpose {
     VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
     RESET_PASSWORD = "RESET_PASSWORD"
@@ -81,6 +123,10 @@ export interface GetTradeInput {
 
 export interface SuggestExpenseInput {
     bankTransactionId: number;
+}
+
+export interface GetPaymentMethodDto {
+    id?: Nullable<number>;
 }
 
 export interface CreateCryptoPortfolioInput {
@@ -195,6 +241,7 @@ export interface CreateEventInput {
     endDate: DateTime;
     allDay: boolean;
     color?: Nullable<string>;
+    recurrenceId?: Nullable<number>;
     categoryId: number;
     reminderMinutes?: Nullable<number>;
     recurrence?: Nullable<CreateRecurrenceInput>;
@@ -218,9 +265,9 @@ export interface UpdateEventInput {
     endDate?: Nullable<DateTime>;
     allDay?: Nullable<boolean>;
     color?: Nullable<string>;
+    recurrenceId?: Nullable<number>;
     categoryId?: Nullable<number>;
     reminderMinutes?: Nullable<number>;
-    recurrence?: Nullable<CreateRecurrenceInput>;
 }
 
 export interface CreateEventCategoryInput {
@@ -231,6 +278,76 @@ export interface CreateEventCategoryInput {
 export interface UpdateEventCategoryInput {
     name?: Nullable<string>;
     color?: Nullable<string>;
+}
+
+export interface UpdateEventRecurrenceInput {
+    type?: Nullable<RecurrenceType>;
+    interval?: Nullable<number>;
+    daysOfWeek?: Nullable<string>;
+    dayOfMonth?: Nullable<number>;
+    weekOfMonth?: Nullable<number>;
+    dayOfWeek?: Nullable<number>;
+    endDate?: Nullable<DateTime>;
+    endCount?: Nullable<number>;
+    userId?: Nullable<number>;
+}
+
+export interface CreatePlanDto {
+    name: string;
+    description?: Nullable<string>;
+    featureIds?: Nullable<number[]>;
+}
+
+export interface UpdatePlanDto {
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+}
+
+export interface CreatePriceDto {
+    planId: string;
+    billingCycle?: Nullable<TimePeriodInput>;
+    trialPeriod?: Nullable<TimePeriodInput>;
+    unitPrice: UnitPriceInput;
+    status: string;
+}
+
+export interface TimePeriodInput {
+    interval: string;
+    frequency: number;
+}
+
+export interface UnitPriceInput {
+    amount: string;
+    currencyCode: string;
+}
+
+export interface UpdatePriceDto {
+    billingCycleId?: Nullable<number>;
+    trialPeriodId?: Nullable<number>;
+    unitPriceId?: Nullable<number>;
+    status?: Nullable<string>;
+}
+
+export interface CreateFeatureDto {
+    type: FeatureType;
+}
+
+export interface UpdateFeatureDto {
+    type?: Nullable<FeatureType>;
+}
+
+export interface CreateSubscriptionDto {
+    userId: number;
+    planId: string;
+    status: string;
+    startDate?: Nullable<DateTime>;
+    endDate: DateTime;
+}
+
+export interface UpdateSubscriptionDto {
+    planId?: Nullable<string>;
+    status?: Nullable<string>;
+    endDate?: Nullable<DateTime>;
 }
 
 export interface GetHistoricalBalancesInput {
@@ -429,7 +546,7 @@ export interface CryptoPortfolio {
     latestAssetProfits: HistoricalAssetProfit[];
 }
 
-export interface Recurrence {
+export interface EventRecurrence {
     id: number;
     type: RecurrenceType;
     interval: number;
@@ -439,10 +556,11 @@ export interface Recurrence {
     dayOfWeek?: Nullable<number>;
     endDate?: Nullable<DateTime>;
     endCount?: Nullable<number>;
-    eventId: number;
+    userId: number;
     createdAt: DateTime;
     updatedAt: DateTime;
-    event: Event;
+    events: Event[];
+    user: User;
 }
 
 export interface EventCategory {
@@ -462,14 +580,119 @@ export interface Event {
     endDate: DateTime;
     allDay: boolean;
     color?: Nullable<string>;
+    recurrenceId?: Nullable<number>;
     userId: number;
     categoryId: number;
     reminderMinutes?: Nullable<number>;
     createdAt: DateTime;
     updatedAt: DateTime;
-    recurrence?: Nullable<Recurrence>;
+    recurrence?: Nullable<EventRecurrence>;
     user: User;
     category: EventCategory;
+}
+
+export interface TimePeriod {
+    id: number;
+    interval: Interval;
+    frequency: number;
+    billingCycles?: Nullable<MembershipPrice[]>;
+    trialPeriods?: Nullable<MembershipPrice[]>;
+}
+
+export interface UnitPrice {
+    id: number;
+    amount: string;
+    currencyCode: string;
+    prices?: Nullable<MembershipPrice[]>;
+}
+
+export interface MembershipPrice {
+    id: string;
+    planId: string;
+    billingCycleId?: Nullable<number>;
+    trialPeriodId?: Nullable<number>;
+    unitPriceId: number;
+    status: PriceStatus;
+    createdAt: DateTime;
+    billingCycle?: Nullable<TimePeriod>;
+    trialPeriod?: Nullable<TimePeriod>;
+    unitPrice: UnitPrice;
+    plan: MembershipPlan;
+}
+
+export interface Feature {
+    id: number;
+    type: FeatureType;
+    membershipFeatures?: Nullable<MembershipFeature[]>;
+}
+
+export interface MembershipFeature {
+    id: number;
+    planId: string;
+    featureId: number;
+    plan: MembershipPlan;
+    feature: Feature;
+}
+
+export interface MembershipPlan {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    subscriptions?: Nullable<MembershipSubscription[]>;
+    prices: MembershipPrice[];
+    membershipFeatures: MembershipFeature[];
+}
+
+export interface PaddlePaymentTransaction {
+    id: number;
+    paymentTransactionId: number;
+    paymentTransaction: PaymentTransaction;
+}
+
+export interface PaymentTransaction {
+    id: number;
+    membershipSubscriptionId: string;
+    userId: number;
+    amount: Decimal;
+    currency: string;
+    status: PaymentStatus;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    paddlePaymentTransaction?: Nullable<PaddlePaymentTransaction>;
+    membershipSubscription: MembershipSubscription;
+}
+
+export interface MembershipSubscription {
+    id: string;
+    userId: number;
+    planId: string;
+    status: MembershipSubscriptionStatus;
+    startDate: DateTime;
+    endDate: DateTime;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    user: User;
+    plan: MembershipPlan;
+    paymentTransactions: PaymentTransaction[];
+}
+
+export interface PaddlePaymentMethod {
+    id: number;
+    paymentMethodId: number;
+    customerId: string;
+    addressId?: Nullable<string>;
+    businessId?: Nullable<string>;
+    paymentMethod: PaymentMethod;
+}
+
+export interface PaymentMethod {
+    id: number;
+    userId: number;
+    provider: PaymentProvider;
+    user: User;
+    paddlePaymentMethod?: Nullable<PaddlePaymentMethod>;
 }
 
 export interface User {
@@ -484,7 +707,10 @@ export interface User {
     expenses?: Nullable<Expense[]>;
     expenseCategories?: Nullable<ExpenseCategory[]>;
     events?: Nullable<Event[]>;
+    eventRecurrences?: Nullable<EventRecurrence[]>;
     eventCategories?: Nullable<EventCategory[]>;
+    memberships?: Nullable<MembershipSubscription[]>;
+    paymentMethods?: Nullable<PaymentMethod[]>;
     cryptoProfiles: CryptoPortfolio;
 }
 
@@ -504,17 +730,6 @@ export interface SignupResDto {
     refreshToken: string;
 }
 
-export interface CreatePortfolioExecution {
-    id: number;
-    time?: Nullable<DateTime>;
-    userId: number;
-    status: CreateExecutionStatus;
-}
-
-export interface CreateCryptoRes {
-    userId: number;
-}
-
 export interface AssetInfoOutput {
     id: string;
     name: string;
@@ -526,6 +741,17 @@ export interface AssetInfoOutput {
     historicalProfits?: Nullable<HistoricalAssetProfit[]>;
     trades?: Nullable<Trade[]>;
     lastPrice: number;
+}
+
+export interface CreatePortfolioExecution {
+    id: number;
+    time?: Nullable<DateTime>;
+    userId: number;
+    status: CreateExecutionStatus;
+}
+
+export interface CreateCryptoRes {
+    userId: number;
 }
 
 export interface TotalSpentAmountOutput {
@@ -552,6 +778,19 @@ export interface IQuery {
     getMonthlyTargets(categoryId: string, month?: Nullable<number>, year?: Nullable<number>): MonthlyTarget[] | Promise<MonthlyTarget[]>;
     getEvents(startDate?: Nullable<DateTime>, endDate?: Nullable<DateTime>): Event[] | Promise<Event[]>;
     getEventCategories(): EventCategory[] | Promise<EventCategory[]>;
+    getRecurrenceTemplates(): EventRecurrence[] | Promise<EventRecurrence[]>;
+    getRecurrenceTemplate(id: number): EventRecurrence | Promise<EventRecurrence>;
+    getMembershipPlans(): MembershipPlan[] | Promise<MembershipPlan[]>;
+    getMembershipPlan(id: string): MembershipPlan | Promise<MembershipPlan>;
+    getMembershipPrices(): MembershipPrice[] | Promise<MembershipPrice[]>;
+    getMembershipPrice(id: string): MembershipPrice | Promise<MembershipPrice>;
+    getMembershipPricesByPlan(planId: string): MembershipPrice[] | Promise<MembershipPrice[]>;
+    getFeatures(): Feature[] | Promise<Feature[]>;
+    getFeature(id: number): Feature | Promise<Feature>;
+    myActiveMembershipSubscriptions(): MembershipSubscription[] | Promise<MembershipSubscription[]>;
+    myMembershipSubscriptions(): MembershipSubscription[] | Promise<MembershipSubscription[]>;
+    getPaymentMethod(data: GetPaymentMethodDto): Nullable<PaymentMethod> | Promise<Nullable<PaymentMethod>>;
+    getPaymentMethods(): PaymentMethod[] | Promise<PaymentMethod[]>;
 }
 
 export interface IMutation {
@@ -581,17 +820,35 @@ export interface IMutation {
     createEventCategory(data: CreateEventCategoryInput): EventCategory | Promise<EventCategory>;
     updateEventCategory(id: number, data: UpdateEventCategoryInput): EventCategory | Promise<EventCategory>;
     removeEventCategory(id: number): EventCategory | Promise<EventCategory>;
+    updateRecurrenceTemplate(id: number, data: UpdateEventRecurrenceInput): EventRecurrence | Promise<EventRecurrence>;
+    deleteRecurrenceTemplate(id: number): EventRecurrence | Promise<EventRecurrence>;
+    cancelPaddleSubscription(id: string): MembershipSubscription | Promise<MembershipSubscription>;
+    reactivatePaddleSubscription(id: string, handlePastDueTransactions?: Nullable<string>): MembershipSubscription | Promise<MembershipSubscription>;
+    createMembershipPlan(data: CreatePlanDto): MembershipPlan | Promise<MembershipPlan>;
+    updateMembershipPlan(id: string, data: UpdatePlanDto): MembershipPlan | Promise<MembershipPlan>;
+    deleteMembershipPlan(id: string): boolean | Promise<boolean>;
+    createMembershipPrice(data: CreatePriceDto): MembershipPrice | Promise<MembershipPrice>;
+    updateMembershipPrice(id: string, data: UpdatePriceDto): MembershipPrice | Promise<MembershipPrice>;
+    deleteMembershipPrice(id: string): boolean | Promise<boolean>;
+    createFeature(data: CreateFeatureDto): Feature | Promise<Feature>;
+    updateFeature(id: number, data: UpdateFeatureDto): Feature | Promise<Feature>;
+    deleteFeature(id: number): Feature | Promise<Feature>;
+    createMembershipSubscription(data: CreateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
+    updateMembershipSubscription(id: string, data: UpdateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
+    deleteMembershipSubscription(id: string): boolean | Promise<boolean>;
 }
 
 export interface ISubscription {
-    portfolioCreated(): CryptoPortfolio | Promise<CryptoPortfolio>;
+    onCreatePortfolioExecution(): CreatePortfolioExecution | Promise<CreatePortfolioExecution>;
     newAssetPrice1m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
     newAssetPrice5m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
     newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
     newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
     newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
     newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
+    onMembershipSubscriptionUpdated(): MembershipSubscription | Promise<MembershipSubscription>;
 }
 
 export type DateTime = any;
+export type Decimal = any;
 type Nullable<T> = T | null;

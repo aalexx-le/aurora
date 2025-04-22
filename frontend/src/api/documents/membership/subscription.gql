@@ -1,0 +1,90 @@
+query GetMyMembershipSubscriptions {
+    myMembershipSubscriptions {
+        id
+        userId
+        planId
+        status
+        startDate
+        endDate
+        createdAt
+        updatedAt
+        plan {
+            id
+            name
+            description
+            createdAt
+            updatedAt
+        }
+        paymentTransactions {
+            id
+            membershipSubscriptionId
+            userId
+            amount
+            currency
+            status
+            createdAt
+            updatedAt
+        }
+    }
+}
+
+query GetMyActiveMembershipSubscriptions {
+    myActiveMembershipSubscriptions {
+        id
+        userId
+        planId
+        status
+        startDate
+        endDate
+        createdAt
+        updatedAt
+        plan {
+            id
+            name
+            description
+        }
+    }
+}
+
+mutation CancelMembershipSubscription($id: String!) {
+  cancelPaddleSubscription(id: $id) {
+    id
+    status
+    endDate
+  }
+}
+
+mutation UpdateMembershipSubscription($id: String!, $data: UpdateSubscriptionDto!) {
+  updateMembershipSubscription(id: $id, data: $data) {
+    id
+    status
+    planId
+    endDate
+  }
+}
+
+mutation ReactivatePaddleSubscription($id: String!) {
+  reactivatePaddleSubscription(id: $id) {
+    id
+    userId
+    planId
+    status
+    startDate
+    endDate
+    createdAt
+    updatedAt
+  }
+}
+
+subscription OnMembershipSubscriptionUpdated {
+  onMembershipSubscriptionUpdated {
+    id
+    userId
+    planId
+    status
+    startDate
+    endDate
+    createdAt
+    updatedAt
+  }
+}

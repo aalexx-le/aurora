@@ -9,8 +9,11 @@ model User {
   cryptoPortfolios  CryptoPortfolio[]
   expenses          Expense[]
   expenseCategories ExpenseCategory[]
-  events          Event[]
-  eventCategories EventCategory[]
+  events            Event[]
+  eventRecurrences  EventRecurrence[]
+  eventCategories   EventCategory[]
+  memberships       MembershipSubscription[]  
+  paymentMethods    PaymentMethod[]
 }
 
 enum OtpPurpose {

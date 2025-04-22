@@ -1,13 +1,13 @@
-import { useQuery } from "@apollo/client";
-import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
 import {
     GET_ASSET,
     getSubscriptNewAssetPriceHook,
     getSubscriptNewAssetPriceResult,
-} from "@/api/script/crypto/crypto";
-import { useMemo } from "react";
+} from "@/api/scripts/crypto/crypto";
 import { AssetProfitPageParams } from "@/app/(dashboard)/finance/investment/asset-profit/[assetId]/[portfolioId]/page";
+import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
 
 export const useAssetQuery = (
     input: AssetProfitPageParams,

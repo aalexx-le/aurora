@@ -1,3 +1,5 @@
+import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
+import SETTING_ROUTE from "@/lib/routes/setting.route";
 import {
     Bot,
     Calendar,
@@ -9,8 +11,6 @@ import {
     Settings2,
     Wallet,
 } from "lucide-react";
-import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
-import SETTING_ROUTE from "@/lib/routes/setting.route";
 
 export const SIDEBAR_DATA = {
     user: {
@@ -61,6 +61,10 @@ export const SIDEBAR_DATA = {
                 {
                     title: "Appearance",
                     url: SETTING_ROUTE.appearance.value,
+                },
+                {
+                    title: "Subscription",
+                    url: SETTING_ROUTE.subscription.value,
                 },
             ],
         },

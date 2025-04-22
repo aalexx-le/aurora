@@ -1,17 +1,17 @@
 import {
     getSubscriptNewHistoricalProfitHook,
     getSubscriptNewHistoricalProfitResult
-} from "@/api/script/crypto/asset-profit";
+} from "@/api/scripts/crypto/asset-profit";
 import { AnalyseData } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { CexExchanges } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
 import { useEffect, useState } from "react";
-import {CexExchanges} from "@/gql/graphql";
 
 
 interface IProps {

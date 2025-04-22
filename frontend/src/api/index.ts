@@ -2,13 +2,15 @@ import {
     RefreshTokenMutation,
     RefreshTokenMutationVariables,
 } from "@/gql/graphql";
+import { createErrorLink } from "@/lib/apollo/error-link";
+import AUTH_ROUTE from "@/lib/routes/auth.route";
 import { Cookie } from "@/lib/utils/cookie";
+import { logError } from "@/lib/utils/error-utils";
 import {
     ApolloClient,
     ApolloLink,
     HttpLink,
     InMemoryCache,
-    Observable,
     fromPromise,
     split,
 } from "@apollo/client";
@@ -17,10 +19,7 @@ import { onError } from "@apollo/client/link/error";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
-import { REFRESH_TOKEN_MUTATION } from "./script/auth/auth";
-import AUTH_ROUTE from "@/lib/routes/auth.route";
-import { createErrorLink } from "@/lib/apollo/error-link";
-import { logError } from "@/lib/utils/error-utils";
+import { REFRESH_TOKEN_MUTATION } from "./scripts/auth/auth";
 
 // Creates a new client without auth for the refresh token request
 const createRefreshClient = () => {
@@ -159,9 +158,9 @@ const wsLink = new GraphQLWsLink(
         url: process.env.SUBSCRIPTION_SERVER || "ws://localhost:5001/graphql",
         connectionParams: () => {
             const accessToken = Cookie.getAccessToken();
-            return accessToken
-                ? { Authorization: `Bearer ${accessToken}` }
-                : {};
+            return {
+                authorization: `Bearer ${accessToken}`,
+            };
         },
         retryAttempts: Infinity,
         shouldRetry: () => true,

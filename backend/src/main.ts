@@ -1,12 +1,17 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
-import { PrismaClientExceptionFilter } from "nestjs-prisma";
 import { ConfigService } from "@nestjs/config";
+import { NestFactory } from "@nestjs/core";
 import helmet from "helmet";
+import { WINSTON_MODULE_NEST_PROVIDER } from "nest-winston";
+import { PrismaClientExceptionFilter } from "nestjs-prisma";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        rawBody: true,
+    });
+    app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
     app.enableCors({
         origin: "*",
     });
