@@ -29,7 +29,7 @@ const SchedulePage = () => {
     GET_EVENTS, 
     {
       variables: { startDate, endDate },
-      fetchPolicy: 'cache-and-network', // Use cache first, then update in background
+      // fetchPolicy: 'cache-and-network', // Use cache first, then update in background
       skip: !startDate || !endDate,
     }
   );
@@ -40,14 +40,9 @@ const SchedulePage = () => {
     [data]
   );
 
-  return <EventCalendar events={currentEvents} />;
-};
-
-// Container component with Suspense boundary only for initial load
-const SchedulePageContainer = () => {
   return (
     <Suspense fallback={<SchedulePageSkeleton />}>
-      <SchedulePage />
+      <EventCalendar events={currentEvents} />
     </Suspense>
   );
 };
@@ -58,7 +53,7 @@ export default function SchedulePageWithContext() {
     <ConvertCurrencyProvider baseCurrency="VND">
       <DateFilterProvider>
         <EventCalendarProvider>
-            <SchedulePageContainer />
+            <SchedulePage />
         </EventCalendarProvider>
       </DateFilterProvider>
     </ConvertCurrencyProvider>

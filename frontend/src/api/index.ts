@@ -181,7 +181,7 @@ const link = split(
 );
 
 const client = new ApolloClient({
-    link: ApolloLink.from([authLink, authErrorLink, errorLink, link]),
+    link: ApolloLink.from([authLink, errorLink, link]),
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {

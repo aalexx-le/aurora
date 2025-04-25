@@ -185,6 +185,7 @@ const loginWithToken = createAsyncThunk(
         } catch (e) {
             // If getting user profile fails, try refreshing the token once
             const refreshToken = Cookie.getRefreshToken();
+            console.log("refreshToken", refreshToken);
             if (refreshToken) {
                 try {
                     await dispatch(refreshAccessToken());
