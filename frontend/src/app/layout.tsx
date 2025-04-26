@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Providers from "../providers";
 import "./globals.css";
+import { ReactScan } from "@/components/react-scan";
 // import Header from "@/app/home/components/header";
 
 const geistSans = localFont({
@@ -56,6 +57,7 @@ export default function RootLayout({
                 <Providers>
                   <ScrollArea>
                       {/*<Header/>*/}
+                      <ReactScan />
                       {children}
                       <Toaster />
                   </ScrollArea>

@@ -10,7 +10,7 @@ import {
 import { GetEventsQuery, GetEventsQueryVariables } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { DateFilterProvider } from "@/lib/context/date-range.context";
-import { useSuspenseQuery } from "@apollo/client";
+import { useQuery, useSuspenseQuery } from "@apollo/client";
 import { Suspense, useMemo } from 'react';
 import EventCalendar from "./components/event-calendar/event-calendar";
 import { EventCalendarProvider, useEventCalendar } from "./event-calendar-provider";
@@ -25,7 +25,7 @@ const SchedulePage = () => {
   );
   
   // Use suspense query with better caching strategy
-  const { data } = useSuspenseQuery<GetEventsQuery, GetEventsQueryVariables>(
+  const { data } = useQuery<GetEventsQuery, GetEventsQueryVariables>(
     GET_EVENTS, 
     {
       variables: { startDate, endDate },

@@ -1,8 +1,8 @@
 "use client";
 import apolloClient from "@/api";
-import { ThemeProvider } from "@/providers/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ErrorProvider from "@/providers/ErrorProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 import { makeStore } from "@/state/store";
 import { ApolloProvider } from "@apollo/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
