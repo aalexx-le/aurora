@@ -28,6 +28,7 @@ export function CreatEventDialog({}: CreateEventDialogProps) {
     endDate: eventAddEndTime,
     allDay: false,
     categoryId: 0,
+    hasRecurrence: false,
   }), [eventAddStartTime, eventAddEndTime]);
 
   const recurrenceDefaultValues = useMemo<RecurrenceInput>(() => ({
@@ -58,9 +59,10 @@ export function CreatEventDialog({}: CreateEventDialogProps) {
   // }, [eventAddOpen, recurrenceDefaultValues, recurrenceForm]);
 
   const handleSubmit = async (data: CreateEventInput) => {
-    const recurrence = recurrenceForm.getValues();
+    const { hasRecurrence, ...eventData } = data;
+    const recurrence = hasRecurrence ? recurrenceForm.getValues() : null;
     await createEvent({
-      variables: { data: { ...data, recurrence } }
+      variables: { data: { ...eventData, recurrence } }
     })
   };
 

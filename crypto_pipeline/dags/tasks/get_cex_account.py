@@ -7,7 +7,7 @@ from uuid import uuid4
 
 from airflow.decorators import task
 from graphql_client.enums import CEXExchanges
-from tasks.exchange_strategies import ExchangeContext
+from utils.exchange_strategies import ExchangeContext
 from tasks.index import TaskName
 from utils.data_model import (AccountBalances, CEXAccount,
                               CryptoPortfolioForCalculation, LatestAssetPrice,

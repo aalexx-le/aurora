@@ -3,7 +3,6 @@ import logging
 from typing import Any
 from collections.abc import Sequence
 from airflow.models import BaseOperator
-from airflow.utils.decorators import apply_defaults
 from triggers.kafka_triggers import AwaitMessageTrigger
 
 logger = logging.getLogger(__name__)

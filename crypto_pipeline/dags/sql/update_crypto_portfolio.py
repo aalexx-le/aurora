@@ -1,5 +1,6 @@
 from sql.base import get_insert_sql_script, get_query_sql_script
 
+# Static SQL queries
 GET_ALL_CRYPTO_PORTFOLIO = '''
     SELECT  cp."id" as id,
             cp."parentPortfolioId" as parent_portfolio_id,
@@ -81,12 +82,15 @@ GET_TRADES = '''
     WHERE "cryptoPortfolioId" = %s
 '''
 
-GET_ONE_ASSET_INFO = get_query_sql_script(
-    "AssetInfo",
-    ["id"],
-    "symbol"
-)
+# Define a function to get the query script at runtime
+def get_one_asset_info():
+    return get_query_sql_script(
+        "AssetInfo",
+        ["id"],
+        "symbol"
+    )
 
+# Use a string for simple queries
 DELETE_ASSET_BALANCES = '''
     DELETE FROM "AssetBalance" WHERE "cryptoPortfolioId" = %s
 '''
@@ -97,17 +101,25 @@ UPDATE_CRYPTO_PROFILE_UPDATE_TIME = '''
     WHERE "id" = %s
 '''
 
-INSERT_ASSET_BALANCE = get_insert_sql_script(
-    "AssetBalance",
-    ["id", "cryptoPortfolioId", "assetInfoId", "balance", "locked"]
-)
+# Define functions to get the insert scripts at runtime
+def get_insert_asset_balance_script():
+    return get_insert_sql_script(
+        "AssetBalance",
+        ["id", "cryptoPortfolioId", "assetInfoId", "balance", "locked"]
+    )
 
-INSERT_HISTORICAL_BALANCE = get_insert_sql_script(
-    "HistoricalCryptoBalance", 
-    ["cryptoPortfolioId", "time", "estimatedBalance", "changePercent", "changeBalance"]
-)
+def get_insert_historical_balance_script():
+    return get_insert_sql_script(
+        "HistoricalCryptoBalance", 
+        ["cryptoPortfolioId", "time", "estimatedBalance", "changePercent", "changeBalance"]
+    )
 
-GET_LATEST_ASSET_PROFITS = '''
+# Use functions for dynamic SQL generation but call them only when needed
+GET_ONE_ASSET_INFO = get_one_asset_info
+INSERT_ASSET_BALANCE = get_insert_asset_balance_script
+INSERT_HISTORICAL_BALANCE = get_insert_historical_balance_script
+
+GET_ALL_LATEST_ASSET_PROFITS = '''
     SELECT
         hap."time" as time,
         hap."assetInfoId" as asset_info_id,
@@ -127,13 +139,20 @@ GET_LATEST_ASSET_PROFITS = '''
     WHERE hap."cryptoPortfolioId" = %s
 '''
 
-GET_ASSET_SYMBOL = get_query_sql_script(
-    "AssetInfo",
-    ["symbol"],
-    "id"
-)
+# Define a function to get the query script at runtime
+def get_asset_symbol_script():
+    return get_query_sql_script(
+        "AssetInfo",
+        ["symbol"],
+        "id"
+    )
 
-INSERT_HISTORICAL_ASSET_PROFIT = get_insert_sql_script(
-    "HistoricalAssetProfit",
-    ["time", "cryptoPortfolioId", "assetInfoId", "estimatedProfit", "totalCostInQuoteQty", "remainingQty"]
-)
+def get_insert_historical_asset_profit_script():
+    return get_insert_sql_script(
+        "HistoricalAssetProfit",
+        ["time", "cryptoPortfolioId", "assetInfoId", "estimatedProfit", "totalCostInQuoteQty", "remainingQty"]
+    )
+
+# Set references to functions instead of calling them directly
+GET_ASSET_SYMBOL = get_asset_symbol_script
+INSERT_HISTORICAL_ASSET_PROFIT = get_insert_historical_asset_profit_script

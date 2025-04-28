@@ -11,7 +11,7 @@ from airflow.providers.apache.kafka.operators.produce import ProduceToTopicOpera
 from graphql_client.enums import CEXExchanges
 from sql.base import (get_insert_sql_script, get_query_sql_script,
                       get_update_sql_script)
-from tasks.exchange_strategies import ExchangeContext
+from dags.utils.exchange_strategies import ExchangeContext
 from utils.connection import get_connection
 from utils.data_model import AccountBalances, CEXAccount
 from utils.status_enums import CreateExecutionStatus

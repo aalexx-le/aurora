@@ -1,6 +1,5 @@
 from utils.data_model import AccountBalances, Trade
 from typing import List
-import pandas as pd
 
 def calc_estimated_balance(balances: List[AccountBalances], price_map: dict, asset_id_map: dict):
     total = 0
@@ -30,6 +29,9 @@ def calculate_current_profit(trades, current_price):
     if len(trades) == 0:
         return 0, 0, 0
 
+    # Import pandas inside the function to avoid import at DAG definition time
+    import pandas as pd
+    
     df = pd.DataFrame(trades)
     df["quoteQty"] = pd.to_numeric(df["quoteQty"])
     df["qty"] = pd.to_numeric(df["qty"])
@@ -69,6 +71,9 @@ def calculate_all_time_profit(trades: List[Trade], current_price):
     if len(trades) == 0:
         return 0, 0, 0
 
+    # Import pandas inside the function to avoid import at DAG definition time
+    import pandas as pd
+    
     dict_trades = [trade.model_dump() for trade in trades]
     df = pd.DataFrame(dict_trades)
     df["quoteQty"] = pd.to_numeric(df["quoteQty"])

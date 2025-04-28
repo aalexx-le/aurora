@@ -2,18 +2,12 @@ from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-import psycopg
-import psycopg2.extras
+from typing import Optional
 from graphql_client.input_types import (
     AssetBalanceCreateManyCryptoProfileInput,
     AssetPriceCreateManyAssetInfoInput,
     HistoricalCryptoBalanceCreateManyCryptoProfileInput)
 from graphql_client.enums import CEXExchanges
-from psycopg import sql
-from psycopg.rows import class_row
-
-from sql.base import (get_all_query_sql_script, get_insert_sql_script,
-                      get_query_sql_script)
 import json
 from uuid import UUID
 
@@ -28,7 +22,6 @@ class AssetBalanceForCalculation(AssetBalanceCreateManyCryptoProfileInput):
     locked: Optional[float] = None
 
 class LatestAssetProfit(BaseModel):
-    time: datetime
     asset_info_id: str
     estimated_profit: float
     total_cost_in_quote_qty: float
@@ -81,9 +74,6 @@ class AccountBalances(BaseModel):
     free: float
     locked: float
 
-# class BinanceAccount(BaseModel):
-#     updateTime: datetime
-#     balances: List[AccountBalances]
     
 class CEXAccount(BaseModel):
     portfolio_id: str
@@ -98,12 +88,6 @@ class BinanceKline(BaseModel):
     high_price: float
     low_price: float
     volume: float
-    
-    
-from typing import Optional
-from pydantic import BaseModel, Field
-
-
 
 class OKXTrade(BaseModel):
     fillSz: str = Field(description="Filled size")

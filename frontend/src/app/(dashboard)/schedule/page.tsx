@@ -15,6 +15,9 @@ import { Suspense, useMemo } from 'react';
 import EventCalendar from "./components/event-calendar/event-calendar";
 import { EventCalendarProvider, useEventCalendar } from "./event-calendar-provider";
 
+// export const dynamic = "force-dynamic";
+// export const fetchCache = "force-no-store";
+
 // Data fetching wrapper component that maintains a stable event state
 const SchedulePage = () => {
   // Get date range based on current view and date
@@ -39,7 +42,7 @@ const SchedulePage = () => {
     () => mapEventFromEntityToInput(data?.getEvents ?? []), 
     [data]
   );
-
+  
   return (
     <Suspense fallback={<SchedulePageSkeleton />}>
       <EventCalendar events={currentEvents} />

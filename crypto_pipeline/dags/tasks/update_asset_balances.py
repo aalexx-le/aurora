@@ -1,38 +1,38 @@
-import json
 import logging
-import sys
-from datetime import datetime, timedelta, timezone
-from typing import List
+from datetime import datetime
+from typing import List, Dict
 from uuid import uuid4
 
 import pytz
-from airflow import DAG
 from airflow.decorators import task
-from psycopg.rows import class_row, dict_row
-from sql.update_crypto_portfolio import (
-    DELETE_ASSET_BALANCES,
-    INSERT_ASSET_BALANCE,
-    UPDATE_CRYPTO_PROFILE_UPDATE_TIME,
-)
+from graphql_client.enums import CEXExchanges
 from tasks.index import TaskName
 from utils.connection import get_connection
 from utils.data_model import (
     CEXAccount,
-    AccountBalances,
     CryptoPortfolioForCalculation,
-    LatestAssetPrice,
-    LatestAssetProfit
 )
-from graphql_client.enums import CEXExchanges
 
 @task(task_id=TaskName.UPDATE_ASSET_BALANCES)
 def update_asset_balances(
     crypto_portfolios: List[CryptoPortfolioForCalculation],
     accounts: List[CEXAccount],
-    **kwargs
+    asset_id_map: Dict = None
 ):
+    # Import SQL queries inside the task to avoid DAG import time issues
+    from sql.update_crypto_portfolio import (
+        DELETE_ASSET_BALANCES,
+        INSERT_ASSET_BALANCE,
+        UPDATE_CRYPTO_PROFILE_UPDATE_TIME,
+    )
+    
     conn = get_connection()
-    asset_id_map = kwargs["ti"].xcom_pull(task_ids=TaskName.CONVERT_TO_ASSET_ID_MAP)
+    
+    # If asset_id_map wasn't passed directly, fall back to XCom for backward compatibility
+    if asset_id_map is None:
+        from airflow.operators.python import get_current_context
+        ti = get_current_context()["ti"]
+        asset_id_map = ti.xcom_pull(task_ids=TaskName.CONVERT_TO_ASSET_ID_MAP)
 
     with conn.cursor() as cursor:
         for crypto_portfolio, account in zip(crypto_portfolios, accounts):
@@ -74,7 +74,9 @@ def update_asset_balances(
                     "locked": owning_coin.locked,
                 }
 
-                cursor.execute(INSERT_ASSET_BALANCE, data)
+                # Get SQL script at runtime
+                insert_script = INSERT_ASSET_BALANCE()
+                cursor.execute(insert_script, data)
 
             # update crypto profile update time
             cursor.execute(

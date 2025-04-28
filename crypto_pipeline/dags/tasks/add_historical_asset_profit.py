@@ -1,28 +1,20 @@
-import json
 import logging
-import sys
-from datetime import datetime, timedelta, timezone
-from typing import List
-from uuid import uuid4
+from datetime import datetime
+from typing import List, Dict
 
-import okx.Account as OKXAccountClient
-import okx.Trade as OKXTradeClient
-import pytz
-from airflow import DAG
 from airflow.decorators import task
-from binance.client import Client as BinanceClient
 from graphql_client.enums import CEXExchanges
-from mexc_api.spot import Spot as MexcClient
-from psycopg.rows import class_row, dict_row
+from psycopg.rows import class_row
+from psycopg import Connection
 from sql.update_crypto_portfolio import INSERT_HISTORICAL_ASSET_PROFIT, GET_ASSET_SYMBOL
 from tasks.index import TaskName
-from utils.calculation import (calc_change_in_balance, calc_estimated_balance,
-                               calculate_all_time_profit)
+from utils.calculation import calculate_all_time_profit
 from utils.connection import get_connection
-from utils.data_model import (AccountBalances, CEXAccount,
-                              CryptoPortfolioForCalculation, LatestAssetPrice,
-                              LatestAssetProfit)
-from psycopg import Connection
+from utils.data_model import (
+    CEXAccount,
+    CryptoPortfolioForCalculation,
+    LatestAssetProfit
+)
 
 
 def find_child_portfolio_and_account(crypto_portfolios: List[CryptoPortfolioForCalculation], accounts: List[CEXAccount], parent_id: int) -> dict:
@@ -57,7 +49,10 @@ def find_all_owning_symbols(crypto_portfolio: CryptoPortfolioForCalculation, acc
 
         if symbol is None:
             with conn.cursor() as _cursor:
-                _cursor.execute(GET_ASSET_SYMBOL, (owning_coin.asset_info_id,))
+                # Import and call the function inside the task execution
+                from sql.update_crypto_portfolio import GET_ASSET_SYMBOL
+                asset_symbol_script = GET_ASSET_SYMBOL()
+                _cursor.execute(asset_symbol_script, (owning_coin.asset_info_id,))
                 asset_info = _cursor.fetchone()
                 if asset_info is None:
                     continue
@@ -75,12 +70,27 @@ def filter_trades(trades, symbol_id):
 def add_historical_asset_profit(
     crypto_portfolios: List[CryptoPortfolioForCalculation],
     accounts: List[CEXAccount],
-    **kwargs
+    latest_prices_map: Dict = None,
+    asset_id_map: Dict = None,
+    latest_time: datetime = None
 ):
+    # Import these libraries inside the task function to prevent importing at DAG definition time
+    import okx.Account as OKXAccountClient
+    import okx.Trade as OKXTradeClient
+    from binance.client import Client as BinanceClient
+    from mexc_api.spot import Spot as MexcClient
+    # Import SQL queries inside the task
+    from sql.update_crypto_portfolio import INSERT_HISTORICAL_ASSET_PROFIT, GET_ASSET_SYMBOL
+    
     conn = get_connection()
-    latest_prices_map = kwargs["ti"].xcom_pull(task_ids=TaskName.CONVERT_TO_PRICE_MAP)
-    asset_id_map = kwargs["ti"].xcom_pull(task_ids=TaskName.CONVERT_TO_ASSET_ID_MAP)
-    latest_time: datetime = kwargs["ti"].xcom_pull(task_ids=TaskName.GET_LATEST_TIME)
+    
+    # If parameters weren't passed directly, fall back to XCom for backward compatibility
+    if latest_prices_map is None or asset_id_map is None or latest_time is None:
+        from airflow.operators.python import get_current_context
+        ti = get_current_context()["ti"]
+        latest_prices_map = latest_prices_map or ti.xcom_pull(task_ids=TaskName.CONVERT_TO_PRICE_MAP)
+        asset_id_map = asset_id_map or ti.xcom_pull(task_ids=TaskName.CONVERT_TO_ASSET_ID_MAP)
+        latest_time = latest_time or ti.xcom_pull(task_ids=TaskName.GET_LATEST_TIME)
 
     with conn.cursor(row_factory=class_row(LatestAssetProfit)) as cursor:
         for crypto_portfolio, account in zip(crypto_portfolios, accounts):
@@ -172,6 +182,8 @@ def add_historical_asset_profit(
                 
                 logging.info(data)
 
-                cursor.execute(INSERT_HISTORICAL_ASSET_PROFIT, data)
+                # Get SQL script at runtime
+                insert_script = INSERT_HISTORICAL_ASSET_PROFIT()
+                cursor.execute(insert_script, data)
 
                 conn.commit()

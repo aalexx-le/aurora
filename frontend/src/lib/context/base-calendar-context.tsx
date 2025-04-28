@@ -31,16 +31,7 @@ export const useBaseCalendarProvider = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const setViewedDate = (date: Date) => {
-    _setViewedDate(prevDate => {
-      const prevMonth = prevDate.getMonth();
-      const newMonth = date.getMonth();
-
-      if (prevMonth === newMonth) {
-        return prevDate;
-      }
-
-      return date;
-    });
+    _setViewedDate(date);
   };
 
   /**
@@ -61,11 +52,25 @@ export const useBaseCalendarProvider = () => {
         
       case CalendarView.TimeGridWeek:
         // For week view, get the start and end of the week containing the viewed date
-        const currentDay = viewedDate.getDay(); // 0 = Sunday, 6 = Saturday
-        // Make sure we include Sunday as the first day (subtract the day number to get to Sunday)
-        const weekStart = new Date(year, month, date - currentDay); // This gives us Sunday
-        const weekEnd = new Date(year, month, date + (7 - currentDay), 23, 59, 59); // This gives us Saturday
-        return { startDate: weekStart, endDate: weekEnd };
+        const currentDay = viewedDate.getDay(); // JavaScript: 0 = Sunday, 6 = Saturday
+        
+        // Convert to our calendar system where 0 = Monday, 6 = Sunday
+        // Sunday (0) becomes 6, Monday (1) becomes 0, Tuesday (2) becomes 1, etc.
+        const adjustedDay = currentDay === 0 ? 6 : currentDay - 1;
+        
+        // Create a new date object and set it to the start of the week (Monday)
+        const weekStartDate = new Date(viewedDate);
+        weekStartDate.setDate(weekStartDate.getDate() - adjustedDay);
+        weekStartDate.setHours(0, 0, 0, 0);
+        
+        // Create a new date object and set it to the end of the week (Sunday)
+        const weekEndDate = new Date(weekStartDate);
+        weekEndDate.setDate(weekEndDate.getDate() + 6);
+        weekEndDate.setHours(23, 59, 59, 999);
+
+        console.log(weekStartDate, weekEndDate);
+
+        return { startDate: weekStartDate, endDate: weekEndDate };
         
       case CalendarView.DayGridMonth:
       default:

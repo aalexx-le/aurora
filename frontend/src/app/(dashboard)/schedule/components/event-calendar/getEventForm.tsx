@@ -10,20 +10,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { RecurrenceType } from "@/gql/graphql";
 import { CreateEventInput } from "@/lib/schema/event";
-import { useEffect, useState } from "react";
+import { RecurrenceInput } from "@/lib/schema/eventRecurrence";
+import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { EventCategorySelect } from "../event-category-list/EventCategorySelect";
 import { RecurrenceForm } from "../event-recurrence-list/RecurrenceForm";
 import { DateTimePicker } from "./date-picker";
 import { Textarea } from "./ui/textarea";
-import { RecurrenceInput } from "@/lib/schema/eventRecurrence";
 
 
 // If recurrenceForm is not provided, the recurrence options will not be shown
 export const GetEventForm = (eventForm: UseFormReturn<CreateEventInput>, recurrenceForm?: UseFormReturn<RecurrenceInput>) => {
-    const [hasRecurrence, setHasRecurrence] = useState(false);
     const [recurrenceSummary, setRecurrenceSummary] = useState("");
 
     // Helper to create form field groups
@@ -32,6 +30,9 @@ export const GetEventForm = (eventForm: UseFormReturn<CreateEventInput>, recurre
         {children}
       </div>
     );
+
+    // Get the current hasRecurrence value from form
+    const hasRecurrence = eventForm.watch("hasRecurrence");
 
     return (
         <div className="space-y-6">
@@ -157,18 +158,31 @@ export const GetEventForm = (eventForm: UseFormReturn<CreateEventInput>, recurre
                 {recurrenceForm && (
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center space-x-2">
-                      <Switch
-                      checked={hasRecurrence}
-                      onCheckedChange={() => setHasRecurrence(!hasRecurrence)}
-                      id="recurrence-toggle"
-                    />
-                    <FormLabel htmlFor="recurrence-toggle">Repeat this event</FormLabel>
-                  </div>
-                  {hasRecurrence && (
-                    <div className="text-sm text-muted-foreground">
-                      {recurrenceSummary}
+                      <FormField
+                        control={eventForm.control}
+                        name="hasRecurrence"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex flex-row gap-2 items-center">
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  id="recurrence-toggle"
+                                />
+                              </FormControl>
+                              <FormLabel htmlFor="recurrence-toggle">Repeat this event</FormLabel>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                  )}
+                    {hasRecurrence && (
+                      <div className="text-sm text-muted-foreground">
+                        {recurrenceSummary}
+                      </div>
+                    )}
                   </div> 
                 )}
               </div>

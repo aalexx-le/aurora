@@ -1,0 +1,34 @@
+# Use official Airflow image with constraints for production
+FROM apache/airflow:3.0.0-python3.12
+
+# Set build arguments for potential customization
+ARG AIRFLOW_HOME=/opt/airflow
+
+# Install system dependencies and create airflow user
+USER root
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        python3-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set proper ownership and switch to non-root user
+RUN chown -R airflow:0 ${AIRFLOW_HOME} && \
+    chmod -R g=u ${AIRFLOW_HOME}
+USER airflow
+
+# Create virtual environment for better dependency isolation
+# RUN python -m venv ${AIRFLOW_HOME}/venv && \
+#     ${AIRFLOW_HOME}/venv/bin/pip install --no-cache-dir --upgrade pip
+
+# Copy wheel file and requirements.txt
+COPY requirements.txt .
+COPY ccxt-4.4.77-py2.py3-none-any.whl /tmp/
+
+# Install dependencies including the local ccxt wheel file
+RUN pip install --no-cache-dir \
+    -r requirements.txt \
+    --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.0.0/constraints-3.12.txt"
+
+# Activate virtual environment in PATH
+ENV PATH="${AIRFLOW_HOME}/venv/bin:$PATH"

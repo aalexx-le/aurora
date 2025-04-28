@@ -100,6 +100,7 @@ function EventCalendarContent({ events }: IProps) {
     };
 
     const handleDateClick = (info: DateClickArg) => {
+        console.log(currentView);
         if (currentView === CalendarView.DayGridMonth) {
             const startDate = new Date(info.date);
             startDate.setHours(7, 0, 0, 0);
@@ -109,7 +110,9 @@ function EventCalendarContent({ events }: IProps) {
             setEventAddEndTime(endDate);
         }
         else {
-            const endTime = new Date(info.date.getTime() + 30 * 60 * 1000); // 30 minutes between 
+            const date = new Date(info.date);
+            console.log(date);
+            const endTime = new Date(info.date.getTime() + 30 * 60 * 1000); // 30 minutes in between 
             setEventAddStartTime(info.date);
             setEventAddEndTime(endTime);
         }
@@ -141,11 +144,9 @@ function EventCalendarContent({ events }: IProps) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-4">
-                <div className="space-y-4">
+                <div className="flex flex-col gap-4">
                     <EventCategoryList />
-                    {/* <Suspense fallback={<div className="p-4 animate-pulse h-48 bg-muted rounded-lg"></div>}> */}
                     <EventRecurrenceList />
-                    {/* </Suspense> */}
                 </div>
                 <Card className="col-span-4 overflow-hidden mb-5">
                     <FullCalendar

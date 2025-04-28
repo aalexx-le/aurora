@@ -3,10 +3,10 @@ import {
     GetRecurrenceTemplatesQuery,
     GetRecurrenceTemplatesQueryVariables,
 } from "@/gql/graphql";
-import { useSuspenseQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 export const useEventRecurrencesQuery = () => {
-    const { data, error } = useSuspenseQuery<
+    const { data, error, loading } = useQuery<
         GetRecurrenceTemplatesQuery,
         GetRecurrenceTemplatesQueryVariables
     >(GET_EVENT_RECURRENCES, {
@@ -16,5 +16,6 @@ export const useEventRecurrencesQuery = () => {
     return {
         recurrences: data?.getRecurrenceTemplates || [],
         error,
+        loading,
     };
 };

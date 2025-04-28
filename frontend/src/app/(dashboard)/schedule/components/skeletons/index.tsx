@@ -1,3 +1,4 @@
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -149,12 +150,38 @@ export const SchedulePageSkeleton = () => (
       <Skeleton className="h-10 w-32" />
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <div className="lg:col-span-1">
+      <div className="flex flex-col gap-6 lg:col-span-1">
         <EventCategoryListSkeleton />
+        <EventRecurrenceListSkeleton />
       </div>
       <div className="lg:col-span-3">
         <EventCalendarSkeleton />
       </div>
     </div>
+  </div>
+);
+
+/**
+ * Skeleton loader for the event recurrence list component
+ * Displays a placeholder UI while event recurrences are loading
+ */
+export const EventRecurrenceListSkeleton = () => (
+  <div className="flex flex-col gap-2">
+    <div className="flex items-center justify-between">
+      <Skeleton className="h-7 w-32" />
+      <Skeleton className="h-9 w-9 rounded-md" />
+    </div>
+    
+    {/* Recurrence items - 5 placeholder items */}
+    {Array(5).fill(0).map((_, i) => (
+      <div className="grid gap-2" key={i}>
+        <div className="flex gap-4 items-center justify-between rounded-lg overflow-hidden w-full">
+          <div className="flex items-center gap-2 flex-1">
+            <Skeleton className="h-8 w-full rounded-md" />
+          </div>
+          <Skeleton className="h-8 w-8 rounded-md" />
+        </div>
+      </div>
+    ))}
   </div>
 ); 

@@ -10,6 +10,7 @@ export const createEventSchema = z.object({
     allDay: z.boolean(),
     categoryId: z.number().gt(0, "Please select a category"),
     reminderMinutes: z.number().int().min(0).max(1440).nullable().optional(),
+    hasRecurrence: z.boolean(),
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;

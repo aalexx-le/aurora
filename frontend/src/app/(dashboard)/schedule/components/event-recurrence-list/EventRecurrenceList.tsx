@@ -1,3 +1,5 @@
+'use client';
+
 import { DeleteDialog } from "@/components/crud/delete-dialog";
 import { EmptyState } from "@/components/error-ui/EmptyState";
 import { Card } from "@/components/ui/card";
@@ -10,13 +12,21 @@ import { EventRecurrence } from "./types";
 import { UpdateEventRecurrenceDialog } from "./UpdateEventRecurrenceDialog";
 import { useDeleteEventRecurrenceMutation } from "./useDeleteEventRecurrenceMutation";
 import { useEventRecurrencesQuery } from "./useEventRecurrencesQuery";
+import { EventRecurrenceListSkeleton } from "../skeletons";
+
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 const EventRecurrenceList = () => {
     const [action, setAction] = useState<DataTableRowActionType | null>(null);
     const [recurrence, setRecurrence] = useState<EventRecurrence | null>(null);
 
-    const { recurrences } = useEventRecurrencesQuery();
+    const { recurrences, loading } = useEventRecurrencesQuery();
     const { handleDeleteRecurrence } = useDeleteEventRecurrenceMutation();
+
+    if (loading) {
+        return <EventRecurrenceListSkeleton />;
+    }
 
     return (
         <Card className="p-4 h-min">

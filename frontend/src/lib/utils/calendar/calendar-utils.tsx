@@ -56,6 +56,7 @@ export const setView = (
 // Update viewedDate from calendar
 export const updateViewedDate = (calendarRef: calendarRef, setViewedDate: (date: Date) => void) => {
     const newDate = calendarRef.current?.getApi().getDate();
+    console.log('newDate', newDate);
     if (newDate) {
       setViewedDate(new Date(newDate));
     }
