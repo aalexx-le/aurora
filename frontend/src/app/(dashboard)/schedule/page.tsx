@@ -1,51 +1,51 @@
 "use client";
 
-import { GET_EVENTS } from "@/api/scripts/schedule/event";
-import {
-  mapEventFromEntityToInput
-} from "@/app/(dashboard)/schedule/components/event-calendar/mapEventFromEntityToInput";
 import {
   SchedulePageSkeleton
 } from "@/app/(dashboard)/schedule/components/skeletons";
-import { GetEventsQuery, GetEventsQueryVariables } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { DateFilterProvider } from "@/lib/context/date-range.context";
-import { useQuery, useSuspenseQuery } from "@apollo/client";
-import { Suspense, useMemo } from 'react';
-import EventCalendar from "./components/event-calendar/event-calendar";
+import { Suspense } from 'react';
 import { EventCalendarProvider, useEventCalendar } from "./event-calendar-provider";
+
+import { useRef } from "react";
+import { UpdateEventDialog } from "./components/event-calendar/UpdateEventDialog";
+import EventCalendarNav from "./components/event-calendar/event-calendar-nav";
+import EventCategoryList from "./components/event-category-list/EventCategoryList";
+import EventRecurrenceList from "./components/event-recurrence-list/EventRecurrenceList";
+import EventCalendar from "./components/event-calendar/event-calendar";
+import FullCalendar from "@fullcalendar/react";
 
 // export const dynamic = "force-dynamic";
 // export const fetchCache = "force-no-store";
 
-// Data fetching wrapper component that maintains a stable event state
 const SchedulePage = () => {
-  // Get date range based on current view and date
-  const { getDateRangeForView } = useEventCalendar();
-  const { startDate, endDate } = useMemo(
-    () => getDateRangeForView(),
-    [getDateRangeForView]
-  );
-  
-  // Use suspense query with better caching strategy
-  const { data } = useQuery<GetEventsQuery, GetEventsQueryVariables>(
-    GET_EVENTS, 
-    {
-      variables: { startDate, endDate },
-      // fetchPolicy: 'cache-and-network', // Use cache first, then update in background
-      skip: !startDate || !endDate,
-    }
-  );
+  const calendarRef = useRef<FullCalendar | null>(null);
+  const { selectedEvent } = useEventCalendar();
 
-  // Map to calendar format
-  const currentEvents = useMemo(
-    () => mapEventFromEntityToInput(data?.getEvents ?? []), 
-    [data]
-  );
-  
   return (
     <Suspense fallback={<SchedulePageSkeleton />}>
-      <EventCalendar events={currentEvents} />
+      <div className="space-y-5">
+        <div className="flex justify-between">
+          <EventCalendarNav
+            calendarRef={calendarRef}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-4">
+          <div className="flex flex-col gap-4">
+            <EventCategoryList />
+            <EventRecurrenceList />
+          </div>
+          <div className="col-span-4 overflow-hidden mb-5">
+            <EventCalendar calendarRef={calendarRef} />
+          </div>
+        </div>
+
+        {selectedEvent && (
+          <UpdateEventDialog event={selectedEvent} />
+        )}
+      </div>
     </Suspense>
   );
 };
@@ -56,7 +56,7 @@ export default function SchedulePageWithContext() {
     <ConvertCurrencyProvider baseCurrency="VND">
       <DateFilterProvider>
         <EventCalendarProvider>
-            <SchedulePage />
+          <SchedulePage />
         </EventCalendarProvider>
       </DateFilterProvider>
     </ConvertCurrencyProvider>

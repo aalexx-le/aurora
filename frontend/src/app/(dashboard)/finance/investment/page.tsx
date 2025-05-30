@@ -80,7 +80,7 @@ function InvestmentPage({portfolios}: IProps) {
 export default function InvestmentContainer() {
     const {portfolios, loading} = useCryptoPortfoliosQuery()
 
-    if (loading || !portfolios) {
+    if (loading) {
         return <InvestmentPageSkeleton />;
     }
 

@@ -18,9 +18,7 @@ import {
     GetHistoricalAssetProfitInput,
 } from "./dto/get-historical-asset-profit.input";
 import { AssetInfoOutput } from "./dto/get-asset-info.output";
-import { AssetBalance } from "src/entities/asset-balance";
 import { CryptoPortfolio } from "../../../entities/crypto-portfolio";
-import { Trade } from "../../../entities/trade";
 
 @Resolver(() => HistoricalAssetProfit)
 export class HistoricalAssetProfitResolver {
@@ -30,7 +28,7 @@ export class HistoricalAssetProfitResolver {
     ) {}
 
     @ResolveField("assetInfo", () => AssetInfoOutput)
-    getBalances(@Parent() historicalAssetProfit: HistoricalAssetProfit) {
+    getAssetInfo(@Parent() historicalAssetProfit: HistoricalAssetProfit) {
         const { assetInfoId } = historicalAssetProfit;
         return this.cryptoPortfolioService.findAssetInfo(assetInfoId);
     }
@@ -55,48 +53,34 @@ export class HistoricalAssetProfitResolver {
     }
 
     @Subscription(() => HistoricalAssetProfit, {
-        name: HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_1m_PAYLOAD_NAME,
+        name: HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME,
         filter: async (payload, variables: GetHistoricalAssetProfitArgs) => {
             const profit: HistoricalAssetProfit =
                 payload[
                     HistoricalAssetProfitEventListener
-                        .NEW_HISTORICAL_ASSET_PROFIT_1m_PAYLOAD_NAME
+                        .NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME
                 ]!;
-            const { cryptoPortfolioId, assetInfoId } = variables.data;
+            const timeFrame = payload[
+                HistoricalAssetProfitEventListener.TIME_FRAME
+            ]!;
+            const {
+                cryptoPortfolioId,
+                assetInfoId,
+                timeFrame: timeFrameInput,
+            } = variables.data;
+            
             return (
                 profit.cryptoPortfolioId === cryptoPortfolioId &&
-                profit.assetInfoId === assetInfoId
+                profit.assetInfoId === assetInfoId &&
+                timeFrame === timeFrameInput
             );
         },
     })
-    async onHistoricalAssetProfit1mInserted(
+    async onHistoricalAssetProfitInserted(
         @Args() args: GetHistoricalAssetProfitArgs,
     ) {
         return this.pubSub.asyncIterator(
-            SubscriptionEvent.HISTORICAL_ASSET_PROFIT_1m_INSERTED,
-        );
-    }
-
-    @Subscription(() => HistoricalAssetProfit, {
-        name: HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_1h_PAYLOAD_NAME,
-        filter: async (payload, variables: GetHistoricalAssetProfitArgs) => {
-            const profit: HistoricalAssetProfit =
-                payload[
-                    HistoricalAssetProfitEventListener
-                        .NEW_HISTORICAL_ASSET_PROFIT_1h_PAYLOAD_NAME
-                ]!;
-            const { cryptoPortfolioId, assetInfoId } = variables.data;
-            return (
-                profit.cryptoPortfolioId === cryptoPortfolioId &&
-                profit.assetInfoId === assetInfoId
-            );
-        },
-    })
-    async onHistoricalAssetProfit1hInserted(
-        @Args() args: GetHistoricalAssetProfitArgs,
-    ) {
-        return this.pubSub.asyncIterator(
-            SubscriptionEvent.HISTORICAL_ASSET_PROFIT_1h_INSERTED,
+            SubscriptionEvent.HISTORICAL_ASSET_PROFIT_INSERTED,
         );
     }
 }

@@ -1,5 +1,5 @@
-import { GET_EXPENSES, REMOVE_EXPENSE } from "@/api/scripts/expense/expense";
-import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { GET_EXPENSES, REMOVE_EXPENSE } from "@/api/expense/expense";
+import { GET_EXPENSE_CATEGORIES } from "@/api/expense/expense-category";
 import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import { DuplicateExpenseSheet } from "@/app/(dashboard)/finance/expense/components/expense-table/DuplicateExpenseSheet";
 import { getExpenseColumns } from "@/app/(dashboard)/finance/expense/components/expense-table/expenseColumns";
@@ -33,7 +33,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 
-import { GET_BANK_TRANSACTIONS } from "@/api/scripts/bank/transaction";
+import { GET_BANK_TRANSACTIONS } from "@/api/bank/transaction";
 
 interface IProps {
     expenses: Expense[];

@@ -6,10 +6,10 @@ import * as React from "react";
 import { useMemo, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
-import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/scripts/expense/expense";
+import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/expense/expense";
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
 import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
-import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/hooks/useTransactionQuery";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, } from "@/components/ui/sheet";
 import { MutationUpdateExpenseArgs, UpdateExpenseMutation, } from "@/gql/graphql";

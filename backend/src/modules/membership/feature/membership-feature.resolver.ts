@@ -15,7 +15,7 @@ export class MembershipFeatureResolver {
     ) {}
 
     @ResolveField(() => Feature, { name: "feature" })
-    async resolveFeature(
+    async getFeature(
         @Parent() membershipFeature: MembershipFeature,
     ): Promise<Feature> {
         return this.featureService.findOne(membershipFeature.featureId);

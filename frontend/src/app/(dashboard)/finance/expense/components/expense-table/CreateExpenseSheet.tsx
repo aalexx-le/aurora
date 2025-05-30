@@ -1,8 +1,8 @@
 "use client";
 
-import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/scripts/expense/expense";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/expense/expense";
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
-import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/hooks/useTransactionQuery";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { CreateExpenseMutation, MutationCreateExpenseArgs, } from "@/gql/graphql";
 import { useToast } from "@/hooks/use-toast";

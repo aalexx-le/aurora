@@ -17,7 +17,7 @@ export class BankTransactionCron {
         @InjectKafka() private readonly kafkaService: KafkaService,
     ) {}
 
-    @Cron(CronExpression.EVERY_5_MINUTES)
+    @Cron(CronExpression.EVERY_MINUTE)
     private async pollingTransactions() {
         this.logger.log("Polling transactions...");
         const autoBankManagers = await this.prisma.autoBankManager.findMany();
@@ -31,6 +31,9 @@ export class BankTransactionCron {
                     orderBy: { createdAt: "desc" },
                 },
             );
+
+            const lastTransactionTime = lastTransaction.createdAt;
+            lastTransactionTime.setDate(lastTransactionTime.getDate() - 1);
 
             const { data } = await this.fetchTransactions(
                 autoBankManager.apiKey,
@@ -55,7 +58,7 @@ export class BankTransactionCron {
                 (r) => r.id > lastTransactionId,
             );
             this.logger.log(
-                `Process ${latestTransactions.length} bank transactions for auto bank manager ${autoBankManager.id}`,
+                `Process ${latestTransactions.length} bank transactions for auto bank manager ${autoBankManager.id} from ${data.records[0].when} to ${data.records[data.records.length - 1].when}`,
             );
 
             for (const transaction of latestTransactions) {

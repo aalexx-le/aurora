@@ -1,7 +1,7 @@
 "use client";
 
-import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/scripts/expense/expense";
-import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { GET_EXPENSES, UPDATE_EXPENSE } from "@/api/expense/expense";
+import { GET_EXPENSE_CATEGORIES } from "@/api/expense/expense-category";
 import ExpenseCategoryList from "@/app/(dashboard)/finance/expense/components/category-list/ExpenseCategoryList";
 import CategoryPieChart from "@/app/(dashboard)/finance/expense/components/category-pie-chart/CategoryPieChart";
 import DayHeader from "@/app/(dashboard)/schedule/components/event-calendar/DayHeader";
@@ -27,10 +27,10 @@ import { Expense } from "../../components/expense-table/types";
 import { CreateExpenseSheet } from "../expense-table/CreateExpenseSheet";
 import { UpdateExpenseSheet } from "../expense-table/UpdateExpenseSheet";
 import ExpenseCalendarNav from "./expense-calendar-nav";
+import { ExpenseCalendarProvider, useExpenseCalendar } from "./expense-calendar-provider";
 import "./expense-calendar.css";
 import ExpenseEventItem from "./ExpenseEventItem";
 import { mapExpenseToEventInput } from "./mapExpenseToEventInput";
-import { ExpenseCalendarProvider, useExpenseCalendar } from "./expense-calendar-provider";
 
 // Main component that uses the context
 function ExpenseCalendarContent() {

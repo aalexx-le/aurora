@@ -10,8 +10,8 @@ import {
 import { useQuery } from "@apollo/client";
 import { lazy, Suspense, useMemo } from "react";
 
-import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
-import { GET_EXPENSES } from "@/api/scripts/expense/expense";
+import { GET_BANK_MANAGERS } from "@/api/bank/manager";
+import { GET_EXPENSES } from "@/api/expense/expense";
 import {
     CalendarTabSkeleton,
     ExpenseTabSkeleton,

@@ -1,4 +1,4 @@
-import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { GET_EXPENSE_CATEGORIES } from "@/api/expense/expense-category";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
 import { GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";

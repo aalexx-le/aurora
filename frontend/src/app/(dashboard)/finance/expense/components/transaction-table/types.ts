@@ -1,6 +1,4 @@
-import { GetBankQuery } from "@/gql/graphql";
-
-export type BankManager = GetBankQuery["getBankManagers"][number];
+import { BankManager } from "@/gql/graphql";
 
 export type BankAccount = BankManager["banks"][number];
 

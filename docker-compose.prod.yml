@@ -96,29 +96,29 @@ services:
     networks:
       - xela
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.11.1
-    container_name: logstash
-    volumes:
-      - ./logstash/pipeline:/usr/share/logstash/pipeline
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-    ports:
-      - "5044:5044"
-      - "5000:5000/tcp"
-      - "5000:5000/udp"
-      - "9600:9600"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    depends_on:
-      - elasticsearch
-    restart: unless-stopped
-    networks:
-      - xela
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:8.11.1
+  #   container_name: logstash
+  #   volumes:
+  #     - ./logstash/pipeline:/usr/share/logstash/pipeline
+  #     - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+  #   ports:
+  #     - "5044:5044"
+  #     - "5000:5000/tcp"
+  #     - "5000:5000/udp"
+  #     - "9600:9600"
+  #   environment:
+  #     LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+  #   depends_on:
+  #     - elasticsearch
+  #   restart: unless-stopped
+  #   networks:
+  #     - xela
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.11.1

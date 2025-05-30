@@ -1,6 +1,6 @@
 "use client";
 
-import { GET_EVENTS, UPDATE_EVENT } from "@/api/scripts/schedule/event";
+import { GET_EVENTS, UPDATE_EVENT } from "@/api/schedule/event";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Dialog } from "@/components/ui/dialog";
 import { UpdateEventMutation, UpdateEventMutationVariables } from "@/gql/graphql";

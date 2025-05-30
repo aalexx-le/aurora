@@ -1,8 +1,8 @@
-import { useExpenseCategoriesQuery } from "@/app/(dashboard)/finance/expense/components/category-list/useExpenseCategoriesQuery";
 import DateFilter from "@/app/(dashboard)/finance/expense/components/date-filter/DateFilter";
 import { ResetDateFilterButton } from "@/app/(dashboard)/finance/expense/components/date-filter/ResetDateFilterButton";
 import ExpenseTable from "@/app/(dashboard)/finance/expense/components/expense-table/ExpenseTable";
 import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
+import { useExpenseCategoriesQuery } from "@/app/(dashboard)/finance/expense/hooks/useExpenseCategoriesQuery";
 import { Skeleton } from "@/components/ui/skeleton";
 import { memo, Suspense, useMemo } from "react";
 

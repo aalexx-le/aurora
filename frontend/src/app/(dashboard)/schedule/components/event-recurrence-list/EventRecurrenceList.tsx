@@ -6,13 +6,13 @@ import { Card } from "@/components/ui/card";
 import { DataTableRowActionType } from "@/types";
 import { Repeat } from "lucide-react";
 import { useState } from "react";
+import { EventRecurrenceListSkeleton } from "../skeletons";
 import { EventRecurrenceActionButton } from "./EventRecurrenceActionButton";
 import { EventRecurrenceBadge } from "./EventRecurrenceBadge";
 import { EventRecurrence } from "./types";
 import { UpdateEventRecurrenceDialog } from "./UpdateEventRecurrenceDialog";
 import { useDeleteEventRecurrenceMutation } from "./useDeleteEventRecurrenceMutation";
 import { useEventRecurrencesQuery } from "./useEventRecurrencesQuery";
-import { EventRecurrenceListSkeleton } from "../skeletons";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";

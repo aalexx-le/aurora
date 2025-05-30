@@ -1,6 +1,7 @@
 model Feature {
   id             Int           @id @default(autoincrement())
   type           FeatureType
+  name           String        @default("")
 
   membershipFeatures MembershipFeature[]
 }

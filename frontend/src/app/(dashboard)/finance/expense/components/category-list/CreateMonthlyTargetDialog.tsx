@@ -1,5 +1,5 @@
 import MonthSelect from "@/app/(dashboard)/finance/expense/components/category-list/MonthSelect";
-import { useCreateMonthlyTargetMutation } from "@/app/(dashboard)/finance/expense/components/category-list/useCreateMonthlyTargetMutation";
+import { useCreateMonthlyTargetMutation } from "@/app/(dashboard)/finance/expense/hooks/useCreateMonthlyTargetMutation";
 import { Button } from "@/components/ui/button";
 import CurrencyInput from "@/components/ui/currency-input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";

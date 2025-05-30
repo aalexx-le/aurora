@@ -2,7 +2,7 @@
 
 import {Pie, PieChart} from "recharts"
 import {ChartContainer, ChartTooltip, ChartTooltipContent,} from "@/components/ui/chart"
-import {ExpenseCategory} from "@/app/(dashboard)/finance/expense/components/category-list/types";
+import { ExpenseCategory } from "@/gql/graphql"
 
 const chartData = [
     {browser: "chrome", visitors: 275, fill: "var(--color-chrome)"},

@@ -10,15 +10,15 @@ import { DatabaseEvent } from "../../../shared/constants/database.event";
 import { HistoricalAssetProfit } from "src/entities/historical-asset-profit";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
+import { AbbreviatedTimeFrameEnum } from "src/shared/constants/timeframe";
 
 @Injectable()
 export class HistoricalAssetProfitEventListener
     implements OnModuleDestroy, OnModuleInit
 {
-    public static readonly NEW_HISTORICAL_ASSET_PROFIT_1m_PAYLOAD_NAME =
-        "newHistoricalAssetProfit1m";
-    public static readonly NEW_HISTORICAL_ASSET_PROFIT_1h_PAYLOAD_NAME =
-        "newHistoricalAssetProfit1h";
+    public static readonly NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME =
+        "newHistoricalAssetProfit";
+    public static readonly TIME_FRAME = "timeframe";
     private readonly logger = new Logger(
         HistoricalAssetProfitEventListener.name,
     );
@@ -42,10 +42,11 @@ export class HistoricalAssetProfitEventListener
             async (payload: HistoricalAssetProfit) => {
                 payload.time = new Date(payload.time + "Z");
                 this.pubSub.publish(
-                    SubscriptionEvent.HISTORICAL_ASSET_PROFIT_1m_INSERTED,
+                    SubscriptionEvent.HISTORICAL_ASSET_PROFIT_INSERTED,
                     {
-                        [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_1m_PAYLOAD_NAME]:
+                        [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME]:
                             payload,
+                        [HistoricalAssetProfitEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_MINUTE
                     },
                 );
             },
@@ -59,10 +60,11 @@ export class HistoricalAssetProfitEventListener
             async (payload: HistoricalAssetProfit) => {
                 payload.time = new Date(payload.time + "Z");
                 this.pubSub.publish(
-                    SubscriptionEvent.HISTORICAL_ASSET_PROFIT_1h_INSERTED,
+                    SubscriptionEvent.HISTORICAL_ASSET_PROFIT_INSERTED,
                     {
-                        [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_1h_PAYLOAD_NAME]:
+                        [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME]:
                             payload,
+                        [HistoricalAssetProfitEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_HOUR
                     },
                 );
             },

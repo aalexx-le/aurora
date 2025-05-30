@@ -6,7 +6,7 @@
 /* Removing borders */
 
 .fc-scrollgrid {
-  @apply border-none !important;
+  @apply border rounded-xl flex-1 w-full !important;
 }
 
 .fc tbody tr:last-child td:first-child {

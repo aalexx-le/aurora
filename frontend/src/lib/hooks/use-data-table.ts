@@ -282,7 +282,6 @@ export function useDataTable<TData>({
 
     const onColumnFiltersChange = React.useCallback(
         (updaterOrValue: Updater<ColumnFiltersState>) => {
-            console.log({ updaterOrValue });
             // Don't process filters if advanced filtering is enabled
             if (enableAdvancedFilter) return;
 

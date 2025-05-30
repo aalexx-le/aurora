@@ -1,7 +1,7 @@
-import { GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
-import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
-import { GET_BANK_TRANSACTIONS, REMOVE_BANK_TRANSACTION } from "@/api/scripts/bank/transaction";
-import { GET_EXPENSES } from "@/api/scripts/expense/expense";
+import { GET_BANK_ACCOUNTS } from "@/api/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/bank/manager";
+import { GET_BANK_TRANSACTIONS, REMOVE_BANK_TRANSACTION } from "@/api/bank/transaction";
+import { GET_EXPENSES } from "@/api/expense/expense";
 import {
     AutoCreateExpenseSheet
 } from "@/app/(dashboard)/finance/expense/components/expense-table/AutoCreateExpenseSheet";
@@ -12,11 +12,11 @@ import {
     TransactionRowActionUnionType
 } from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionActionButton";
 import TransactionItem from "@/app/(dashboard)/finance/expense/components/transaction-list/TransactionItem";
+import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import {
     useFilteredTransactions
-} from "@/app/(dashboard)/finance/expense/components/transaction-list/useFilteredTransactions";
-import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
-import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+} from "@/app/(dashboard)/finance/expense/hooks/useFilteredTransactions";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/hooks/useTransactionQuery";
 import { DeleteDialog } from "@/components/crud/delete-dialog";
 import { RemoveBankTransactionMutation, RemoveBankTransactionMutationVariables } from "@/gql/graphql";
 import { useMutation } from "@apollo/client";

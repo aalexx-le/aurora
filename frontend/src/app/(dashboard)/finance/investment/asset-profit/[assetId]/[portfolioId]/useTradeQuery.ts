@@ -1,4 +1,4 @@
-import { GET_TRADES } from "@/api/scripts/crypto/trade";
+import { GET_TRADES } from "@/api/crypto/trade";
 import { GetTradesQuery, GetTradesQueryVariables } from "@/gql/graphql";
 import { useQuery } from "@apollo/client";
 

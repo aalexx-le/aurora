@@ -1,6 +1,6 @@
-import { GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
-import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
-import { CREATE_BANK_TRANSACTION, GET_BANK_TRANSACTIONS } from "@/api/scripts/bank/transaction";
+import { GET_BANK_ACCOUNTS } from "@/api/bank/account";
+import { GET_BANK_MANAGERS } from "@/api/bank/manager";
+import { CREATE_BANK_TRANSACTION, GET_BANK_TRANSACTIONS } from "@/api/bank/transaction";
 import BankAccountSelect from "@/app/(dashboard)/finance/bank/components/account-list/BankAccountSelect";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import CurrencyInput from "@/components/ui/currency-input";

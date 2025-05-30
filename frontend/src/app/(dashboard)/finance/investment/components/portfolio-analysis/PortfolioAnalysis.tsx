@@ -1,16 +1,14 @@
 "use client"
 
-import {Card, CardContent, CardHeader, CardTitle,} from "@/components/ui/card"
-import {useEffect, useState} from "react";
-import {FastAverageColor, FastAverageColorResource} from "fast-average-color";
-import {CategorySummary} from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/CategorySummary";
-import {QuestionMarkCircledIcon} from "@radix-ui/react-icons";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
-import {MoneyAnimated} from "@/components/money/money-animated";
-import {MoneyUpDownAnimated} from "@/components/money/money-up-down-animated";
-import {BalancePieChart} from "@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart";
-import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { BalancePieChart } from "@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart";
+import { CategorySummary } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/CategorySummary";
+import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import { FastAverageColor, FastAverageColorResource } from "fast-average-color";
+import { useEffect, useState } from "react";
 
 interface IProps {
     cryptoPortfolioId: string;

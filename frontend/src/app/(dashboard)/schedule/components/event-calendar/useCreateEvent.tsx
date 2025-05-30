@@ -1,5 +1,5 @@
-import { CREATE_EVENT, GET_EVENTS } from "@/api/scripts/schedule/event";
-import { GET_EVENT_RECURRENCES } from "@/api/scripts/schedule/event-recurrence";
+import { CREATE_EVENT, GET_EVENTS } from "@/api/schedule/event";
+import { GET_EVENT_RECURRENCES } from "@/api/schedule/event-recurrence";
 import { CreateEventMutation, CreateEventMutationVariables } from "@/gql/graphql";
 import { useMutation } from "@apollo/client";
 

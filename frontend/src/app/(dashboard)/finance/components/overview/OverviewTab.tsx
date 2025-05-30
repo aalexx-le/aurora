@@ -1,4 +1,4 @@
-import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { GET_EXPENSE_CATEGORIES } from "@/api/expense/expense-category";
 import BankSummary from "@/app/(dashboard)/finance/components/bank-summary/BankSummary";
 import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-summary/InvestmentSummary";
 import {

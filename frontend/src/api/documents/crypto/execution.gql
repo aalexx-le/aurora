@@ -1,7 +1,0 @@
-query GetCreatePortfolioExecutions($userId: Float!) {
-    getCreatePortfolioExecutions(userId: $userId) {
-        id
-        status
-        time
-    }
-}

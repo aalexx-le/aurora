@@ -53,16 +53,13 @@ export const PaddleProvider = ({ children }: PaddleProviderProps) => {
         // Handle all events using the custom event type
         switch(customEvent.name) {
           case 'checkout.completed': 
-            console.log('Subscription completed successfully');
             router.refresh();
             break;
           
           case 'checkout.closed':
-            console.log('Checkout was closed without completion');
             break;
             
           case 'checkout.error':
-            console.error('Payment Error: There was an issue with your payment');
             break;
             
           case 'transaction.updated':
@@ -96,7 +93,6 @@ export const PaddleProvider = ({ children }: PaddleProviderProps) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Failed to initialize Paddle:', error);
         setLoading(false);
       });
   }, [router]);

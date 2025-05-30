@@ -1,4 +1,4 @@
-import { GET_CRYPTO_PORTFOLIOS } from "@/api/scripts/crypto/crypto";
+import { GET_CRYPTO_PORTFOLIOS } from "@/api/crypto/crypto";
 import {
     GetCryptoPortfoliosQuery,
     GetCryptoPortfoliosQueryVariables,

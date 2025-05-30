@@ -19,7 +19,7 @@ import { onError } from "@apollo/client/link/error";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
-import { REFRESH_TOKEN_MUTATION } from "./scripts/auth/auth";
+import { REFRESH_TOKEN_MUTATION } from "./auth/auth";
 
 // Creates a new client without auth for the refresh token request
 const createRefreshClient = () => {

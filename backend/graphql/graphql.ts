@@ -623,6 +623,7 @@ export interface MembershipPrice {
 export interface Feature {
     id: number;
     type: FeatureType;
+    name: string;
     membershipFeatures?: Nullable<MembershipFeature[]>;
 }
 
@@ -840,12 +841,9 @@ export interface IMutation {
 
 export interface ISubscription {
     onCreatePortfolioExecution(): CreatePortfolioExecution | Promise<CreatePortfolioExecution>;
-    newAssetPrice1m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
-    newAssetPrice5m(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
-    newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
-    newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
-    newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
-    newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
+    newAssetPrice(data: GetAssetPriceInput): AssetPrice | Promise<AssetPrice>;
+    newHistoricalCryptoBalance(data: GetHistoricalBalancesInput): HistoricalCryptoBalance | Promise<HistoricalCryptoBalance>;
+    newHistoricalAssetProfit(data: GetHistoricalAssetProfitInput): HistoricalAssetProfit | Promise<HistoricalAssetProfit>;
     onMembershipSubscriptionUpdated(): MembershipSubscription | Promise<MembershipSubscription>;
 }
 

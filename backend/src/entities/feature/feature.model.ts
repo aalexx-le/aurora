@@ -13,6 +13,9 @@ export class Feature {
     @Field(() => FeatureType, {nullable:false})
     type!: `${FeatureType}`;
 
+    @Field(() => String, {defaultValue:'',nullable:false})
+    name!: string;
+
     @Field(() => [MembershipFeature], {nullable:true})
     membershipFeatures?: Array<MembershipFeature>;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { GET_MONTHLY_TARGETS } from "@/api/scripts/expense/expense-category";
+import { GET_MONTHLY_TARGETS } from "@/api/expense/expense-category";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,

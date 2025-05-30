@@ -1,38 +1,28 @@
 import {
     GET_HISTORICAL_BALANCE,
-    getSubscriptNewHistoricalBalanceHook,
-    getSubscriptNewHistoricalBalanceResult,
-} from "@/api/scripts/crypto/crypto";
+    SUBSCRIBE_HISTORICAL_BALANCE,
+} from "@/api/crypto/crypto";
 import { HistoricalCryptoBalance } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/types";
-import {
-    GetHistoricalBalancesQuery,
-    GetHistoricalBalancesQueryVariables,
-} from "@/gql/graphql";
 import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useEffect, useMemo, useState } from "react";
 
 export const useHistoricalBalanceQuery = (
     cryptoPortfolioId: string,
     timeFrame: TimeframeEnum,
 ) => {
-    const { data, loading, refetch } = useQuery<
-        GetHistoricalBalancesQuery,
-        GetHistoricalBalancesQueryVariables
-    >(GET_HISTORICAL_BALANCE, {
+    const { data, loading } = useQuery(GET_HISTORICAL_BALANCE, {
         variables: {
             data: { cryptoPortfolioId, timeFrame },
             pagination: { take: 500 },
         },
     });
-    const { hook, query } = getSubscriptNewHistoricalBalanceHook(timeFrame);
-    const { data: newData } = hook(query, {
+    const { data: newData } = useSubscription(SUBSCRIBE_HISTORICAL_BALANCE, {
         variables: {
             data: { cryptoPortfolioIds: [cryptoPortfolioId], timeFrame },
         },
     });
-    const newBalance = getSubscriptNewHistoricalBalanceResult(newData);
 
     const [convertedValues, setConvertedValues] = useState<
         HistoricalCryptoBalance[]
@@ -40,14 +30,19 @@ export const useHistoricalBalanceQuery = (
     const { convertCurrency } = useConvertCurrencyContext();
 
     const aggregateData = useMemo(() => {
-        if (!data || loading) {
+        if (!data?.getHistoricalBalances || loading) {
             return [];
         }
 
-        return newBalance
-            ? [...data.getHistoricalBalances, newBalance]
-            : data.getHistoricalBalances;
-    }, [data, newBalance, loading]);
+        if (!newData?.newHistoricalCryptoBalance) {
+            return data.getHistoricalBalances;
+        }
+
+        return [
+            ...data.getHistoricalBalances,
+            newData.newHistoricalCryptoBalance,
+        ];
+    }, [data, newData, loading]);
 
     useEffect(() => {
         const convert = async () => {

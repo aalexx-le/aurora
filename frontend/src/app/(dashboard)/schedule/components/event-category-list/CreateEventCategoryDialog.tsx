@@ -1,15 +1,14 @@
-import { CREATE_EVENT_CATEGORY, GET_EVENT_CATEGORIES } from "@/api/scripts/schedule/event-category";
+import { CREATE_EVENT_CATEGORY, GET_EVENT_CATEGORIES } from "@/api/schedule/event-category";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { GradientPicker } from "@/components/ui/color-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CreateEventCategoryMutation, CreateEventCategoryMutationVariables } from "@/gql/graphql";
+import { CreateEventCategoryInput, createEventCategorySchema } from "@/lib/schema/eventCategory";
 import { useMutation } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { EventCategoryBadge } from "./EventCategoryBadge";
-import { CreateEventCategoryInput, createEventCategorySchema } from "@/lib/schema/eventCategory";
 
 export function CreateEventCategoryDialog() {
   const defaultValues: CreateEventCategoryInput = {

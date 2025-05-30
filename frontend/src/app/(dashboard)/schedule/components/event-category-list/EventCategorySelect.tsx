@@ -1,4 +1,4 @@
-import { GET_EVENT_CATEGORIES } from "@/api/scripts/schedule/event-category";
+import { GET_EVENT_CATEGORIES } from "@/api/schedule/event-category";
 import { Button } from "@/components/ui/button";
 import {
     Command,

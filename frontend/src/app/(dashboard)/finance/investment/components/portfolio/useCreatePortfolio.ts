@@ -2,8 +2,8 @@ import {
     CREATE_CRYPTO_PORTFOLIO,
     CREATE_OKX_CRYPTO_PORTFOLIO,
     GET_CRYPTO_PORTFOLIOS,
-} from "@/api/scripts/crypto/crypto";
-import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/scripts/crypto/execution";
+} from "@/api/crypto/crypto";
+import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/crypto/execution";
 import {
     CreateCryptoPortfolioMutation,
     CreateCryptoPortfolioMutationVariables,

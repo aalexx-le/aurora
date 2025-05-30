@@ -5,7 +5,7 @@ import {
     LOGOUT_MUTATION,
     REFRESH_TOKEN_MUTATION,
     VERIFY_ACCOUNT_MUTATION,
-} from "@/api/scripts/auth/auth";
+} from "@/api/auth/auth";
 import {
     GetMeQuery,
     LoginMutation,

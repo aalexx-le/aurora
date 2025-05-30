@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SIGNUP_MUTATION } from "@/api/scripts/auth/auth";
+import { SIGNUP_MUTATION } from "@/api/auth/auth";
 import { TABS } from "@/app/auth/page";
 import ButtonWithLoading from "@/components/ui/button-with-loading";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";

@@ -1,11 +1,11 @@
-import { GET_EVENTS, REMOVE_EVENT } from "@/api/scripts/schedule/event"; // Assuming this is the mutation for deleting an event
+import { GET_EVENTS, REMOVE_EVENT } from "@/api/schedule/event"; // Assuming this is the mutation for deleting an event
 import { Button } from "@/components/ui/button";
 import { RemoveEventCategoryMutationVariables, RemoveEventMutation } from "@/gql/graphql";
 import { useMutation } from "@apollo/client";
 import { Trash } from "lucide-react";
 import * as React from "react";
-import { Event } from "./types";
 import { useEventCalendar } from "../../event-calendar-provider";
+import { Event } from "./types";
 
 interface IProps {
     event: Event;

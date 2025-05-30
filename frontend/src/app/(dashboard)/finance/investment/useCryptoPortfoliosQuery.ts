@@ -1,15 +1,8 @@
-import { GET_CRYPTO_PORTFOLIOS } from "@/api/scripts/crypto/crypto";
-import {
-    GetCryptoPortfoliosQuery,
-    GetCryptoPortfoliosQueryVariables,
-} from "@/gql/graphql";
+import { GET_CRYPTO_PORTFOLIOS } from "@/api/crypto/crypto";
 import { useQuery } from "@apollo/client";
 
 export const useCryptoPortfoliosQuery = () => {
-    const { data, loading } = useQuery<
-        GetCryptoPortfoliosQuery,
-        GetCryptoPortfoliosQueryVariables
-    >(GET_CRYPTO_PORTFOLIOS, {
+    const { data, loading } = useQuery(GET_CRYPTO_PORTFOLIOS, {
         variables: {
             timeFrame: "1 day",
         },

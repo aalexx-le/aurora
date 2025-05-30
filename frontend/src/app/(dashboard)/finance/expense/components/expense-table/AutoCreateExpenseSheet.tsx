@@ -1,14 +1,12 @@
 "use client";
 
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
-import { useAISuggestExpenses } from "@/app/(dashboard)/finance/expense/components/expense-table/useAISuggestedExpenses";
-import { useReviewTransaction } from "@/app/(dashboard)/finance/expense/components/expense-table/useReviewTransaction";
-import { useSubmitForm } from "@/app/(dashboard)/finance/expense/components/expense-table/useSubmitForm";
+import { useAISuggestExpenses } from "@/app/(dashboard)/finance/expense/hooks/useAISuggestedExpenses";
+import { useReviewTransaction } from "@/app/(dashboard)/finance/expense/hooks/useReviewTransaction";
+import { useSubmitExpenseForm } from "@/app/(dashboard)/finance/expense/hooks/useSubmitForm";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, } from "@/components/ui/sheet";
 import { CreateExpenseInput, createExpenseSchema } from "@/lib/schema/expense";
 import { cn } from "@/lib/utils";
@@ -46,7 +44,7 @@ export function AutoCreateExpenseSheet({
     const suggestedExpenses = useAISuggestExpenses(form);
 
     const reviewTransaction = useReviewTransaction(form);
-    const {onSubmit} = useSubmitForm(form, reviewTransaction, startTransition, props.onOpenChange);
+    const {onSubmit} = useSubmitExpenseForm(form, reviewTransaction, startTransition, props.onOpenChange);
 
     // Reset form when click on another transaction
     useEffect(() => {

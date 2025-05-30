@@ -1,6 +1,6 @@
 "use client";
 
-import { GET_EVENT_CATEGORIES, UPDATE_EVENT_CATEGORY } from "@/api/scripts/schedule/event-category";
+import { GET_EVENT_CATEGORIES, UPDATE_EVENT_CATEGORY } from "@/api/schedule/event-category";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { GradientPicker } from "@/components/ui/color-picker";
 import { Dialog } from "@/components/ui/dialog";

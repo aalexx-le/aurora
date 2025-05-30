@@ -315,6 +315,7 @@ enum PriceStatus {
 type Feature {
   id: Int!
   type: FeatureType!
+  name: String!
   membershipFeatures: [MembershipFeature!]
 }
 
@@ -842,12 +843,9 @@ input UpdateSubscriptionDto {
 
 type Subscription {
   onCreatePortfolioExecution: CreatePortfolioExecution!
-  newAssetPrice1m(data: GetAssetPriceInput!): AssetPrice!
-  newAssetPrice5m(data: GetAssetPriceInput!): AssetPrice!
-  newHistoricalCryptoBalance1m(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
-  newHistoricalCryptoBalance1h(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
-  newHistoricalAssetProfit1m(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
-  newHistoricalAssetProfit1h(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
+  newAssetPrice(data: GetAssetPriceInput!): AssetPrice!
+  newHistoricalCryptoBalance(data: GetHistoricalBalancesInput!): HistoricalCryptoBalance!
+  newHistoricalAssetProfit(data: GetHistoricalAssetProfitInput!): HistoricalAssetProfit!
   onMembershipSubscriptionUpdated: MembershipSubscription!
 }
 

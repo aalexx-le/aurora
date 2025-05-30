@@ -59,10 +59,6 @@ export class EventRecurrenceService {
             options.bymonthday = data.recurrence.dayOfMonth;
         }
 
-        console.log("data", data);
-
-        console.log(options);
-
         const rule = new RRule(options);
 
         // Generate all occurrence dates

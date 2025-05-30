@@ -1,6 +1,6 @@
 'use client';
 
-import { getSubscriptNewHistoricalBalanceHook, getSubscriptNewHistoricalBalanceResult } from "@/api/scripts/crypto/crypto";
+import { SUBSCRIBE_HISTORICAL_BALANCE } from "@/api/crypto/crypto";
 import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
 import { getAbbreviatedTimeFrame } from "@/lib/utils/date-time/get-currency-month-date-range";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useSubscription } from "@apollo/client";
 import { useMemo } from "react";
 
 interface IProps {
@@ -16,8 +17,7 @@ interface IProps {
 }
 
 export default function PortfolioSummary({portfolio}: IProps) {
-    const {hook, query} = getSubscriptNewHistoricalBalanceHook(TimeframeEnum.ONE_MINUTE);
-    const {data: newData, loading} = hook(query, {
+    const {data: newData, loading} = useSubscription(SUBSCRIBE_HISTORICAL_BALANCE, {
         variables: {
             data: {
                 cryptoPortfolioIds: [portfolio.id],
@@ -25,13 +25,17 @@ export default function PortfolioSummary({portfolio}: IProps) {
             }
         },
     });
-    const newBalance = getSubscriptNewHistoricalBalanceResult(newData);
 
     const latestHistoricalBalances = useMemo(() => {
-        return newBalance
-            ? {...portfolio.latestHistoricalBalances, estimatedBalance: newBalance.estimatedBalance}
-            : portfolio.latestHistoricalBalances
-    }, [portfolio, newBalance]);
+        if (!newData?.newHistoricalCryptoBalance || loading) {
+            return portfolio.latestHistoricalBalances;
+        }
+
+        return {
+            ...portfolio.latestHistoricalBalances,
+            ...newData.newHistoricalCryptoBalance
+        }
+    }, [portfolio, newData, loading]);
 
     const selectedExchanges = EXCHANGES_INFOS.find((e) => e.id === portfolio.exchanges);
 

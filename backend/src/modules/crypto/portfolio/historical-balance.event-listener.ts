@@ -10,15 +10,15 @@ import { DatabaseEvent } from "../../../shared/constants/database.event";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
 import { PubSub } from "graphql-subscriptions";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
+import { AbbreviatedTimeFrameEnum } from "src/shared/constants/timeframe";
 
 @Injectable()
 export class HistoricalCryptoBalanceEventListener
     implements OnModuleDestroy, OnModuleInit
 {
-    public static readonly NEW_HISTORICAL_CRYPTO_BALANCE_1m_PAYLOAD_NAME =
-        "newHistoricalCryptoBalance1m";
-    public static readonly NEW_HISTORICAL_CRYPTO_BALANCE_1h_PAYLOAD_NAME =
-        "newHistoricalCryptoBalance1h";
+    public static readonly NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME =
+        "newHistoricalCryptoBalance";
+    public static readonly TIME_FRAME = "timeframe"
     private readonly logger = new Logger(
         HistoricalCryptoBalanceEventListener.name,
     );
@@ -44,10 +44,11 @@ export class HistoricalCryptoBalanceEventListener
             async (payload: HistoricalCryptoBalance) => {
                 payload.time = new Date(payload.time + "Z");
                 this.pubSub.publish(
-                    SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_1m_INSERTED,
+                    SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_INSERTED,
                     {
-                        [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_1m_PAYLOAD_NAME]:
+                        [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME]:
                             payload,
+                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_MINUTE
                     },
                 );
             },
@@ -61,10 +62,11 @@ export class HistoricalCryptoBalanceEventListener
             async (payload: HistoricalCryptoBalance) => {
                 payload.time = new Date(payload.time + "Z");
                 this.pubSub.publish(
-                    SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_1h_INSERTED,
+                    SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_INSERTED,
                     {
-                        [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_1h_PAYLOAD_NAME]:
+                        [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME]:
                             payload,
+                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_HOUR
                     },
                 );
             },

@@ -2,6 +2,7 @@
 
 import { BaseCalendarContextType, useBaseCalendarProvider } from "@/lib/context/base-calendar-context";
 import { createContext, ReactNode, useContext, useState } from "react";
+import { Event } from "./components/event-calendar/types";
 
 /**
  * Event calendar specific context properties
@@ -20,6 +21,10 @@ interface EventCalendarContextType extends BaseCalendarContextType {
   setEventAddStartTime: (value: Date) => void;
   eventAddEndTime: Date;
   setEventAddEndTime: (value: Date) => void;
+
+  // Event selection
+  selectedEvent: Event | null;
+  setSelectedEvent: (value: Event | null) => void;
 }
 
 // Create context
@@ -50,6 +55,7 @@ export const EventCalendarProvider: React.FC<{ children: ReactNode }> = ({
   const [eventAddOpen, setEventAddOpen] = useState(false);
   const [eventEditOpen, setEventEditOpen] = useState(false);
   const [eventDeleteOpen, setEventDeleteOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   
   // Set start time to the beginning of the current day (00:00:00)
   const [eventAddStartTime, setEventAddStartTime] = useState<Date>(() => {
@@ -79,6 +85,8 @@ export const EventCalendarProvider: React.FC<{ children: ReactNode }> = ({
         setEventAddStartTime,
         eventAddEndTime,
         setEventAddEndTime,
+        selectedEvent,
+        setSelectedEvent,
       }}
     >
       {children}

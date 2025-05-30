@@ -1,4 +1,4 @@
-import { GET_HISTORICAL_ASSET_PROFIT } from "@/api/scripts/crypto/crypto";
+import { GET_HISTORICAL_ASSET_PROFIT } from "@/api/crypto/crypto";
 import {
     GetHistoricalAssetProfitsQuery,
     GetHistoricalAssetProfitsQueryVariables,

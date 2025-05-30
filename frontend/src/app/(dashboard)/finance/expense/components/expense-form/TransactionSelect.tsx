@@ -1,8 +1,8 @@
 import { ChevronsUpDown } from "lucide-react";
 
 import { BANK_INFOS } from "@/app/(dashboard)/finance/bank/components/bank-select/BankSelect";
-import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/components/transaction-list/useTransactionQuery";
 import { BankTransaction } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { useTransactionQuery } from "@/app/(dashboard)/finance/expense/hooks/useTransactionQuery";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

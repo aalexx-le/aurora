@@ -1,5 +1,6 @@
 import { usePaddle } from "@/providers/PaddleProvider";
 import type {
+    CheckoutLineItem,
     CheckoutOpenOptions,
     CheckoutUpdateOptions,
 } from "@paddle/paddle-js";
@@ -17,11 +18,9 @@ export const usePaddleCheckout = () => {
     const openCheckout = useCallback(
         (options: CheckoutOpenOptions) => {
             if (!paddle) {
-                console.error("Paddle is not initialized yet.");
                 return;
             }
             if (loading) {
-                console.log("Paddle is still loading...");
                 return;
             }
             opRef.current = "open";
@@ -39,11 +38,9 @@ export const usePaddleCheckout = () => {
     const updateCheckout = useCallback(
         (options: CheckoutUpdateOptions) => {
             if (!paddle) {
-                console.error("Paddle is not initialized yet.");
                 return;
             }
             if (loading) {
-                console.log("Paddle is still loading...");
                 return;
             }
             opRef.current = "update";
@@ -59,19 +56,17 @@ export const usePaddleCheckout = () => {
     );
 
     const updateSubscriptionItems = useCallback(
-        (options: { items: Array<{ priceId: string; quantity: number }> }) => {
+        (items: CheckoutLineItem[]) => {
             if (!paddle) {
-                console.error("Paddle is not initialized yet.");
                 return;
             }
             if (loading) {
-                console.log("Paddle is still loading...");
                 return;
             }
             opRef.current = "update";
             setOperationLoading(true);
             try {
-                paddle.Checkout.updateItems(options.items);
+                paddle.Checkout.updateItems(items);
             } finally {
                 setOperationLoading(false);
                 opRef.current = null;

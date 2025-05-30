@@ -1,15 +1,13 @@
-import { gql, useMutation } from "@apollo/client";
-import { toast } from "sonner";
-import { EventRecurrence } from "./types";
+import { GET_EVENTS } from "@/api/schedule/event";
 import {
     DELETE_EVENT_RECURRENCE,
     GET_EVENT_RECURRENCES,
-} from "@/api/scripts/schedule/event-recurrence";
+} from "@/api/schedule/event-recurrence";
 import {
     DeleteRecurrenceTemplateMutation,
     DeleteRecurrenceTemplateMutationVariables,
 } from "@/gql/graphql";
-import { GET_EVENTS } from "@/api/scripts/schedule/event";
+import { useMutation } from "@apollo/client";
 
 export const useDeleteEventRecurrenceMutation = () => {
     const [deleteRecurrence, { loading }] = useMutation<

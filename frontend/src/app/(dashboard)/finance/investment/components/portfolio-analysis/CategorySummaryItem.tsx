@@ -1,7 +1,6 @@
 import {
-    getSubscriptNewHistoricalProfitHook,
-    getSubscriptNewHistoricalProfitResult
-} from "@/api/scripts/crypto/asset-profit";
+    SUBSCRIBE_HISTORICAL_ASSET_PROFIT
+} from "@/api/crypto/asset-profit";
 import { AnalyseData } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
@@ -11,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { CexExchanges } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useSubscription } from "@apollo/client";
 import { useEffect, useState } from "react";
 
 
@@ -21,8 +21,7 @@ interface IProps {
 }
 
 export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IProps) {
-    const {hook, query} = getSubscriptNewHistoricalProfitHook(TimeframeEnum.ONE_MINUTE);
-    const {data: newData} = hook(query, {
+    const {data: newData, loading} = useSubscription(SUBSCRIBE_HISTORICAL_ASSET_PROFIT, {
         variables: {
             data: {
                 cryptoPortfolioId,
@@ -31,14 +30,15 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
             }
         },
     });
-    const newHistoricalProfit = getSubscriptNewHistoricalProfitResult(newData);
     const [aggregatedData, setAggregatedData] = useState<AnalyseData>(data);
     const shouldShowProfitPercent = !isNaN(aggregatedData.profitPercent) && aggregatedData.profitPercent !== 0;
 
     useEffect(() => {
-        if (!newHistoricalProfit) {
+        if (!newData?.newHistoricalAssetProfit || loading) {
             return;
         }
+
+        const newHistoricalProfit = newData.newHistoricalAssetProfit;
 
         const newAggregatedData = {
             ...data,
@@ -49,7 +49,7 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
         }
 
         setAggregatedData(newAggregatedData);
-    }, [data, newHistoricalProfit]);
+    }, [data, newData, loading]);
 
     return (
         <div>

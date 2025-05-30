@@ -4,7 +4,7 @@ import CreateCategoryDialog from "@/app/(dashboard)/finance/expense/components/c
 import { CreateMonthlyTargetDialog } from "@/app/(dashboard)/finance/expense/components/category-list/CreateMonthlyTargetDialog";
 import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
 import { UpdateCategoryDialog } from "@/app/(dashboard)/finance/expense/components/category-list/UpdateCategoryDialog";
-import { useDeleteExpenseCategoryMutation } from "@/app/(dashboard)/finance/expense/components/category-list/useDeleteExpenseCategoryMutation";
+import { useDeleteExpenseCategoryMutation } from "@/app/(dashboard)/finance/expense/hooks/useDeleteExpenseCategoryMutation";
 import { DeleteDialog } from "@/components/crud/delete-dialog";
 import { useConvertCurrencyContext } from "@/lib/context/convert-currency.context";
 import { useDateFilterContext } from "@/lib/context/date-range.context";

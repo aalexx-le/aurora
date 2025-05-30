@@ -28,37 +28,26 @@ export class CryptoAssetPriceResolver {
     }
 
     @Subscription(() => AssetPrice, {
-        name: AssetPriceEventListener.NEW_ASSET_PRICE_1m_PAYLOAD_NAME,
+        name: AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME,
         filter: async (payload, variables: GetAssetPriceArgs) => {
             const assetPrice: AssetPrice =
                 payload[
-                    AssetPriceEventListener.NEW_ASSET_PRICE_1m_PAYLOAD_NAME
+                    AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME
                 ]!;
-            const { assetInfoId } = variables.data;
-            return assetPrice.assetInfoId === assetInfoId;
+            const timeFrame = payload[
+                AssetPriceEventListener.TIME_FRAME
+            ]!;
+            const { assetInfoId, timeFrame: timeFrameInput } =
+                variables.data;
+            return (
+                assetPrice.assetInfoId === assetInfoId &&
+                timeFrame === timeFrameInput
+            );
         },
     })
-    async onAssetPrice1mInserted(@Args() _: GetAssetPriceArgs) {
+    async onAssetPriceInserted(@Args() _: GetAssetPriceArgs) {
         return this.pubSub.asyncIterator(
             SubscriptionEvent.ASSET_PRICE_1m_INSERTED,
-        );
-    }
-
-    @Subscription(() => AssetPrice, {
-        name: AssetPriceEventListener.NEW_ASSET_PRICE_5m_PAYLOAD_NAME,
-        filter: async (payload, variables: GetAssetPriceArgs) => {
-            const assetPrice: AssetPrice =
-                payload[
-                    AssetPriceEventListener.NEW_ASSET_PRICE_5m_PAYLOAD_NAME
-                ]!;
-            const { assetInfoId } = variables.data;
-
-            return assetPrice.assetInfoId === assetInfoId;
-        },
-    })
-    async onAssetPrice5mInserted(@Args() _: GetAssetPriceArgs) {
-        return this.pubSub.asyncIterator(
-            SubscriptionEvent.ASSET_PRICE_5m_INSERTED,
         );
     }
 }

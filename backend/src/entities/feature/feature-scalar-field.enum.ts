@@ -2,7 +2,8 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum FeatureScalarFieldEnum {
     id = "id",
-    type = "type"
+    type = "type",
+    name = "name"
 }
 
 

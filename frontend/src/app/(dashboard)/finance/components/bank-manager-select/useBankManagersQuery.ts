@@ -1,4 +1,4 @@
-import { GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
+import { GET_BANK_MANAGERS } from "@/api/bank/manager";
 import {
     GetBankManagersQuery,
     GetBankManagersQueryVariables,

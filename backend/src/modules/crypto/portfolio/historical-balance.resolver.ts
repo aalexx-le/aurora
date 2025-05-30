@@ -30,43 +30,29 @@ export class HistoricalBalanceResolver {
     }
 
     @Subscription(() => HistoricalCryptoBalance, {
-        name: HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_1m_PAYLOAD_NAME,
+        name: HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME,
         filter: async (payload, variables: GetHistoricalBalanceArgs) => {
             const balance: HistoricalCryptoBalance =
                 payload[
                     HistoricalCryptoBalanceEventListener
-                        .NEW_HISTORICAL_CRYPTO_BALANCE_1m_PAYLOAD_NAME
+                        .NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME
                 ]!;
-            const { cryptoPortfolioIds } = variables.data;
-            return cryptoPortfolioIds.includes(balance.cryptoPortfolioId);
+            const timeFrame = payload[
+                HistoricalCryptoBalanceEventListener.TIME_FRAME
+            ]!;
+            const { cryptoPortfolioIds, timeFrame: timeFrameInput } =
+                variables.data;
+            return (
+                cryptoPortfolioIds.includes(balance.cryptoPortfolioId) &&
+                timeFrame === timeFrameInput
+            );
         },
     })
-    async onHistoricalCryptoBalance1mInserted(
+    async onHistoricalCryptoBalanceInserted(
         @Args() args: GetHistoricalBalanceArgs,
     ) {
         return this.pubSub.asyncIterator(
-            SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_1m_INSERTED,
-        );
-    }
-
-    @Subscription(() => HistoricalCryptoBalance, {
-        name: HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_1h_PAYLOAD_NAME,
-        filter: async (payload, variables: GetHistoricalBalanceArgs) => {
-            const balance: HistoricalCryptoBalance =
-                payload[
-                    HistoricalCryptoBalanceEventListener
-                        .NEW_HISTORICAL_CRYPTO_BALANCE_1h_PAYLOAD_NAME
-                ]!;
-            const { cryptoPortfolioIds } = variables.data;
-
-            return cryptoPortfolioIds.includes(balance.cryptoPortfolioId);
-        },
-    })
-    async onHistoricalCryptoBalance1hInserted(
-        @Args() args: GetHistoricalBalanceArgs,
-    ) {
-        return this.pubSub.asyncIterator(
-            SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_1h_INSERTED,
+            SubscriptionEvent.HISTORICAL_CRYPTO_BALANCE_INSERTED,
         );
     }
 }

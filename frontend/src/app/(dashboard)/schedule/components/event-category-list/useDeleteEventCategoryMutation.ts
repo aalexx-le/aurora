@@ -1,8 +1,8 @@
-import { GET_EVENTS } from "@/api/scripts/schedule/event";
+import { GET_EVENTS } from "@/api/schedule/event";
 import {
     GET_EVENT_CATEGORIES,
     REMOVE_EVENT_CATEGORY,
-} from "@/api/scripts/schedule/event-category";
+} from "@/api/schedule/event-category";
 import {
     RemoveEventCategoryMutation,
     RemoveEventCategoryMutationVariables,

@@ -1,4 +1,4 @@
-import { GET_EVENT_RECURRENCES } from "@/api/scripts/schedule/event-recurrence";
+import { GET_EVENT_RECURRENCES } from "@/api/schedule/event-recurrence";
 import {
     GetRecurrenceTemplatesQuery,
     GetRecurrenceTemplatesQueryVariables,

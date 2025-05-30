@@ -1,4 +1,4 @@
-import { GET_BANK_ACCOUNTS } from "@/api/scripts/bank/account";
+import { GET_BANK_ACCOUNTS } from "@/api/bank/account";
 import { BankAccount } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

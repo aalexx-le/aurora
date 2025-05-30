@@ -1,6 +1,6 @@
 "use client";
 
-import { GET_EXPENSE_CATEGORIES, UPDATE_EXPENSE_CATEGORY } from '@/api/scripts/expense/expense-category';
+import { GET_EXPENSE_CATEGORIES, UPDATE_EXPENSE_CATEGORY } from '@/api/expense/expense-category';
 import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
 import { CreateOrUpdateDialog } from '@/components/crud/create-or-update-dialog';

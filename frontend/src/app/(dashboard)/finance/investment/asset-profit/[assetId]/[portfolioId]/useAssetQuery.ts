@@ -1,12 +1,12 @@
+import { SUBSCRIBE_HISTORICAL_ASSET_PROFIT } from "@/api/crypto/asset-profit";
 import {
     GET_ASSET,
-    getSubscriptNewAssetPriceHook,
-    getSubscriptNewAssetPriceResult,
-} from "@/api/scripts/crypto/crypto";
+    SUBSCRIBE_ASSET_PRICE,
+} from "@/api/crypto/crypto";
 import { AssetProfitPageParams } from "@/app/(dashboard)/finance/investment/asset-profit/[assetId]/[portfolioId]/page";
 import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useMemo } from "react";
 
 export const useAssetQuery = (
@@ -14,9 +14,11 @@ export const useAssetQuery = (
     timeFrame: TimeframeEnum,
 ) => {
     const { portfolioId: cryptoPortfolioId, assetId: assetInfoId } = input;
-    const { hook, query } = getSubscriptNewAssetPriceHook(timeFrame);
-    const { data: newData } = hook(query, {
+    const { data: newPriceData } = useSubscription(SUBSCRIBE_ASSET_PRICE, {
         variables: { data: { assetInfoId, timeFrame } },
+    });
+    const { data: newProfitData } = useSubscription(SUBSCRIBE_HISTORICAL_ASSET_PROFIT, {
+        variables: { data: { cryptoPortfolioId, assetInfoId, timeFrame } },
     });
 
     const { data, loading, fetchMore } = useQuery<
@@ -46,19 +48,30 @@ export const useAssetQuery = (
         });
     };
 
-    const newPrice = getSubscriptNewAssetPriceResult(newData);
 
     const priceData = useMemo(() => {
         if (!data || loading) {
             return [];
         }
 
-        return newPrice
-            ? [...data.getAssetPrices, newPrice]
-            : data.getAssetPrices;
-    }, [data, newPrice, loading]);
+        if (!newPriceData?.newAssetPrice) {
+            return data.getAssetPrices;
+        }
 
-    const profitData = data?.getHistoricalAssetProfits || [];
+        return [...data.getAssetPrices, newPriceData.newAssetPrice];
+    }, [data, newPriceData, loading]);
+
+    const profitData = useMemo(() => {
+        if (!data?.getHistoricalAssetProfits || loading) {
+            return [];
+        }
+
+        if (!newProfitData?.newHistoricalAssetProfit) {
+            return data.getHistoricalAssetProfits;
+        }
+
+        return [...data.getHistoricalAssetProfits, newProfitData.newHistoricalAssetProfit];
+    }, [data, newProfitData, loading]);
 
     return {
         priceData,

@@ -1,4 +1,4 @@
-import { CREATE_EXPENSE_CATEGORY, GET_EXPENSE_CATEGORIES } from '@/api/scripts/expense/expense-category';
+import { CREATE_EXPENSE_CATEGORY, GET_EXPENSE_CATEGORIES } from '@/api/expense/expense-category';
 import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import { ExpenseCategory } from "@/app/(dashboard)/finance/expense/components/category-list/types";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";

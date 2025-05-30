@@ -6,7 +6,7 @@ import * as React from "react";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 
-import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/scripts/expense/expense";
+import { CREATE_EXPENSE, GET_EXPENSES } from "@/api/expense/expense";
 import ExpenseForm from "@/app/(dashboard)/finance/expense/components/expense-form/ExpenseForm";
 import { Expense } from "@/app/(dashboard)/finance/expense/components/expense-table/types";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import { GET_EXPENSE_CATEGORIES } from "@/api/scripts/expense/expense-category";
+import { GET_EXPENSE_CATEGORIES } from "@/api/expense/expense-category";
 import CategoryAvatar from "@/app/(dashboard)/finance/expense/components/category-list/CategoryAvatar";
 import { CategoryBadge } from "@/app/(dashboard)/finance/expense/components/category-list/CategoryBadge";
 import { Button } from "@/components/ui/button";

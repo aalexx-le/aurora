@@ -1,4 +1,4 @@
-import { CREATE_BANK_MANAGER, GET_BANK_MANAGERS } from "@/api/scripts/bank/manager";
+import { CREATE_BANK_MANAGER, GET_BANK_MANAGERS } from "@/api/bank/manager";
 import { ThirdPartySelect } from "@/app/(dashboard)/finance/components/third-party-select/ThirdPartySelect";
 import { CreateOrUpdateDialog } from "@/components/crud/create-or-update-dialog";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/scripts/crypto/execution";
+import { GET_CREATE_PORTFOLIO_EXECUTIONS } from "@/api/crypto/execution";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Timeline from "@/components/ui/timeline";
 import { GetCreatePortfolioExecutionsQuery, GetCreatePortfolioExecutionsQueryVariables } from "@/gql/graphql";

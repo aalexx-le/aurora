@@ -11,11 +11,49 @@ export const generateDaysInMonth = (daysInMonth: number) =>
   }));
 
 // Calendar navigation functions
-export const goPrev = (calendarRef: calendarRef) => 
-  calendarRef.current?.getApi().prev();
+export const goPrev = (calendarRef: calendarRef) => {
+  const calendarApi = calendarRef.current?.getApi();
+  const currentDate = calendarApi?.getDate();
+  if (currentDate) {
+    const newDate = new Date(currentDate);
+    const view = calendarApi?.view.type;
+    
+    if (view === 'dayGridMonth') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else if (view === 'timeGridWeek') {
+      newDate.setDate(newDate.getDate() - 7);
+    } else if (view === 'timeGridDay') {
+      newDate.setDate(newDate.getDate() - 1);
+    } else {
+      // Default fallback
+      newDate.setDate(newDate.getDate() - 1);
+    }
+    
+    calendarApi?.gotoDate(newDate);
+  }
+};
 
-export const goNext = (calendarRef: calendarRef) => 
-  calendarRef.current?.getApi().next();
+export const goNext = (calendarRef: calendarRef) => {
+  const calendarApi = calendarRef.current?.getApi();
+  const currentDate = calendarApi?.getDate();
+  if (currentDate) {
+    const newDate = new Date(currentDate);
+    const view = calendarApi?.view.type;
+    
+    if (view === 'dayGridMonth') {
+      newDate.setMonth(newDate.getMonth() + 1);
+    } else if (view === 'timeGridWeek') {
+      newDate.setDate(newDate.getDate() + 7);
+    } else if (view === 'timeGridDay') {
+      newDate.setDate(newDate.getDate() + 1);
+    } else {
+      // Default fallback
+      newDate.setDate(newDate.getDate() + 1);
+    }
+    
+    calendarApi?.gotoDate(newDate);
+  }
+};
 
 export const goToday = (calendarRef: calendarRef) => 
   calendarRef.current?.getApi().today();
@@ -56,7 +94,6 @@ export const setView = (
 // Update viewedDate from calendar
 export const updateViewedDate = (calendarRef: calendarRef, setViewedDate: (date: Date) => void) => {
     const newDate = calendarRef.current?.getApi().getDate();
-    console.log('newDate', newDate);
     if (newDate) {
       setViewedDate(new Date(newDate));
     }
