@@ -17,12 +17,12 @@ import { User } from "src/entities/user/user.model";
 import { JwtGuard } from "src/modules/auth/guards/jwt.guard";
 import { SubscriptionEvent } from "src/shared/constants/subscription.event";
 import { AuthUser } from "src/shared/decorators/auth-user.decorator";
+import { PaddleWebhookService } from "../../paddle/paddle-webhook.service";
 import { MembershipPlanService } from "../plan/membership-plan.service";
 import { CreateSubscriptionArgs } from "./dtos/create-subscription.dto";
 import { DeleteSubscriptionArgs } from "./dtos/delete-subscription.dto";
 import { UpdateSubscriptionArgs } from "./dtos/update-subscription.dto";
 import { MembershipSubscriptionService } from "./membership-subscription.service";
-import { PaddleWebhookService } from "../../paddle/paddle-webhook.service";
 
 @UseGuards(JwtGuard)
 @Resolver(() => MembershipSubscription)

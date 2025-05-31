@@ -1,7 +1,7 @@
 import { graphql } from "@/gql";
 
 export const CREATE_CRYPTO_PORTFOLIO = graphql(`
-    mutation CreateCryptoProfile($data: CreateCryptoPortfolioInput!) {
+    mutation CreateCryptoPortfolio($data: CreateCryptoPortfolioInput!) {
         createCryptoPortfolio(data: $data) {
             userId
         }

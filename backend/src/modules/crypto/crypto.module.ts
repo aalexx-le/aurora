@@ -1,8 +1,9 @@
 import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
-import { Module, Scope } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ConnectionStringParser } from "connection-string-parser";
 import { PgPubSubModule } from "nestjs-pg-pubsub";
+import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
 import { EncryptionService } from "../../shared/encryption.service";
 import { CryptoAssetInfoResolver } from "./asset/asset-info.resolver";
 import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
@@ -17,7 +18,7 @@ import { HistoricalBalanceResolver } from "./portfolio/historical-balance.resolv
 import { PortfolioEventListener } from "./portfolio/portfolio-event-listener.service";
 import { CryptoPortfolioResolver } from "./portfolio/portfolio.resolver";
 import { CryptoPortfolioService } from "./portfolio/portfolio.service";
-import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
+import { ExportModule } from "./export/export.module";
 
 @Module({
     imports: [
@@ -75,35 +76,7 @@ import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
                 };
             },
         }),
-        // KafkaModule.forRootAsync({
-        //     useFactory: (configService: ConfigService) => {
-        //         const groupId = "crypto-profile";
-        //         const brokerList =
-        //             configService.get<string>("MESSAGE_BROKER_URL");
-        //         const clientId = "crypto-profile-nestjs";
-        //         return {
-        //             global: true,
-        //             consumer: {
-        //                 conf: {
-        //                     "group.id": groupId,
-        //                     "metadata.broker.list": brokerList,
-        //                 },
-        //             },
-        //             producer: {
-        //                 conf: {
-        //                     "client.id": clientId,
-        //                     "metadata.broker.list": brokerList,
-        //                 },
-        //             },
-        //             adminClient: {
-        //                 conf: {
-        //                     "metadata.broker.list": brokerList,
-        //                 },
-        //             },
-        //         };
-        //     },
-        //     inject: [ConfigService],
-        // }),
+        ExportModule,
     ],
     providers: [
         CryptoPortfolioResolver,
@@ -111,11 +84,7 @@ import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
         CryptoAssetInfoResolver,
         CryptoAssetPriceResolver,
         HistoricalBalanceResolver,
-        {
-            provide: HistoricalAssetProfitResolver,
-            useClass: HistoricalAssetProfitResolver,
-            scope: Scope.DEFAULT,
-        },
+        HistoricalAssetProfitResolver,
         TradeResolver,
 
         CryptoPortfolioService,
@@ -132,6 +101,7 @@ import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
         CryptoPortfolioService,
         CryptoAssetService,
         SUBSCRIPTION_PUB_SUB_PROVIDER,
+        ExportModule,
     ],
 })
 export class CryptoModule {}

@@ -10,7 +10,7 @@ import { MembershipPlanService } from "./membership-plan.service";
     imports: [
         PaddleModule,
         forwardRef(() => MembershipPriceModule),
-        MembershipFeatureModule,
+        forwardRef(() => MembershipFeatureModule),
     ],
     providers: [MembershipPlanService, PaddleService, MembershipPlanResolver],
     exports: [MembershipPlanService],

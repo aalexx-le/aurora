@@ -5,12 +5,13 @@ import { CategorySummary } from "@/app/(dashboard)/finance/investment/components
 import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ExportButton } from "@/components/export/ExportButton";
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { FastAverageColor, FastAverageColorResource } from "fast-average-color";
 import { useEffect, useState } from "react";
 
-interface IProps {
+export interface IPortfolioAnalysisProps {
     cryptoPortfolioId: string;
     assetProfits: GetCryptoPortfoliosQuery['getCryptoPortfolios'][number]['latestAssetProfits'];
     balances: GetCryptoPortfoliosQuery['getCryptoPortfolios'][number]['balances'];
@@ -32,8 +33,9 @@ export type AnalyseData = {
 
 const MIN_THRESHOLD = 0.1;
 
-export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: IProps) {
+export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: IPortfolioAnalysisProps) {
     const [analyseData, setAnalyseData] = useState<AnalyseData[]>([]);
+    
 
     useEffect(() => {
         const getChartData = async () => {
@@ -78,9 +80,9 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
 
             const hideSymbols = ["BNB", "BTC"];
 
-            const filteredHideBalances = filteredBalances.filter(b => !hideSymbols.includes(b.name));
+            // const filteredHideBalances = filteredBalances.filter(b => !hideSymbols.includes(b.name));
 
-            return filteredHideBalances;
+            return filteredBalances;
             // const converted = await Promise.all(
             //     filteredBalances.map((v) => convertCurrency(v.estimatedProfit as number, false))
             // );
@@ -91,22 +93,33 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
         getChartData().then(data => {
             setAnalyseData(data);
         });
-    }, [assetProfits, balances])
+    }, [assetProfits])
 
     return (
         <Card className="flex-1 flex flex-col">
             <CardHeader className="flex flex-row justify-between">
-                <CardTitle className="text-xl font-bold text-muted-foreground tracking-wide">Portfolio</CardTitle>
-                <Tooltip>
-                    <TooltipTrigger className="text-muted-foreground">
-                        <QuestionMarkCircledIcon/>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p className="font-bold text-sm">Formula</p>
-                        <p className="font-bold">[Current Price] x [Remaining quantity] = [Balance]</p>
-                        <p className="font-bold">[Balance] - [Invest] = [Profit]</p>
-                    </TooltipContent>
-                </Tooltip>
+                <div className="flex items-center gap-2">
+                    <CardTitle className="text-xl font-bold text-muted-foreground tracking-wide">
+                        Portfolio
+                    </CardTitle>
+                    <Tooltip>
+                        <TooltipTrigger className="text-muted-foreground">
+                            <QuestionMarkCircledIcon/>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p className="font-bold text-sm">Formula</p>
+                            <p className="font-bold">[Current Price] x [Remaining quantity] = [Balance]</p>
+                            <p className="font-bold">[Balance] - [Invest] = [Profit]</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
+                <div className="flex items-center gap-2">
+                    <ExportButton
+                        analyseData={analyseData}
+                        portfolioId={cryptoPortfolioId}
+                        portfolioName="Portfolio"
+                    />
+                </div>
             </CardHeader>
             <CardContent className="p-0 lg:p-4 flex flex-1 items-center">
                 <div className="flex-1 flex flex-col lg:flex-row items-center justify-between">

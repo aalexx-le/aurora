@@ -4,7 +4,6 @@ import { GraphQLError } from "graphql";
 import { PrismaService } from "nestjs-prisma";
 import { MembershipPlan } from "src/entities/membership-plan/membership-plan.model";
 import { PaddleService } from "src/modules/paddle/paddle.service";
-import { MembershipFeatureService } from "../feature/membership-feature.service";
 import { CreatePlanDto } from "./dtos/create-plan.dto";
 import { UpdatePlanDto } from "./dtos/update-plan.dto";
 
@@ -15,7 +14,6 @@ export class MembershipPlanService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly paddleService: PaddleService,
-        private readonly membershipFeatureService: MembershipFeatureService,
     ) {}
 
     async findAll(): Promise<MembershipPlan[]> {
@@ -59,16 +57,23 @@ export class MembershipPlanService {
                 },
             });
 
+            await Promise.all(
+                featureIds.map((featureId) =>
+                    tx.membershipFeature.create({
+                        data: {
+                            planId: plan.id,
+                            featureId,
+                        },
+                        include: { feature: true },
+                    }),
+                ),
+            );
+
             return plan;
         });
 
-        // If featureIds are provided, create membership features
-        if (featureIds && featureIds.length > 0) {
-            await this.membershipFeatureService.createMany(plan.id, featureIds);
-        }
-
-        // Return the created plan with proper typing
-        return plan as MembershipPlan;
+        
+        return plan;
     }
 
     async update(id: string, data: UpdatePlanDto): Promise<MembershipPlan> {
@@ -130,7 +135,9 @@ export class MembershipPlanService {
         }
 
         // Delete all membership features for this plan
-        await this.membershipFeatureService.deleteByPlanId(id);
+        await this.prisma.membershipFeature.deleteMany({
+            where: { planId: id },
+        });
 
         // Note: We don't delete the product from Paddle here as it might be needed for historical records
         // Instead, we could archive it or handle it according to business requirements

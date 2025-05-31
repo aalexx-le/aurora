@@ -90,6 +90,12 @@ export enum CreateExecutionStatus {
     SUCCESS = "SUCCESS"
 }
 
+export enum ExportFormat {
+    PDF = "PDF",
+    CSV = "CSV",
+    EXCEL = "EXCEL"
+}
+
 export interface GetAssetInfoInput {
     id: string;
 }
@@ -142,6 +148,14 @@ export interface CreateOKXCryptoPortfolioInput {
     apiKey: string;
     secretKey: string;
     passphrase: string;
+}
+
+export interface ExportPortfolioInput {
+    portfolioId: string;
+    format: ExportFormat;
+    includeCharts: boolean;
+    includeSummary: boolean;
+    portfolioName?: Nullable<string>;
 }
 
 export interface LoginReqDto {
@@ -755,6 +769,14 @@ export interface CreateCryptoRes {
     userId: number;
 }
 
+export interface ExportResult {
+    downloadUrl: string;
+    fileName: string;
+    mimeType: string;
+    fileSize: number;
+    expiresAt: DateTime;
+}
+
 export interface TotalSpentAmountOutput {
     amount: number;
     month: number;
@@ -786,6 +808,7 @@ export interface IQuery {
     getMembershipPrices(): MembershipPrice[] | Promise<MembershipPrice[]>;
     getMembershipPrice(id: string): MembershipPrice | Promise<MembershipPrice>;
     getMembershipPricesByPlan(planId: string): MembershipPrice[] | Promise<MembershipPrice[]>;
+    myMembershipFeatures(): MembershipFeature[] | Promise<MembershipFeature[]>;
     getFeatures(): Feature[] | Promise<Feature[]>;
     getFeature(id: number): Feature | Promise<Feature>;
     myActiveMembershipSubscriptions(): MembershipSubscription[] | Promise<MembershipSubscription[]>;
@@ -797,6 +820,7 @@ export interface IQuery {
 export interface IMutation {
     createCryptoPortfolio(data: CreateCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
     createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
+    exportPortfolio(input: ExportPortfolioInput): ExportResult | Promise<ExportResult>;
     login(data: LoginReqDto): LoginResDto | Promise<LoginResDto>;
     signup(data: CreateUserInput): SignupResDto | Promise<SignupResDto>;
     verifyAccount(data: VerifyDto): LoginResDto | Promise<LoginResDto>;

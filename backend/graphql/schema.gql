@@ -492,6 +492,14 @@ type CreateCryptoRes {
   userId: Float!
 }
 
+type ExportResult {
+  downloadUrl: String!
+  fileName: String!
+  mimeType: String!
+  fileSize: Float!
+  expiresAt: DateTime!
+}
+
 type TotalSpentAmountOutput {
   amount: Float!
   month: Float!
@@ -523,6 +531,7 @@ type Query {
   getMembershipPrices: [MembershipPrice!]!
   getMembershipPrice(id: String!): MembershipPrice!
   getMembershipPricesByPlan(planId: String!): [MembershipPrice!]!
+  myMembershipFeatures: [MembershipFeature!]!
   getFeatures: [Feature!]!
   getFeature(id: Int!): Feature!
   myActiveMembershipSubscriptions: [MembershipSubscription!]!
@@ -573,6 +582,7 @@ input GetPaymentMethodDto {
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
   createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput!): CreateCryptoRes!
+  exportPortfolio(input: ExportPortfolioInput!): ExportResult!
   login(data: LoginReqDto!): LoginResDto!
   signup(data: CreateUserInput!): SignupResDto!
   verifyAccount(data: VerifyDto!): LoginResDto!
@@ -633,6 +643,21 @@ input CreateOKXCryptoPortfolioInput {
   apiKey: String!
   secretKey: String!
   passphrase: String!
+}
+
+input ExportPortfolioInput {
+  portfolioId: String!
+  format: ExportFormat!
+  includeCharts: Boolean! = true
+  includeSummary: Boolean! = true
+  portfolioName: String
+}
+
+"""Available export formats for portfolio analysis"""
+enum ExportFormat {
+  PDF
+  CSV
+  EXCEL
 }
 
 input LoginReqDto {

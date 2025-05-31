@@ -179,18 +179,19 @@ export const ExpenseFormPresentation = ({ onSubmit, loading }) => (
 
 ```typescript
 // api/auth/auth.ts
-import gql from "@/gql";
+import { graphql } from "@/gql";
 
-export const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = graphql(`
   mutation Login($data: LoginReqDto!) {
     login(data: $data) {
       accessToken
       refreshToken
     }
   }
-`;
+`);
+
 // api/user/user.ts
-export const GET_USER = gql`
+export const GET_USER = graphql(`
   query GetUser($id: ID!) {
     user(id: $id) {
       id
@@ -199,7 +200,7 @@ export const GET_USER = gql`
       email
     }
   }
-`;
+`);
 
 // domain/hooks/useUserQuery.ts
 import { GET_USER } from "@/api/user/user";

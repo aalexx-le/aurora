@@ -1,9 +1,3 @@
----
-description: Next.js frontend development patterns and conventions
-globs: frontend/src/**/*.ts*
-alwaysApply: true
----
-
 # Next.js Frontend Guidelines
 
 - Use yarn as package manager
@@ -72,7 +66,6 @@ export const UserCard = ({ user, settings }: UserCardProps) => (
 - Consider object props when you have 3+ related parameters
 - Maintain clear object boundaries (user data, settings, actions, etc.)
 - Use object spreading for partial updates: `{...user, name: newName}`
-
 **❌ Avoid:** Destructuring objects into individual props at component boundaries.
 
 ## Rule 3: Empty Arrays Over Undefined
@@ -181,18 +174,19 @@ export const ExpenseFormPresentation = ({ onSubmit, loading }) => (
 
 ```typescript
 // api/auth/auth.ts
-import gql from "@/gql";
+import { graphql } from "@/gql";
 
-export const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = graphql(`
   mutation Login($data: LoginReqDto!) {
     login(data: $data) {
       accessToken
       refreshToken
     }
   }
-`;
+`);
+
 // api/user/user.ts
-export const GET_USER = gql`
+export const GET_USER = graphql(`
   query GetUser($id: ID!) {
     user(id: $id) {
       id
@@ -201,7 +195,7 @@ export const GET_USER = gql`
       email
     }
   }
-`;
+`);
 
 // domain/hooks/useUserQuery.ts
 import { GET_USER } from "@/api/user/user";

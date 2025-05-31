@@ -8,7 +8,7 @@ import {
     PortfolioHeaderSkeleton,
     PortfolioSkeleton
 } from "@/app/(dashboard)/finance/investment/components/skeletons";
-import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
+import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/hooks/useCryptoPortfoliosQuery";
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { useAppSelector } from "@/state/hooks";
@@ -16,13 +16,13 @@ import { lazy, Suspense } from "react";
 
 // Lazy load components
 const PortfolioSelect = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/PortfolioSelect"));
-const CreatePortfolioDialog = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/CreatePortfolioDialog"));
+const CreatePortfolioDialogWithLock = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/CreatePortfolioDialogWithLock"));
 const CurrencySelect = lazy(() => import("@/app/(dashboard)/finance/investment/components/currency-select/CurrencySelect"));
 const PortfolioSummary = lazy(() => import("@/app/(dashboard)/finance/components/investment-summary/PortfolioSummary"));
 const HistoricalBalanceChart = lazy(() => import("@/app/(dashboard)/finance/investment/components/historical-balance-chart/HistoricalBalanceChart"));
 const AssetTable = lazy(() => import("@/app/(dashboard)/finance/investment/components/asset-table/AssetTable"));
 const BalancePieChart = lazy(() => import("@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart").then(module => ({ default: module.BalancePieChart })));
-const PortfolioAnalysis = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis").then(module => ({ default: module.PortfolioAnalysis })));
+const PortfolioAnalysisWithLock = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysisWithLock"));
 const CreateExecutionSteps = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/CreateExecutionSteps").then(module => ({ default: module.CreateExecutionSteps })));
 
 interface IProps {
@@ -38,7 +38,7 @@ function InvestmentPage({portfolios}: IProps) {
                 <div className="flex gap-4">
                     <Suspense fallback={<PortfolioHeaderSkeleton />}>
                         <PortfolioSelect portfolios={portfolios} />
-                        <CreatePortfolioDialog/>
+                        <CreatePortfolioDialogWithLock/>
                         <div className="ml-auto">
                             <CurrencySelect/>
                         </div>
@@ -61,7 +61,7 @@ function InvestmentPage({portfolios}: IProps) {
                         </Suspense>
 
                         <Suspense fallback={<PortfolioAnalysisSkeleton />}>
-                            <PortfolioAnalysis
+                            <PortfolioAnalysisWithLock
                                 cryptoPortfolioId={portfolio.id}
                                 assetProfits={portfolio.latestAssetProfits}
                                 balances={portfolio.balances}

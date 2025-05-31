@@ -13,7 +13,7 @@ export class FeatureService {
     }
 
     async findOne(id: number): Promise<Feature> {
-        return this.prisma.feature.findUniqueOrThrow({
+        return this.prisma.feature.findUnique({
             where: { id },
         });
     }

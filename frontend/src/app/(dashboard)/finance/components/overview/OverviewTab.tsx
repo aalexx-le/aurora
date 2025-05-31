@@ -5,7 +5,7 @@ import {
     ExpenseRatioBarChart
 } from "@/app/(dashboard)/finance/expense/components/income-expense-ratio-bar-chart/ExpenseRatioBarChart";
 import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
-import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/useCryptoPortfoliosQuery";
+import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/hooks/useCryptoPortfoliosQuery";
 import { CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { useQuery } from "@apollo/client";
