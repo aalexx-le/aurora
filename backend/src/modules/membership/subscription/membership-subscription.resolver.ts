@@ -70,13 +70,6 @@ export class MembershipSubscriptionResolver {
         return this.subscriptionService.update(args.id, args.data);
     }
 
-    @Mutation(() => Boolean, { name: "deleteMembershipSubscription" })
-    async deleteSubscription(
-        @Args() args: DeleteSubscriptionArgs,
-    ): Promise<boolean> {
-        return this.subscriptionService.delete(args.id);
-    }
-
     @ResolveField("plan", () => MembershipPlan)
     async getPlan(@Parent() subscription: MembershipSubscription) {
         return this.planService.findOne(subscription.planId);
@@ -105,6 +98,7 @@ export class MembershipSubscriptionResolver {
                 PaddleWebhookService
                     .MEMBERSHIP_SUBSCRIPTION_UPDATED_PAYLOAD_NAME
             ] as MembershipSubscription;
+            console.log(context.req)
             const userId = context.req?.user?.id;
             return subscription.userId === userId;
         },

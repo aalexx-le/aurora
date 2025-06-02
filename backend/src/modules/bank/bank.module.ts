@@ -17,39 +17,39 @@ const CassoHttpModule = HttpModule.registerAsync({
     inject: [ConfigService],
 });
 
-const KafkaModuleAsync = KafkaModule.registerAsync({
-    inject: [ConfigService],
-    useFactory: async (
-        configService: ConfigService,
-    ): Promise<KafkaModuleOptions> => {
-        const broker = configService.get("MESSAGE_BROKER_URL");
-        return {
-            consume_method: "each",
-            options: {
-                client: {
-                    brokers: [broker],
-                    clientId: "nestjs-kafka",
-                },
-                consumer: {
-                    groupId: "backend-server",
-                    allowAutoTopicCreation: true,
-                },
-                producer: {
-                    allowAutoTopicCreation: true,
-                },
-                subscribe: {
-                    fromBeginning: false,
-                },
-                run: {
-                    autoCommit: true,
-                },
-            },
-        };
-    },
-});
+// const KafkaModuleAsync = KafkaModule.registerAsync({
+//     inject: [ConfigService],
+//     useFactory: async (
+//         configService: ConfigService,
+//     ): Promise<KafkaModuleOptions> => {
+//         const broker = configService.get("MESSAGE_BROKER_URL");
+//         return {
+//             consume_method: "each",
+//             options: {
+//                 client: {
+//                     brokers: [broker],
+//                     clientId: "nestjs-kafka",
+//                 },
+//                 consumer: {
+//                     groupId: "backend-server",
+//                     allowAutoTopicCreation: true,
+//                 },
+//                 producer: {
+//                     allowAutoTopicCreation: true,
+//                 },
+//                 subscribe: {
+//                     fromBeginning: false,
+//                 },
+//                 run: {
+//                     autoCommit: true,
+//                 },
+//             },
+//         };
+//     },
+// });
 
 @Module({
-    imports: [ScheduleModule.forRoot(), CassoHttpModule, KafkaModuleAsync],
+    imports: [ScheduleModule.forRoot(), CassoHttpModule],
     providers: [
         BankManagerResolver,
         BankAccountResolver,
@@ -63,7 +63,6 @@ const KafkaModuleAsync = KafkaModule.registerAsync({
         BankAccountService,
         BankTransactionService,
         CassoHttpModule,
-        KafkaModuleAsync,
     ],
 })
 export class BankModule {}

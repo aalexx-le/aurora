@@ -65,8 +65,7 @@ export class CryptoPortfolioResolver {
         filter: (payload, variables, context) => {
             const execution =
                 payload[SubscriptionEvent.CRYPTO_PORTFOLIO_CREATION_STATUS];
-            console.log("execution", context);
-            const userId = context.user?.id;
+            const userId = context.req.user.id;
             return execution.userId === userId;
         },
     })
@@ -79,7 +78,7 @@ export class CryptoPortfolioResolver {
 
     @ResolveField("balances", () => [AssetBalance])
     async getBalances(@Parent() cryptoPortfolio: CryptoPortfolio) {
-        return await this.cryptoPortfolioService.findBalances(
+        return this.cryptoPortfolioService.findBalances(
             cryptoPortfolio.id,
             cryptoPortfolio.exchanges as CEXExchanges,
         );
@@ -99,7 +98,13 @@ export class CryptoPortfolioResolver {
             );
 
         if (historicalBalance.length === 0) {
-            return {};
+            return {
+                time: new Date(),
+                estimatedBalance: 0,
+                changePercent: 0,
+                changeBalance: 0,
+                cryptoPortfolioId: portfolio.id,
+            };
         }
 
         return historicalBalance[0];

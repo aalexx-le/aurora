@@ -1,5 +1,5 @@
-import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
-import { Inject, Injectable, Logger, LoggerService } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ClientKafka } from '@nestjs/microservices';
 import { Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { PrismaService } from "nestjs-prisma";
@@ -7,7 +7,6 @@ import { AssetPrice } from "src/entities/asset-price";
 import { HistoricalAssetProfit } from "src/entities/historical-asset-profit";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
 import { CEXExchanges, CreateExecutionStatus } from "../../../entities/prisma";
-import { KafkaTopic } from "../../../shared/constants/kafka";
 import { EncryptionService } from "../../../shared/encryption.service";
 import { PaginationInput } from "../../../shared/pagination/pagination.args";
 import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
@@ -23,7 +22,7 @@ export class CryptoPortfolioService {
 
     constructor(
         private prisma: PrismaService,
-        @InjectKafka() private readonly kafkaService: KafkaService,
+        @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
         private readonly encryptionService: EncryptionService,
     ) {}
 
@@ -31,44 +30,26 @@ export class CryptoPortfolioService {
         userId: number,
         createCryptoPortfolioInput: CreateCryptoPortfolioInput,
     ) {
-        // createCryptoPortfolioInput.secretKey =
-        //     await this.encryptionService.generateEncryptedKey(
-        //         createCryptoPortfolioInput.secretKey,
-        //     );
-
         const execution = await this.prisma.createPortfolioExecution.create({
             data: {
                 userId,
                 status: CreateExecutionStatus.QUEUE,
             },
         });
+        createCryptoPortfolioInput.secretKey = await this.encryptionService.encryptApiKey(createCryptoPortfolioInput.secretKey);
+        createCryptoPortfolioInput.apiKey = await this.encryptionService.encryptApiKey(createCryptoPortfolioInput.apiKey);
 
-        // Ensure secretKey is properly encoded before sending
-        const msgPayload = {
+        this.kafkaClient.emit('create-crypto-portfolio', {
             userId,
             ...createCryptoPortfolioInput,
             executionId: execution.id,
-            secretKey: createCryptoPortfolioInput.secretKey, // Already encrypted string
-        };
-
-        // Stringify with proper encoding
-        const msg = Buffer.from(JSON.stringify(msgPayload), "utf-8");
-
-        const res = await this.kafkaService.sendMessage({
-            topic: KafkaTopic.CREATE_CRYPTO_PORTFOLIO,
-            messages: [
-                {
-                    value: msg,
-                    headers: {
-                        "content-encoding": "utf-8", // Add encoding header
-                    },
-                },
-            ],
         });
 
         this.logger.log(
-            `Message sent to topic(${KafkaTopic.CREATE_CRYPTO_PORTFOLIO})`,
+            `Portfolio creation message emitted for execution ${execution.id}`,
         );
+
+        return execution;
     }
 
     findPortfolio(cryptoPortfolioId: string) {

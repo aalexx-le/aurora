@@ -17,7 +17,6 @@ import { ExpenseModule } from "./modules/expense/expense.module";
 import { FeatureModule } from "./modules/feature/feature.module";
 import { HealthModule } from "./modules/health/health.module";
 import { MembershipModule } from "./modules/membership/membership.module";
-import { PaddleModule } from "./modules/paddle/paddle.module";
 import { PaymentModule } from "./modules/payment/payment.module";
 import { UserModule } from "./modules/user/user.module";
 import { WinstonLoggerModule } from "./shared/logger/winston-logger.module";
@@ -157,7 +156,6 @@ import { LoggingInterceptor } from "./shared/logger/winston-logging.interceptor"
         ExpenseModule,
         EventModule,
         HealthModule,
-        PaddleModule,
         MembershipModule,
         FeatureModule,
         PaymentModule,

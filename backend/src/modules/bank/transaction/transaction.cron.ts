@@ -2,9 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { PrismaService } from "nestjs-prisma";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { GetTransactionNetworkOutput } from "./dto/get-transaction-network.output";
+import { GetTransactionNetworkOutput, Record } from "./dto/get-transaction-network.output";
 import { firstValueFrom } from "rxjs";
-import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
 import { KafkaTopic } from "../../../shared/constants/kafka";
 
 @Injectable()
@@ -14,7 +13,6 @@ export class BankTransactionCron {
     constructor(
         private readonly httpService: HttpService,
         private readonly prisma: PrismaService,
-        @InjectKafka() private readonly kafkaService: KafkaService,
     ) {}
 
     @Cron(CronExpression.EVERY_MINUTE)
@@ -35,7 +33,7 @@ export class BankTransactionCron {
             const lastTransactionTime = lastTransaction.createdAt;
             lastTransactionTime.setDate(lastTransactionTime.getDate() - 1);
 
-            const { data } = await this.fetchTransactions(
+            const newTransactions = await this.fetchTransactions(
                 autoBankManager.apiKey,
             );
 
@@ -54,11 +52,11 @@ export class BankTransactionCron {
             //     });
             // }
 
-            const latestTransactions = data.records.filter(
+            const latestTransactions = newTransactions.filter(
                 (r) => r.id > lastTransactionId,
             );
             this.logger.log(
-                `Process ${latestTransactions.length} bank transactions for auto bank manager ${autoBankManager.id} from ${data.records[0].when} to ${data.records[data.records.length - 1].when}`,
+                `Process ${latestTransactions.length} bank transactions for auto bank manager ${autoBankManager.id} from ${newTransactions[0].when} to ${newTransactions[newTransactions.length - 1].when}`,
             );
 
             for (const transaction of latestTransactions) {
@@ -76,13 +74,13 @@ export class BankTransactionCron {
                 });
 
                 const msg = Buffer.from(JSON.stringify(txn_entity));
-                const res = await this.kafkaService.sendMessage({
-                    topic: KafkaTopic.EMBED_TRANSACTION,
-                    messages: [{ value: msg }],
-                });
-                this.logger.log(
-                    `Message sent to topic(${KafkaTopic.EMBED_TRANSACTION}): ${msg} with result: ${res}`,
-                );
+                // const res = await this.kafkaService.sendMessage({
+                //     topic: KafkaTopic.EMBED_TRANSACTION,
+                //     messages: [{ value: msg }],
+                // });
+                // this.logger.log(
+                //     `Message sent to topic(${KafkaTopic.EMBED_TRANSACTION}): ${msg} with result: ${res}`,
+                // );
 
                 await this.prisma.historicalBankBalance.create({
                     data: {
@@ -103,16 +101,21 @@ export class BankTransactionCron {
     private async fetchTransactions(
         apiKey: string,
         fromDate?: string,
-    ): Promise<GetTransactionNetworkOutput> {
-        const response = await firstValueFrom(
-            this.httpService
-                .get("/v2/transactions", {
-                    headers: { Authorization: `Apikey ${apiKey}` },
-                    params: { fromDate, sort: "DESC", pageSize: 30 },
-                })
-                .pipe(),
-        );
+    ): Promise<Record[]> {
+        try {
+            const response: { data: GetTransactionNetworkOutput } = await firstValueFrom(
+                this.httpService
+                    .get("/v2/transactions", {
+                        headers: { Authorization: `Apikey ${apiKey}` },
+                        params: { fromDate, sort: "DESC", pageSize: 30 },
+                    })
+                    .pipe(),
+                );
 
-        return response.data;
+            return response.data.data.records;
+        } catch (error) {
+            this.logger.error(`Error fetching transactions: ${error}`);
+            return [];
+        }
     }
 }

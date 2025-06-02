@@ -1,11 +1,9 @@
 import {
-    forwardRef,
-    Inject,
     Injectable,
     InternalServerErrorException,
     Logger,
     NotFoundException,
-    OnModuleInit,
+    OnModuleInit
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Environment, Paddle } from "@paddle/paddle-node-sdk";
@@ -15,12 +13,12 @@ import {
 } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { PrismaService } from "nestjs-prisma";
+import { CustomerPortalSessionResponse } from "./dtos/customer-portal-session.dto";
 import { CreatePriceInputData, UpdatePriceInputData } from "./dtos/price.dto";
 import {
     CreateProductInputData,
     UpdateProductInputData,
 } from "./dtos/product.dto";
-import { PaddleWebhookService } from "./paddle-webhook.service";
 
 @Injectable()
 export class PaddleService implements OnModuleInit {
@@ -397,5 +395,80 @@ export class PaddleService implements OnModuleInit {
                 },
             );
         }
+    }
+
+    /**
+     * Create a customer portal session for a user
+     * @param userId - The user ID to create portal session for
+     * @param subscriptionIds - Optional array of subscription IDs for deep linking
+     */
+    async createCustomerPortalSession(
+        userId: number,
+        subscriptionIds?: string[]
+    ): Promise<CustomerPortalSessionResponse> {
+        this.logger.log(
+            `Creating customer portal session for user ID: ${userId}`,
+        );
+
+        try {
+            // First, get the Paddle customer ID for this user
+            const paddleCustomerId = await this.getPaddleCustomerIdByUserId(userId);
+            
+            if (!paddleCustomerId) {
+                throw new GraphQLError('No Paddle customer found for this user', {
+                    extensions: { code: 'CUSTOMER_NOT_FOUND' }
+                });
+            }
+
+            this.logger.log(
+                `Found Paddle customer ID: ${paddleCustomerId} for user: ${userId}`,
+            );
+
+            // Create the portal session using Paddle SDK
+            const response = await this.paddle.customerPortalSessions.create(
+                paddleCustomerId,
+                subscriptionIds || []
+            );
+            
+            this.logger.log(
+                `Successfully created customer portal session: ${response.id}`,
+            );
+
+            return response;
+        } catch (error) {
+            if (error instanceof GraphQLError) {
+                throw error;
+            }
+            this.handlePaddleError(error, 'createCustomerPortalSession');
+        }
+    }
+
+    /**
+     * Get Paddle customer ID for a user by looking up their payment method
+     * @param userId - The user ID to look up
+     * @returns Paddle customer ID or null if not found
+     */
+    private async getPaddleCustomerIdByUserId(userId: number): Promise<string | null> {
+        this.logger.debug(`Looking up Paddle customer ID for user: ${userId}`);
+
+        const paymentMethod = await this.prisma.paymentMethod.findFirst({
+            where: { 
+                userId,
+                provider: 'PADDLE'
+            },
+            include: {
+                paddlePaymentMethod: true
+            }
+        });
+
+        const customerId = paymentMethod?.paddlePaymentMethod?.customerId || null;
+        
+        if (customerId) {
+            this.logger.debug(`Found Paddle customer ID: ${customerId} for user: ${userId}`);
+        } else {
+            this.logger.debug(`No Paddle customer ID found for user: ${userId}`);
+        }
+
+        return customerId;
     }
 }

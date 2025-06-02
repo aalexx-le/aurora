@@ -11,7 +11,7 @@ import {
     ValidateNested,
 } from "class-validator";
 
-class Record {
+export class Record {
     @IsInt()
     id: number;
 

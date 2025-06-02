@@ -461,6 +461,14 @@ type SignupResDto {
   refreshToken: String!
 }
 
+type ExportResult {
+  downloadUrl: String!
+  fileName: String!
+  mimeType: String!
+  fileSize: Float!
+  expiresAt: DateTime!
+}
+
 type AssetInfoOutput {
   id: String!
   name: String!
@@ -492,18 +500,25 @@ type CreateCryptoRes {
   userId: Float!
 }
 
-type ExportResult {
-  downloadUrl: String!
-  fileName: String!
-  mimeType: String!
-  fileSize: Float!
-  expiresAt: DateTime!
-}
-
 type TotalSpentAmountOutput {
   amount: Float!
   month: Float!
   year: Float!
+}
+
+type GeneralUrl {
+  overview: String!
+}
+
+type CustomerPortalUrls {
+  general: GeneralUrl!
+}
+
+type CustomerPortalSessionResponse {
+  id: String!
+  customerId: String!
+  urls: CustomerPortalUrls!
+  createdAt: String!
 }
 
 type Query {
@@ -616,6 +631,7 @@ type Mutation {
     """How to handle failed transactions (retry or ignore)"""
     handlePastDueTransactions: String
   ): MembershipSubscription!
+  createCustomerPortalSession(subscriptionIds: [String!]): CustomerPortalSessionResponse!
   createMembershipPlan(data: CreatePlanDto!): MembershipPlan!
   updateMembershipPlan(id: String!, data: UpdatePlanDto!): MembershipPlan!
   deleteMembershipPlan(id: String!): Boolean!
@@ -627,7 +643,6 @@ type Mutation {
   deleteFeature(id: Int!): Feature!
   createMembershipSubscription(data: CreateSubscriptionDto!): MembershipSubscription!
   updateMembershipSubscription(id: String!, data: UpdateSubscriptionDto!): MembershipSubscription!
-  deleteMembershipSubscription(id: String!): Boolean!
 }
 
 input CreateCryptoPortfolioInput {

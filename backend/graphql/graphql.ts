@@ -745,6 +745,14 @@ export interface SignupResDto {
     refreshToken: string;
 }
 
+export interface ExportResult {
+    downloadUrl: string;
+    fileName: string;
+    mimeType: string;
+    fileSize: number;
+    expiresAt: DateTime;
+}
+
 export interface AssetInfoOutput {
     id: string;
     name: string;
@@ -769,18 +777,25 @@ export interface CreateCryptoRes {
     userId: number;
 }
 
-export interface ExportResult {
-    downloadUrl: string;
-    fileName: string;
-    mimeType: string;
-    fileSize: number;
-    expiresAt: DateTime;
-}
-
 export interface TotalSpentAmountOutput {
     amount: number;
     month: number;
     year: number;
+}
+
+export interface GeneralUrl {
+    overview: string;
+}
+
+export interface CustomerPortalUrls {
+    general: GeneralUrl;
+}
+
+export interface CustomerPortalSessionResponse {
+    id: string;
+    customerId: string;
+    urls: CustomerPortalUrls;
+    createdAt: string;
 }
 
 export interface IQuery {
@@ -849,6 +864,7 @@ export interface IMutation {
     deleteRecurrenceTemplate(id: number): EventRecurrence | Promise<EventRecurrence>;
     cancelPaddleSubscription(id: string): MembershipSubscription | Promise<MembershipSubscription>;
     reactivatePaddleSubscription(id: string, handlePastDueTransactions?: Nullable<string>): MembershipSubscription | Promise<MembershipSubscription>;
+    createCustomerPortalSession(subscriptionIds?: Nullable<string[]>): CustomerPortalSessionResponse | Promise<CustomerPortalSessionResponse>;
     createMembershipPlan(data: CreatePlanDto): MembershipPlan | Promise<MembershipPlan>;
     updateMembershipPlan(id: string, data: UpdatePlanDto): MembershipPlan | Promise<MembershipPlan>;
     deleteMembershipPlan(id: string): boolean | Promise<boolean>;
@@ -860,7 +876,6 @@ export interface IMutation {
     deleteFeature(id: number): Feature | Promise<Feature>;
     createMembershipSubscription(data: CreateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
     updateMembershipSubscription(id: string, data: UpdateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
-    deleteMembershipSubscription(id: string): boolean | Promise<boolean>;
 }
 
 export interface ISubscription {

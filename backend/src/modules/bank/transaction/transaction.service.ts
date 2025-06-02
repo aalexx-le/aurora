@@ -1,4 +1,3 @@
-import { InjectKafka, KafkaService } from "@claudeseo/nest-kafka";
 import { HttpService } from "@nestjs/axios";
 import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "nestjs-prisma";
@@ -11,7 +10,6 @@ export class BankTransactionService {
     constructor(
         private readonly httpService: HttpService,
         private readonly prisma: PrismaService,
-        @InjectKafka() private readonly kafkaService: KafkaService,
     ) {}
 
     async findHistoricalBalances(bankAccountId: string) {

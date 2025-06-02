@@ -35,7 +35,7 @@ export class PaddleWebhookService {
     constructor(
         private readonly configService: ConfigService,
         private readonly prisma: PrismaService,
-        @Inject(forwardRef(() => PaddleService))
+        @Inject(PaddleService)
         private readonly paddleService: PaddleService,
         @Inject("SUBSCRIPTION_PUB_SUB") private readonly pubSub: PubSub,
     ) {

@@ -1,6 +1,6 @@
-import { KafkaModule, KafkaModuleOptions } from "@claudeseo/nest-kafka";
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConnectionStringParser } from "connection-string-parser";
 import { PgPubSubModule } from "nestjs-pg-pubsub";
 import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
@@ -10,6 +10,7 @@ import { AssetPriceEventListener } from "./asset/asset-price.event-listener";
 import { CryptoAssetPriceResolver } from "./asset/asset-price.resolver";
 import { CryptoAssetService } from "./asset/asset.service";
 import { TradeResolver } from "./asset/trade.resolver";
+import { ExportModule } from "./export/export.module";
 import { CryptoBalanceResolver } from "./portfolio/balance.resolver";
 import { HistoricalAssetProfitEventListener } from "./portfolio/historical-asset-profit.event-listener";
 import { HistoricalAssetProfitResolver } from "./portfolio/historical-asset-profit.resolver";
@@ -18,7 +19,6 @@ import { HistoricalBalanceResolver } from "./portfolio/historical-balance.resolv
 import { PortfolioEventListener } from "./portfolio/portfolio-event-listener.service";
 import { CryptoPortfolioResolver } from "./portfolio/portfolio.resolver";
 import { CryptoPortfolioService } from "./portfolio/portfolio.service";
-import { ExportModule } from "./export/export.module";
 
 @Module({
     imports: [
@@ -46,36 +46,31 @@ import { ExportModule } from "./export/export.module";
             },
             inject: [ConfigService],
         }),
-        KafkaModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: async (
-                configService: ConfigService,
-            ): Promise<KafkaModuleOptions> => {
-                const broker = configService.get("MESSAGE_BROKER_URL");
-                return {
-                    consume_method: "each",
-                    options: {
-                        client: {
-                            brokers: [broker],
-                            clientId: "nestjs-kafka",
-                        },
-                        consumer: {
-                            groupId: "backend-server",
-                            allowAutoTopicCreation: true,
-                        },
-                        producer: {
-                            allowAutoTopicCreation: true,
-                        },
-                        subscribe: {
-                            fromBeginning: false,
-                        },
-                        run: {
-                            autoCommit: true,
-                        },
-                    },
-                };
-            },
-        }),
+        ClientsModule.registerAsync([
+            {
+                name: 'KAFKA_SERVICE',
+                inject: [ConfigService],
+                useFactory: async (configService: ConfigService) => {
+                    const broker = configService.get("MESSAGE_BROKER_URL");
+                    return {
+                        transport: Transport.KAFKA,
+                        options: {
+                            client: {
+                                clientId: 'backend-producer',
+                                brokers: [broker],
+                            },
+                            consumer: {
+                                groupId: 'backend-consumer',
+                                allowAutoTopicCreation: true,
+                            },
+                            producer: {
+                                allowAutoTopicCreation: true,
+                            }
+                        }
+                    };
+                }
+            }
+        ]),
         ExportModule,
     ],
     providers: [
