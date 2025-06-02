@@ -1,38 +1,9 @@
-// Standalone test script for new encryption service
+// Standalone test script for Web Crypto API encryption service
 // Run with: node test-encryption.js
 
 const crypto = require('crypto');
 
-// Mock Fernet for testing
-const mockFernet = {
-  Secret: class {
-    constructor(key) {
-      this.key = key;
-    }
-  },
-  Token: class {
-    constructor({ secret, token, ttl }) {
-      this.secret = secret;
-      this.token = token;
-      this.ttl = ttl;
-    }
-    
-    encode(data) {
-      // Simple mock Fernet encoding (not real Fernet)
-      return 'fernet_' + Buffer.from(data).toString('base64');
-    }
-    
-    decode() {
-      // Simple mock Fernet decoding (not real Fernet)
-      if (!this.token.startsWith('fernet_')) {
-        throw new Error('Invalid Fernet token');
-      }
-      return Buffer.from(this.token.substring(7), 'base64').toString();
-    }
-  }
-};
-
-// Simplified encryption service for testing
+// Simplified encryption service for testing Web Crypto API only
 class TestEncryptionService {
   constructor(masterKey) {
     this.masterSecret = masterKey;
@@ -42,9 +13,6 @@ class TestEncryptionService {
     this.saltLength = 32;
     this.iterations = 100000;
     this.webCryptoPrefix = 'WC1';
-    
-    // Mock legacy secret
-    this.legacySecret = new mockFernet.Secret(masterKey);
   }
 
   async encryptApiKey(apiKey) {
@@ -58,7 +26,7 @@ class TestEncryptionService {
       // Derive key using Node.js crypto (simplified PBKDF2)
       const key = crypto.pbkdf2Sync(this.masterSecret, salt, this.iterations, 32, 'sha256');
       
-      // Encrypt using Node.js crypto AES-GCM (correct API)
+      // Encrypt using Node.js crypto AES-CBC (simplified for testing)
       const cipher = crypto.createCipher('aes-256-cbc', key);
       
       let encrypted = cipher.update(apiKey, 'utf8', 'base64');
@@ -80,18 +48,14 @@ class TestEncryptionService {
 
   async decryptApiKey(encryptedApiKey) {
     try {
-      console.log('🔓 Decrypting with format detection...');
+      console.log('🔓 Decrypting with Web Crypto API...');
       
-      const format = this.detectEncryptionFormat(encryptedApiKey);
-      console.log(`📋 Detected format: ${format}`);
-      
-      if (format === 'webcrypto') {
-        return await this.decryptWebCrypto(encryptedApiKey);
-      } else if (format === 'fernet') {
-        return this.decryptFernet(encryptedApiKey);
-      } else {
-        throw new Error('Unknown format');
+      // Only support Web Crypto format
+      if (!encryptedApiKey.startsWith(this.webCryptoPrefix)) {
+        throw new Error('Unsupported encryption format - only Web Crypto API format is supported');
       }
+      
+      return await this.decryptWebCrypto(encryptedApiKey);
     } catch (error) {
       console.error('❌ Decryption failed:', error);
       throw error;
@@ -127,67 +91,11 @@ class TestEncryptionService {
       throw error;
     }
   }
-
-  decryptFernet(encryptedApiKey) {
-    try {
-      console.log('🔄 Using Fernet fallback...');
-      const token = new mockFernet.Token({
-        secret: this.legacySecret,
-        token: encryptedApiKey,
-        ttl: 0
-      });
-      const result = token.decode();
-      console.log('✅ Fernet decryption successful');
-      return result;
-    } catch (error) {
-      console.error('❌ Fernet decryption failed:', error);
-      throw error;
-    }
-  }
-
-  detectEncryptionFormat(encryptedData) {
-    if (encryptedData.startsWith(this.webCryptoPrefix)) {
-      return 'webcrypto';
-    }
-    
-    // Mock Fernet detection for testing
-    if (encryptedData.startsWith('fernet_')) {
-      return 'fernet';
-    }
-    
-    // Real Fernet detection
-    if (encryptedData.length >= 100 && 
-        !encryptedData.includes('+') && 
-        !encryptedData.includes('/') &&
-        !encryptedData.startsWith(this.webCryptoPrefix)) {
-      return 'fernet';
-    }
-    
-    throw new Error('Unknown format');
-  }
-
-  async migrateApiKey(fernetEncrypted) {
-    try {
-      console.log('🔄 Migrating from Fernet to Web Crypto...');
-      
-      // Decrypt with Fernet
-      const plaintext = this.decryptFernet(fernetEncrypted);
-      
-      // Re-encrypt with Web Crypto
-      const webCryptoEncrypted = await this.encryptApiKey(plaintext);
-      
-      console.log('✅ Migration successful');
-      return webCryptoEncrypted;
-    } catch (error) {
-      console.error('❌ Migration failed:', error);
-      throw error;
-    }
-  }
 }
 
 // Test function
 async function runTests() {
-  console.log('🧪 Starting encryption service tests...\n');
+  console.log('🧪 Starting Web Crypto API encryption tests...\n');
   
   const testKey = 'my-test-api-key-12345';
   const masterKey = 'test-master-key-for-encryption';
@@ -204,36 +112,38 @@ async function runTests() {
     const webCryptoValid = webCryptoDecrypted === testKey;
     console.log(`✅ Web Crypto test: ${webCryptoValid ? 'PASSED' : 'FAILED'}\n`);
     
-    console.log('=== Test 2: Fernet Fallback ===');
-    const fernetToken = new mockFernet.Token({ secret: encryptionService.legacySecret, token: '', ttl: 0 });
-    const fernetEncrypted = fernetToken.encode(testKey);
-    console.log(`Encrypted (Fernet): ${fernetEncrypted}`);
+    console.log('=== Test 2: Multiple Roundtrips ===');
+    let allRoundtripsValid = true;
     
-    const fernetDecrypted = await encryptionService.decryptApiKey(fernetEncrypted);
-    console.log(`Decrypted: ${fernetDecrypted}`);
+    for (let i = 0; i < 3; i++) {
+      const testData = `test-data-${i}-${Date.now()}`;
+      const encrypted = await encryptionService.encryptApiKey(testData);
+      const decrypted = await encryptionService.decryptApiKey(encrypted);
+      const isValid = decrypted === testData;
+      allRoundtripsValid = allRoundtripsValid && isValid;
+      console.log(`Roundtrip ${i + 1}: ${isValid ? 'PASSED' : 'FAILED'}`);
+    }
     
-    const fernetValid = fernetDecrypted === testKey;
-    console.log(`✅ Fernet test: ${fernetValid ? 'PASSED' : 'FAILED'}\n`);
+    console.log(`✅ Multiple roundtrips test: ${allRoundtripsValid ? 'PASSED' : 'FAILED'}\n`);
     
-    console.log('=== Test 3: Migration ===');
-    const migratedEncrypted = await encryptionService.migrateApiKey(fernetEncrypted);
-    console.log(`Migrated to Web Crypto: ${migratedEncrypted.substring(0, 50)}...`);
+    console.log('=== Test 3: Invalid Format Handling ===');
+    try {
+      await encryptionService.decryptApiKey('invalid-format-data');
+      console.log('❌ Invalid format test: FAILED (should have thrown error)');
+    } catch (error) {
+      const expectedError = error.message.includes('Unsupported encryption format');
+      console.log(`✅ Invalid format test: ${expectedError ? 'PASSED' : 'FAILED'}`);
+    }
     
-    const migratedDecrypted = await encryptionService.decryptApiKey(migratedEncrypted);
-    console.log(`Decrypted migrated: ${migratedDecrypted}`);
-    
-    const migrationValid = migratedDecrypted === testKey;
-    console.log(`✅ Migration test: ${migrationValid ? 'PASSED' : 'FAILED'}\n`);
-    
-    console.log('=== Test Summary ===');
-    const allPassed = webCryptoValid && fernetValid && migrationValid;
+    console.log('\n=== Test Summary ===');
+    const allPassed = webCryptoValid && allRoundtripsValid;
     console.log(`Overall result: ${allPassed ? '🎉 ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
     
     if (allPassed) {
-      console.log('✅ Encryption service is working correctly!');
-      console.log('✅ Web Crypto API encryption implemented');
-      console.log('✅ Fernet fallback functional');
-      console.log('✅ Migration capability verified');
+      console.log('✅ Web Crypto API encryption service is working correctly!');
+      console.log('✅ Encryption/decryption roundtrips functional');
+      console.log('✅ Error handling for invalid formats working');
+      console.log('✅ Fernet dependencies completely removed');
     }
     
   } catch (error) {

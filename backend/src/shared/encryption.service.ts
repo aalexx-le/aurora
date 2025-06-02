@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as fernet from 'fernet';
 
 interface MigrationProgress {
   totalKeys: number;
@@ -17,7 +16,7 @@ interface MigrationProgress {
 export class EncryptionService {
     private readonly logger = new Logger(EncryptionService.name);
     private readonly masterSecret: string;
-    private readonly legacySecret: any; // For Fernet fallback during migration
+    // Legacy Fernet support removed - using Web Crypto API only
     
     // Web Crypto API constants
     private readonly algorithm = 'AES-GCM';
@@ -35,14 +34,7 @@ export class EncryptionService {
         
         this.masterSecret = masterKey;
         
-        try {
-            // Initialize legacy Fernet support for migration
-            this.legacySecret = new fernet.Secret(masterKey);
-            this.logger.log('✅ Encryption service initialized with Web Crypto API and Fernet fallback');
-        } catch (error) {
-            this.logger.error('❌ Failed to initialize encryption service', error);
-            throw error;
-        }
+        this.logger.log('✅ Encryption service initialized with Web Crypto API');
     }
 
     /**
@@ -98,26 +90,22 @@ export class EncryptionService {
     }
 
     /**
-     * Primary decryption method with automatic format detection and fallback
+     * Primary decryption method using Web Crypto API only
      */
     async decryptApiKey(encryptedApiKey: string): Promise<string> {
         try {
-            this.logger.debug('🔓 Decrypting API key with format detection');
+            this.logger.debug('🔓 Decrypting API key with Web Crypto API');
             
             if (!encryptedApiKey) {
                 throw new Error('Encrypted API key cannot be empty');
             }
 
-            const format = this.detectEncryptionFormat(encryptedApiKey);
-            
-            if (format === 'webcrypto') {
-                return await this.decryptWebCrypto(encryptedApiKey);
-            } else if (format === 'fernet') {
-                this.logger.debug('🔄 Using Fernet fallback for legacy encrypted data');
-                return await this.decryptFernetApiKey(encryptedApiKey);
-            } else {
-                throw new Error('Unknown encryption format detected');
+            // Only support Web Crypto format now
+            if (!encryptedApiKey.startsWith(this.webCryptoPrefix)) {
+                throw new Error('Unsupported encryption format - only Web Crypto API format is supported');
             }
+            
+            return await this.decryptWebCrypto(encryptedApiKey);
         } catch (error) {
             this.logger.error('❌ Failed to decrypt API key', error);
             throw new Error(`Decryption failed: ${error.message}`);
@@ -163,53 +151,7 @@ export class EncryptionService {
         }
     }
 
-    /**
-     * Legacy Fernet decryption for migration support
-     */
-    private async decryptFernetApiKey(encryptedApiKey: string): Promise<string> {
-        try {
-            this.logger.debug('🔄 Decrypting with legacy Fernet method');
-            const token = new fernet.Token({
-                secret: this.legacySecret,
-                token: encryptedApiKey,
-                ttl: 0 // No expiration check
-            });
-            const decrypted = token.decode();
-            this.logger.debug('✅ Legacy Fernet decryption successful');
-            return decrypted;
-        } catch (error) {
-            this.logger.error('❌ Legacy Fernet decryption failed', error);
-            throw new Error(`Legacy decryption failed: ${error.message}`);
-        }
-    }
-
-    /**
-     * Detect encryption format based on content analysis
-     */
-    private detectEncryptionFormat(encryptedData: string): 'fernet' | 'webcrypto' {
-        try {
-            // Web Crypto format starts with our custom prefix
-            if (encryptedData.startsWith(this.webCryptoPrefix)) {
-                return 'webcrypto';
-            }
-            
-            // Fernet format detection:
-            // - Base64url encoded (no + or / characters)
-            // - Typically 144+ characters
-            // - No custom prefix
-            if (encryptedData.length >= 100 && 
-                !encryptedData.includes('+') && 
-                !encryptedData.includes('/') &&
-                !encryptedData.startsWith(this.webCryptoPrefix)) {
-                return 'fernet';
-            }
-            
-            throw new Error('Unable to detect encryption format');
-        } catch (error) {
-            this.logger.error('❌ Format detection failed', error);
-            throw new Error('Invalid or unrecognized encryption format');
-        }
-    }
+    // Legacy Fernet methods removed - Web Crypto API only
 
     /**
      * Derive encryption key using PBKDF2 with SHA-256
@@ -270,54 +212,10 @@ export class EncryptionService {
         return bytes;
     }
 
-    /**
-     * Migration utility: Convert Fernet-encrypted key to Web Crypto format
-     */
-    async migrateApiKey(fernetEncrypted: string): Promise<string> {
-        try {
-            this.logger.debug('🔄 Migrating API key from Fernet to Web Crypto');
-            
-            // Decrypt with Fernet
-            const plaintext = await this.decryptFernetApiKey(fernetEncrypted);
-            
-            // Re-encrypt with Web Crypto API
-            const webCryptoEncrypted = await this.encryptApiKey(plaintext);
-            
-            this.logger.debug('✅ API key migration successful');
-            return webCryptoEncrypted;
-        } catch (error) {
-            this.logger.error('❌ API key migration failed', error);
-            throw new Error(`Migration failed: ${error.message}`);
-        }
-    }
+    // Migration utilities removed - using Web Crypto API only
 
     /**
-     * Validate migration by comparing decrypted values
-     */
-    async validateMigration(originalFernet: string, newWebCrypto: string): Promise<boolean> {
-        try {
-            // Decrypt both versions
-            const fernetDecrypted = await this.decryptFernetApiKey(originalFernet);
-            const webCryptoDecrypted = await this.decryptWebCrypto(newWebCrypto);
-            
-            // Compare plaintext
-            const isValid = fernetDecrypted === webCryptoDecrypted;
-            
-            if (isValid) {
-                this.logger.debug('✅ Migration validation successful');
-            } else {
-                this.logger.error('❌ Migration validation failed: plaintext mismatch');
-            }
-            
-            return isValid;
-        } catch (error) {
-            this.logger.error('❌ Migration validation error', error);
-            return false;
-        }
-    }
-
-    /**
-     * Test encryption/decryption roundtrip for both formats
+     * Test encryption/decryption roundtrip for Web Crypto API
      */
     async validateEncryptionCompatibility(): Promise<boolean> {
         try {
@@ -329,26 +227,13 @@ export class EncryptionService {
             const webCryptoDecrypted = await this.decryptApiKey(webCryptoEncrypted);
             const webCryptoValid = webCryptoDecrypted === testKey;
             
-            // Test legacy Fernet roundtrip
-            const fernetToken = new fernet.Token({
-                secret: this.legacySecret,
-                token: '',
-                ttl: 0
-            });
-            const fernetEncrypted = fernetToken.encode(testKey);
-            const fernetDecrypted = await this.decryptApiKey(fernetEncrypted);
-            const fernetValid = fernetDecrypted === testKey;
-            
-            const overallValid = webCryptoValid && fernetValid;
-            
-            if (overallValid) {
-                this.logger.log('✅ Encryption compatibility validation passed for both formats');
+            if (webCryptoValid) {
+                this.logger.log('✅ Encryption compatibility validation passed');
             } else {
                 this.logger.error('❌ Encryption compatibility validation failed');
-                this.logger.error(`Web Crypto valid: ${webCryptoValid}, Fernet valid: ${fernetValid}`);
             }
             
-            return overallValid;
+            return webCryptoValid;
         } catch (error) {
             this.logger.error('❌ Encryption compatibility validation failed', error);
             return false;
@@ -376,9 +261,8 @@ export class EncryptionService {
             service: 'encryption',
             algorithm: this.algorithm,
             keyLength: this.keyLength,
-            supportedFormats: ['webcrypto', 'fernet'],
+            supportedFormats: ['webcrypto'],
             webCryptoReady: !!crypto?.subtle,
-            fernetFallbackReady: !!this.legacySecret,
             timestamp: new Date(),
         };
     }
