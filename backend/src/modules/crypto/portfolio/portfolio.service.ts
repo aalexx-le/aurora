@@ -33,7 +33,6 @@ export class CryptoPortfolioService {
         const execution = await this.prisma.createPortfolioExecution.create({
             data: {
                 userId,
-                status: CreateExecutionStatus.QUEUE,
             },
         });
         createCryptoPortfolioInput.secretKey = await this.encryptionService.encryptApiKey(createCryptoPortfolioInput.secretKey);

@@ -6,8 +6,8 @@ import React, {useEffect, useState} from "react";
 import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
 import {useAppDispatch, useAppSelector} from "@/state/hooks";
 import {cryptoActions} from "@/state/slices/crypto.slice";
-import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
 
 interface IProps {
     portfolios: GetCryptoPortfoliosQuery["getCryptoPortfolios"];
@@ -27,7 +27,7 @@ export default function PortfolioSelect({
         setOpen(false);
     };
 
-    const selectedExchangesInfo = EXCHANGES_INFOS.find((e) => e.id === portfolio?.exchanges);
+    const selectedExchangesInfo = CRYPTO_EXCHANGES_INFOS.find((e) => e.id === portfolio?.exchanges);
 
     useEffect(() => {
         if (portfolios.length > 0) {
@@ -73,7 +73,7 @@ export default function PortfolioSelect({
                         <CommandEmpty>No portfolio found.</CommandEmpty>
                         <CommandGroup>
                             {portfolios.map((p) => {
-                                const exchangesInfo = EXCHANGES_INFOS.find((e) => e.id === p.exchanges);
+                                const exchangesInfo = CRYPTO_EXCHANGES_INFOS.find((e) => e.id === p.exchanges);
                                 return (
                                     <CommandItem
                                         key={p.id}

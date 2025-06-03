@@ -219,6 +219,69 @@ enum TradingType {
   SPOT
 }
 
+type CreatePortfolioExecution {
+  id: Int!
+  userId: Int!
+  currentStep: PortfolioCreationStep
+  currentMilestone: PortfolioCreationMilestone
+  progressPercent: Int!
+  errorMessage: String
+  recoveryAction: ErrorRecoveryAction
+  retryCount: Int!
+  maxRetries: Int!
+  exchangeType: CEXExchanges
+  executionContext: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  completedAt: DateTime
+  user: User!
+}
+
+enum PortfolioCreationStep {
+  VALIDATION
+  AUTHENTICATION
+  CONNECTION
+  ACCOUNT_INFO
+  BALANCE_FETCH
+  DATA_PROCESSING
+  DATABASE_STORAGE
+  FINALIZATION
+}
+
+enum PortfolioCreationMilestone {
+  INITIALIZED
+  CREDENTIALS_VERIFIED
+  EXCHANGE_CONNECTED
+  ACCOUNT_FETCHED
+  BALANCES_FETCHED
+  PORTFOLIO_STORED
+  COMPLETED
+  VALIDATION_FAILED
+  CREDENTIALS_FAILED
+  CONNECTION_FAILED
+  FETCH_FAILED
+  STORAGE_FAILED
+  TIMEOUT_FAILED
+  RATE_LIMITED
+  INSUFFICIENT_PERMISSIONS
+  FAILED
+}
+
+enum ErrorRecoveryAction {
+  RETRY_AUTOMATIC
+  RETRY_MANUAL
+  UPDATE_CREDENTIALS
+  WAIT_RATE_LIMIT
+  CHECK_PERMISSIONS
+  CONTACT_SUPPORT
+  ABORT
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
 type EventRecurrence {
   id: Int!
   type: RecurrenceType!
@@ -430,6 +493,7 @@ type User {
   otpPurpose: OtpPurpose
   bankManager: [BankManager!]
   cryptoPortfolios: [CryptoPortfolio!]
+  createPortfolioExecutions: [CreatePortfolioExecution!]
   expenses: [Expense!]
   expenseCategories: [ExpenseCategory!]
   events: [Event!]
@@ -480,20 +544,6 @@ type AssetInfoOutput {
   historicalProfits: [HistoricalAssetProfit!]
   trades: [Trade!]
   lastPrice: Float!
-}
-
-type CreatePortfolioExecution {
-  id: Int!
-  time: DateTime
-  userId: Int!
-  status: CreateExecutionStatus!
-}
-
-enum CreateExecutionStatus {
-  QUEUE
-  PROCESSING
-  FAILED
-  SUCCESS
 }
 
 type CreateCryptoRes {

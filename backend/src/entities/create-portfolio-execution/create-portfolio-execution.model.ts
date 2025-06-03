@@ -1,7 +1,12 @@
 import { Field } from '@nestjs/graphql';
 import { ObjectType } from '@nestjs/graphql';
 import { Int } from '@nestjs/graphql';
-import { CreateExecutionStatus } from '../prisma/create-execution-status.enum';
+import { PortfolioCreationStep } from '../prisma/portfolio-creation-step.enum';
+import { PortfolioCreationMilestone } from '../prisma/portfolio-creation-milestone.enum';
+import { ErrorRecoveryAction } from '../prisma/error-recovery-action.enum';
+import { CEXExchanges } from '../prisma/cex-exchanges.enum';
+import { GraphQLJSON } from 'graphql-type-json';
+import { User } from '../user/user.model';
 
 @ObjectType()
 export class CreatePortfolioExecution {
@@ -9,12 +14,45 @@ export class CreatePortfolioExecution {
     @Field(() => Int, {nullable:false})
     id!: number;
 
-    @Field(() => Date, {nullable:true})
-    time!: Date | null;
-
     @Field(() => Int, {nullable:false})
     userId!: number;
 
-    @Field(() => CreateExecutionStatus, {defaultValue:'QUEUE',nullable:false})
-    status!: `${CreateExecutionStatus}`;
+    @Field(() => PortfolioCreationStep, {nullable:true})
+    currentStep!: `${PortfolioCreationStep}` | null;
+
+    @Field(() => PortfolioCreationMilestone, {nullable:true})
+    currentMilestone!: `${PortfolioCreationMilestone}` | null;
+
+    @Field(() => Int, {defaultValue:0,nullable:false})
+    progressPercent!: number;
+
+    @Field(() => String, {nullable:true})
+    errorMessage!: string | null;
+
+    @Field(() => ErrorRecoveryAction, {nullable:true})
+    recoveryAction!: `${ErrorRecoveryAction}` | null;
+
+    @Field(() => Int, {defaultValue:0,nullable:false})
+    retryCount!: number;
+
+    @Field(() => Int, {defaultValue:3,nullable:false})
+    maxRetries!: number;
+
+    @Field(() => CEXExchanges, {nullable:true})
+    exchangeType!: `${CEXExchanges}` | null;
+
+    @Field(() => GraphQLJSON, {nullable:true})
+    executionContext!: any | null;
+
+    @Field(() => Date, {nullable:false})
+    createdAt!: Date;
+
+    @Field(() => Date, {nullable:false})
+    updatedAt!: Date;
+
+    @Field(() => Date, {nullable:true})
+    completedAt!: Date | null;
+
+    @Field(() => User, {nullable:false})
+    user?: User;
 }

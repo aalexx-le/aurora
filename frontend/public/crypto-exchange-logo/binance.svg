@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle (optional, can be removed for transparent background) -->
+  <circle cx="50" cy="50" r="50" fill="#000000"/>
+  
+  <!-- Binance logo - recreated based on official design -->
+  <!-- Top diamond -->
+  <polygon points="50,15 58,23 50,31 42,23" fill="#F3BA2F"/>
+  
+  <!-- Left diamond -->
+  <polygon points="23,42 31,34 39,42 31,50 23,58 15,50" fill="#F3BA2F"/>
+  
+  <!-- Center diamond with inner square -->
+  <polygon points="50,34 66,50 50,66 34,50" fill="#F3BA2F"/>
+  <polygon points="50,42 58,50 50,58 42,50" fill="#000000"/>
+  
+  <!-- Right diamond -->
+  <polygon points="77,42 85,50 77,58 69,50 77,42" fill="#F3BA2F"/>
+  
+  <!-- Bottom diamond -->
+  <polygon points="50,69 58,77 50,85 42,77" fill="#F3BA2F"/>
+</svg> 

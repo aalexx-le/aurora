@@ -33,13 +33,11 @@ export default function DashBoardSidebar({
                                 <Logo className="size-6"/>
                             </div>
 
-                            {/*<div className="text-lg font-semibold truncate leading-tight">Xela</div>*/}
                             <div className="grid flex-1 text-left text-lg leading-tight">
                                 <span className="truncate font-semibold">
-                                    Xela
+                                    Aurora
                                 </span>
                             </div>
-                            {/*</div>*/}
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

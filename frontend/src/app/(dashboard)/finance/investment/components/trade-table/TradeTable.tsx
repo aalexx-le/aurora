@@ -1,23 +1,14 @@
-import {DataTable} from "@/components/data-table/data-table";
+import { Trade } from "@/app/(dashboard)/finance/investment/types";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { useDataTable } from "@/lib/hooks/use-data-table";
+import { DataTableAdvancedFilterField, DataTableRowActionState, } from "@/types";
 import {
-    ColumnFiltersState,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
+    ColumnFiltersState
 } from "@tanstack/react-table";
-import React, {useMemo, useState} from "react";
-import {DataTableAdvancedFilterField, DataTableRowActionState,} from "@/types";
-import {useToast} from "@/hooks/use-toast";
-import {DataTableToolbar} from "@/components/data-table/data-table-toolbar";
-import {useAppSelector} from "@/state/hooks";
-import {DataTableViewOptions} from "@/components/data-table/data-table-view-options";
-import {Trade} from "@/app/(dashboard)/finance/investment/types";
-import {getTradeColumns} from "./tradeColumns";
-import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
-import {DataTableAdvancedToolbar} from "@/components/data-table/data-table-advanced-toolbar";
-import {useDataTable} from "@/lib/hooks/use-data-table";
+import { useMemo, useState } from "react";
+import { getTradeColumns } from "./tradeColumns";
 // import {TradeTableToolbarActions} from "./TradeTableToolbarActions";
 
 interface IProps {

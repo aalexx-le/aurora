@@ -1,12 +1,12 @@
 'use client';
 
 import { SUBSCRIBE_HISTORICAL_BALANCE } from "@/api/crypto/crypto";
-import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import { MoneyAnimated } from "@/components/money/money-animated";
 import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
+import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
 import { getAbbreviatedTimeFrame } from "@/lib/utils/date-time/get-currency-month-date-range";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
 import { useSubscription } from "@apollo/client";
@@ -37,7 +37,7 @@ export default function PortfolioSummary({portfolio}: IProps) {
         }
     }, [portfolio, newData, loading]);
 
-    const selectedExchanges = EXCHANGES_INFOS.find((e) => e.id === portfolio.exchanges);
+    const selectedExchanges = CRYPTO_EXCHANGES_INFOS.find((e) => e.id === portfolio.exchanges);
 
     return (
         <Card className="flex flex-col">

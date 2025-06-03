@@ -1,8 +1,8 @@
 import { ArgsType, Field, InputType, OmitType } from "@nestjs/graphql";
-import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { GetAssetInfoInput } from "../../crypto/asset/dto/get-asset-info.input";
+import { ValidateNested } from "class-validator";
 import { User } from "src/entities/user";
+import { GetAssetInfoInput } from "../../crypto/asset/dto/get-asset-info.input";
 
 @InputType()
 export class CreateUserInput extends OmitType(
@@ -10,6 +10,7 @@ export class CreateUserInput extends OmitType(
     [
         "id",
         "cryptoPortfolios",
+        "createPortfolioExecutions",
         "expenseCategories",
         "bankManager",
         "expenses",

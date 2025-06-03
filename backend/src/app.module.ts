@@ -1,6 +1,6 @@
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { Module, Scope } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -169,7 +169,6 @@ import { LoggingInterceptor } from "./shared/logger/winston-logging.interceptor"
         {
             provide: APP_INTERCEPTOR,
             useClass: LoggingInterceptor,
-            scope: Scope.REQUEST,
         },
     ],
 })

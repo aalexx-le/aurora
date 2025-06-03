@@ -80,12 +80,8 @@ export const PlanCardSkeleton = () => (
  */
 export const SubscriptionListSkeleton = () => (
   <div className="space-y-4">
-    <div className="flex justify-between items-center">
-      <Skeleton className="h-8 w-48" /> {/* Title */}
-      <Skeleton className="h-10 w-32" /> {/* Action button */}
-    </div>
     <div className="space-y-4">
-      {Array(3).fill(0).map((_, i) => (
+      {Array(2).fill(0).map((_, i) => (
         <Card key={i} className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-2">
@@ -146,28 +142,36 @@ export const SubscriptionFormSkeleton = () => (
 
 /**
  * Complete Subscription Page Skeleton
- * Combines all subscription-related skeletons for a complete page loading state
+ * Matches the structure of the subscription page with tabs for current and all subscriptions
  */
 export const SubscriptionPageSkeleton = () => (
   <div className="space-y-6">
-    <div className="space-y-2">
-      <Skeleton className="h-7 w-48" /> {/* Page title */}
-      <Skeleton className="h-4 w-96" /> {/* Page description */}
+    {/* Header Section */}
+    <div>
+      <Skeleton className="h-7 w-32" /> {/* "Subscription" title */}
+      <Skeleton className="h-4 w-80 mt-1" /> {/* Description */}
     </div>
     
     <Skeleton className="h-px w-full" /> {/* Separator */}
     
+    {/* Tabs Section */}
     <div className="space-y-6">
-      {/* Tabs Skeleton */}
-      <div className="space-y-6">
-        <div className="flex space-x-1 bg-muted p-1 rounded-md w-fit">
-          <Skeleton className="h-9 w-40" /> {/* Tab 1 */}
-          <Skeleton className="h-9 w-36" /> {/* Tab 2 */}
-        </div>
-        
-        {/* Tab Content Skeleton */}
-        <div className="mt-6">
+      {/* Tab List */}
+      <div className="flex space-x-1 rounded-md w-fit">
+        <Skeleton className="h-9 w-44" /> {/* "Current Subscriptions" tab */}
+        <Skeleton className="h-9 w-36" /> {/* "All Subscriptions" tab */}
+      </div>
+      
+      {/* Tab Content - Default to Current Subscriptions view */}
+      <div className="mt-6">
+        <div className="space-y-4">
+          {/* Subscription List */}
           <SubscriptionListSkeleton />
+          
+          {/* Manage Subscription Button */}
+          <div className="pt-2">
+            <Skeleton className="h-10 w-48" /> {/* Manage subscription button */}
+          </div>
         </div>
       </div>
     </div>

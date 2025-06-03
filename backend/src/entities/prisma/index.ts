@@ -5,6 +5,7 @@ export { Asset_price_5mScalarFieldEnum } from './asset-price-5-m-scalar-field.en
 export { AutoBankManagerThirdParty } from './auto-bank-manager-third-party.enum';
 export { CEXExchanges } from './cex-exchanges.enum';
 export { CreateExecutionStatus } from './create-execution-status.enum';
+export { ErrorRecoveryAction } from './error-recovery-action.enum';
 export { FeatureType } from './feature-type.enum';
 export { Historical_asset_profit_1dScalarFieldEnum } from './historical-asset-profit-1-d-scalar-field.enum';
 export { Historical_asset_profit_1hScalarFieldEnum } from './historical-asset-profit-1-h-scalar-field.enum';
@@ -12,11 +13,15 @@ export { Historical_asset_profit_5mScalarFieldEnum } from './historical-asset-pr
 export { Historical_crypto_balance_1dScalarFieldEnum } from './historical-crypto-balance-1-d-scalar-field.enum';
 export { Historical_crypto_balance_1hScalarFieldEnum } from './historical-crypto-balance-1-h-scalar-field.enum';
 export { Interval } from './interval.enum';
+export { JsonNullValueFilter } from './json-null-value-filter.enum';
 export { MembershipSubscriptionStatus } from './membership-subscription-status.enum';
+export { NullableJsonNullValueInput } from './nullable-json-null-value-input.enum';
 export { NullsOrder } from './nulls-order.enum';
 export { OtpPurpose } from './otp-purpose.enum';
 export { PaymentProvider } from './payment-provider.enum';
 export { PaymentStatus } from './payment-status.enum';
+export { PortfolioCreationMilestone } from './portfolio-creation-milestone.enum';
+export { PortfolioCreationStep } from './portfolio-creation-step.enum';
 export { PortfolioStatus } from './portfolio-status.enum';
 export { PriceStatus } from './price-status.enum';
 export { QueryMode } from './query-mode.enum';

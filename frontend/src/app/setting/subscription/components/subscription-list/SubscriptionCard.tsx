@@ -33,9 +33,9 @@ export const SubscriptionCard = ({
   const { handleReactivateSubscription, loading: reactivateLoading } = useReactivateSubscriptionMutation();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  const isTrialing = subscription.status === MembershipSubscriptionStatus.Trialing;
-  const isActive = subscription.status === MembershipSubscriptionStatus.Active;
-  const isCanceled = subscription.status === MembershipSubscriptionStatus.Canceled;
+  // const isTrialing = subscription.status === MembershipSubscriptionStatus.Trialing;
+  // const isActive = subscription.status === MembershipSubscriptionStatus.Active;
+  // const isCanceled = subscription.status === MembershipSubscriptionStatus.Canceled;
 
   return (
     <Card className="w-full max-w-full p-4">
@@ -52,7 +52,7 @@ export const SubscriptionCard = ({
             {subscription.status}
           </Badge>
     
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
@@ -61,9 +61,9 @@ export const SubscriptionCard = ({
             <DropdownMenuContent align="end">
               {(isActive || isTrialing) && (
                 <>
-                  {/* <DropdownMenuItem onClick={() => onUpgrade(subscription.id)}>
+                  <DropdownMenuItem onClick={() => onUpgrade(subscription.id)}>
                     Upgrade Plan
-                  </DropdownMenuItem> */}
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setShowCancelDialog(true)}>
                     Cancel Subscription
                   </DropdownMenuItem>
@@ -75,7 +75,7 @@ export const SubscriptionCard = ({
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </CardHeader>
       <CardContent className="p-0 pt-2">

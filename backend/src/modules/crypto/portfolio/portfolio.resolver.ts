@@ -65,11 +65,11 @@ export class CryptoPortfolioResolver {
         filter: (payload, variables, context) => {
             const execution =
                 payload[SubscriptionEvent.CRYPTO_PORTFOLIO_CREATION_STATUS];
+            console.log("User ID: ", context.req.user.id);
             const userId = context.req.user.id;
             return execution.userId === userId;
         },
     })
-    @UseGuards(JwtGuard)
     onPortfolioCreationStatus() {
         return this.pubSub.asyncIterator(
             SubscriptionEvent.CRYPTO_PORTFOLIO_CREATION_STATUS,

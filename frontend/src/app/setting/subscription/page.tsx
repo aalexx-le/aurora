@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ManageSubscriptionButton } from "./components/manage-subscription-button";
 import { SubscriptionForm } from "./components/subcription-form/SubscriptionForm";
 import { SubscriptionList } from "./components/subscription-list/SubscriptionList";
 
@@ -20,7 +21,10 @@ export default function SubscriptionPage() {
           <TabsTrigger value="new">All Subscriptions</TabsTrigger>
         </TabsList>
         <TabsContent value="current" className="mt-6">
-            <SubscriptionList />
+            <div className="space-y-4">
+              <SubscriptionList />
+              <ManageSubscriptionButton />
+            </div>
         </TabsContent>
         <TabsContent value="new" className="mt-6">
             <SubscriptionForm />

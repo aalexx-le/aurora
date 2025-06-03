@@ -16,7 +16,7 @@ import { HistoricalAssetProfitEventListener } from "./portfolio/historical-asset
 import { HistoricalAssetProfitResolver } from "./portfolio/historical-asset-profit.resolver";
 import { HistoricalCryptoBalanceEventListener } from "./portfolio/historical-balance.event-listener";
 import { HistoricalBalanceResolver } from "./portfolio/historical-balance.resolver";
-import { PortfolioEventListener } from "./portfolio/portfolio-event-listener.service";
+import { PortfolioController } from "./portfolio/portfolio.controller";
 import { CryptoPortfolioResolver } from "./portfolio/portfolio.resolver";
 import { CryptoPortfolioService } from "./portfolio/portfolio.service";
 
@@ -73,6 +73,7 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
         ]),
         ExportModule,
     ],
+    controllers: [PortfolioController],
     providers: [
         CryptoPortfolioResolver,
         CryptoBalanceResolver,
@@ -84,7 +85,7 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
 
         CryptoPortfolioService,
         CryptoAssetService,
-        PortfolioEventListener,
+        
         AssetPriceEventListener,
         HistoricalCryptoBalanceEventListener,
         HistoricalAssetProfitEventListener,
@@ -95,7 +96,6 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
     exports: [
         CryptoPortfolioService,
         CryptoAssetService,
-        SUBSCRIPTION_PUB_SUB_PROVIDER,
         ExportModule,
     ],
 })

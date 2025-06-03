@@ -12,18 +12,16 @@ import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/h
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { useAppSelector } from "@/state/hooks";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 
-// Lazy load components
-const PortfolioSelect = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/PortfolioSelect"));
-const CreatePortfolioDialogWithLock = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/CreatePortfolioDialogWithLock"));
-const CurrencySelect = lazy(() => import("@/app/(dashboard)/finance/investment/components/currency-select/CurrencySelect"));
-const PortfolioSummary = lazy(() => import("@/app/(dashboard)/finance/components/investment-summary/PortfolioSummary"));
-const HistoricalBalanceChart = lazy(() => import("@/app/(dashboard)/finance/investment/components/historical-balance-chart/HistoricalBalanceChart"));
-const AssetTable = lazy(() => import("@/app/(dashboard)/finance/investment/components/asset-table/AssetTable"));
-const BalancePieChart = lazy(() => import("@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart").then(module => ({ default: module.BalancePieChart })));
-const PortfolioAnalysisWithLock = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysisWithLock"));
-const CreateExecutionSteps = lazy(() => import("@/app/(dashboard)/finance/investment/components/portfolio/CreateExecutionSteps").then(module => ({ default: module.CreateExecutionSteps })));
+import PortfolioSummary from "@/app/(dashboard)/finance/components/investment-summary/PortfolioSummary";
+import AssetTable from "@/app/(dashboard)/finance/investment/components/asset-table/AssetTable";
+import CurrencySelect from "@/app/(dashboard)/finance/investment/components/currency-select/CurrencySelect";
+import HistoricalBalanceChart from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/HistoricalBalanceChart";
+import PortfolioAnalysisWithLock from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysisWithLock";
+import { CreateExecutionSteps } from "@/app/(dashboard)/finance/investment/components/portfolio/CreateExecutionSteps";
+import CreatePortfolioDialogWithLock from "@/app/(dashboard)/finance/investment/components/portfolio/CreatePortfolioDialogWithLock";
+import PortfolioSelect from "@/app/(dashboard)/finance/investment/components/portfolio/PortfolioSelect";
 
 interface IProps {
     portfolios: GetCryptoPortfoliosQuery["getCryptoPortfolios"];
@@ -50,12 +48,10 @@ function InvestmentPage({portfolios}: IProps) {
                 </Suspense>
 
                 {portfolio && <div className="flex flex-col gap-4">
-                    <div className="col-span-2">
-                        <Suspense fallback={<PortfolioSkeleton />}>
-                            <PortfolioSummary portfolio={portfolio}/>
-                        </Suspense>
-                    </div>
-                    <div className="flex gap-4">
+                    <Suspense fallback={<PortfolioSkeleton />}>
+                        <PortfolioSummary portfolio={portfolio}/>
+                    </Suspense>
+                    <div className="flex flex-col lg:flex-row gap-4">
                         <Suspense fallback={<BalanceChartSkeleton />}>
                             <HistoricalBalanceChart cryptoPortfolioId={portfolio.id}/>
                         </Suspense>
@@ -69,7 +65,7 @@ function InvestmentPage({portfolios}: IProps) {
                         </Suspense>
                     </div>
                     <Suspense fallback={<AssetTableSkeleton />}>
-                        <AssetTable portfolios={[portfolio]}/>
+                        <AssetTable portfolio={portfolio}/>
                     </Suspense>
                 </div>}
             </div>

@@ -309,6 +309,19 @@ export type CryptoPortfolioLatestHistoricalBalancesArgs = {
   timeFrame: Scalars['String']['input'];
 };
 
+export type CustomerPortalSessionResponse = {
+  __typename?: 'CustomerPortalSessionResponse';
+  createdAt: Scalars['String']['output'];
+  customerId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  urls: CustomerPortalUrls;
+};
+
+export type CustomerPortalUrls = {
+  __typename?: 'CustomerPortalUrls';
+  general: GeneralUrl;
+};
+
 export type Event = {
   __typename?: 'Event';
   allDay: Scalars['Boolean']['output'];
@@ -435,6 +448,11 @@ export enum FeatureType {
   Crypto = 'CRYPTO',
   Expense = 'EXPENSE'
 }
+
+export type GeneralUrl = {
+  __typename?: 'GeneralUrl';
+  overview: Scalars['String']['output'];
+};
 
 export type GetAssetInfoInput = {
   id: Scalars['String']['input'];
@@ -594,6 +612,7 @@ export type Mutation = {
   createBankManager: BankManager;
   createBankTransaction: BankTransaction;
   createCryptoPortfolio: CreateCryptoRes;
+  createCustomerPortalSession: CustomerPortalSessionResponse;
   createEvent: Event;
   createEventCategory: EventCategory;
   createExpense: Expense;
@@ -607,7 +626,6 @@ export type Mutation = {
   deleteFeature: Feature;
   deleteMembershipPlan: Scalars['Boolean']['output'];
   deleteMembershipPrice: Scalars['Boolean']['output'];
-  deleteMembershipSubscription: Scalars['Boolean']['output'];
   deleteRecurrenceTemplate: EventRecurrence;
   exportPortfolio: ExportResult;
   login: LoginResDto;
@@ -657,6 +675,11 @@ export type MutationCreateBankTransactionArgs = {
 
 export type MutationCreateCryptoPortfolioArgs = {
   data: CreateCryptoPortfolioInput;
+};
+
+
+export type MutationCreateCustomerPortalSessionArgs = {
+  subscriptionIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -721,11 +744,6 @@ export type MutationDeleteMembershipPlanArgs = {
 
 
 export type MutationDeleteMembershipPriceArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteMembershipSubscriptionArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -1591,6 +1609,13 @@ export type ReactivatePaddleSubscriptionMutationVariables = Exact<{
 
 export type ReactivatePaddleSubscriptionMutation = { __typename?: 'Mutation', reactivatePaddleSubscription: { __typename?: 'MembershipSubscription', id: string, userId: number, planId: string, status: MembershipSubscriptionStatus, startDate: any, endDate: any, createdAt: any, updatedAt: any } };
 
+export type CreateCustomerPortalSessionMutationVariables = Exact<{
+  subscriptionIds?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+}>;
+
+
+export type CreateCustomerPortalSessionMutation = { __typename?: 'Mutation', createCustomerPortalSession: { __typename?: 'CustomerPortalSessionResponse', id: string, customerId: string, createdAt: string, urls: { __typename?: 'CustomerPortalUrls', general: { __typename?: 'GeneralUrl', overview: string } } } };
+
 export type OnMembershipSubscriptionUpdatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1732,6 +1757,7 @@ export const GetMyActiveMembershipSubscriptionsDocument = {"kind":"Document","de
 export const CancelMembershipSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelMembershipSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelPaddleSubscription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<CancelMembershipSubscriptionMutation, CancelMembershipSubscriptionMutationVariables>;
 export const UpdateMembershipSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateMembershipSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateSubscriptionDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateMembershipSubscription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"planId"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}}]}}]}}]} as unknown as DocumentNode<UpdateMembershipSubscriptionMutation, UpdateMembershipSubscriptionMutationVariables>;
 export const ReactivatePaddleSubscriptionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ReactivatePaddleSubscription"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reactivatePaddleSubscription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"planId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<ReactivatePaddleSubscriptionMutation, ReactivatePaddleSubscriptionMutationVariables>;
+export const CreateCustomerPortalSessionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCustomerPortalSession"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"subscriptionIds"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCustomerPortalSession"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"subscriptionIds"},"value":{"kind":"Variable","name":{"kind":"Name","value":"subscriptionIds"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customerId"}},{"kind":"Field","name":{"kind":"Name","value":"urls"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"general"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"overview"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]} as unknown as DocumentNode<CreateCustomerPortalSessionMutation, CreateCustomerPortalSessionMutationVariables>;
 export const OnMembershipSubscriptionUpdatedDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"OnMembershipSubscriptionUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"onMembershipSubscriptionUpdated"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}},{"kind":"Field","name":{"kind":"Name","value":"planId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<OnMembershipSubscriptionUpdatedSubscription, OnMembershipSubscriptionUpdatedSubscriptionVariables>;
 export const GetPaymentMethodsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPaymentMethods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getPaymentMethods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"paddlePaymentMethod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"customerId"}},{"kind":"Field","name":{"kind":"Name","value":"addressId"}},{"kind":"Field","name":{"kind":"Name","value":"businessId"}}]}}]}}]}}]} as unknown as DocumentNode<GetPaymentMethodsQuery, GetPaymentMethodsQueryVariables>;
 export const GetEventCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEventCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getEventCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<GetEventCategoriesQuery, GetEventCategoriesQueryVariables>;
@@ -2048,6 +2074,19 @@ export type CryptoPortfolioLatestHistoricalBalancesArgs = {
   timeFrame: Scalars['String']['input'];
 };
 
+export type CustomerPortalSessionResponse = {
+  __typename?: 'CustomerPortalSessionResponse';
+  createdAt: Scalars['String']['output'];
+  customerId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  urls: CustomerPortalUrls;
+};
+
+export type CustomerPortalUrls = {
+  __typename?: 'CustomerPortalUrls';
+  general: GeneralUrl;
+};
+
 export type Event = {
   __typename?: 'Event';
   allDay: Scalars['Boolean']['output'];
@@ -2174,6 +2213,11 @@ export enum FeatureType {
   Crypto = 'CRYPTO',
   Expense = 'EXPENSE'
 }
+
+export type GeneralUrl = {
+  __typename?: 'GeneralUrl';
+  overview: Scalars['String']['output'];
+};
 
 export type GetAssetInfoInput = {
   id: Scalars['String']['input'];
@@ -2333,6 +2377,7 @@ export type Mutation = {
   createBankManager: BankManager;
   createBankTransaction: BankTransaction;
   createCryptoPortfolio: CreateCryptoRes;
+  createCustomerPortalSession: CustomerPortalSessionResponse;
   createEvent: Event;
   createEventCategory: EventCategory;
   createExpense: Expense;
@@ -2346,7 +2391,6 @@ export type Mutation = {
   deleteFeature: Feature;
   deleteMembershipPlan: Scalars['Boolean']['output'];
   deleteMembershipPrice: Scalars['Boolean']['output'];
-  deleteMembershipSubscription: Scalars['Boolean']['output'];
   deleteRecurrenceTemplate: EventRecurrence;
   exportPortfolio: ExportResult;
   login: LoginResDto;
@@ -2396,6 +2440,11 @@ export type MutationCreateBankTransactionArgs = {
 
 export type MutationCreateCryptoPortfolioArgs = {
   data: CreateCryptoPortfolioInput;
+};
+
+
+export type MutationCreateCustomerPortalSessionArgs = {
+  subscriptionIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -2460,11 +2509,6 @@ export type MutationDeleteMembershipPlanArgs = {
 
 
 export type MutationDeleteMembershipPriceArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteMembershipSubscriptionArgs = {
   id: Scalars['String']['input'];
 };
 

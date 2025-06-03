@@ -1,15 +1,15 @@
-import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
-import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
-import MoneyWithCurrency from "@/components/money/money-with-currency";
 import {
     CategorySummaryItem
 } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/CategorySummaryItem";
-import {AnalyseData} from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/PortfolioAnalysis";
+import { MoneyAnimated } from "@/components/money/money-animated";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useEffect, useState } from "react";
+import { type PortfolioAnalyseData } from "../../types";
 
 interface IProps {
     cryptoPortfolioId: string;
-    analyseData: AnalyseData[];
+    analyseData: PortfolioAnalyseData[];
 }
 
 type GroupByTagValue = {
@@ -25,7 +25,7 @@ export function CategorySummary({analyseData, cryptoPortfolioId}: IProps) {
 
     useEffect(() => {
         setTotalInvest(analyseData.reduce((sum, b) => sum + b.invest, 0));
-        const _groupByTagKeys = Object.groupBy<string, AnalyseData>(analyseData, (b) => b.tag);
+        const _groupByTagKeys = Object.groupBy<string, PortfolioAnalyseData>(analyseData, (b) => b.tag);
         const _groupByTag: Map<string, GroupByTagValue> = new Map();
         for (const [tag, balances] of Object.entries(_groupByTagKeys)) {
             const invest = balances?.reduce((sum, b) => sum + b.invest, 0) || 0;
@@ -47,25 +47,16 @@ export function CategorySummary({analyseData, cryptoPortfolioId}: IProps) {
                 return (
                     <Collapsible key={index + tag} className="space-y-2" defaultOpen={true}>
                         <CollapsibleTrigger asChild>
-                            <Button className="gap-2" variant="secondary" size="sm">
+                            <Button className="gap-3" variant="secondary" size="sm">
                                 <p className="text-muted-foreground text-sm">{tag}</p>
-                                <p
+                                {/* <p
                                     className="text-sm font-bold">{investPercent.toFixed(2)}%
                                 </p>
-                                {/*<span*/}
-                                {/*    className={cn("font-bold text-sm", value.profitPercent > 0 ? "text-chart-2" : "text-chart-5")}>*/}
-                                {/*    ({value.profitPercent > 0 ? "+" : ""}*/}
-                                {/*    <span>{value.profitPercent.toFixed(2)}%</span>*/}
-                                {/*    )*/}
-                                {/*</span>*/}
                                 <p className="text-muted-foreground text-sm">
                                     <MoneyWithCurrency amount={value.invest}/>
-                                </p>
-                                {/*<span*/}
-                                {/*    className={cn("font-bold text-sm", value.profit > 0 ? "text-chart-2" : "text-chart-5")}>*/}
-                                {/*                        ({value.profit > 0 ? "+" : ""}*/}
-                                {/*    <MoneyWithCurrency amount={value.profit}/>)*/}
-                                {/*</span>*/}
+                                </p> */}
+                                <MoneyAnimated className="text-muted-foreground" number={value.invest}/>
+                                <MoneyAnimated className="text-muted-foreground" number={investPercent} isPercent/>
                             </Button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="space-y-2 px-4">

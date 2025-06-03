@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     MiniAssetProfitLineChart
 } from "@/app/(dashboard)/finance/investment/components/asset-table/MiniAssetProfitLineChart";
-import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import { CryptoPortfolio } from "@/app/(dashboard)/finance/investment/types";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
@@ -11,28 +10,35 @@ import DASHBOARD_ROUTE from "@/lib/routes/dashboard.route";
 import { formatCurrency } from "@/lib/utils/currency/format-currency";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
 
 interface IProps {
-    portfolios: CryptoPortfolio[];
+    portfolio: CryptoPortfolio;
 }
 
-export default function AssetTable({portfolios}: IProps) {
+export default function AssetTable({portfolio}: IProps) {
     const assetList = useMemo(() => {
-        const balances = portfolios
-            .map((portfolio) =>
-                portfolio.balances.map(b => ({
-                    ...b,
-                    portfolioId: portfolio.id,
-                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
-                })
-            )).flat();
+        // const balances = portfolios
+        //     .map((portfolio) =>
+        //         portfolio.balances.map(b => ({
+        //             ...b,
+        //             portfolioId: portfolio.id,
+        //             exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
+        //         })
+        //     )).flat();
 
-        return balances.sort(
-            (a, b) =>
-                b.balance * b.assetInfo.lastPrice -
-                a.balance * a.assetInfo.lastPrice,
+        return portfolio.balances
+            .map(b => ({
+                ...b,
+                portfolioId: portfolio.id,
+                exchangeLogo: CRYPTO_EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
+            }))
+            .sort(
+                (a, b) =>
+                    b.balance * b.assetInfo.lastPrice -
+                    a.balance * a.assetInfo.lastPrice,
         );
-    }, [portfolios]);
+    }, [portfolio]);
 
     const router = useRouter();
 

@@ -1,5 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 
 // Lazy loaded component to improve performance
 const LazyExpenseCalendar = lazy(() => import("@/app/(dashboard)/finance/expense/components/expense-calendar/expense-calendar"));

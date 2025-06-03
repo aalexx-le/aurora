@@ -29,6 +29,46 @@ export enum TradingType {
     SPOT = "SPOT"
 }
 
+export enum PortfolioCreationStep {
+    VALIDATION = "VALIDATION",
+    AUTHENTICATION = "AUTHENTICATION",
+    CONNECTION = "CONNECTION",
+    ACCOUNT_INFO = "ACCOUNT_INFO",
+    BALANCE_FETCH = "BALANCE_FETCH",
+    DATA_PROCESSING = "DATA_PROCESSING",
+    DATABASE_STORAGE = "DATABASE_STORAGE",
+    FINALIZATION = "FINALIZATION"
+}
+
+export enum PortfolioCreationMilestone {
+    INITIALIZED = "INITIALIZED",
+    CREDENTIALS_VERIFIED = "CREDENTIALS_VERIFIED",
+    EXCHANGE_CONNECTED = "EXCHANGE_CONNECTED",
+    ACCOUNT_FETCHED = "ACCOUNT_FETCHED",
+    BALANCES_FETCHED = "BALANCES_FETCHED",
+    PORTFOLIO_STORED = "PORTFOLIO_STORED",
+    COMPLETED = "COMPLETED",
+    VALIDATION_FAILED = "VALIDATION_FAILED",
+    CREDENTIALS_FAILED = "CREDENTIALS_FAILED",
+    CONNECTION_FAILED = "CONNECTION_FAILED",
+    FETCH_FAILED = "FETCH_FAILED",
+    STORAGE_FAILED = "STORAGE_FAILED",
+    TIMEOUT_FAILED = "TIMEOUT_FAILED",
+    RATE_LIMITED = "RATE_LIMITED",
+    INSUFFICIENT_PERMISSIONS = "INSUFFICIENT_PERMISSIONS",
+    FAILED = "FAILED"
+}
+
+export enum ErrorRecoveryAction {
+    RETRY_AUTOMATIC = "RETRY_AUTOMATIC",
+    RETRY_MANUAL = "RETRY_MANUAL",
+    UPDATE_CREDENTIALS = "UPDATE_CREDENTIALS",
+    WAIT_RATE_LIMIT = "WAIT_RATE_LIMIT",
+    CHECK_PERMISSIONS = "CHECK_PERMISSIONS",
+    CONTACT_SUPPORT = "CONTACT_SUPPORT",
+    ABORT = "ABORT"
+}
+
 export enum RecurrenceType {
     DAILY = "DAILY",
     WEEKLY = "WEEKLY",
@@ -81,13 +121,6 @@ export enum PaymentProvider {
 export enum OtpPurpose {
     VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
     RESET_PASSWORD = "RESET_PASSWORD"
-}
-
-export enum CreateExecutionStatus {
-    QUEUE = "QUEUE",
-    PROCESSING = "PROCESSING",
-    FAILED = "FAILED",
-    SUCCESS = "SUCCESS"
 }
 
 export enum ExportFormat {
@@ -560,6 +593,24 @@ export interface CryptoPortfolio {
     latestAssetProfits: HistoricalAssetProfit[];
 }
 
+export interface CreatePortfolioExecution {
+    id: number;
+    userId: number;
+    currentStep?: Nullable<PortfolioCreationStep>;
+    currentMilestone?: Nullable<PortfolioCreationMilestone>;
+    progressPercent: number;
+    errorMessage?: Nullable<string>;
+    recoveryAction?: Nullable<ErrorRecoveryAction>;
+    retryCount: number;
+    maxRetries: number;
+    exchangeType?: Nullable<CEXExchanges>;
+    executionContext?: Nullable<JSON>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    completedAt?: Nullable<DateTime>;
+    user: User;
+}
+
 export interface EventRecurrence {
     id: number;
     type: RecurrenceType;
@@ -719,6 +770,7 @@ export interface User {
     otpPurpose?: Nullable<OtpPurpose>;
     bankManager?: Nullable<BankManager[]>;
     cryptoPortfolios?: Nullable<CryptoPortfolio[]>;
+    createPortfolioExecutions?: Nullable<CreatePortfolioExecution[]>;
     expenses?: Nullable<Expense[]>;
     expenseCategories?: Nullable<ExpenseCategory[]>;
     events?: Nullable<Event[]>;
@@ -764,13 +816,6 @@ export interface AssetInfoOutput {
     historicalProfits?: Nullable<HistoricalAssetProfit[]>;
     trades?: Nullable<Trade[]>;
     lastPrice: number;
-}
-
-export interface CreatePortfolioExecution {
-    id: number;
-    time?: Nullable<DateTime>;
-    userId: number;
-    status: CreateExecutionStatus;
 }
 
 export interface CreateCryptoRes {
@@ -887,5 +932,6 @@ export interface ISubscription {
 }
 
 export type DateTime = any;
+export type JSON = any;
 export type Decimal = any;
 type Nullable<T> = T | null;

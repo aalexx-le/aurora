@@ -5,12 +5,12 @@ import {ArrowDown, ArrowUp, MoreHorizontal} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
 import {MoneyTransferAmount} from "@/components/money/money-transfer-amount";
 import moment from "moment";
-import {EXCHANGES_INFOS} from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {DataTableRowActionState} from "@/types";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import {MoneyAnimated} from "@/components/money/money-animated";
 import {cn} from "@/lib/utils";
+import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
 
 interface GetTradeColumnsParams {
     setRowAction: (action: DataTableRowActionState<Trade>) => void;
@@ -28,7 +28,7 @@ export const getTradeColumns = ({
         accessorKey: "exchange",
         header: "Exchange",
         cell: ({row}) => {
-            const exchange = EXCHANGES_INFOS.find(e => e.id === row.original.cryptoPortfolio.exchanges);
+            const exchange = CRYPTO_EXCHANGES_INFOS.find(e => e.id === row.original.cryptoPortfolio.exchanges);
             return (
                 <div className="flex items-center gap-2">
                     <Avatar className="h-5 w-5">

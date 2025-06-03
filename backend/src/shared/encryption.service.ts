@@ -1,17 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-interface MigrationProgress {
-  totalKeys: number;
-  migratedKeys: number;
-  failedKeys: number;
-  inProgressKeys: number;
-  percentComplete: number;
-  estimatedTimeRemaining: string;
-  errorRate: number;
-  lastMigrationTime: Date;
-}
-
 @Injectable()
 export class EncryptionService {
     private readonly logger = new Logger(EncryptionService.name);

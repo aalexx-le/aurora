@@ -2,14 +2,12 @@
 
 import { BalancePieChart } from "@/app/(dashboard)/finance/investment/components/balance-pie-chart/BalancePieChart";
 import { CategorySummary } from "@/app/(dashboard)/finance/investment/components/portfolio-analysis/CategorySummary";
-import { EXCHANGES_INFOS } from "@/app/(dashboard)/finance/investment/components/portfolio/ExchangeSelect";
+import { ExportButton } from "@/components/export/ExportButton";
 import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { ExportButton } from "@/components/export/ExportButton";
 import { GetCryptoPortfoliosQuery } from "@/gql/graphql";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import { FastAverageColor, FastAverageColorResource } from "fast-average-color";
-import { useEffect, useState } from "react";
+import { useAnalyseData } from "../../hooks/useAnalyseData";
 
 export interface IPortfolioAnalysisProps {
     cryptoPortfolioId: string;
@@ -17,83 +15,8 @@ export interface IPortfolioAnalysisProps {
     balances: GetCryptoPortfoliosQuery['getCryptoPortfolios'][number]['balances'];
 }
 
-export type AnalyseData = {
-    assetId: string;
-    invest: number;
-    price: number;
-    remainingQty: number;
-    estimatedProfit: number;
-    profitPercent: number;
-    name: string;
-    fill: string;
-    tag: string;
-    exchange: string;
-    exchangeLogo: string;
-}
-
-const MIN_THRESHOLD = 0.1;
-
 export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: IPortfolioAnalysisProps) {
-    const [analyseData, setAnalyseData] = useState<AnalyseData[]>([]);
-    
-
-    useEffect(() => {
-        const getChartData = async () => {
-            const fac = new FastAverageColor();
-            const mapBalances = await Promise.all(assetProfits
-                .map(async b => ({
-                    assetId: b.assetInfo.id,
-                    invest: b.totalCostInQuoteQty,
-                    price: b.assetInfo.lastPrice,
-                    remainingQty: b.remainingQty,
-                    estimatedProfit: b.estimatedProfit,
-                    profitPercent: b.estimatedProfit / b.totalCostInQuoteQty * 100,
-                    name: b.assetInfo.symbol,
-                    fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
-                    tag: b.assetInfo.tag,
-                    exchange: b.cryptoPortfolio.exchanges,
-                    exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
-                })))
-
-            // const usdtBalances = balances.filter(b => b.assetInfo.symbol === 'USDT');
-            // const mapUSDTBalances = await Promise.all(usdtBalances
-            //     .map(async b => ({
-            //         assetId: b.assetInfo.id,
-            //         invest: b.balance,
-            //         price: b.assetInfo.lastPrice,
-            //         remainingQty: b.balance,
-            //         estimatedProfit: 0,
-            //         profitPercent: 0,
-            //         name: b.assetInfo.symbol,
-            //         fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
-            //         tag: b.assetInfo.tag,
-            //         exchange: b.cryptoPortfolio.exchanges,
-            //         exchangeLogo: EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
-            //     })))
-            //
-            // mapBalances.push(...mapUSDTBalances);
-
-            const sortedBalances = mapBalances.sort((a, b) => b.invest - a.invest);
-
-            const filteredBalances = sortedBalances
-                .filter(b => b.remainingQty > MIN_THRESHOLD);
-
-            const hideSymbols = ["BNB", "BTC"];
-
-            // const filteredHideBalances = filteredBalances.filter(b => !hideSymbols.includes(b.name));
-
-            return filteredBalances;
-            // const converted = await Promise.all(
-            //     filteredBalances.map((v) => convertCurrency(v.estimatedProfit as number, false))
-            // );
-            //
-            // return filteredBalances.map((b, i) => ({...b, estimatedProfit: converted[i] as unknown as number}))
-        }
-
-        getChartData().then(data => {
-            setAnalyseData(data);
-        });
-    }, [assetProfits])
+    const { analyseData } = useAnalyseData(assetProfits);
 
     return (
         <Card className="flex-1 flex flex-col">
@@ -121,44 +44,10 @@ export function PortfolioAnalysis({assetProfits, balances, cryptoPortfolioId}: I
                     />
                 </div>
             </CardHeader>
-            <CardContent className="p-0 lg:p-4 flex flex-1 items-center">
+            <CardContent className="p-0 lg:p-1 xl:p-2 2xl:p-4 flex flex-1 items-center">
                 <div className="flex-1 flex flex-col lg:flex-row items-center justify-between">
                     <div className="flex-1 flex flex-col items-center mb-6 lg:mb-0">
                         <BalancePieChart data={analyseData} />
-                        {/*<ResponsiveContainer className="flex-1">*/}
-                        {/*    <ChartContainer config={{}}>*/}
-                        {/*        <BarChart data={chartData}>*/}
-                        {/*            <ChartTooltip*/}
-                        {/*                cursor={false}*/}
-                        {/*                content={<ChartTooltipContent hideLabel/>}*/}
-                        {/*            />*/}
-                        {/*            <Bar dataKey="estimatedProfit" name="profit" radius={3}>*/}
-                        {/*                /!*<LabelList position="top" dataKey="name" fillOpacity={1}/>*!/*/}
-                        {/*                {chartData.map((item) => (*/}
-                        {/*                    <Cell*/}
-                        {/*                        key={item.name}*/}
-                        {/*                        fill={item.fill}*/}
-                        {/*                    />*/}
-                        {/*                ))}*/}
-                        {/*            </Bar>*/}
-                        {/*        </BarChart>*/}
-                        {/*    </ChartContainer>*/}
-                        {/*</ResponsiveContainer>*/}
-
-                        {/*<div className="flex flex-col">*/}
-                        {/*    <span className="font-bold text-lg">*/}
-                        {/*        <span className="font-bold text-muted-foreground text-sm mr-4">Deposited</span>*/}
-                        {/*        <MoneyAnimated number={analyseData.reduce((sum, b) => sum + b.invest, 0)}/>*/}
-                        {/*    </span>*/}
-                        {/*    <span className="font-bold text-lg">*/}
-                        {/*        <span className="font-bold text-muted-foreground text-sm mr-4">Profit</span>*/}
-                        {/*        <MoneyUpDownAnimated number={analyseData.reduce((sum, b) => sum + b.estimatedProfit, 0)}/>*/}
-                        {/*    </span>*/}
-                        {/*    <span className="font-bold text-lg">*/}
-                        {/*        <span className="font-bold text-muted-foreground text-sm mr-4">Total</span>*/}
-                        {/*        <MoneyAnimated number={analyseData.reduce((sum, b) => sum + b.remainingQty * b.price, 0)}/>*/}
-                        {/*    </span>*/}
-                        {/*</div>*/}
                     </div>
 
                     <CategorySummary analyseData={analyseData} cryptoPortfolioId={cryptoPortfolioId}/>

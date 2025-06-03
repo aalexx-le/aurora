@@ -31,10 +31,31 @@ model OKXCryptoPortfolio {
 }
 
 model CreatePortfolioExecution {
-  id     Int                   @id @default(autoincrement())
-  time   DateTime?             @default(now())
-  userId Int
-  status CreateExecutionStatus @default(QUEUE)
+  id                Int                       @id @default(autoincrement())
+  userId            Int
+  currentStep       PortfolioCreationStep?
+  currentMilestone  PortfolioCreationMilestone?
+  
+  // Progress tracking
+  progressPercent   Int                       @default(0) @db.SmallInt
+  
+  // Error handling
+  errorMessage      String?                   
+  recoveryAction    ErrorRecoveryAction?
+  retryCount        Int                       @default(0) @db.SmallInt
+  maxRetries        Int                       @default(3) @db.SmallInt
+  
+  // Context data
+  exchangeType      CEXExchanges?
+  executionContext  Json?                     // Minimal context only
+  
+  // Timestamps
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+  completedAt       DateTime?
+  
+  // Relations
+  user              User                      @relation(fields: [userId], references: [id])
 }
 
 model AssetBalance {
@@ -123,12 +144,48 @@ enum PortfolioStatus {
   INACTIVE
 }
 
-enum CreateExecutionStatus {
-  QUEUE
-  PROCESSING
+enum ErrorRecoveryAction {
+  RETRY_AUTOMATIC
+  RETRY_MANUAL
+  UPDATE_CREDENTIALS
+  WAIT_RATE_LIMIT
+  CHECK_PERMISSIONS
+  CONTACT_SUPPORT
+  ABORT
+} 
+
+enum PortfolioCreationMilestone {
+  // Success milestones
+  INITIALIZED
+  CREDENTIALS_VERIFIED
+  EXCHANGE_CONNECTED
+  ACCOUNT_FETCHED
+  BALANCES_FETCHED
+  PORTFOLIO_STORED
+  COMPLETED
+  
+  // Error milestones
+  VALIDATION_FAILED
+  CREDENTIALS_FAILED
+  CONNECTION_FAILED
+  FETCH_FAILED
+  STORAGE_FAILED
+  TIMEOUT_FAILED
+  RATE_LIMITED
+  INSUFFICIENT_PERMISSIONS
   FAILED
-  SUCCESS
-}
+} 
+
+enum PortfolioCreationStep {
+  VALIDATION
+  AUTHENTICATION
+  CONNECTION
+  ACCOUNT_INFO
+  BALANCE_FETCH
+  DATA_PROCESSING
+  DATABASE_STORAGE
+  FINALIZATION
+} 
 
 enum TradingType {
   FUTURES

@@ -1,19 +1,19 @@
 "use client";
 
-import {Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {ChartContainer, ChartTooltip, ChartTooltipContent,} from "@/components/ui/chart";
+import { useChartConfig } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/useChartConfig";
 import {
     useChartFormatter
 } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/useChartFormatter";
-import {useChartConfig} from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/useChartConfig";
-import {useState} from "react";
-import {TimeframeSelect} from "@/app/(dashboard)/finance/investment/components/timeframe-select/TimeframeSelect";
 import {
     useHistoricalBalanceQuery
 } from "@/app/(dashboard)/finance/investment/components/historical-balance-chart/useHistoricalBalanceQuery";
-import {TimeframeEnum} from "@/lib/utils/date-time/timeframe.enum";
+import { TimeframeSelect } from "@/app/(dashboard)/finance/investment/components/timeframe-select/TimeframeSelect";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, } from "@/components/ui/chart";
+import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
+import { useState } from "react";
 
 interface IProps {
     cryptoPortfolioId: string;
@@ -38,9 +38,9 @@ export default function HistoricalBalanceChart({cryptoPortfolioId}: IProps) {
                 </CardTitle>
                 <TimeframeSelect timeframe={timeFrame} setTimeframe={setTimeframe}/>
             </CardHeader>
-            <CardContent className="flex-1">
+            <CardContent className="flex-1 p-0 lg:p-1 xl:p-2 2xl:p-4">
                 <ResponsiveContainer>
-                    <ChartContainer config={chartConfig} className="min-h-[20rem]">
+                    <ChartContainer config={chartConfig} className="min-h-[10rem] min-w-[20rem]">
                         <LineChart
                             accessibilityLayer
                             data={historicalData}

@@ -4,6 +4,7 @@ import { Int } from '@nestjs/graphql';
 import { OtpPurpose } from '../prisma/otp-purpose.enum';
 import { BankManager } from '../bank-manager/bank-manager.model';
 import { CryptoPortfolio } from '../crypto-portfolio/crypto-portfolio.model';
+import { CreatePortfolioExecution } from '../create-portfolio-execution/create-portfolio-execution.model';
 import { Expense } from '../expense/expense.model';
 import { ExpenseCategory } from '../expense-category/expense-category.model';
 import { Event } from '../event/event.model';
@@ -38,6 +39,9 @@ export class User {
 
     @Field(() => [CryptoPortfolio], {nullable:true})
     cryptoPortfolios?: Array<CryptoPortfolio>;
+
+    @Field(() => [CreatePortfolioExecution], {nullable:true})
+    createPortfolioExecutions?: Array<CreatePortfolioExecution>;
 
     @Field(() => [Expense], {nullable:true})
     expenses?: Array<Expense>;

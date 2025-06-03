@@ -2,9 +2,19 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum CreatePortfolioExecutionScalarFieldEnum {
     id = "id",
-    time = "time",
     userId = "userId",
-    status = "status"
+    currentStep = "currentStep",
+    currentMilestone = "currentMilestone",
+    progressPercent = "progressPercent",
+    errorMessage = "errorMessage",
+    recoveryAction = "recoveryAction",
+    retryCount = "retryCount",
+    maxRetries = "maxRetries",
+    exchangeType = "exchangeType",
+    executionContext = "executionContext",
+    createdAt = "createdAt",
+    updatedAt = "updatedAt",
+    completedAt = "completedAt"
 }
 
 

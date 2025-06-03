@@ -20,12 +20,11 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Xela",
+  title: "Aurora",
   icons: {
     icon: [
     //   { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/public/logo/weblogo.png", type: "image/png", sizes: "16x16" },
-      { url: "/public/logo/weblogo.png", type: "image/png", sizes: "32x32" },
+      { url: "/logo/logo-white.svg", type: "image/svg+xml", sizes: "any" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180" },
@@ -51,7 +50,7 @@ export default function RootLayout({
     return (
         <html lang="en" data-theme="light" suppressHydrationWarning={true}>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-screen flex flex-col box-border`}
+                className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased w-full h-screen flex flex-col box-border`}
                 suppressHydrationWarning={true}
             >
                 <Providers>
