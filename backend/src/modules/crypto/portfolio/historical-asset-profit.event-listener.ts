@@ -46,7 +46,8 @@ export class HistoricalAssetProfitEventListener
                     {
                         [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME]:
                             payload,
-                        [HistoricalAssetProfitEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_MINUTE
+                        [HistoricalAssetProfitEventListener.TIME_FRAME]:
+                            AbbreviatedTimeFrameEnum.ONE_MINUTE,
                     },
                 );
             },
@@ -64,7 +65,8 @@ export class HistoricalAssetProfitEventListener
                     {
                         [HistoricalAssetProfitEventListener.NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME]:
                             payload,
-                        [HistoricalAssetProfitEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_HOUR
+                        [HistoricalAssetProfitEventListener.TIME_FRAME]:
+                            AbbreviatedTimeFrameEnum.ONE_HOUR,
                     },
                 );
             },

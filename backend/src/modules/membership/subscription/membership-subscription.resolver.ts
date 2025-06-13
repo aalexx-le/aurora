@@ -17,10 +17,9 @@ import { User } from "src/entities/user/user.model";
 import { JwtGuard } from "src/modules/auth/guards/jwt.guard";
 import { SubscriptionEvent } from "src/shared/constants/subscription.event";
 import { AuthUser } from "src/shared/decorators/auth-user.decorator";
-import { PaddleWebhookService } from "../../paddle/paddle-webhook.service";
+import { PaddleWebhookService } from "../../payment/paddle/paddle-webhook.service";
 import { MembershipPlanService } from "../plan/membership-plan.service";
 import { CreateSubscriptionArgs } from "./dtos/create-subscription.dto";
-import { DeleteSubscriptionArgs } from "./dtos/delete-subscription.dto";
 import { UpdateSubscriptionArgs } from "./dtos/update-subscription.dto";
 import { MembershipSubscriptionService } from "./membership-subscription.service";
 
@@ -98,7 +97,7 @@ export class MembershipSubscriptionResolver {
                 PaddleWebhookService
                     .MEMBERSHIP_SUBSCRIPTION_UPDATED_PAYLOAD_NAME
             ] as MembershipSubscription;
-            console.log(context.req)
+            console.log(context.req);
             const userId = context.req?.user?.id;
             return subscription.userId === userId;
         },

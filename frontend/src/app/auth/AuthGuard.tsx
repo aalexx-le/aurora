@@ -1,3 +1,5 @@
+'use client'
+
 import { AuthParams } from "@/lib/constants/params";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";
 import { authActions } from "@/state/slices/auth.slice";

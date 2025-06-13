@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinning';
 import { Settings } from 'lucide-react';
-import { useCustomerPortalSession } from '../../hooks/useCustomerPortalSession';
+import { useCustomerPortalSession } from '../../../../(membership)/hooks/useCustomerPortalSession';
 
 interface ManageSubscriptionButtonProps {
   subscriptionIds?: string[];

@@ -11,20 +11,30 @@ export function useAnalyseData(assetProfits: LatestAssetProfit[]) {
     useEffect(() => {
         const getChartData = async () => {
             const fac = new FastAverageColor();
-            const mapBalances = await Promise.all(assetProfits
-                .map(async b => ({
+            const mapBalances = await Promise.all(
+                assetProfits.map(async (b) => ({
                     assetId: b.assetInfo.id,
                     invest: b.totalCostInQuoteQty,
                     price: b.assetInfo.lastPrice,
                     remainingQty: b.remainingQty,
                     estimatedProfit: b.estimatedProfit,
-                    profitPercent: b.estimatedProfit / b.totalCostInQuoteQty * 100,
+                    profitPercent:
+                        (b.estimatedProfit / b.totalCostInQuoteQty) * 100,
                     name: b.assetInfo.symbol,
-                    fill: (await fac.getColorAsync(b.assetInfo.logo as unknown as FastAverageColorResource)).rgb,
+                    fill: (
+                        await fac.getColorAsync(
+                            b.assetInfo
+                                .logo as unknown as FastAverageColorResource,
+                        )
+                    ).rgb,
                     tag: b.assetInfo.tag,
                     exchange: b.cryptoPortfolio.exchanges,
-                    exchangeLogo: CRYPTO_EXCHANGES_INFOS.find(e => b.cryptoPortfolio.exchanges == e.id)?.logo || ''
-                })))
+                    exchangeLogo:
+                        CRYPTO_EXCHANGES_INFOS.find(
+                            (e) => b.cryptoPortfolio.exchanges == e.id,
+                        )?.logo || "",
+                })),
+            );
 
             // const usdtBalances = balances.filter(b => b.assetInfo.symbol === 'USDT');
             // const mapUSDTBalances = await Promise.all(usdtBalances
@@ -44,10 +54,13 @@ export function useAnalyseData(assetProfits: LatestAssetProfit[]) {
             //
             // mapBalances.push(...mapUSDTBalances);
 
-            const sortedBalances = mapBalances.sort((a, b) => b.invest - a.invest);
+            const sortedBalances = mapBalances.sort(
+                (a, b) => b.invest - a.invest,
+            );
 
-            const filteredBalances = sortedBalances
-                .filter(b => b.remainingQty > MIN_THRESHOLD);
+            const filteredBalances = sortedBalances.filter(
+                (b) => b.remainingQty > MIN_THRESHOLD,
+            );
 
             const hideSymbols = ["BNB", "BTC"];
 
@@ -59,12 +72,12 @@ export function useAnalyseData(assetProfits: LatestAssetProfit[]) {
             // );
             //
             // return filteredBalances.map((b, i) => ({...b, estimatedProfit: converted[i] as unknown as number}))
-        }
+        };
 
-        getChartData().then(data => {
+        getChartData().then((data) => {
             setAnalyseData(data);
         });
     }, [assetProfits]);
 
     return { analyseData };
-} 
+}

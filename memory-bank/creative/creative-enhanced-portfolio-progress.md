@@ -113,7 +113,7 @@ model CreatePortfolioExecution {
   maxRetries      Int                           @default(3) @db.SmallInt
   
   // Context data
-  exchangeType    CEXExchanges?
+  exchangeType    Exchanges?
   executionContext String?                      @db.JsonB // Minimal context only
   
   // Timestamps
@@ -245,7 +245,7 @@ model CreatePortfolioExecution {
   maxRetries        Int                       @default(3) @db.SmallInt
   
   // Context data
-  exchangeType      CEXExchanges?
+  exchangeType      Exchanges?
   executionContext  Json?                     // Minimal context only
   
   // Timestamps
@@ -320,7 +320,7 @@ interface EnhancedPortfolioStatusPayload {
   recoveryAction?: ErrorRecoveryAction;
   retryCount: number;
   maxRetries: number;
-  exchangeType?: CEXExchanges;
+  exchangeType?: Exchanges;
   executionContext?: {
     portfolioId?: string;
     processingStartTime?: Date;

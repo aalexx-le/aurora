@@ -1,7 +1,8 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum PaymentProvider {
-    PADDLE = "PADDLE"
+    PADDLE = "PADDLE",
+    METAMASK = "METAMASK"
 }
 
 

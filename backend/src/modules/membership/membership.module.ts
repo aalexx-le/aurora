@@ -1,26 +1,46 @@
-import { Module } from "@nestjs/common";
-import { MembershipFeatureModule } from "./feature/membership-feature.module";
-import { MembershipPlanModule } from "./plan/membership-plan.module";
-import { MembershipPriceModule } from "./price/membership-price.module";
-import { MembershipSubscriptionModule } from "./subscription/membership-subscription.module";
-import {PaddleModule} from "../paddle/paddle.module";
-import {SUBSCRIPTION_PUB_SUB_PROVIDER} from "../../shared/providers/pubsub";
+import { forwardRef, Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "../../shared/providers/pubsub";
+import { FeatureModule } from "../feature/feature.module";
+import { PaymentModule } from "../payment/payment.module";
+import { MembershipFeatureResolver } from "./feature/membership-feature.resolver";
+import { MembershipFeatureService } from "./feature/membership-feature.service";
+import { MembershipPlanResolver } from "./plan/membership-plan.resolver";
+import { MembershipPlanService } from "./plan/membership-plan.service";
+import { MembershipPriceResolver } from "./price/membership-price.resolver";
+import { MembershipPriceService } from "./price/membership-price.service";
+import { MembershipSubscriptionResolver } from "./subscription/membership-subscription.resolver";
+import { MembershipSubscriptionService } from "./subscription/membership-subscription.service";
+import { MembershipDiscountService } from "./discount/membership-discount.service";
+import { MembershipDiscountResolver } from "./discount/membership-discount.resolver";
 
 @Module({
     imports: [
-        PaddleModule,
-
-        MembershipPlanModule,
-        MembershipPriceModule,
-        MembershipSubscriptionModule,
-        MembershipFeatureModule,
+        ConfigModule,
+        forwardRef(() => PaymentModule),
+        FeatureModule,
     ],
-    providers: [SUBSCRIPTION_PUB_SUB_PROVIDER],
+    providers: [
+        MembershipPlanService,
+        MembershipPriceService,
+        MembershipSubscriptionService,
+        MembershipFeatureService,
+        MembershipDiscountService,
+
+        MembershipPlanResolver,
+        MembershipPriceResolver,
+        MembershipSubscriptionResolver,
+        MembershipFeatureResolver,
+        MembershipDiscountResolver,
+
+        SUBSCRIPTION_PUB_SUB_PROVIDER,
+    ],
     exports: [
-        MembershipPlanModule,
-        MembershipPriceModule,
-        MembershipSubscriptionModule,
-        MembershipFeatureModule,
+        MembershipPlanService,
+        MembershipPriceService,
+        MembershipSubscriptionService,
+        MembershipFeatureService,
+        MembershipDiscountService,
     ],
 })
 export class MembershipModule {}

@@ -70,20 +70,43 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // Initialize with stored value from localStorage or use defaultOpen
-    const [_open, _setOpen] = React.useState(() => {
-      // Only run on client side
-      if (typeof window === "undefined") return defaultOpen
+    // Initialize with defaultOpen to avoid hydration mismatch
+    const [_open, _setOpen] = React.useState(defaultOpen)
+    
+    // Track if we've loaded from localStorage yet
+    const [hasLoadedFromStorage, setHasLoadedFromStorage] = React.useState(false)
+    
+    const open = openProp ?? _open
+
+    // Load initial state from localStorage on client-side only
+    React.useEffect(() => {
+      if (typeof window === "undefined" || hasLoadedFromStorage) return
       
       try {
         const storedValue = localStorage.getItem(SIDEBAR_STORAGE_KEY)
-        return storedValue === "true" ? true : storedValue === "false" ? false : defaultOpen
+        if (storedValue !== null) {
+          const savedOpen = storedValue === "true"
+          if (savedOpen !== defaultOpen) {
+            _setOpen(savedOpen)
+          }
+        }
       } catch (error) {
-        return defaultOpen
+        console.warn("Failed to load sidebar state from localStorage:", error)
+      } finally {
+        setHasLoadedFromStorage(true)
       }
-    })
-    
-    const open = openProp ?? _open
+    }, [defaultOpen, hasLoadedFromStorage])
+
+    // Save to localStorage whenever open state changes (but only after initial load)
+    React.useEffect(() => {
+      if (!hasLoadedFromStorage || typeof window === "undefined") return
+      
+      try {
+        localStorage.setItem(SIDEBAR_STORAGE_KEY, String(open))
+      } catch (error) {
+        console.warn("Failed to save sidebar state to localStorage:", error)
+      }
+    }, [open, hasLoadedFromStorage])
     
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
@@ -92,16 +115,6 @@ const SidebarProvider = React.forwardRef<
           setOpenProp(openState)
         } else {
           _setOpen(openState)
-        }
-
-        // Store in localStorage
-        try {
-          if (typeof window !== "undefined") {
-            localStorage.setItem(SIDEBAR_STORAGE_KEY, String(openState))
-          }
-        } catch (error) {
-          // Fallback to cookies if localStorage fails
-          document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
         }
       },
       [setOpenProp, open]
@@ -114,7 +127,7 @@ const SidebarProvider = React.forwardRef<
       } else {
         setOpen((prevOpen) => !prevOpen)
       }
-    }, [isMobile, setOpen, setOpenMobile])
+    }, [isMobile, setOpen])
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -146,7 +159,7 @@ const SidebarProvider = React.forwardRef<
         setOpenMobile,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobile, openMobile, toggleSidebar]
     )
 
     return (

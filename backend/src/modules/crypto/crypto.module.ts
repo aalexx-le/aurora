@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ClientsModule, Transport } from "@nestjs/microservices";
 import { ConnectionStringParser } from "connection-string-parser";
 import { PgPubSubModule } from "nestjs-pg-pubsub";
 import { SUBSCRIPTION_PUB_SUB_PROVIDER } from "src/shared/providers/pubsub";
@@ -48,7 +48,7 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
         }),
         ClientsModule.registerAsync([
             {
-                name: 'KAFKA_SERVICE',
+                name: "KAFKA_SERVICE",
                 inject: [ConfigService],
                 useFactory: async (configService: ConfigService) => {
                     const broker = configService.get("MESSAGE_BROKER_URL");
@@ -56,20 +56,20 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
                         transport: Transport.KAFKA,
                         options: {
                             client: {
-                                clientId: 'backend-producer',
+                                clientId: "backend-producer",
                                 brokers: [broker],
                             },
                             consumer: {
-                                groupId: 'backend-consumer',
+                                groupId: "backend-consumer",
                                 allowAutoTopicCreation: true,
                             },
                             producer: {
                                 allowAutoTopicCreation: true,
-                            }
-                        }
+                            },
+                        },
                     };
-                }
-            }
+                },
+            },
         ]),
         ExportModule,
     ],
@@ -85,7 +85,7 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
 
         CryptoPortfolioService,
         CryptoAssetService,
-        
+
         AssetPriceEventListener,
         HistoricalCryptoBalanceEventListener,
         HistoricalAssetProfitEventListener,
@@ -93,10 +93,6 @@ import { CryptoPortfolioService } from "./portfolio/portfolio.service";
         EncryptionService,
         SUBSCRIPTION_PUB_SUB_PROVIDER,
     ],
-    exports: [
-        CryptoPortfolioService,
-        CryptoAssetService,
-        ExportModule,
-    ],
+    exports: [CryptoPortfolioService, CryptoAssetService, ExportModule],
 })
 export class CryptoModule {}

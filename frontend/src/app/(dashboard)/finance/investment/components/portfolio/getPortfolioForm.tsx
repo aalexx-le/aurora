@@ -1,12 +1,15 @@
+import { Badge } from "@/components/ui/badge";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
-import { CexExchanges } from "@/gql/graphql";
+import { isPassphraseRequired } from "@/lib/constants/crypto-exchanges";
 import { CreateCryptoPortfolioInput } from "@/lib/schema/cryptoPortfolio";
+import { AlertTriangle } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { ExchangeSelect } from "./ExchangeSelect";
 
 export function getPortfolioForm(form: UseFormReturn<CreateCryptoPortfolioInput>) {
-  const reviewExchanges = form.watch("exchanges");
+  const selectedExchange = form.watch("exchanges");
+  const requiresPassphrase = selectedExchange ? isPassphraseRequired(selectedExchange) : false;
 
   return (
     <>
@@ -40,7 +43,7 @@ export function getPortfolioForm(form: UseFormReturn<CreateCryptoPortfolioInput>
               <span className="text-muted-foreground"> (optional)</span>
             </FormLabel>
             <FormControl>
-              <Input {...field} />
+              <Input {...field} placeholder="Enter portfolio name" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -51,12 +54,15 @@ export function getPortfolioForm(form: UseFormReturn<CreateCryptoPortfolioInput>
         name="apiKey"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>
+            <FormLabel className="flex items-center gap-2">
               API Key
-              <span className="text-destructive"> (require)</span>
+              <Badge variant="destructive" className="flex items-center gap-1 px-2 py-1">
+                <AlertTriangle className="h-3 w-3" />
+                Required
+              </Badge>
             </FormLabel>
             <FormControl>
-              <Input {...field} />
+              <Input {...field} placeholder="Enter your API key" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -67,35 +73,45 @@ export function getPortfolioForm(form: UseFormReturn<CreateCryptoPortfolioInput>
         name="secretKey"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>
+            <FormLabel className="flex items-center gap-2">
               Secret Key
-              <span className="text-destructive"> (require)</span>
+              <Badge variant="destructive" className="flex items-center gap-1 px-2 py-1">
+                <AlertTriangle className="h-3 w-3" />
+                Required
+              </Badge>
             </FormLabel>
             <FormControl>
-              <Input {...field} type="password" />
+              <Input {...field} type="password" placeholder="Enter your secret key" />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-      {reviewExchanges === CexExchanges.Okx && (
+      
+      {/* Dynamic Passphrase Field with Consistent Badge System */}
+      {requiresPassphrase && (
         <FormField
           control={form.control}
           name="passphrase"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>
+            <FormItem className="animate-in slide-in-from-top-2 duration-200">
+              <FormLabel className="flex items-center gap-2">
                 Passphrase
-                <span className="text-destructive"> (require)</span>
+                <Badge variant="destructive" className="flex items-center gap-1 px-2 py-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  Required
+                </Badge>
               </FormLabel>
               <FormControl>
-                <Input {...field} type="password" />
+                <Input {...field} type="password" placeholder="Enter your passphrase" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
       )}
+
+
     </>
   );
 } 

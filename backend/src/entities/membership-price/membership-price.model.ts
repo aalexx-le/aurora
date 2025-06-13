@@ -5,6 +5,7 @@ import { PriceStatus } from '../prisma/price-status.enum';
 import { TimePeriod } from '../time-period/time-period.model';
 import { UnitPrice } from '../unit-price/unit-price.model';
 import { MembershipPlan } from '../membership-plan/membership-plan.model';
+import { MembershipDiscountPrice } from '../membership-discount-price/membership-discount-price.model';
 
 @ObjectType()
 export class MembershipPrice {
@@ -41,4 +42,7 @@ export class MembershipPrice {
 
     @Field(() => MembershipPlan, {nullable:false})
     plan?: MembershipPlan;
+
+    @Field(() => [MembershipDiscountPrice], {nullable:true})
+    discounts?: Array<MembershipDiscountPrice>;
 }

@@ -1,15 +1,13 @@
 import { Badge } from "@/components/ui/badge";
+import { PaymentTransaction } from "@/gql/graphql";
 import { format } from "date-fns";
 import { DollarSign } from "lucide-react";
-import { PaymentTransaction } from "../../types";
 
 type TransactionListProps = {
   transactions: PaymentTransaction[];
 };
 
 export const TransactionList = ({ transactions }: TransactionListProps) => {
-  if (!transactions?.length) return null;
-
   return (
     <div className="mt-4">
       <h4 className="text-sm font-medium mb-2">Payment History</h4>

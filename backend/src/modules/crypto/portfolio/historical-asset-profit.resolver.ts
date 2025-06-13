@@ -60,15 +60,14 @@ export class HistoricalAssetProfitResolver {
                     HistoricalAssetProfitEventListener
                         .NEW_HISTORICAL_ASSET_PROFIT_PAYLOAD_NAME
                 ]!;
-            const timeFrame = payload[
-                HistoricalAssetProfitEventListener.TIME_FRAME
-            ]!;
+            const timeFrame =
+                payload[HistoricalAssetProfitEventListener.TIME_FRAME]!;
             const {
                 cryptoPortfolioId,
                 assetInfoId,
                 timeFrame: timeFrameInput,
             } = variables.data;
-            
+
             return (
                 profit.cryptoPortfolioId === cryptoPortfolioId &&
                 profit.assetInfoId === assetInfoId &&

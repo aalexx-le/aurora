@@ -1,54 +1,44 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Crown, Sparkles } from "lucide-react";
+import { UPGRADE_CONSTANTS } from "@/lib/constants/upgrade";
+import MEMBERSHIP_ROUTE from "@/lib/routes/membership-plan.route";
 import Link from "next/link";
 
 interface UpgradeButtonProps {
-  variant?: "default" | "outline" | "ghost" | "gradient";
-  size?: "sm" | "default" | "lg";
-  text?: string;
-  showIcon?: boolean;
+  upgradeText?: string;
+  size?: "default" | "sm" | "lg" | "icon";
   className?: string;
+  showTrial?: boolean;
 }
 
-export const UpgradeButton = ({
-  variant = "default",
-  size = "default",
-  text = "Upgrade to Pro",
-  showIcon = true,
+export const UpgradeButton = ({ 
+  upgradeText = UPGRADE_CONSTANTS.defaultUpgradeText, 
+  size = "lg",
   className = "",
+  showTrial = true
 }: UpgradeButtonProps) => {
-  if (variant === "gradient") {
-    return (
+  const { icons } = UPGRADE_CONSTANTS;
+  const ZapIcon = icons.zap;
+  const ArrowRightIcon = icons.arrowRight;
+
+  return (
+    <div className="space-y-3 w-full">
       <Button
         asChild
         size={size}
-        className={`bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden ${className}`}
+        className={`w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 group ${className}`}
       >
-        <Link href="/setting/subscription" className="flex items-center justify-center gap-2 relative z-10">
-          {/* Subtle sparkle effect */}
-          <Sparkles className="absolute top-1 left-1 h-3 w-3 text-primary-foreground/70 animate-pulse" />
-          <Sparkles className="absolute bottom-1 right-1 h-2 w-2 text-primary-foreground/50 animate-pulse delay-500" />
-          
-          {showIcon && <Crown className="h-4 w-4" />}
-          {text}
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <Link href={MEMBERSHIP_ROUTE.plan.value} className="flex items-center justify-center gap-2">
+          <ZapIcon className="h-4 w-4" />
+          {upgradeText}
+          <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </Button>
-    );
-  }
-
-  return (
-    <Button
-      asChild
-      variant={variant}
-      size={size}
-      className={className}
-    >
-      <Link href="/setting/subscription" className="flex items-center justify-center gap-2">
-        {showIcon && <Crown className="h-4 w-4" />}
-        {text}
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </Link>
-    </Button>
+      
+      {showTrial && (
+        <p className="text-xs text-muted-foreground text-center">
+          {UPGRADE_CONSTANTS.trialText}
+        </p>
+      )}
+    </div>
   );
 }; 

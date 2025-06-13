@@ -1,24 +1,36 @@
+import LogoSvg from "@/components/logo/logo-svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CexExchanges } from "@/gql/graphql";
+import { Exchanges } from "@/gql/graphql";
 import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
+import { cn } from "@/lib/utils";
 import { ChevronsUpDown } from "lucide-react";
 import React from "react";
 
 interface IProps {
     selectedExchanges: string;
-    setSelectedExchanges: (exchanges: CexExchanges) => void;
+    setSelectedExchanges: (exchanges: Exchanges) => void;
 }
 
+const CRYPTO_EXCHANGES_INFOS_WITHOUT_ALL = CRYPTO_EXCHANGES_INFOS.filter((e) => e.id !== Exchanges.All);
+
+export function ExchangeLogo({id, logo, name, className}: {id: Exchanges, logo: string, name: string, className?: string}) {
+    return id !== Exchanges.All ? <Avatar className="h-4 w-4 rounded-lg">
+        <AvatarImage src={logo} alt={name}/>
+        <AvatarFallback className="rounded-lg">
+            {name}
+        </AvatarFallback>
+    </Avatar> : <LogoSvg className={cn("size-4", className)} />;
+}
 
 
 export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps) {
     const [open, setOpen] = React.useState(false);
 
     const onSelect = (exchanges: string) => {
-        setSelectedExchanges(exchanges as CexExchanges);
+        setSelectedExchanges(exchanges as Exchanges);
         setOpen(false);
     }
 
@@ -34,15 +46,7 @@ export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps
                     aria-expanded={open}
                 >
                     {selected ?
-                        <div className="flex flex-row gap-2 items-center">
-                            <Avatar className="h-4 w-4 rounded-lg">
-                                <AvatarImage src={selected.logo} alt={selected.name}/>
-                                <AvatarFallback className="rounded-lg">
-                                    {selected.name}
-                                </AvatarFallback>
-                            </Avatar>
-                            {selected.name}
-                        </div>
+                        <ExchangeLogo id={selected.id} logo={selected.logo} name={selected.name} className="size-4" />
                         :
                         <p className="text-muted-foreground">Select exchanges...</p>
                     }
@@ -55,19 +59,13 @@ export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps
                     <CommandList>
                         <CommandEmpty>No exchange found.</CommandEmpty>
                         <CommandGroup>
-                            {CRYPTO_EXCHANGES_INFOS.map((e) => (
+                            {CRYPTO_EXCHANGES_INFOS_WITHOUT_ALL.map((e) => (
                                 <CommandItem
                                     key={e.id}
                                     value={e.id}
                                     onSelect={onSelect}
                                 >
-                                    <Avatar className="h-4 w-4 rounded-lg">
-                                        <AvatarImage src={e.logo} alt={e.name}/>
-                                        <AvatarFallback className="rounded-lg">
-                                            {e.name}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    {e.name}
+                                    <ExchangeLogo id={e.id} logo={e.logo} name={e.name} className="size-4" />
                                 </CommandItem>
                             ))}
                         </CommandGroup>

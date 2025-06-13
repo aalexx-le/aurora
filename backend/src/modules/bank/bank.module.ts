@@ -59,10 +59,6 @@ const CassoHttpModule = HttpModule.registerAsync({
 
         BankTransactionCron,
     ],
-    exports: [
-        BankAccountService,
-        BankTransactionService,
-        CassoHttpModule,
-    ],
+    exports: [BankAccountService, BankTransactionService, CassoHttpModule],
 })
 export class BankModule {}

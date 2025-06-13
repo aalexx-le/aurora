@@ -37,9 +37,8 @@ export class HistoricalBalanceResolver {
                     HistoricalCryptoBalanceEventListener
                         .NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME
                 ]!;
-            const timeFrame = payload[
-                HistoricalCryptoBalanceEventListener.TIME_FRAME
-            ]!;
+            const timeFrame =
+                payload[HistoricalCryptoBalanceEventListener.TIME_FRAME]!;
             const { cryptoPortfolioIds, timeFrame: timeFrameInput } =
                 variables.data;
             return (

@@ -1,12 +1,12 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { TaxMode } from "@paddle/paddle-node-sdk";
+import { PriceStatus } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { PrismaService } from "nestjs-prisma";
 import { MembershipPrice } from "src/entities/membership-price/membership-price.model";
-import { PaddleService } from "src/modules/paddle/paddle.service";
+import { PaddleProductService } from "src/modules/payment/paddle/paddle-product.service";
 import { CreatePriceDto } from "./dtos/create-price.dto";
 import { UpdatePriceDto } from "./dtos/update-price.dto";
-import { PriceStatus } from "@prisma/client";
 
 @Injectable()
 export class MembershipPriceService {
@@ -14,7 +14,7 @@ export class MembershipPriceService {
 
     constructor(
         private readonly prisma: PrismaService,
-        private readonly paddleService: PaddleService,
+        private readonly paddleProductService: PaddleProductService,
     ) {}
 
     async findAll(): Promise<MembershipPrice[]> {
@@ -90,7 +90,7 @@ export class MembershipPriceService {
 
         // Create the price in Paddle
         this.logger.log("Creating price in Paddle");
-        const paddlePrice = await this.paddleService.createPrice({
+        const paddlePrice = await this.paddleProductService.createPrice({
             productId: data.planId,
             description: `Membership Price for Plan ${plan.name}`,
             unitPrice: data.unitPrice,

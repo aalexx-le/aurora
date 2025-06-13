@@ -81,8 +81,6 @@ export function DataTableFilterList<TData>({
       })
   )
 
-  console.log(filters)
-
   const [joinOperator, setJoinOperator] = useQueryState(
     "joinOperator",
     parseAsStringEnum(["and", "or"]).withDefault("and").withOptions({

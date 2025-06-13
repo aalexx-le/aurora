@@ -2,7 +2,7 @@ model CryptoPortfolio {
   userId                 Int
   name                   String                    @default("")
   status                 PortfolioStatus           @default(ACTIVE)
-  exchanges              CEXExchanges              @default(BINANCE)
+  exchanges              Exchanges              @default(BINANCE)
   tradingType            TradingType
   apiKey                 String
   secretKey              String
@@ -15,7 +15,7 @@ model CryptoPortfolio {
   historicalBalances     HistoricalCryptoBalance[]
   trades                 Trade[]
 
-  okxPortfolio OKXCryptoPortfolio?
+  passphrasePortfolio PassphraseCryptoPortfolio?
 
   // New fields for aggregation
   parentPortfolioId String?
@@ -23,7 +23,7 @@ model CryptoPortfolio {
   childPortfolios   CryptoPortfolio[] @relation("AggregatedPortfolios")
 }
 
-model OKXCryptoPortfolio {
+model PassphraseCryptoPortfolio {
   id                String          @id @default(uuid())
   cryptoPortfolioId String          @unique
   cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
@@ -46,7 +46,7 @@ model CreatePortfolioExecution {
   maxRetries        Int                       @default(3) @db.SmallInt
   
   // Context data
-  exchangeType      CEXExchanges?
+  exchangeType      Exchanges?
   executionContext  Json?                     // Minimal context only
   
   // Timestamps
@@ -179,12 +179,9 @@ enum PortfolioCreationMilestone {
 enum PortfolioCreationStep {
   VALIDATION
   AUTHENTICATION
-  CONNECTION
-  ACCOUNT_INFO
-  BALANCE_FETCH
-  DATA_PROCESSING
+  BALANCE_RETRIEVAL
   DATABASE_STORAGE
-  FINALIZATION
+  COMPLETION
 } 
 
 enum TradingType {
@@ -192,9 +189,128 @@ enum TradingType {
   SPOT
 }
 
-enum CEXExchanges {
+enum Exchanges {
+  // Special/Aggregate values
+  ALL
+  // Tier 1 Global Exchanges
   BINANCE
   MEXC
   OKX
-  ALL
+  COINBASE
+  COINBASEEXCHANGE
+  COINBASEINTERNATIONAL
+  KRAKEN
+  KRAKENFUTURES
+  BYBIT
+  BITGET
+  GATE
+  HUOBI  // HTX
+  HTX
+  KUCOIN
+  KUCOINFUTURES
+  CRYPTOCOM
+  BITFINEX
+  BITMEX
+  BITSTAMP
+  GEMINI
+  
+  // Tier 2 Popular Exchanges
+  BITMART
+  BITRUE
+  ASCENDEX
+  PROBIT
+  POLONIEX
+  LBANK
+  PHEMEX
+  WOO
+  WOOFIPRO
+  DERIBIT
+  BINGX
+  HASHKEY
+  COINEX
+  WHITEBIT
+  XT
+  MEXC3  // Alternative naming
+  P2B
+  TRADEOGRE
+  NDAX
+  OXFUN
+  BLOFIN
+  COINCATCH
+  
+  // Regional/Country-Specific Exchanges
+  BINANCEUS
+  BINANCEUSDM
+  BINANCECOINM
+  OKCOIN
+  MYOKX
+  OKXUS
+  BITHUMB
+  UPBIT
+  COINONE
+  HUOBIJP
+  BITFLYER
+  COINCHECK
+  BITBANK
+  ZAIF
+  BTCBOX
+  INDODAX
+  TOKOCRYPTO
+  COINSPH
+  NOVADAX
+  MERCADO
+  BITSO
+  BTCTURK
+  BTCALPHA
+  EXMO
+  BITTEAM
+  KUNA
+  LATOKEN
+  
+  // DEX and Layer 2 Exchanges
+  HYPERLIQUID
+  VERTEX
+  PARADEX
+  DERIVE
+  APEX
+  DEFX
+  WOOFIPRO_DEX
+  IDEX
+  WAVESEXCHANGE
+  MODETRADE
+  
+  // Smaller/Niche Exchanges
+  ALPACA
+  BEQUANT
+  BIGONE
+  BIT2C
+  BITBNS
+  BITOPRO
+  BITVAVO
+  BL3P
+  BLOCKCHAINCOM
+  BTCMARKETS
+  CEX
+  COINLIST
+  COINMATE
+  COINMETRO
+  COINSPOT
+  CRYPTOMUS
+  DELTA
+  DIGIFINEX
+  ELLIPX
+  FMFWIO
+  HOLLAEX
+  INDEPENDENTRESERVE
+  LUNO
+  OCEANEX
+  ONETRADING
+  PAYMIUM
+  TIMEX
+  YOBIT
+  ZONDA
+  HITBTC
+  
+  // Legacy/Historical (maintained for compatibility)
+  HUOBI_LEGACY  // For old Huobi references
 }

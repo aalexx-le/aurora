@@ -31,14 +31,9 @@ export class CryptoAssetPriceResolver {
         name: AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME,
         filter: async (payload, variables: GetAssetPriceArgs) => {
             const assetPrice: AssetPrice =
-                payload[
-                    AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME
-                ]!;
-            const timeFrame = payload[
-                AssetPriceEventListener.TIME_FRAME
-            ]!;
-            const { assetInfoId, timeFrame: timeFrameInput } =
-                variables.data;
+                payload[AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME]!;
+            const timeFrame = payload[AssetPriceEventListener.TIME_FRAME]!;
+            const { assetInfoId, timeFrame: timeFrameInput } = variables.data;
             return (
                 assetPrice.assetInfoId === assetInfoId &&
                 timeFrame === timeFrameInput

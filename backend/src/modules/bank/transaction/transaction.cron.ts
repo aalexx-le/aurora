@@ -2,7 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { PrismaService } from "nestjs-prisma";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { GetTransactionNetworkOutput, Record } from "./dto/get-transaction-network.output";
+import {
+    GetTransactionNetworkOutput,
+    Record,
+} from "./dto/get-transaction-network.output";
 import { firstValueFrom } from "rxjs";
 import { KafkaTopic } from "../../../shared/constants/kafka";
 
@@ -103,13 +106,14 @@ export class BankTransactionCron {
         fromDate?: string,
     ): Promise<Record[]> {
         try {
-            const response: { data: GetTransactionNetworkOutput } = await firstValueFrom(
-                this.httpService
-                    .get("/v2/transactions", {
-                        headers: { Authorization: `Apikey ${apiKey}` },
-                        params: { fromDate, sort: "DESC", pageSize: 30 },
-                    })
-                    .pipe(),
+            const response: { data: GetTransactionNetworkOutput } =
+                await firstValueFrom(
+                    this.httpService
+                        .get("/v2/transactions", {
+                            headers: { Authorization: `Apikey ${apiKey}` },
+                            params: { fromDate, sort: "DESC", pageSize: 30 },
+                        })
+                        .pipe(),
                 );
 
             return response.data.data.records;

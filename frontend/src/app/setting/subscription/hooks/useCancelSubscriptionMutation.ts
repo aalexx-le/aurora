@@ -2,15 +2,13 @@
 
 import {
     CANCEL_SUBSCRIPTION,
-    GET_MY_ACTIVE_SUBSCRIPTIONS
+    GET_MY_ACTIVE_SUBSCRIPTIONS,
 } from "@/api/membership/subscription";
 import {
     CancelMembershipSubscriptionMutation,
-    CancelMembershipSubscriptionMutationVariables
+    CancelMembershipSubscriptionMutationVariables,
 } from "@/gql/graphql";
-import {
-    useMutation
-} from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 export const useCancelSubscriptionMutation = () => {
     const [cancelSubscription, { loading }] = useMutation<

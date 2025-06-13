@@ -4,6 +4,7 @@ import { Int } from '@nestjs/graphql';
 import { PaymentProvider } from '../prisma/payment-provider.enum';
 import { User } from '../user/user.model';
 import { PaddlePaymentMethod } from '../paddle-payment-method/paddle-payment-method.model';
+import { MetaMaskPaymentMethod } from '../meta-mask-payment-method/meta-mask-payment-method.model';
 
 @ObjectType()
 export class PaymentMethod {
@@ -22,4 +23,7 @@ export class PaymentMethod {
 
     @Field(() => PaddlePaymentMethod, {nullable:true})
     paddlePaymentMethod?: PaddlePaymentMethod | null;
+
+    @Field(() => MetaMaskPaymentMethod, {nullable:true})
+    metaMaskPaymentMethod?: MetaMaskPaymentMethod | null;
 }

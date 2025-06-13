@@ -3,9 +3,11 @@ export { Asset_price_1hScalarFieldEnum } from './asset-price-1-h-scalar-field.en
 export { Asset_price_1MScalarFieldEnum } from './asset-price-1-m-scalar-field.enum';
 export { Asset_price_5mScalarFieldEnum } from './asset-price-5-m-scalar-field.enum';
 export { AutoBankManagerThirdParty } from './auto-bank-manager-third-party.enum';
-export { CEXExchanges } from './cex-exchanges.enum';
 export { CreateExecutionStatus } from './create-execution-status.enum';
+export { DiscountTargetType } from './discount-target-type.enum';
+export { DiscountType } from './discount-type.enum';
 export { ErrorRecoveryAction } from './error-recovery-action.enum';
+export { Exchanges } from './exchanges.enum';
 export { FeatureType } from './feature-type.enum';
 export { Historical_asset_profit_1dScalarFieldEnum } from './historical-asset-profit-1-d-scalar-field.enum';
 export { Historical_asset_profit_1hScalarFieldEnum } from './historical-asset-profit-1-h-scalar-field.enum';

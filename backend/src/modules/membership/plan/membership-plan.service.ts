@@ -3,7 +3,7 @@ import { MembershipSubscriptionStatus } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { PrismaService } from "nestjs-prisma";
 import { MembershipPlan } from "src/entities/membership-plan/membership-plan.model";
-import { PaddleService } from "src/modules/paddle/paddle.service";
+import { PaddleProductService } from "src/modules/payment/paddle/paddle-product.service";
 import { CreatePlanDto } from "./dtos/create-plan.dto";
 import { UpdatePlanDto } from "./dtos/update-plan.dto";
 
@@ -13,7 +13,7 @@ export class MembershipPlanService {
 
     constructor(
         private readonly prisma: PrismaService,
-        private readonly paddleService: PaddleService,
+        private readonly paddleProductService: PaddleProductService,
     ) {}
 
     async findAll(): Promise<MembershipPlan[]> {
@@ -41,7 +41,7 @@ export class MembershipPlanService {
         const { featureIds, ...planData } = data;
 
         // Create product in Paddle first
-        const paddleProduct = await this.paddleService.createProduct({
+        const paddleProduct = await this.paddleProductService.createProduct({
             name: planData.name,
             description: planData.description,
             taxCategory: "standard",
@@ -72,7 +72,6 @@ export class MembershipPlanService {
             return plan;
         });
 
-        
         return plan;
     }
 
@@ -82,7 +81,7 @@ export class MembershipPlanService {
         const plan = await this.findOne(id);
 
         // Update the product in Paddle first
-        await this.paddleService.updateProduct(id, {
+        await this.paddleProductService.updateProduct(id, {
             name: data.name,
             description: data.description,
         });

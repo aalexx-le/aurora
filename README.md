@@ -10,9 +10,11 @@ Real-time cryptocurrency portfolio tracking system with automated data pipelines
 
 ### Crypto Management
 - Multi-exchange portfolio aggregation (Binance, OKX, MEXC)
-- Real-time asset valuation
+- Real-time asset valuation  
 - Historical P&L analysis
 - Automated trade synchronization
+- **Integrated Portfolio Service**: CCXT-based exchange connectivity with secure credential encryption
+- **Event-Driven Workflow**: Kafka-based portfolio creation with 8-step automated process
 
 ### Banking & Expenses
 - Transaction monitoring across bank accounts

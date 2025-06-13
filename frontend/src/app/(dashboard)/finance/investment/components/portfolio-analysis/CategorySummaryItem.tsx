@@ -6,7 +6,7 @@ import { MoneyUpDownAnimated } from "@/components/money/money-up-down-animated";
 import MoneyWithCurrency from "@/components/money/money-with-currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { CexExchanges } from "@/gql/graphql";
+import { Exchanges } from "@/gql/graphql";
 import { cn } from "@/lib/utils";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
 import { useSubscription } from "@apollo/client";
@@ -57,7 +57,7 @@ export function CategorySummaryItem({data, totalInvest, cryptoPortfolioId}: IPro
                 <TooltipTrigger className="text-start">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
-                            {aggregatedData.exchange !== CexExchanges.All && <Avatar className="size-4">
+                            {aggregatedData.exchange !== Exchanges.All && <Avatar className="size-4">
                                 <AvatarImage src={aggregatedData.exchangeLogo}/>
                                 <AvatarFallback>{aggregatedData.name}</AvatarFallback>
                             </Avatar>}

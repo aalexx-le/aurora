@@ -1,7 +1,6 @@
 import { FEATURES } from "@/lib/constants/membership-feature";
 import { useCryptoFeatureAccess } from "./useCryptoFeatureAccess";
 
-
 export const useCryptoViewAnalysis = () => {
     const { hasFeature, loading } = useCryptoFeatureAccess();
 
@@ -9,6 +8,6 @@ export const useCryptoViewAnalysis = () => {
 
     return {
         canViewAnalysis,
-        loading
-    }
-}
+        loading,
+    };
+};

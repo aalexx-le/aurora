@@ -51,23 +51,29 @@ async function bootstrap() {
         transport: Transport.KAFKA,
         options: {
             client: {
-                clientId: 'backend-consumer',
-                brokers: [configService.get("MESSAGE_BROKER_URL") || 'localhost:9092'],
+                clientId: "backend-consumer",
+                brokers: [
+                    configService.get("MESSAGE_BROKER_URL") || "localhost:9092",
+                ],
             },
             consumer: {
-                groupId: 'backend-consumer-group',
+                groupId: "backend-consumer-group",
                 allowAutoTopicCreation: true,
-            }
-        }
+            },
+        },
     };
-    
+
     app.connectMicroservice(kafkaOptions);
-    
+
     await app.startAllMicroservices();
     await app.listen(configService.get("SERVER_PORT"));
-    
+
     console.log(`🚀 Backend running as hybrid service:`);
-    console.log(`   📡 HTTP/GraphQL: ${configService.get("SERVER_HOST")}:${configService.get("SERVER_PORT")}`);
-    console.log(`   📨 Kafka Consumer: ${configService.get("MESSAGE_BROKER_URL")}`);
+    console.log(
+        `   📡 HTTP/GraphQL: ${configService.get("SERVER_HOST")}:${configService.get("SERVER_PORT")}`,
+    );
+    console.log(
+        `   📨 Kafka Consumer: ${configService.get("MESSAGE_BROKER_URL")}`,
+    );
 }
 bootstrap();

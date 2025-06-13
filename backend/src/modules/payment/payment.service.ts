@@ -13,6 +13,7 @@ export class PaymentService {
             },
             include: {
                 paddlePaymentMethod: true,
+                metaMaskPaymentMethod: true,
             },
         });
     }
@@ -24,6 +25,7 @@ export class PaymentService {
             },
             include: {
                 paddlePaymentMethod: true,
+                metaMaskPaymentMethod: true,
             },
         });
     }

@@ -4,544 +4,1012 @@
 
 This style guide establishes comprehensive development standards, coding conventions, and best practices for the Xela Finance Management System. All contributors must follow these guidelines to ensure code consistency, maintainability, and quality across the entire project.
 
-## 💻 CODE FORMATTING & STANDARDS
+The project uses a modern stack with **Next.js frontend** and **NestJS backend**, integrated through **GraphQL** and **Apollo Client**.
 
-### TypeScript/JavaScript Standards
+## 💻 FRONTEND STANDARDS (Next.js)
 
-#### File Naming Conventions
+### Package Management & Dependencies
+- Use **yarn** as package manager
+- Follow TypeScript guidelines strictly
+- Reference project structure documentation for consistency
+
+### Type Definitions and Props
+
+**Pattern:** Define prop interfaces separately from components.
+
 ```typescript
-// Use PascalCase for React components and classes
-UserProfile.tsx
-PortfolioManager.ts
-ExchangeApiService.ts
+// types/portfolio.ts
+interface PortfolioCardProps {
+  portfolio: Portfolio;
+  settings: UserSettings;
+  onSelect?: (id: string) => void;
+}
 
-// Use camelCase for functions, variables, and non-component files
-userService.ts
-portfolioUtils.ts
-exchangeConnector.ts
+// components/PortfolioCard.tsx
+export const PortfolioCard = ({ 
+  portfolio, 
+  settings, 
+  onSelect 
+}: PortfolioCardProps) => (
+  <div className={`card ${settings.theme}`}>
+    <h3>{portfolio.name}</h3>
+    <p>{formatCurrency(portfolio.totalValue)}</p>
+  </div>
+);
+```
 
-// Use kebab-case for directories and non-code files
-user-management/
-portfolio-analytics/
-exchange-integration/
+**Guidelines:**
+- Define interfaces in separate files or at the top of component files
+- Use optional properties with default values in destructuring
+- Prefer `interface` over `type` for component props
+- Use union types for controlled prop values (`'primary' | 'secondary'`)
+- Import types with `type` keyword: `import { type PortfolioCardProps }`
+- Group related interfaces in domain-specific type files
 
-// Use UPPER_SNAKE_CASE for constants
-export const API_ENDPOINTS = {
-  BINANCE_BASE_URL: 'https://api.binance.com',
-  DEFAULT_TIMEOUT: 30000,
-  MAX_RETRY_ATTEMPTS: 3
+### Object Props Over Multiple Parameters
+
+**Pattern:** Pass entire objects as props instead of destructuring into multiple parameters.
+
+```typescript
+// ✅ Good: Pass entire objects
+interface UserDashboardProps {
+  user: User;
+  portfolio: Portfolio;
+  settings: UserSettings;
+  preferences: UserPreferences;
+}
+
+export const UserDashboard = ({ user, portfolio, settings, preferences }: UserDashboardProps) => (
+  <div className={`dashboard ${settings.theme}`}>
+    <UserProfile user={user} />
+    <PortfolioSummary portfolio={portfolio} preferences={preferences} />
+  </div>
+);
+
+// ❌ Avoid: Multiple individual props
+interface BadUserDashboardProps {
+  userName: string;
+  userEmail: string;
+  portfolioName: string;
+  portfolioValue: number;
+  theme: string;
+  currency: string;
+}
+```
+
+**Guidelines:**
+- Group related parameters into logical objects
+- Use TypeScript interfaces to define object structures
+- Pass entire domain objects when multiple properties are needed
+- Maintain clear object boundaries (user data, settings, actions, etc.)
+- Use object spreading for partial updates: `{...user, name: newName}`
+
+### Empty Arrays Over Undefined
+
+**Pattern:** Pass empty arrays instead of undefined for array props.
+
+```typescript
+// ✅ Good: Use empty arrays as defaults
+interface AssetListProps {
+  assets: Asset[];
+  transactions: Transaction[];
+}
+
+export const AssetList = ({ assets, transactions }: AssetListProps) => (
+  <div>
+    <h3>Assets ({assets.length})</h3>
+    {assets.map(asset => <AssetCard key={asset.id} asset={asset} />)}
+    
+    <h3>Recent Transactions ({transactions.length})</h3>
+    {transactions.map(tx => <TransactionRow key={tx.id} transaction={tx} />)}
+  </div>
+);
+
+// Usage - no need for conditional checks
+<AssetList assets={data?.assets || []} transactions={data?.transactions || []} />
+```
+
+### File Structure and Organization
+
+**Pattern:** Domain-specific organization within app directory.
+
+```typescript
+src/
+├── components/ui/              // Shared UI primitives
+├── hooks/                     // Global hooks
+├── lib/schemas/              // Zod validation schemas
+└── app/
+    ├── auth/components/              // Domain-specific
+    │   ├── finance/
+    │   │   ├── components/
+    │   │   ├── hooks/               // Domain hooks
+    │   │   └── types.tsx           // Domain types
+    │   └── investment/
+    │       ├── components/
+    │       └── hooks/
+    └── (membership)/
+        ├── plan/components/
+        └── payment/components/
+
+// Import patterns:
+import { Button } from "@/components/ui/button";        // Global
+import { usePortfolio } from "../hooks/usePortfolio";   // Domain
+```
+
+### Container vs Presentation Components
+
+**Pattern:** Separate logic (container) from UI (presentation).
+
+```typescript
+// Container (handles logic)
+export default function PortfolioManager() {
+  const { portfolio, loading, updatePortfolio } = usePortfolio();
+  const { user } = useAuth();
+  
+  const handlePortfolioUpdate = async (data: UpdatePortfolioInput) => {
+    await updatePortfolio(data);
+  };
+  
+  return (
+    <PortfolioManagerPresentation 
+      portfolio={portfolio}
+      user={user}
+      loading={loading}
+      onUpdate={handlePortfolioUpdate}
+    />
+  );
+}
+
+// Presentation (handles UI)
+export const PortfolioManagerPresentation = ({ 
+  portfolio, 
+  user, 
+  loading, 
+  onUpdate 
+}: PortfolioManagerPresentationProps) => (
+  <div className="portfolio-manager">
+    <PortfolioHeader portfolio={portfolio} user={user} />
+    <PortfolioForm onSubmit={onUpdate} loading={loading} />
+  </div>
+);
+```
+
+### GraphQL Integration
+
+**Pattern:** Domain-specific GraphQL operations in API folders.
+
+```typescript
+// api/portfolio/portfolio.ts
+import { graphql } from "@/gql";
+
+export const GET_PORTFOLIO = graphql(`
+  query GetPortfolio($id: ID!) {
+    portfolio(id: $id) {
+      id
+      name
+      totalValue
+      assets {
+        id
+        symbol
+        quantity
+        currentPrice
+      }
+    }
+  }
+`);
+
+export const UPDATE_PORTFOLIO = graphql(`
+  mutation UpdatePortfolio($data: UpdatePortfolioArgs!) {
+    updatePortfolio(data: $data) {
+      id
+      name
+      totalValue
+    }
+  }
+`);
+
+// hooks/usePortfolio.ts
+import { useQuery, useMutation } from '@apollo/client';
+import type { GetPortfolioQuery, UpdatePortfolioMutation } from '@/gql/graphql';
+
+export const usePortfolio = (portfolioId: string) => {
+  const { data, loading, error } = useQuery<GetPortfolioQuery>(GET_PORTFOLIO, {
+    variables: { id: portfolioId },
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const [updatePortfolioMutation] = useMutation<UpdatePortfolioMutation>(UPDATE_PORTFOLIO);
+
+  return {
+    portfolio: data?.portfolio,
+    loading,
+    error,
+    updatePortfolio: updatePortfolioMutation,
+  };
 };
 ```
 
-#### Code Formatting Rules
+### Type Safety with Apollo Client
+
+**Pattern:** Always use generated types with Apollo hooks.
+
 ```typescript
-// ✅ Good: Proper spacing and formatting
+import type { 
+  GetPortfolioQuery, 
+  GetPortfolioQueryVariables,
+  UpdatePortfolioMutation,
+  UpdatePortfolioMutationVariables
+} from '@/gql/graphql';
+
+export const usePortfolio = (portfolioId: string) => {
+  const { data, loading } = useQuery<GetPortfolioQuery, GetPortfolioQueryVariables>(
+    GET_PORTFOLIO, 
+    { variables: { id: portfolioId } }
+  );
+
+  const [updatePortfolio] = useMutation<UpdatePortfolioMutation, UpdatePortfolioMutationVariables>(
+    UPDATE_PORTFOLIO
+  );
+
+  return { portfolio: data?.portfolio, loading, updatePortfolio };
+};
+```
+
+### Extract Query Entities to Types Files
+
+**Pattern:** Extract necessary entity types from GraphQL queries into domain-specific types files.
+
+```typescript
+// types.tsx in domain folder
+import { 
+  GetPortfolioQuery, 
+  GetUserPortfoliosQuery,
+  GetAssetPricesQuery 
+} from "@/gql/graphql";
+
+export type Portfolio = GetPortfolioQuery['portfolio'];
+export type PortfolioAsset = Portfolio['assets'][number];
+export type AssetPrice = GetAssetPricesQuery['assetPrices'][number];
+
+// Usage in components
+import { type Portfolio, type PortfolioAsset } from "./types";
+
+interface PortfolioCardProps {
+  portfolio: Portfolio;
+  selectedAsset?: PortfolioAsset;
+}
+```
+
+### Form Handling
+
+**Pattern:** React Hook Form + Zod with separated schemas.
+
+```typescript
+// lib/schemas/portfolio.ts
+export const createPortfolioSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  description: z.string().max(500, 'Description too long').optional(),
+  baseCurrency: z.string().length(3, 'Invalid currency code').default('USD'),
+});
+
+// components/PortfolioForm.tsx
+export const PortfolioForm = ({ onSubmit }: PortfolioFormProps) => {
+  const form = useForm({
+    resolver: zodResolver(createPortfolioSchema),
+    defaultValues: { 
+      name: '', 
+      description: '', 
+      baseCurrency: 'USD' 
+    },
+  });
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <input {...form.register('name')} />
+      <textarea {...form.register('description')} />
+      <Button type="submit" loading={form.formState.isSubmitting}>
+        Create Portfolio
+      </Button>
+    </form>
+  );
+};
+```
+
+### State Management
+
+**Pattern:** Different tools for different state types.
+
+```typescript
+// Global state: Redux Toolkit
+const authSlice = createSlice({
+  name: "auth",
+  initialState: { user: null, isAuthenticated: false },
+  reducers: {
+    login: (state, action) => { 
+      state.user = action.payload; 
+      state.isAuthenticated = true;
+    },
+    logout: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+    },
+  },
+});
+
+// Server state: Apollo Client
+const { data, loading } = useQuery(GET_PORTFOLIOS, { 
+  fetchPolicy: 'cache-and-network' 
+});
+
+// Local state: React hooks
+const [selectedPortfolio, setSelectedPortfolio] = useState<string | null>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+```
+
+### Error Handling
+
+**Pattern:** Error boundaries for component errors.
+
+```typescript
+export class PortfolioErrorBoundary extends Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  
+  static getDerivedStateFromError() { 
+    return { hasError: true }; 
+  }
+  
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Portfolio error:', error, errorInfo);
+    // Log to monitoring service
+  }
+  
+  render() {
+    return this.state.hasError ? this.props.fallback : this.props.children;
+  }
+}
+
+// Usage
+<PortfolioErrorBoundary fallback={<PortfolioErrorPage />}>
+  <PortfolioManager />
+</PortfolioErrorBoundary>
+```
+
+### Testing Standards
+
+**Pattern:** Component testing with React Testing Library.
+
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MockedProvider } from '@apollo/client/testing';
+import { PortfolioCard } from './PortfolioCard';
+
+describe('PortfolioCard', () => {
+  const mockPortfolio = {
+    id: '1',
+    name: 'My Portfolio',
+    totalValue: 10000,
+    assets: [],
+  };
+
+  it('displays portfolio information correctly', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <PortfolioCard portfolio={mockPortfolio} />
+      </MockedProvider>
+    );
+    
+    expect(screen.getByText('My Portfolio')).toBeInTheDocument();
+    expect(screen.getByText('$10,000')).toBeInTheDocument();
+  });
+
+  it('calls onSelect when clicked', () => {
+    const onSelect = jest.fn();
+    render(
+      <MockedProvider mocks={[]}>
+        <PortfolioCard portfolio={mockPortfolio} onSelect={onSelect} />
+      </MockedProvider>
+    );
+    
+    fireEvent.click(screen.getByText('My Portfolio'));
+    expect(onSelect).toHaveBeenCalledWith('1');
+  });
+});
+```
+
+## 🔧 BACKEND STANDARDS (NestJS)
+
+### Package Management & Dependencies
+- Use **yarn** as package manager
+- Follow TypeScript guidelines strictly
+- Reference project structure documentation for consistency
+
+### GraphQL Query and Mutation Naming
+
+**Pattern:** Each GraphQL query or mutation should have an explicit name that clearly describes its purpose.
+
+```typescript
+// ✅ Good: Explicit descriptive names
+@Query(() => Portfolio, { name: 'getPortfolio' })
+async portfolio(@Args('id') id: string): Promise<Portfolio> {
+  return this.portfolioService.findById(id);
+}
+
+@Mutation(() => Portfolio, { name: 'createPortfolio' })
+async createPortfolio(@Args() args: CreatePortfolioArgs): Promise<Portfolio> {
+  return this.portfolioService.create(args.data);
+}
+
+// ❌ Bad: Generic or function-based names
+@Query(() => Portfolio, { name: 'portfolio' })
+@Mutation(() => Portfolio, { name: 'portfolio' })
+```
+
+### DTOs and Input Types Structure
+
+**Pattern:** Arguments passed through queries or mutations must be defined in dedicated DTO files within the same-level `dtos` folder.
+
+```typescript
+// portfolio/dtos/create-portfolio.dto.ts
+@InputType()
+export class CreatePortfolioDto {
+  @Field(() => String)
+  @IsNotEmpty()
+  @Length(1, 100)
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @Length(0, 500)
+  description?: string;
+
+  @Field(() => String)
+  @IsString()
+  @Length(3, 3)
+  baseCurrency: string = 'USD';
+}
+
+@ArgsType()
+export class CreatePortfolioArgs {
+  @Field(() => CreatePortfolioDto)
+  @Type(() => CreatePortfolioDto)
+  @ValidateNested()
+  data: CreatePortfolioDto;
+}
+
+// portfolio/portfolio.resolver.ts
+@Mutation(() => Portfolio, { name: 'createPortfolio' })
+async createPortfolio(
+  @Args() args: CreatePortfolioArgs,
+  @AuthUser() user: User
+): Promise<Portfolio> {
+  return this.portfolioService.create(args.data, user.id);
+}
+```
+
+### Authentication and User Context
+
+**Pattern:** Utilize the @AuthUser() decorator to access user context.
+
+```typescript
+// ✅ Good: Use @AuthUser() decorator
+@Query(() => [Portfolio], { name: 'getUserPortfolios' })
+async getUserPortfolios(@AuthUser() user: User): Promise<Portfolio[]> {
+  return this.portfolioService.findByUserId(user.id);
+}
+
+@Mutation(() => Portfolio, { name: 'createPortfolio' })
+async createPortfolio(
+  @Args() args: CreatePortfolioArgs,
+  @AuthUser() user: User
+): Promise<Portfolio> {
+  return this.portfolioService.create(args.data, user.id);
+}
+
+// ❌ Bad: Requiring user information in arguments
+@Query(() => [Portfolio])
+async portfolios(@Args('userId') userId: string): Promise<Portfolio[]> {
+  return this.portfolioService.findByUserId(userId);
+}
+```
+
+### Service Layer Pattern
+
+**Pattern:** Implement business logic in services, keeping resolvers thin.
+
+```typescript
+// portfolio/portfolio.service.ts
+@Injectable()
 export class PortfolioService {
   private readonly logger = new Logger(PortfolioService.name);
 
   constructor(
-    private readonly portfolioRepo: IPortfolioRepository,
-    private readonly eventBus: EventBus,
+    private readonly portfolioRepository: PortfolioRepository,
+    private readonly eventBus: EventBus
   ) {}
 
-  async createPortfolio(
-    data: CreatePortfolioDto,
-    userId: string,
-  ): Promise<Portfolio> {
-    this.logger.debug('Creating portfolio', { userId, portfolioName: data.name });
+  async create(data: CreatePortfolioDto, userId: string): Promise<Portfolio> {
+    this.logger.log(`Creating portfolio for user ${userId}`);
 
     try {
-      const portfolio = await this.portfolioRepo.create({
+      const portfolio = await this.portfolioRepository.create({
         ...data,
         userId,
-        createdAt: new Date(),
+        totalValue: 0,
+        isActive: true,
       });
 
       await this.eventBus.publish(
         new PortfolioCreatedEvent(portfolio.id, userId)
       );
 
+      this.logger.log(`Portfolio created successfully: ${portfolio.id}`);
       return portfolio;
     } catch (error) {
-      this.logger.error('Failed to create portfolio', error);
+      this.logger.error(`Failed to create portfolio: ${error.message}`, error.stack);
       throw new InternalServerErrorException('Portfolio creation failed');
     }
   }
 }
 
-// ❌ Bad: Poor formatting and spacing
-export class PortfolioService{
-private readonly logger=new Logger(PortfolioService.name);
-constructor(private readonly portfolioRepo:IPortfolioRepository,private readonly eventBus:EventBus){}
-async createPortfolio(data:CreatePortfolioDto,userId:string):Promise<Portfolio>{
-try{
-const portfolio=await this.portfolioRepo.create({...data,userId,createdAt:new Date()});
-await this.eventBus.publish(new PortfolioCreatedEvent(portfolio.id,userId));
-return portfolio;
-}catch(error){
-throw new InternalServerErrorException('Portfolio creation failed');
-}}}
+// portfolio/portfolio.resolver.ts
+@Resolver(() => Portfolio)
+export class PortfolioResolver {
+  constructor(private readonly portfolioService: PortfolioService) {}
+
+  @Mutation(() => Portfolio, { name: 'createPortfolio' })
+  async createPortfolio(
+    @Args() args: CreatePortfolioArgs,
+    @AuthUser() user: User
+  ): Promise<Portfolio> {
+    return this.portfolioService.create(args.data, user.id);
+  }
+}
 ```
 
-#### Import Organization
+### Prisma Repository Pattern
+
+**Pattern:** Use repository pattern with Prisma to encapsulate database operations.
+
 ```typescript
-// ✅ Good: Organized imports with proper grouping
-// 1. Node.js built-in modules
-import { readFileSync } from 'fs';
-import { join } from 'path';
+// portfolio/portfolio.repository.ts
+@Injectable()
+export class PortfolioRepository {
+  private readonly logger = new Logger(PortfolioRepository.name);
 
-// 2. External libraries
-import { Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+  constructor(private readonly prisma: PrismaService) {}
 
-// 3. Internal modules (absolute paths)
-import { Portfolio } from '@/entities/Portfolio';
-import { CreatePortfolioDto } from '@/dto/CreatePortfolioDto';
-import { IPortfolioRepository } from '@/interfaces/IPortfolioRepository';
+  async findById(id: string): Promise<Portfolio | null> {
+    this.logger.debug(`Finding portfolio by id: ${id}`);
+    
+    return this.prisma.portfolio.findUnique({
+      where: { id },
+      include: {
+        assets: true,
+        user: true,
+      },
+    });
+  }
 
-// 4. Relative imports
-import { PortfolioValidator } from './PortfolioValidator';
-import { PortfolioEvents } from './events';
+  async findByUserId(userId: string): Promise<Portfolio[]> {
+    this.logger.debug(`Finding portfolios for user: ${userId}`);
+    
+    return this.prisma.portfolio.findMany({
+      where: { 
+        userId,
+        isActive: true,
+      },
+      include: {
+        assets: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 
-// ❌ Bad: Mixed import organization
-import { PortfolioValidator } from './PortfolioValidator';
-import { Injectable, Logger } from '@nestjs/common';
-import { Portfolio } from '@/entities/Portfolio';
-import { readFileSync } from 'fs';
-import { CreatePortfolioDto } from '@/dto/CreatePortfolioDto';
+  async create(data: CreatePortfolioData): Promise<Portfolio> {
+    this.logger.debug(`Creating portfolio: ${data.name}`);
+    
+    return this.prisma.portfolio.create({
+      data,
+      include: {
+        assets: true,
+        user: true,
+      },
+    });
+  }
+}
 ```
 
-### React/Next.js Component Standards
+### Redis Caching Strategy
 
-#### Component Structure
+**Pattern:** Implement caching with proper TTL and cache invalidation strategies.
+
 ```typescript
-// ✅ Good: Well-structured React component
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/router';
-
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { usePortfolio } from '@/hooks/usePortfolio';
-import { formatCurrency } from '@/utils/formatting';
-
-interface PortfolioCardProps {
-  portfolioId: string;
-  onPortfolioSelect?: (id: string) => void;
-  className?: string;
+// shared/constants/cache-keys.ts
+export enum CACHE_KEY {
+  USER_PORTFOLIOS = 'user:portfolios',
+  PORTFOLIO_DETAILS = 'portfolio:details',
+  ASSET_PRICES = 'asset:prices',
 }
 
-export const PortfolioCard: React.FC<PortfolioCardProps> = ({
-  portfolioId,
-  onPortfolioSelect,
-  className,
-}) => {
-  const router = useRouter();
-  const { portfolio, loading, error } = usePortfolio(portfolioId);
-  const [isExpanded, setIsExpanded] = useState(false);
+// portfolio/portfolio.service.ts
+@Injectable()
+export class PortfolioService {
+  @CacheKey(CACHE_KEY.USER_PORTFOLIOS)
+  @CacheTTL(300) // 5 minutes
+  async getUserPortfolios(userId: string): Promise<Portfolio[]> {
+    return this.portfolioRepository.findByUserId(userId);
+  }
 
-  const handlePortfolioClick = useCallback(() => {
-    if (onPortfolioSelect) {
-      onPortfolioSelect(portfolioId);
-    } else {
-      router.push(`/portfolios/${portfolioId}`);
+  @CacheKey(CACHE_KEY.PORTFOLIO_DETAILS)
+  @CacheTTL(60) // 1 minute
+  async getPortfolioById(id: string): Promise<Portfolio> {
+    const portfolio = await this.portfolioRepository.findById(id);
+    if (!portfolio) {
+      throw new NotFoundException('Portfolio not found');
     }
-  }, [portfolioId, onPortfolioSelect, router]);
-
-  const toggleExpanded = useCallback(() => {
-    setIsExpanded(prev => !prev);
-  }, []);
-
-  if (loading) {
-    return <PortfolioCardSkeleton />;
+    return portfolio;
   }
-
-  if (error) {
-    return <PortfolioCardError error={error} />;
-  }
-
-  return (
-    <Card className={className} onClick={handlePortfolioClick}>
-      <Card.Header>
-        <Card.Title>{portfolio.name}</Card.Title>
-        <Card.Actions>
-          <Button variant="ghost" size="sm" onClick={toggleExpanded}>
-            {isExpanded ? 'Collapse' : 'Expand'}
-          </Button>
-        </Card.Actions>
-      </Card.Header>
-      
-      <Card.Content>
-        <div className="portfolio-summary">
-          <div className="total-value">
-            {formatCurrency(portfolio.totalValue)}
-          </div>
-          <div className="daily-change">
-            <span className={portfolio.dailyChange >= 0 ? 'positive' : 'negative'}>
-              {portfolio.dailyChange > 0 ? '+' : ''}
-              {portfolio.dailyChange.toFixed(2)}%
-            </span>
-          </div>
-        </div>
-
-        {isExpanded && (
-          <div className="portfolio-details">
-            <AssetList assets={portfolio.assets} />
-          </div>
-        )}
-      </Card.Content>
-    </Card>
-  );
-};
-
-// Component sub-components for organization
-const PortfolioCardSkeleton: React.FC = () => (
-  <Card className="animate-pulse">
-    <Card.Header>
-      <div className="h-6 bg-gray-200 rounded w-1/3" />
-    </Card.Header>
-    <Card.Content>
-      <div className="h-8 bg-gray-200 rounded w-1/2 mb-2" />
-      <div className="h-4 bg-gray-200 rounded w-1/4" />
-    </Card.Content>
-  </Card>
-);
-
-const PortfolioCardError: React.FC<{ error: Error }> = ({ error }) => (
-  <Card className="border-red-200">
-    <Card.Content>
-      <div className="text-red-600">Error loading portfolio: {error.message}</div>
-    </Card.Content>
-  </Card>
-);
+}
 ```
 
-#### Hook Conventions
+### Error Handling
+
+**Pattern:** Use custom exception filters and proper error types.
+
 ```typescript
-// ✅ Good: Custom hook implementation
-import { useState, useEffect, useCallback } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-
-import { GET_PORTFOLIO, UPDATE_PORTFOLIO } from '@/graphql/portfolio';
-import { Portfolio, UpdatePortfolioInput } from '@/types/portfolio';
-
-interface UsePortfolioReturn {
-  portfolio: Portfolio | null;
-  loading: boolean;
-  error: Error | null;
-  updatePortfolio: (updates: UpdatePortfolioInput) => Promise<void>;
-  refreshPortfolio: () => Promise<void>;
+// shared/filters/graphql-exception.filter.ts
+@Catch(PrismaClientKnownRequestError)
+export class PrismaExceptionFilter implements GqlExceptionFilter {
+  catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
+    const gqlHost = GqlArgumentsHost.create(host);
+    
+    switch (exception.code) {
+      case 'P2002':
+        return new GraphQLError('Duplicate entry', {
+          extensions: { code: 'DUPLICATE_ENTRY' },
+        });
+      case 'P2025':
+        return new GraphQLError('Record not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      default:
+        return new GraphQLError('Database error', {
+          extensions: { code: 'DATABASE_ERROR' },
+        });
+    }
+  }
 }
 
-export const usePortfolio = (portfolioId: string): UsePortfolioReturn => {
-  const [error, setError] = useState<Error | null>(null);
+// Usage in service
+async create(data: CreatePortfolioDto, userId: string): Promise<Portfolio> {
+  try {
+    return await this.portfolioRepository.create({ ...data, userId });
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      throw error; // Let the filter handle it
+    }
+    throw new InternalServerErrorException('Portfolio creation failed');
+  }
+}
+```
 
-  const { data, loading, error: queryError, refetch } = useQuery(GET_PORTFOLIO, {
-    variables: { id: portfolioId },
-    errorPolicy: 'all',
-    notifyOnNetworkStatusChange: true,
-  });
+### Constants Management
 
-  const [updatePortfolioMutation] = useMutation(UPDATE_PORTFOLIO, {
-    onError: (mutationError) => {
-      setError(mutationError);
-    },
-    onCompleted: () => {
-      setError(null);
-    },
-  });
+**Pattern:** String literals and constant values should be defined in dedicated constant files.
 
-  const updatePortfolio = useCallback(async (updates: UpdatePortfolioInput) => {
+```typescript
+// shared/constants/subscription-events.ts
+export enum SubscriptionEvent {
+  PORTFOLIO_UPDATED = 'portfolioUpdated',
+  ASSET_PRICE_UPDATED = 'assetPriceUpdated',
+  PORTFOLIO_VALUE_CHANGED = 'portfolioValueChanged',
+}
+
+// shared/constants/cache-keys.ts
+export enum CACHE_KEY {
+  USER_PORTFOLIOS = 'user:portfolios',
+  PORTFOLIO_DETAILS = 'portfolio:details',
+  ASSET_PRICES = 'asset:prices',
+}
+
+// Usage
+@Subscription(() => Portfolio, { name: SubscriptionEvent.PORTFOLIO_UPDATED })
+portfolioUpdated(@Args('portfolioId') portfolioId: string) {
+  return this.pubSub.asyncIterator(SubscriptionEvent.PORTFOLIO_UPDATED);
+}
+```
+
+### Logging Standards
+
+**Pattern:** Every service class must implement a logger instance.
+
+```typescript
+@Injectable()
+export class PortfolioService {
+  private readonly logger = new Logger(PortfolioService.name);
+
+  async create(data: CreatePortfolioDto, userId: string): Promise<Portfolio> {
+    this.logger.log(`Creating portfolio for user: ${userId}`);
+    
     try {
-      await updatePortfolioMutation({
-        variables: {
-          id: portfolioId,
-          input: updates,
-        },
+      const portfolio = await this.portfolioRepository.create({
+        ...data,
+        userId,
       });
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Update failed'));
-      throw err;
+      
+      this.logger.log(`Portfolio created successfully: ${portfolio.id}`);
+      return portfolio;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create portfolio for user ${userId}: ${error.message}`,
+        error.stack
+      );
+      throw new InternalServerErrorException('Portfolio creation failed');
     }
-  }, [portfolioId, updatePortfolioMutation]);
+  }
 
-  const refreshPortfolio = useCallback(async () => {
-    try {
-      await refetch();
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Refresh failed'));
-    }
-  }, [refetch]);
-
-  return {
-    portfolio: data?.portfolio || null,
-    loading,
-    error: error || queryError,
-    updatePortfolio,
-    refreshPortfolio,
-  };
-};
-```
-
-### GraphQL Schema Standards
-
-#### Schema Definition
-```graphql
-# ✅ Good: Well-documented GraphQL schema
-"""
-Portfolio represents a collection of cryptocurrency assets for a user
-"""
-type Portfolio {
-  "Unique identifier for the portfolio"
-  id: ID!
-  
-  "User who owns this portfolio"
-  userId: ID!
-  
-  "Display name for the portfolio"
-  name: String!
-  
-  "Optional description of the portfolio"
-  description: String
-  
-  "Total value of all assets in the portfolio (in base currency)"
-  totalValue: Float!
-  
-  "Base currency for portfolio calculations (default: USD)"
-  baseCurrency: String!
-  
-  "List of assets in this portfolio"
-  assets: [Asset!]!
-  
-  "Recent transactions for this portfolio"
-  transactions(limit: Int = 10, offset: Int = 0): [Transaction!]!
-  
-  "Whether this portfolio is currently active"
-  isActive: Boolean!
-  
-  "When this portfolio was created"
-  createdAt: DateTime!
-  
-  "When this portfolio was last updated"
-  updatedAt: DateTime!
-}
-
-"""
-Input for creating a new portfolio
-"""
-input CreatePortfolioInput {
-  "Display name for the portfolio"
-  name: String!
-  
-  "Optional description"
-  description: String
-  
-  "Base currency for calculations (default: USD)"
-  baseCurrency: String = "USD"
-}
-
-"""
-Input for updating an existing portfolio
-"""
-input UpdatePortfolioInput {
-  "New display name"
-  name: String
-  
-  "New description"
-  description: String
-  
-  "New base currency"
-  baseCurrency: String
-  
-  "Whether portfolio is active"
-  isActive: Boolean
-}
-
-type Query {
-  """
-  Get a specific portfolio by ID
-  """
-  portfolio(id: ID!): Portfolio
-  
-  """
-  Get all portfolios for the current user
-  """
-  portfolios(
-    "Filter by active status"
-    isActive: Boolean
+  async findByUserId(userId: string): Promise<Portfolio[]> {
+    this.logger.debug(`Fetching portfolios for user: ${userId}`);
     
-    "Pagination limit"
-    limit: Int = 20
+    const portfolios = await this.portfolioRepository.findByUserId(userId);
     
-    "Pagination offset"
-    offset: Int = 0
-  ): [Portfolio!]!
-}
-
-type Mutation {
-  """
-  Create a new portfolio
-  """
-  createPortfolio(input: CreatePortfolioInput!): Portfolio!
-  
-  """
-  Update an existing portfolio
-  """
-  updatePortfolio(id: ID!, input: UpdatePortfolioInput!): Portfolio!
-  
-  """
-  Delete a portfolio (soft delete)
-  """
-  deletePortfolio(id: ID!): Boolean!
-}
-
-type Subscription {
-  """
-  Subscribe to portfolio value updates
-  """
-  portfolioUpdated(portfolioId: ID!): Portfolio!
+    this.logger.debug(`Found ${portfolios.length} portfolios for user: ${userId}`);
+    return portfolios;
+  }
 }
 ```
 
-## 🗃️ DATABASE STANDARDS
+### Prisma Model Definition and Entity Generation
 
-### Prisma Schema Conventions
+**Pattern:** Create or update schema files in the prisma/schema directory.
+
 ```prisma
-// ✅ Good: Well-structured Prisma schema
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-/// User account information
-model User {
-  /// Primary key
-  id        String   @id @default(cuid())
-  /// Unique email address
-  email     String   @unique
-  /// Hashed password
-  password  String
-  /// User's first name
-  firstName String?  @map("first_name")
-  /// User's last name
-  lastName  String?  @map("last_name")
-  /// User's timezone
-  timezone  String   @default("UTC")
-  /// Account creation timestamp
-  createdAt DateTime @default(now()) @map("created_at")
-  /// Last update timestamp
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  portfolios          Portfolio[]
-  exchangeConnections ExchangeConnection[]
-
-  @@map("users")
-}
-
-/// Portfolio containing cryptocurrency assets
+// prisma/schema/portfolio.prisma
 model Portfolio {
-  /// Primary key
   id           String    @id @default(cuid())
-  /// Reference to owner user
   userId       String    @map("user_id")
-  /// Portfolio display name
   name         String
-  /// Optional description
   description  String?
-  /// Total portfolio value in base currency
   totalValue   Decimal   @default(0) @map("total_value") @db.Decimal(20, 8)
-  /// Base currency for calculations
   baseCurrency String    @default("USD") @map("base_currency")
-  /// Whether portfolio is active
   isActive     Boolean   @default(true) @map("is_active")
-  /// Creation timestamp
   createdAt    DateTime  @default(now()) @map("created_at")
-  /// Last update timestamp
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
   // Relations
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   assets       Asset[]
-  transactions Transaction[]
 
   // Indexes
   @@index([userId])
   @@index([userId, isActive])
   @@map("portfolios")
 }
+
+model Asset {
+  id           String    @id @default(cuid())
+  portfolioId  String    @map("portfolio_id")
+  symbol       String
+  quantity     Decimal   @db.Decimal(20, 8)
+  averagePrice Decimal   @map("average_price") @db.Decimal(20, 8)
+  currentPrice Decimal   @map("current_price") @db.Decimal(20, 8)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([portfolioId])
+  @@index([symbol])
+  @@map("assets")
+}
 ```
 
-### Migration Standards
+### DTO Organization and Scope
+
+**Pattern:** Organize DTOs in separate files by operation type within each module.
+
 ```typescript
-// ✅ Good: Well-documented migration
+// portfolio/dtos/create-portfolio.dto.ts
+@InputType()
+export class CreatePortfolioDto {
+  @Field(() => String)
+  @IsNotEmpty()
+  @Length(1, 100)
+  name: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @Length(0, 500)
+  description?: string;
+
+  @Field(() => String)
+  @IsString()
+  @Length(3, 3)
+  baseCurrency: string = 'USD';
+}
+
+// portfolio/dtos/update-portfolio.dto.ts
+@InputType()
+export class UpdatePortfolioDto {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @Length(1, 100)
+  name?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @Length(0, 500)
+  description?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+```
+
+### Testing Standards
+
+**Pattern:** Comprehensive testing with unit, integration, and e2e tests.
+
+```typescript
+// portfolio/portfolio.service.spec.ts
+describe('PortfolioService', () => {
+  let service: PortfolioService;
+  let repository: jest.Mocked<PortfolioRepository>;
+  let eventBus: jest.Mocked<EventBus>;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PortfolioService,
+        {
+          provide: PortfolioRepository,
+          useValue: {
+            create: jest.fn(),
+            findById: jest.fn(),
+            findByUserId: jest.fn(),
+          },
+        },
+        {
+          provide: EventBus,
+          useValue: {
+            publish: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<PortfolioService>(PortfolioService);
+    repository = module.get(PortfolioRepository);
+    eventBus = module.get(EventBus);
+  });
+
+  describe('create', () => {
+    it('should create a portfolio successfully', async () => {
+      const createDto: CreatePortfolioDto = {
+        name: 'Test Portfolio',
+        description: 'Test description',
+        baseCurrency: 'USD',
+      };
+      const userId = 'user-123';
+      const expectedPortfolio = {
+        id: 'portfolio-123',
+        ...createDto,
+        userId,
+        totalValue: 0,
+        isActive: true,
+      };
+
+      repository.create.mockResolvedValue(expectedPortfolio as Portfolio);
+
+      const result = await service.create(createDto, userId);
+
+      expect(repository.create).toHaveBeenCalledWith({
+        ...createDto,
+        userId,
+        totalValue: 0,
+        isActive: true,
+      });
+      expect(eventBus.publish).toHaveBeenCalledWith(
+        expect.any(PortfolioCreatedEvent)
+      );
+      expect(result).toEqual(expectedPortfolio);
+    });
+  });
+});
+```
+
+## 🗃️ DATABASE STANDARDS
+
+### Migration Standards
+
+```sql
 /*
-  Migration: Add exchange connections table
+  Migration: Add portfolio and asset tables
   
-  Purpose: Store encrypted API credentials for cryptocurrency exchanges
+  Purpose: Store user portfolios and their cryptocurrency assets
   
   Changes:
-  - Create exchange_connections table
-  - Add foreign key to users table
-  - Add indexes for performance
+  - Create portfolios table with user relationship
+  - Create assets table with portfolio relationship
+  - Add indexes for performance optimization
   
   Dependencies: users table must exist
 */
 
 -- CreateTable
-CREATE TABLE "exchange_connections" (
+CREATE TABLE "portfolios" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "exchange_name" VARCHAR(50) NOT NULL,
-    "api_key_encrypted" TEXT NOT NULL,
-    "api_secret_encrypted" TEXT NOT NULL,
+    "name" VARCHAR(100) NOT NULL,
+    "description" TEXT,
+    "total_value" DECIMAL(20,8) NOT NULL DEFAULT 0,
+    "base_currency" VARCHAR(3) NOT NULL DEFAULT 'USD',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
-    "last_sync_at" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "exchange_connections_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "portfolios_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "assets" (
+    "id" TEXT NOT NULL,
+    "portfolio_id" TEXT NOT NULL,
+    "symbol" VARCHAR(20) NOT NULL,
+    "quantity" DECIMAL(20,8) NOT NULL,
+    "average_price" DECIMAL(20,8) NOT NULL,
+    "current_price" DECIMAL(20,8) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "assets_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE INDEX "exchange_connections_user_id_idx" ON "exchange_connections"("user_id");
-
--- CreateIndex
-CREATE INDEX "exchange_connections_user_id_is_active_idx" ON "exchange_connections"("user_id", "is_active");
+CREATE INDEX "portfolios_user_id_idx" ON "portfolios"("user_id");
+CREATE INDEX "portfolios_user_id_is_active_idx" ON "portfolios"("user_id", "is_active");
+CREATE INDEX "assets_portfolio_id_idx" ON "assets"("portfolio_id");
+CREATE INDEX "assets_symbol_idx" ON "assets"("symbol");
 
 -- AddForeignKey
-ALTER TABLE "exchange_connections" ADD CONSTRAINT "exchange_connections_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "portfolios" ADD CONSTRAINT "portfolios_user_id_fkey" 
+    FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assets" ADD CONSTRAINT "assets_portfolio_id_fkey" 
+    FOREIGN KEY ("portfolio_id") REFERENCES "portfolios"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ```
 
 ## 🎨 UI/UX STANDARDS
 
-### Component Design Principles
+### Component Design System
+
 ```typescript
-// ✅ Good: Consistent component design
-interface ButtonProps {
-  children: React.ReactNode;
+// components/ui/button.tsx
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
-  className?: string;
+  children: React.ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  disabled = false,
+export const Button = ({ 
+  variant = 'primary', 
+  size = 'md', 
   loading = false,
-  onClick,
+  children,
   className,
-}) => {
-  const baseClasses = 'font-medium rounded-md transition-colors focus:outline-none focus:ring-2';
+  disabled,
+  ...props 
+}: ButtonProps) => {
+  const baseClasses = 'font-medium rounded-lg transition-colors focus:outline-none focus:ring-2';
   
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
@@ -562,23 +1030,30 @@ export const Button: React.FC<ButtonProps> = ({
         baseClasses,
         variantClasses[variant],
         sizeClasses[size],
-        disabled && 'opacity-50 cursor-not-allowed',
-        loading && 'cursor-wait',
+        (disabled || loading) && 'opacity-50 cursor-not-allowed',
         className
       )}
       disabled={disabled || loading}
-      onClick={onClick}
+      {...props}
     >
-      {loading ? <Spinner size={size} /> : children}
+      {loading ? (
+        <div className="flex items-center gap-2">
+          <Spinner size={size} />
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 };
 ```
 
-### Color Palette
+### Color System
+
 ```css
-/* Primary Colors */
 :root {
+  /* Primary Colors - Financial Blue */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-500: #3b82f6;
@@ -586,21 +1061,21 @@ export const Button: React.FC<ButtonProps> = ({
   --color-primary-700: #1d4ed8;
   --color-primary-900: #1e3a8a;
 
-  /* Success Colors */
+  /* Success Colors - Profit Green */
   --color-success-50: #ecfdf5;
   --color-success-100: #d1fae5;
   --color-success-500: #10b981;
   --color-success-600: #059669;
   --color-success-700: #047857;
 
-  /* Error Colors */
+  /* Error Colors - Loss Red */
   --color-error-50: #fef2f2;
   --color-error-100: #fee2e2;
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
   --color-error-700: #b91c1c;
 
-  /* Warning Colors */
+  /* Warning Colors - Alert Orange */
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
   --color-warning-500: #f59e0b;
@@ -617,543 +1092,79 @@ export const Button: React.FC<ButtonProps> = ({
 }
 ```
 
-### Typography Scale
-```css
-/* Typography System */
-.text-xs { font-size: 0.75rem; line-height: 1rem; }
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-.text-base { font-size: 1rem; line-height: 1.5rem; }
-.text-lg { font-size: 1.125rem; line-height: 1.75rem; }
-.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-.text-2xl { font-size: 1.5rem; line-height: 2rem; }
-.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-
-/* Font Weights */
-.font-light { font-weight: 300; }
-.font-normal { font-weight: 400; }
-.font-medium { font-weight: 500; }
-.font-semibold { font-weight: 600; }
-.font-bold { font-weight: 700; }
-```
-
-## 🧪 TESTING STANDARDS
-
-### Unit Test Structure
-```typescript
-// ✅ Good: Comprehensive unit test
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-
-import { PortfolioService } from './PortfolioService';
-import { Portfolio } from '@/entities/Portfolio';
-import { CreatePortfolioDto } from '@/dto/CreatePortfolioDto';
-import { NotFoundException } from '@nestjs/common';
-
-describe('PortfolioService', () => {
-  let service: PortfolioService;
-  let repository: jest.Mocked<Repository<Portfolio>>;
-
-  beforeEach(async () => {
-    const mockRepository = {
-      create: jest.fn(),
-      save: jest.fn(),
-      findOne: jest.fn(),
-      find: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    };
-
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PortfolioService,
-        {
-          provide: getRepositoryToken(Portfolio),
-          useValue: mockRepository,
-        },
-      ],
-    }).compile();
-
-    service = module.get<PortfolioService>(PortfolioService);
-    repository = module.get(getRepositoryToken(Portfolio));
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('createPortfolio', () => {
-    it('should create a portfolio successfully', async () => {
-      // Arrange
-      const createDto: CreatePortfolioDto = {
-        name: 'Test Portfolio',
-        description: 'A test portfolio',
-        baseCurrency: 'USD',
-      };
-      const userId = 'user-123';
-      const expectedPortfolio = {
-        id: 'portfolio-123',
-        ...createDto,
-        userId,
-        totalValue: 0,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      repository.create.mockReturnValue(expectedPortfolio as Portfolio);
-      repository.save.mockResolvedValue(expectedPortfolio as Portfolio);
-
-      // Act
-      const result = await service.createPortfolio(createDto, userId);
-
-      // Assert
-      expect(repository.create).toHaveBeenCalledWith({
-        ...createDto,
-        userId,
-        totalValue: 0,
-        isActive: true,
-      });
-      expect(repository.save).toHaveBeenCalledWith(expectedPortfolio);
-      expect(result).toEqual(expectedPortfolio);
-    });
-
-    it('should throw an error if portfolio creation fails', async () => {
-      // Arrange
-      const createDto: CreatePortfolioDto = {
-        name: 'Test Portfolio',
-        baseCurrency: 'USD',
-      };
-      const userId = 'user-123';
-      const error = new Error('Database connection failed');
-
-      repository.create.mockReturnValue({} as Portfolio);
-      repository.save.mockRejectedValue(error);
-
-      // Act & Assert
-      await expect(service.createPortfolio(createDto, userId))
-        .rejects
-        .toThrow('Database connection failed');
-    });
-  });
-
-  describe('getPortfolioById', () => {
-    it('should return a portfolio when found', async () => {
-      // Arrange
-      const portfolioId = 'portfolio-123';
-      const expectedPortfolio = {
-        id: portfolioId,
-        name: 'Test Portfolio',
-        userId: 'user-123',
-      };
-
-      repository.findOne.mockResolvedValue(expectedPortfolio as Portfolio);
-
-      // Act
-      const result = await service.getPortfolioById(portfolioId);
-
-      // Assert
-      expect(repository.findOne).toHaveBeenCalledWith({
-        where: { id: portfolioId },
-        relations: ['assets', 'transactions'],
-      });
-      expect(result).toEqual(expectedPortfolio);
-    });
-
-    it('should throw NotFoundException when portfolio not found', async () => {
-      // Arrange
-      const portfolioId = 'nonexistent-portfolio';
-      repository.findOne.mockResolvedValue(null);
-
-      // Act & Assert
-      await expect(service.getPortfolioById(portfolioId))
-        .rejects
-        .toThrow(NotFoundException);
-    });
-  });
-});
-```
-
-### Integration Test Structure
-```typescript
-// ✅ Good: Integration test for API endpoints
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-
-import { AppModule } from '@/app.module';
-import { Portfolio } from '@/entities/Portfolio';
-import { User } from '@/entities/User';
-import { AuthService } from '@/auth/AuthService';
-
-describe('Portfolio API (e2e)', () => {
-  let app: INestApplication;
-  let portfolioRepository: Repository<Portfolio>;
-  let userRepository: Repository<User>;
-  let authService: AuthService;
-  
-  let testUser: User;
-  let authToken: string;
-
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    portfolioRepository = moduleFixture.get(getRepositoryToken(Portfolio));
-    userRepository = moduleFixture.get(getRepositoryToken(User));
-    authService = moduleFixture.get(AuthService);
-
-    await app.init();
-
-    // Create test user and get auth token
-    testUser = await userRepository.save({
-      email: 'test@example.com',
-      password: 'hashedPassword',
-      firstName: 'Test',
-      lastName: 'User',
-    });
-
-    authToken = await authService.generateToken(testUser);
-  });
-
-  afterAll(async () => {
-    await userRepository.delete({});
-    await portfolioRepository.delete({});
-    await app.close();
-  });
-
-  beforeEach(async () => {
-    await portfolioRepository.delete({});
-  });
-
-  describe('POST /portfolios', () => {
-    it('should create a new portfolio', async () => {
-      const createPortfolioDto = {
-        name: 'Test Portfolio',
-        description: 'A test portfolio for integration testing',
-        baseCurrency: 'USD',
-      };
-
-      const response = await request(app.getHttpServer())
-        .post('/portfolios')
-        .set('Authorization', `Bearer ${authToken}`)
-        .send(createPortfolioDto)
-        .expect(201);
-
-      expect(response.body).toMatchObject({
-        name: createPortfolioDto.name,
-        description: createPortfolioDto.description,
-        baseCurrency: createPortfolioDto.baseCurrency,
-        userId: testUser.id,
-        totalValue: '0',
-        isActive: true,
-      });
-
-      // Verify portfolio was saved to database
-      const savedPortfolio = await portfolioRepository.findOne({
-        where: { id: response.body.id },
-      });
-      expect(savedPortfolio).toBeDefined();
-    });
-
-    it('should return 401 without authentication', async () => {
-      await request(app.getHttpServer())
-        .post('/portfolios')
-        .send({ name: 'Test Portfolio' })
-        .expect(401);
-    });
-  });
-});
-```
-
-## 📝 DOCUMENTATION STANDARDS
-
-### API Documentation
-```typescript
-// ✅ Good: Well-documented API endpoint
-/**
- * @fileoverview Portfolio management API endpoints
- * @module PortfolioController
- */
-
-import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-
-import { PortfolioService } from './PortfolioService';
-import { CreatePortfolioDto } from './dto/CreatePortfolioDto';
-import { PortfolioResponseDto } from './dto/PortfolioResponseDto';
-import { JwtAuthGuard } from '@/auth/guards/JwtAuthGuard';
-import { CurrentUser } from '@/auth/decorators/CurrentUser';
-import { User } from '@/entities/User';
-
-@ApiTags('Portfolios')
-@Controller('api/v1/portfolios')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
-export class PortfolioController {
-  constructor(private readonly portfolioService: PortfolioService) {}
-
-  /**
-   * Create a new portfolio for the authenticated user
-   * 
-   * @param createPortfolioDto - Portfolio creation data
-   * @param user - Currently authenticated user
-   * @returns Created portfolio with generated ID
-   * 
-   * @example
-   * ```json
-   * {
-   *   "name": "My Crypto Portfolio",
-   *   "description": "Long-term cryptocurrency investments",
-   *   "baseCurrency": "USD"
-   * }
-   * ```
-   */
-  @Post()
-  @ApiOperation({ 
-    summary: 'Create a new portfolio',
-    description: 'Creates a new portfolio for the authenticated user with the provided details.'
-  })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Portfolio created successfully',
-    type: PortfolioResponseDto 
-  })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid input data' 
-  })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Authentication required' 
-  })
-  async createPortfolio(
-    @Body() createPortfolioDto: CreatePortfolioDto,
-    @CurrentUser() user: User,
-  ): Promise<PortfolioResponseDto> {
-    return this.portfolioService.createPortfolio(createPortfolioDto, user.id);
-  }
-
-  /**
-   * Get a specific portfolio by ID
-   * 
-   * @param id - Portfolio unique identifier
-   * @param user - Currently authenticated user (for authorization)
-   * @returns Portfolio details with assets and recent transactions
-   */
-  @Get(':id')
-  @ApiOperation({ 
-    summary: 'Get portfolio by ID',
-    description: 'Retrieves detailed information about a specific portfolio including assets and recent transactions.'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Portfolio retrieved successfully',
-    type: PortfolioResponseDto 
-  })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Portfolio not found' 
-  })
-  @ApiResponse({ 
-    status: 403, 
-    description: 'Access denied to this portfolio' 
-  })
-  async getPortfolio(
-    @Param('id') id: string,
-    @CurrentUser() user: User,
-  ): Promise<PortfolioResponseDto> {
-    return this.portfolioService.getPortfolioById(id, user.id);
-  }
-}
-```
-
-### Code Comments
-```typescript
-// ✅ Good: Meaningful comments
-export class PriceCalculationService {
-  /**
-   * Calculates the weighted average price for multiple assets
-   * 
-   * This method handles the complex calculation of portfolio weighted averages,
-   * taking into account both quantity and current market prices. It's used
-   * for portfolio valuation and performance metrics.
-   * 
-   * @param assets - Array of assets with quantities and prices
-   * @param baseCurrency - Target currency for conversion (default: USD)
-   * @returns Weighted average price in the specified currency
-   * 
-   * @throws {InvalidCurrencyError} When base currency is not supported
-   * @throws {InsufficientDataError} When price data is unavailable
-   */
-  calculateWeightedAverage(
-    assets: Asset[],
-    baseCurrency: string = 'USD'
-  ): Promise<number> {
-    // Validate input parameters
-    if (!assets.length) {
-      return Promise.resolve(0);
-    }
-
-    // Filter out assets with zero quantity to avoid division errors
-    const validAssets = assets.filter(asset => asset.quantity > 0);
-
-    // Calculate total portfolio value first for weighting
-    let totalValue = 0;
-    const assetValues = validAssets.map(asset => {
-      const value = asset.quantity * asset.currentPrice;
-      totalValue += value;
-      return { asset, value };
-    });
-
-    // Early return for empty portfolio
-    if (totalValue === 0) {
-      return Promise.resolve(0);
-    }
-
-    // Calculate weighted average using portfolio value weights
-    const weightedSum = assetValues.reduce((sum, { asset, value }) => {
-      const weight = value / totalValue;
-      return sum + (asset.currentPrice * weight);
-    }, 0);
-
-    return Promise.resolve(weightedSum);
-  }
-
-  // ❌ Bad: Useless comments
-  // This function adds two numbers
-  private add(a: number, b: number): number {
-    return a + b; // Return the sum
-  }
-}
-```
-
 ## 🔧 GIT WORKFLOW STANDARDS
 
 ### Commit Message Format
+
 ```bash
-# ✅ Good: Conventional commit format
+# Conventional commit format
 feat(portfolio): add real-time portfolio value updates
 
 Implement WebSocket connection for live portfolio valuation.
 - Add WebSocket service for real-time price feeds
-- Update portfolio component to handle live updates
+- Update portfolio component to handle live updates  
 - Add error handling for connection failures
 
 Fixes #123
 Breaking Change: Portfolio API now requires WebSocket support
 
-# ✅ Good: Various commit types
+# Other commit types
 fix(auth): resolve JWT token expiration issue
 docs(api): update GraphQL schema documentation
-style(ui): improve button component consistency
-refactor(database): optimize portfolio query performance
+style(ui): improve portfolio card component consistency
+refactor(service): optimize portfolio query performance
 test(portfolio): add integration tests for portfolio creation
-chore(deps): update dependencies to latest versions
-
-# ❌ Bad: Poor commit messages
-fix stuff
-update files
-working on portfolio
-misc changes
-WIP
+chore(deps): update Apollo Client to latest version
 ```
 
 ### Branch Naming Conventions
-```bash
-# ✅ Good: Descriptive branch names
-feature/portfolio-real-time-updates
-fix/auth-token-expiration
-hotfix/database-connection-leak
-chore/update-dependencies
-docs/api-documentation-update
-refactor/portfolio-service-optimization
 
-# ✅ Good: Branch naming patterns
-feature/TICKET-123-add-exchange-integration
-fix/BUG-456-portfolio-calculation-error
-release/v1.2.0
+```bash
+# Feature branches
+feature/portfolio-real-time-updates
+feature/XELA-123-add-crypto-exchange-integration
+
+# Bug fixes
+fix/portfolio-calculation-error
+fix/BUG-456-authentication-token-refresh
+
+# Hotfixes
 hotfix/v1.1.1-critical-security-patch
 
-# ❌ Bad: Poor branch names
-my-feature
-fix
-test-branch
-updates
-new-stuff
-```
+# Chores
+chore/update-dependencies
+chore/refactor-portfolio-service
 
-### Pull Request Template
-```markdown
-## Description
-Brief description of the changes in this PR.
-
-## Type of Change
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Performance improvement
-- [ ] Code refactoring
-
-## How Has This Been Tested?
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] Manual testing
-- [ ] E2E tests
-
-## Checklist
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-
-## Screenshots (if applicable)
-Add screenshots to help explain your changes.
-
-## Additional Notes
-Any additional information that reviewers should know.
+# Documentation
+docs/api-documentation-update
+docs/add-frontend-guidelines
 ```
 
 ## 📊 PERFORMANCE STANDARDS
 
 ### Performance Targets
+
 ```typescript
-// Performance requirements for different types of operations
 export const PERFORMANCE_TARGETS = {
-  // API Response Times
+  // API Response Times (ms)
   API_RESPONSE_TIME: {
-    FAST: 100, // Simple queries (user profile, single portfolio)
-    MEDIUM: 300, // Complex queries (portfolio with assets)
-    SLOW: 1000, // Heavy operations (portfolio analytics)
+    FAST: 100,    // Simple queries (user profile, single portfolio)
+    MEDIUM: 300,  // Complex queries (portfolio with assets)
+    SLOW: 1000,   // Heavy operations (portfolio analytics)
   },
 
-  // Database Query Times
+  // Database Query Times (ms)
   DATABASE_QUERY_TIME: {
-    SIMPLE: 50, // Indexed single table queries
+    SIMPLE: 50,   // Indexed single table queries
     COMPLEX: 200, // Multi-table joins
     ANALYTICS: 500, // Aggregation queries
   },
 
   // Frontend Performance
   FRONTEND_PERFORMANCE: {
-    FIRST_PAINT: 1500, // Time to first paint
-    INTERACTIVE: 3000, // Time to interactive
-    BUNDLE_SIZE: 500, // KB compressed
-  },
-
-  // System Resources
-  RESOURCE_LIMITS: {
-    MEMORY_PER_SERVICE: 512, // MB
-    CPU_UTILIZATION: 70, // Percentage
-    DATABASE_CONNECTIONS: 20, // Per service
+    FIRST_PAINT: 1500,     // Time to first paint
+    INTERACTIVE: 3000,     // Time to interactive
+    BUNDLE_SIZE: 500,      // KB compressed
   },
 } as const;
 
@@ -1191,89 +1202,64 @@ export function MonitorPerformance(target: string, threshold: number) {
     };
   };
 }
-
-// Usage example
-export class PortfolioService {
-  @MonitorPerformance('PortfolioService', PERFORMANCE_TARGETS.API_RESPONSE_TIME.MEDIUM)
-  async getPortfolioWithAssets(portfolioId: string): Promise<Portfolio> {
-    // Implementation here
-  }
-}
 ```
 
 ## 🔒 SECURITY STANDARDS
 
 ### Data Validation
-```typescript
-// ✅ Good: Comprehensive input validation
-import { IsString, IsEmail, IsUUID, IsNumber, IsOptional, Min, Max, Length } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
+```typescript
+// Portfolio validation
+@InputType()
 export class CreatePortfolioDto {
-  @ApiProperty({ 
-    description: 'Portfolio name',
-    example: 'My Crypto Portfolio',
-    minLength: 1,
-    maxLength: 100
-  })
+  @Field(() => String)
   @IsString()
-  @Length(1, 100)
+  @Length(1, 100, { message: 'Portfolio name must be 1-100 characters' })
+  @Matches(/^[a-zA-Z0-9\s\-_]+$/, { message: 'Invalid characters in portfolio name' })
   name: string;
 
-  @ApiProperty({ 
-    description: 'Portfolio description',
-    example: 'Long-term cryptocurrency investments',
-    required: false,
-    maxLength: 500
-  })
+  @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
-  @Length(0, 500)
+  @Length(0, 500, { message: 'Description must be less than 500 characters' })
   description?: string;
 
-  @ApiProperty({ 
-    description: 'Base currency for portfolio calculations',
-    example: 'USD',
-    default: 'USD'
-  })
-  @IsOptional()
+  @Field(() => String)
   @IsString()
-  @Length(3, 3)
-  baseCurrency?: string = 'USD';
+  @Length(3, 3, { message: 'Currency code must be exactly 3 characters' })
+  @IsUppercase({ message: 'Currency code must be uppercase' })
+  baseCurrency: string = 'USD';
 }
 
-export class TransactionDto {
-  @ApiProperty({ description: 'Transaction amount' })
-  @IsNumber()
-  @Min(0.00000001)
-  @Max(999999999)
-  amount: number;
-
-  @ApiProperty({ description: 'Asset symbol' })
+// Asset validation
+@InputType()
+export class CreateAssetDto {
+  @Field(() => String)
   @IsString()
-  @Length(1, 20)
+  @Length(1, 20, { message: 'Symbol must be 1-20 characters' })
+  @IsUppercase({ message: 'Symbol must be uppercase' })
   symbol: string;
 
-  @ApiProperty({ description: 'Portfolio ID' })
-  @IsUUID(4)
+  @Field(() => Number)
+  @IsNumber({ maxDecimalPlaces: 8 })
+  @Min(0.00000001, { message: 'Quantity must be greater than 0' })
+  @Max(999999999, { message: 'Quantity too large' })
+  quantity: number;
+
+  @Field(() => String)
+  @IsUUID(4, { message: 'Invalid portfolio ID format' })
   portfolioId: string;
 }
 ```
 
 ### Sensitive Data Handling
-```typescript
-// ✅ Good: Secure handling of API keys and sensitive data
-import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
 
+```typescript
 @Injectable()
 export class EncryptionService {
   private readonly algorithm = 'aes-256-gcm';
   private readonly secretKey = Buffer.from(process.env.ENCRYPTION_KEY!, 'hex');
 
-  /**
-   * Encrypt sensitive data like API keys
-   */
   encrypt(text: string): EncryptedData {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher(this.algorithm, this.secretKey);
@@ -1290,9 +1276,6 @@ export class EncryptionService {
     };
   }
 
-  /**
-   * Decrypt sensitive data
-   */
   decrypt(encryptedData: EncryptedData): string {
     const decipher = crypto.createDecipher(this.algorithm, this.secretKey);
     decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
@@ -1305,14 +1288,14 @@ export class EncryptionService {
 }
 
 // Never log sensitive data
-export class ApiKeyService {
-  private readonly logger = new Logger(ApiKeyService.name);
+export class ExchangeApiService {
+  private readonly logger = new Logger(ExchangeApiService.name);
 
-  async storeApiKey(userId: string, exchange: string, apiKey: string, secret: string) {
+  async storeApiCredentials(userId: string, exchange: string, apiKey: string, secret: string) {
     // ✅ Good: Log operation without exposing sensitive data
-    this.logger.log(`Storing API key for user ${userId} on exchange ${exchange}`);
+    this.logger.log(`Storing API credentials for user ${userId} on exchange ${exchange}`);
     
-    // ❌ Bad: Never do this
+    // ❌ Never do this
     // this.logger.log(`Storing API key ${apiKey} for user ${userId}`);
     
     const encryptedKey = this.encryptionService.encrypt(apiKey);
@@ -1325,4 +1308,4 @@ export class ApiKeyService {
 
 ---
 
-*This style guide ensures consistent, maintainable, and high-quality code across the entire Xela Finance Management System. All developers must adhere to these standards for successful project collaboration.* 
+*This style guide ensures consistent, maintainable, and high-quality code across the entire Xela Finance Management System. All developers must adhere to these standards for successful project collaboration and delivery.* 

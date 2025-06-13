@@ -107,7 +107,7 @@ export function CreateOrUpdateDialog<TFormValues extends FieldValues>({
           )}
         </DialogTrigger>
       )}
-      <DialogContent aria-describedby={description ? undefined : "dialog-description"} className="overflow-y-auto max-h-screen">
+      <DialogContent aria-describedby={description ? undefined : "dialog-description"} className="overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (

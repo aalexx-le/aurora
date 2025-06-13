@@ -13,7 +13,7 @@ export type AssetPrice = GetAssetQuery["getAssetPrices"][number];
 export type HistoricalAssetProfit =
     GetHistoricalAssetProfitsQuery["getHistoricalAssetProfits"][number];
 
-export type LatestAssetProfit = CryptoPortfolio['latestAssetProfits'][number];
+export type LatestAssetProfit = CryptoPortfolio["latestAssetProfits"][number];
 
 export type Trade = GetTradesQuery["getTrades"][number];
 

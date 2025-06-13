@@ -18,7 +18,7 @@ export class HistoricalCryptoBalanceEventListener
 {
     public static readonly NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME =
         "newHistoricalCryptoBalance";
-    public static readonly TIME_FRAME = "timeframe"
+    public static readonly TIME_FRAME = "timeframe";
     private readonly logger = new Logger(
         HistoricalCryptoBalanceEventListener.name,
     );
@@ -48,7 +48,8 @@ export class HistoricalCryptoBalanceEventListener
                     {
                         [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME]:
                             payload,
-                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_MINUTE
+                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]:
+                            AbbreviatedTimeFrameEnum.ONE_MINUTE,
                     },
                 );
             },
@@ -66,7 +67,8 @@ export class HistoricalCryptoBalanceEventListener
                     {
                         [HistoricalCryptoBalanceEventListener.NEW_HISTORICAL_CRYPTO_BALANCE_PAYLOAD_NAME]:
                             payload,
-                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_HOUR
+                        [HistoricalCryptoBalanceEventListener.TIME_FRAME]:
+                            AbbreviatedTimeFrameEnum.ONE_HOUR,
                     },
                 );
             },

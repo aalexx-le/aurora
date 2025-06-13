@@ -2,14 +2,14 @@ import { Field } from '@nestjs/graphql';
 import { ObjectType } from '@nestjs/graphql';
 import { Int } from '@nestjs/graphql';
 import { PortfolioStatus } from '../prisma/portfolio-status.enum';
-import { CEXExchanges } from '../prisma/cex-exchanges.enum';
+import { Exchanges } from '../prisma/exchanges.enum';
 import { TradingType } from '../prisma/trading-type.enum';
 import { AssetBalance } from '../asset-balance/asset-balance.model';
 import { User } from '../user/user.model';
 import { HistoricalAssetProfit } from '../historical-asset-profit/historical-asset-profit.model';
 import { HistoricalCryptoBalance } from '../historical-crypto-balance/historical-crypto-balance.model';
 import { Trade } from '../trade/trade.model';
-import { OKXCryptoPortfolio } from '../okx-crypto-portfolio/okx-crypto-portfolio.model';
+import { PassphraseCryptoPortfolio } from '../passphrase-crypto-portfolio/passphrase-crypto-portfolio.model';
 
 @ObjectType()
 export class CryptoPortfolio {
@@ -23,8 +23,8 @@ export class CryptoPortfolio {
     @Field(() => PortfolioStatus, {defaultValue:'ACTIVE',nullable:false})
     status!: `${PortfolioStatus}`;
 
-    @Field(() => CEXExchanges, {defaultValue:'BINANCE',nullable:false})
-    exchanges!: `${CEXExchanges}`;
+    @Field(() => Exchanges, {defaultValue:'BINANCE',nullable:false})
+    exchanges!: `${Exchanges}`;
 
     @Field(() => TradingType, {nullable:false})
     tradingType!: `${TradingType}`;
@@ -62,8 +62,8 @@ export class CryptoPortfolio {
     @Field(() => [Trade], {nullable:true})
     trades?: Array<Trade>;
 
-    @Field(() => OKXCryptoPortfolio, {nullable:true})
-    okxPortfolio?: OKXCryptoPortfolio | null;
+    @Field(() => PassphraseCryptoPortfolio, {nullable:true})
+    passphrasePortfolio?: PassphraseCryptoPortfolio | null;
 
     @Field(() => CryptoPortfolio, {nullable:true})
     parentPortfolio?: CryptoPortfolio | null;

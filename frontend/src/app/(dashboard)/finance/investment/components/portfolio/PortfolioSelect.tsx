@@ -1,23 +1,25 @@
-import {ChevronsUpDown} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,} from "@/components/ui/command";
-import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover";
-import React, {useEffect, useState} from "react";
-import {GetCryptoPortfoliosQuery} from "@/gql/graphql";
-import {useAppDispatch, useAppSelector} from "@/state/hooks";
-import {cryptoActions} from "@/state/slices/crypto.slice";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { ChevronsUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+import React, { useEffect, useState } from "react";
+import { Exchanges, GetCryptoPortfoliosQuery } from "@/gql/graphql";
+import { useAppDispatch, useAppSelector } from "@/state/hooks";
+import { cryptoActions } from "@/state/slices/crypto.slice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CRYPTO_EXCHANGES_INFOS } from "@/lib/constants/crypto-exchanges";
+import LogoSvg from "@/components/logo/logo-svg";
+import { ExchangeLogo } from "./ExchangeSelect";
 
 interface IProps {
     portfolios: GetCryptoPortfoliosQuery["getCryptoPortfolios"];
 }
 
 export default function PortfolioSelect({
-                                            portfolios,
-                                        }: IProps) {
+    portfolios,
+}: IProps) {
     const dispatch = useAppDispatch()
-    const {portfolio} = useAppSelector((state) => state.crypto.state);
+    const { portfolio } = useAppSelector((state) => state.crypto.state);
     const [open, setOpen] = useState(false);
 
     const onSelectCryptoProfile = (id: string) => {
@@ -46,29 +48,20 @@ export default function PortfolioSelect({
                 >
                     {portfolio ?
                         <div className="flex flex-row gap-2 items-center">
-                            {/*<Avatar className="h-4 w-4 rounded-lg">*/}
-                            {/*    <AvatarImage src={selected.logo} alt={selected.name}/>*/}
-                            {/*    <AvatarFallback className="rounded-lg">*/}
-                            {/*        {selected.name}*/}
-                            {/*    </AvatarFallback>*/}
-                            {/*</Avatar>*/}
-                            {selectedExchangesInfo && <Avatar className="h-4 w-4 rounded-lg">
-                                <AvatarImage src={selectedExchangesInfo.logo} alt={selectedExchangesInfo.name}/>
-                                <AvatarFallback className="rounded-lg">
-                                    {selectedExchangesInfo.name}
-                                </AvatarFallback>
-                            </Avatar>}
+                            {selectedExchangesInfo && (
+                                <ExchangeLogo id={selectedExchangesInfo.id} logo={selectedExchangesInfo.logo} name={selectedExchangesInfo.name} className="size-4" />
+                            )}
                             {portfolio.name}
                         </div>
                         :
                         <p className="text-muted-foreground">Select exchanges...</p>
                     }
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 popover-content-width-full">
                 <Command>
-                    <CommandInput placeholder="Search portfolio..."/>
+                    <CommandInput placeholder="Search portfolio..." />
                     <CommandList>
                         <CommandEmpty>No portfolio found.</CommandEmpty>
                         <CommandGroup>
@@ -80,12 +73,7 @@ export default function PortfolioSelect({
                                         value={p.id}
                                         onSelect={onSelectCryptoProfile}
                                     >
-                                        {exchangesInfo && <Avatar className="h-4 w-4 rounded-lg">
-                                            <AvatarImage src={exchangesInfo.logo} alt={exchangesInfo.name}/>
-                                            <AvatarFallback className="rounded-lg">
-                                                {exchangesInfo.name}
-                                            </AvatarFallback>
-                                        </Avatar>}
+                                        {exchangesInfo && <ExchangeLogo id={exchangesInfo.id} logo={exchangesInfo.logo} name={exchangesInfo.name} className="size-4" />}
                                         {p.name}
                                     </CommandItem>
                                 )

@@ -1,4 +1,3 @@
-import { RedisModule } from "@liaoliaots/nestjs-redis";
 import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -25,18 +24,6 @@ const GoogleHttpModule = HttpModule.registerAsync({
         JwtModule.registerAsync({
             useFactory: (configService: ConfigService) => ({
                 secret: configService.get<string>("JWT_SECRET"),
-            }),
-            inject: [ConfigService],
-        }),
-        RedisModule.forRootAsync({
-            useFactory: (configService: ConfigService) => ({
-                config: {
-                    url: configService.get<string>(
-                        "REDIS_URL",
-                        "redis://localhost:6379",
-                    ),
-                    password: configService.get<string>("REDIS_PASSWORD", ""),
-                },
             }),
             inject: [ConfigService],
         }),

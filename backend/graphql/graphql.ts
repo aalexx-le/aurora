@@ -17,11 +17,118 @@ export enum PortfolioStatus {
     INACTIVE = "INACTIVE"
 }
 
-export enum CEXExchanges {
+export enum Exchanges {
+    ALL = "ALL",
     BINANCE = "BINANCE",
     MEXC = "MEXC",
     OKX = "OKX",
-    ALL = "ALL"
+    COINBASE = "COINBASE",
+    COINBASEEXCHANGE = "COINBASEEXCHANGE",
+    COINBASEINTERNATIONAL = "COINBASEINTERNATIONAL",
+    KRAKEN = "KRAKEN",
+    KRAKENFUTURES = "KRAKENFUTURES",
+    BYBIT = "BYBIT",
+    BITGET = "BITGET",
+    GATE = "GATE",
+    HUOBI = "HUOBI",
+    HTX = "HTX",
+    KUCOIN = "KUCOIN",
+    KUCOINFUTURES = "KUCOINFUTURES",
+    CRYPTOCOM = "CRYPTOCOM",
+    BITFINEX = "BITFINEX",
+    BITMEX = "BITMEX",
+    BITSTAMP = "BITSTAMP",
+    GEMINI = "GEMINI",
+    BITMART = "BITMART",
+    BITRUE = "BITRUE",
+    ASCENDEX = "ASCENDEX",
+    PROBIT = "PROBIT",
+    POLONIEX = "POLONIEX",
+    LBANK = "LBANK",
+    PHEMEX = "PHEMEX",
+    WOO = "WOO",
+    WOOFIPRO = "WOOFIPRO",
+    DERIBIT = "DERIBIT",
+    BINGX = "BINGX",
+    HASHKEY = "HASHKEY",
+    COINEX = "COINEX",
+    WHITEBIT = "WHITEBIT",
+    XT = "XT",
+    MEXC3 = "MEXC3",
+    P2B = "P2B",
+    TRADEOGRE = "TRADEOGRE",
+    NDAX = "NDAX",
+    OXFUN = "OXFUN",
+    BLOFIN = "BLOFIN",
+    COINCATCH = "COINCATCH",
+    BINANCEUS = "BINANCEUS",
+    BINANCEUSDM = "BINANCEUSDM",
+    BINANCECOINM = "BINANCECOINM",
+    OKCOIN = "OKCOIN",
+    MYOKX = "MYOKX",
+    OKXUS = "OKXUS",
+    BITHUMB = "BITHUMB",
+    UPBIT = "UPBIT",
+    COINONE = "COINONE",
+    HUOBIJP = "HUOBIJP",
+    BITFLYER = "BITFLYER",
+    COINCHECK = "COINCHECK",
+    BITBANK = "BITBANK",
+    ZAIF = "ZAIF",
+    BTCBOX = "BTCBOX",
+    INDODAX = "INDODAX",
+    TOKOCRYPTO = "TOKOCRYPTO",
+    COINSPH = "COINSPH",
+    NOVADAX = "NOVADAX",
+    MERCADO = "MERCADO",
+    BITSO = "BITSO",
+    BTCTURK = "BTCTURK",
+    BTCALPHA = "BTCALPHA",
+    EXMO = "EXMO",
+    BITTEAM = "BITTEAM",
+    KUNA = "KUNA",
+    LATOKEN = "LATOKEN",
+    HYPERLIQUID = "HYPERLIQUID",
+    VERTEX = "VERTEX",
+    PARADEX = "PARADEX",
+    DERIVE = "DERIVE",
+    APEX = "APEX",
+    DEFX = "DEFX",
+    WOOFIPRO_DEX = "WOOFIPRO_DEX",
+    IDEX = "IDEX",
+    WAVESEXCHANGE = "WAVESEXCHANGE",
+    MODETRADE = "MODETRADE",
+    ALPACA = "ALPACA",
+    BEQUANT = "BEQUANT",
+    BIGONE = "BIGONE",
+    BIT2C = "BIT2C",
+    BITBNS = "BITBNS",
+    BITOPRO = "BITOPRO",
+    BITVAVO = "BITVAVO",
+    BL3P = "BL3P",
+    BLOCKCHAINCOM = "BLOCKCHAINCOM",
+    BTCMARKETS = "BTCMARKETS",
+    CEX = "CEX",
+    COINLIST = "COINLIST",
+    COINMATE = "COINMATE",
+    COINMETRO = "COINMETRO",
+    COINSPOT = "COINSPOT",
+    CRYPTOMUS = "CRYPTOMUS",
+    DELTA = "DELTA",
+    DIGIFINEX = "DIGIFINEX",
+    ELLIPX = "ELLIPX",
+    FMFWIO = "FMFWIO",
+    HOLLAEX = "HOLLAEX",
+    INDEPENDENTRESERVE = "INDEPENDENTRESERVE",
+    LUNO = "LUNO",
+    OCEANEX = "OCEANEX",
+    ONETRADING = "ONETRADING",
+    PAYMIUM = "PAYMIUM",
+    TIMEX = "TIMEX",
+    YOBIT = "YOBIT",
+    ZONDA = "ZONDA",
+    HITBTC = "HITBTC",
+    HUOBI_LEGACY = "HUOBI_LEGACY"
 }
 
 export enum TradingType {
@@ -32,12 +139,9 @@ export enum TradingType {
 export enum PortfolioCreationStep {
     VALIDATION = "VALIDATION",
     AUTHENTICATION = "AUTHENTICATION",
-    CONNECTION = "CONNECTION",
-    ACCOUNT_INFO = "ACCOUNT_INFO",
-    BALANCE_FETCH = "BALANCE_FETCH",
-    DATA_PROCESSING = "DATA_PROCESSING",
+    BALANCE_RETRIEVAL = "BALANCE_RETRIEVAL",
     DATABASE_STORAGE = "DATABASE_STORAGE",
-    FINALIZATION = "FINALIZATION"
+    COMPLETION = "COMPLETION"
 }
 
 export enum PortfolioCreationMilestone {
@@ -83,6 +187,17 @@ export enum Interval {
     year = "year"
 }
 
+export enum DiscountType {
+    PERCENTAGE = "PERCENTAGE",
+    FIXED_AMOUNT = "FIXED_AMOUNT",
+    FREE_TRIAL = "FREE_TRIAL"
+}
+
+export enum DiscountTargetType {
+    PRICE_SPECIFIC = "PRICE_SPECIFIC",
+    FIRST_TIME_USER = "FIRST_TIME_USER"
+}
+
 export enum PriceStatus {
     active = "active",
     archived = "archived"
@@ -115,12 +230,27 @@ export enum MembershipSubscriptionStatus {
 }
 
 export enum PaymentProvider {
-    PADDLE = "PADDLE"
+    PADDLE = "PADDLE",
+    METAMASK = "METAMASK"
 }
 
 export enum OtpPurpose {
     VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
     RESET_PASSWORD = "RESET_PASSWORD"
+}
+
+export enum DiscountErrorCode {
+    DISCOUNT_NOT_FOUND = "DISCOUNT_NOT_FOUND",
+    DISCOUNT_INACTIVE = "DISCOUNT_INACTIVE",
+    DISCOUNT_EXPIRED = "DISCOUNT_EXPIRED",
+    DISCOUNT_EXHAUSTED = "DISCOUNT_EXHAUSTED",
+    USER_LIMIT_EXCEEDED = "USER_LIMIT_EXCEEDED",
+    USAGE_LIMIT_REACHED = "USAGE_LIMIT_REACHED",
+    USER_USAGE_LIMIT_REACHED = "USER_USAGE_LIMIT_REACHED",
+    DISCOUNT_NOT_APPLICABLE = "DISCOUNT_NOT_APPLICABLE",
+    VALIDATION_ERROR = "VALIDATION_ERROR",
+    INVALID_CURRENCY = "INVALID_CURRENCY",
+    ALREADY_APPLIED = "ALREADY_APPLIED"
 }
 
 export enum ExportFormat {
@@ -164,23 +294,41 @@ export interface SuggestExpenseInput {
     bankTransactionId: number;
 }
 
+export interface ValidateDiscountDto {
+    code: string;
+    priceId?: Nullable<string>;
+    ipAddress?: Nullable<string>;
+    userAgent?: Nullable<string>;
+}
+
 export interface GetPaymentMethodDto {
     id?: Nullable<number>;
 }
 
-export interface CreateCryptoPortfolioInput {
-    name: string;
-    exchanges: CEXExchanges;
-    apiKey: string;
-    secretKey: string;
+export interface GetPaymentSessionDto {
+    sessionId: string;
 }
 
-export interface CreateOKXCryptoPortfolioInput {
+export interface CreateCryptoPortfolioInput {
     name: string;
-    exchanges: CEXExchanges;
+    exchanges: Exchanges;
     apiKey: string;
     secretKey: string;
-    passphrase: string;
+    passphrase?: Nullable<string>;
+}
+
+export interface UpdateCredentialsInput {
+    apiKey: string;
+    secretKey: string;
+    passphrase?: Nullable<string>;
+}
+
+export interface CreateSupportTicketInput {
+    executionId: number;
+    subject: string;
+    description: string;
+    category?: Nullable<string>;
+    priority?: Nullable<string>;
 }
 
 export interface ExportPortfolioInput {
@@ -375,14 +523,6 @@ export interface UpdatePriceDto {
     status?: Nullable<string>;
 }
 
-export interface CreateFeatureDto {
-    type: FeatureType;
-}
-
-export interface UpdateFeatureDto {
-    type?: Nullable<FeatureType>;
-}
-
 export interface CreateSubscriptionDto {
     userId: number;
     planId: string;
@@ -395,6 +535,69 @@ export interface UpdateSubscriptionDto {
     planId?: Nullable<string>;
     status?: Nullable<string>;
     endDate?: Nullable<DateTime>;
+}
+
+export interface CreateDiscountDto {
+    name: string;
+    description?: Nullable<string>;
+    code?: Nullable<string>;
+    type: DiscountType;
+    value: string;
+    currencyCode?: Nullable<string>;
+    maxAmount?: Nullable<string>;
+    isActive: boolean;
+    startDate?: Nullable<string>;
+    endDate?: Nullable<string>;
+    maxUses?: Nullable<number>;
+    maxUsesPerUser?: Nullable<number>;
+    isRecurring: boolean;
+    targetType: DiscountTargetType;
+}
+
+export interface UpdateDiscountDto {
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    code?: Nullable<string>;
+    type?: Nullable<DiscountType>;
+    value?: Nullable<string>;
+    currencyCode?: Nullable<string>;
+    maxAmount?: Nullable<string>;
+    isActive?: Nullable<boolean>;
+    startDate?: Nullable<string>;
+    endDate?: Nullable<string>;
+    maxUses?: Nullable<number>;
+    maxUsesPerUser?: Nullable<number>;
+    targetType?: Nullable<DiscountTargetType>;
+}
+
+export interface CreateMetaMaskPaymentMethodDto {
+    walletAddress: string;
+    ensName?: Nullable<string>;
+}
+
+export interface CreateMetaMaskSubscriptionFromSessionDto {
+    sessionId: string;
+    transactionHash: string;
+    tokenAddress?: Nullable<string>;
+    tokenSymbol: string;
+    blockNumber?: Nullable<number>;
+    gasUsed?: Nullable<string>;
+    gasPrice?: Nullable<string>;
+}
+
+export interface CreatePaymentSessionDto {
+    planId: string;
+    priceId: string;
+    discountId?: Nullable<string>;
+}
+
+export interface CreateFeatureDto {
+    type: FeatureType;
+    name: string;
+}
+
+export interface UpdateFeatureDto {
+    type?: Nullable<FeatureType>;
 }
 
 export interface GetHistoricalBalancesInput {
@@ -562,7 +765,7 @@ export interface HistoricalCryptoBalance {
     cryptoPortfolio: CryptoPortfolio;
 }
 
-export interface OKXCryptoPortfolio {
+export interface PassphraseCryptoPortfolio {
     id: string;
     cryptoPortfolioId: string;
     passphrase: string;
@@ -573,7 +776,7 @@ export interface CryptoPortfolio {
     userId: number;
     name: string;
     status: PortfolioStatus;
-    exchanges: CEXExchanges;
+    exchanges: Exchanges;
     tradingType: TradingType;
     apiKey: string;
     secretKey: string;
@@ -586,7 +789,7 @@ export interface CryptoPortfolio {
     historicalAssetProfits?: Nullable<HistoricalAssetProfit[]>;
     historicalBalances?: Nullable<HistoricalCryptoBalance[]>;
     trades?: Nullable<Trade[]>;
-    okxPortfolio?: Nullable<OKXCryptoPortfolio>;
+    passphrasePortfolio?: Nullable<PassphraseCryptoPortfolio>;
     parentPortfolio?: Nullable<CryptoPortfolio>;
     childPortfolios?: Nullable<CryptoPortfolio[]>;
     latestHistoricalBalances?: HistoricalCryptoBalance;
@@ -603,7 +806,7 @@ export interface CreatePortfolioExecution {
     recoveryAction?: Nullable<ErrorRecoveryAction>;
     retryCount: number;
     maxRetries: number;
-    exchangeType?: Nullable<CEXExchanges>;
+    exchangeType?: Nullable<Exchanges>;
     executionContext?: Nullable<JSON>;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -671,6 +874,49 @@ export interface UnitPrice {
     prices?: Nullable<MembershipPrice[]>;
 }
 
+export interface MembershipDiscountUsage {
+    discountId: string;
+    membershipSubscriptionId: string;
+    originalAmount: Decimal;
+    discountAmount: Decimal;
+    finalAmount: Decimal;
+    currencyCode: string;
+    usedAt: DateTime;
+    ipAddress?: Nullable<string>;
+    userAgent?: Nullable<string>;
+    discount: MembershipDiscount;
+    membershipSubscription: MembershipSubscription;
+}
+
+export interface MembershipDiscount {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    code?: Nullable<string>;
+    type: DiscountType;
+    value: Decimal;
+    currencyCode?: Nullable<string>;
+    maxAmount?: Nullable<Decimal>;
+    isActive: boolean;
+    startDate?: Nullable<DateTime>;
+    endDate?: Nullable<DateTime>;
+    maxUses?: Nullable<number>;
+    maxUsesPerUser?: Nullable<number>;
+    currentUses: number;
+    targetType: DiscountTargetType;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+    usageHistory: MembershipDiscountUsage[];
+    prices: MembershipDiscountPrice[];
+}
+
+export interface MembershipDiscountPrice {
+    discountId: string;
+    priceId: string;
+    discount: MembershipDiscount;
+    price: MembershipPrice;
+}
+
 export interface MembershipPrice {
     id: string;
     planId: string;
@@ -683,6 +929,7 @@ export interface MembershipPrice {
     trialPeriod?: Nullable<TimePeriod>;
     unitPrice: UnitPrice;
     plan: MembershipPlan;
+    discounts?: Nullable<MembershipDiscountPrice[]>;
 }
 
 export interface Feature {
@@ -717,6 +964,18 @@ export interface PaddlePaymentTransaction {
     paymentTransaction: PaymentTransaction;
 }
 
+export interface MetaMaskPaymentTransaction {
+    id: number;
+    paymentTransactionId: number;
+    transactionHash: string;
+    tokenAddress?: Nullable<string>;
+    tokenSymbol: string;
+    blockNumber?: Nullable<number>;
+    gasUsed?: Nullable<string>;
+    gasPrice?: Nullable<string>;
+    paymentTransaction: PaymentTransaction;
+}
+
 export interface PaymentTransaction {
     id: number;
     membershipSubscriptionId: string;
@@ -727,6 +986,7 @@ export interface PaymentTransaction {
     createdAt: DateTime;
     updatedAt: DateTime;
     paddlePaymentTransaction?: Nullable<PaddlePaymentTransaction>;
+    metaMaskPaymentTransaction?: Nullable<MetaMaskPaymentTransaction>;
     membershipSubscription: MembershipSubscription;
 }
 
@@ -742,6 +1002,7 @@ export interface MembershipSubscription {
     user: User;
     plan: MembershipPlan;
     paymentTransactions: PaymentTransaction[];
+    discountUsages?: Nullable<MembershipDiscountUsage[]>;
 }
 
 export interface PaddlePaymentMethod {
@@ -753,12 +1014,21 @@ export interface PaddlePaymentMethod {
     paymentMethod: PaymentMethod;
 }
 
+export interface MetaMaskPaymentMethod {
+    id: number;
+    paymentMethodId: number;
+    walletAddress: string;
+    ensName?: Nullable<string>;
+    paymentMethod: PaymentMethod;
+}
+
 export interface PaymentMethod {
     id: number;
     userId: number;
     provider: PaymentProvider;
     user: User;
     paddlePaymentMethod?: Nullable<PaddlePaymentMethod>;
+    metaMaskPaymentMethod?: Nullable<MetaMaskPaymentMethod>;
 }
 
 export interface User {
@@ -828,6 +1098,21 @@ export interface TotalSpentAmountOutput {
     year: number;
 }
 
+export interface CryptoPriceResult {
+    tokenSymbol: string;
+    usdPrice: number;
+    tokenAmount: string;
+}
+
+export interface DiscountValidationResult {
+    isValid: boolean;
+    discount?: Nullable<MembershipDiscount>;
+    originalAmount?: Nullable<string>;
+    discountAmount?: Nullable<string>;
+    finalAmount?: Nullable<string>;
+    errorCode?: Nullable<DiscountErrorCode>;
+}
+
 export interface GeneralUrl {
     overview: string;
 }
@@ -843,10 +1128,22 @@ export interface CustomerPortalSessionResponse {
     createdAt: string;
 }
 
+export interface PaymentSession {
+    sessionId: string;
+    userId: number;
+    planId: string;
+    priceId: string;
+    discountId?: Nullable<string>;
+    discountAmount?: Nullable<number>;
+    finalAmount: number;
+    expiresAt: DateTime;
+    createdAt: DateTime;
+}
+
 export interface IQuery {
     getMe(): User | Promise<User>;
     getCryptoPortfolios(): CryptoPortfolio[] | Promise<CryptoPortfolio[]>;
-    getCreatePortfolioExecutions(userId: number): CreatePortfolioExecution[] | Promise<CreatePortfolioExecution[]>;
+    getCreatePortfolioExecutions(): CreatePortfolioExecution[] | Promise<CreatePortfolioExecution[]>;
     getAssetInfo(data: GetAssetInfoInput): AssetInfo | Promise<AssetInfo>;
     getAssetPrices(data: GetAssetPriceInput, pagination: PaginationInput): AssetPrice[] | Promise<AssetPrice[]>;
     getHistoricalBalances(data: GetHistoricalBalanceInput, pagination: PaginationInput): HistoricalCryptoBalance[] | Promise<HistoricalCryptoBalance[]>;
@@ -868,18 +1165,26 @@ export interface IQuery {
     getMembershipPrices(): MembershipPrice[] | Promise<MembershipPrice[]>;
     getMembershipPrice(id: string): MembershipPrice | Promise<MembershipPrice>;
     getMembershipPricesByPlan(planId: string): MembershipPrice[] | Promise<MembershipPrice[]>;
-    myMembershipFeatures(): MembershipFeature[] | Promise<MembershipFeature[]>;
-    getFeatures(): Feature[] | Promise<Feature[]>;
-    getFeature(id: number): Feature | Promise<Feature>;
     myActiveMembershipSubscriptions(): MembershipSubscription[] | Promise<MembershipSubscription[]>;
     myMembershipSubscriptions(): MembershipSubscription[] | Promise<MembershipSubscription[]>;
+    myMembershipFeatures(): MembershipFeature[] | Promise<MembershipFeature[]>;
+    getDiscounts(): MembershipDiscount[] | Promise<MembershipDiscount[]>;
+    getDiscount(id: string): MembershipDiscount | Promise<MembershipDiscount>;
+    validateDiscountCode(data: ValidateDiscountDto): DiscountValidationResult | Promise<DiscountValidationResult>;
+    getDiscountsForPrice(priceId: string): MembershipDiscount[] | Promise<MembershipDiscount[]>;
     getPaymentMethod(data: GetPaymentMethodDto): Nullable<PaymentMethod> | Promise<Nullable<PaymentMethod>>;
     getPaymentMethods(): PaymentMethod[] | Promise<PaymentMethod[]>;
+    getCryptoPrice(tokenSymbol: string, usdAmount: number): CryptoPriceResult | Promise<CryptoPriceResult>;
+    getPaymentSession(data: GetPaymentSessionDto): PaymentSession | Promise<PaymentSession>;
+    getFeatures(): Feature[] | Promise<Feature[]>;
+    getFeature(id: number): Feature | Promise<Feature>;
 }
 
 export interface IMutation {
     createCryptoPortfolio(data: CreateCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
-    createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput): CreateCryptoRes | Promise<CreateCryptoRes>;
+    retryPortfolioCreation(executionId: number): CreatePortfolioExecution | Promise<CreatePortfolioExecution>;
+    updatePortfolioCredentials(executionId: number, credentials: UpdateCredentialsInput): CreatePortfolioExecution | Promise<CreatePortfolioExecution>;
+    createSupportTicket(data: CreateSupportTicketInput): boolean | Promise<boolean>;
     exportPortfolio(input: ExportPortfolioInput): ExportResult | Promise<ExportResult>;
     login(data: LoginReqDto): LoginResDto | Promise<LoginResDto>;
     signup(data: CreateUserInput): SignupResDto | Promise<SignupResDto>;
@@ -907,20 +1212,28 @@ export interface IMutation {
     removeEventCategory(id: number): EventCategory | Promise<EventCategory>;
     updateRecurrenceTemplate(id: number, data: UpdateEventRecurrenceInput): EventRecurrence | Promise<EventRecurrence>;
     deleteRecurrenceTemplate(id: number): EventRecurrence | Promise<EventRecurrence>;
-    cancelPaddleSubscription(id: string): MembershipSubscription | Promise<MembershipSubscription>;
-    reactivatePaddleSubscription(id: string, handlePastDueTransactions?: Nullable<string>): MembershipSubscription | Promise<MembershipSubscription>;
-    createCustomerPortalSession(subscriptionIds?: Nullable<string[]>): CustomerPortalSessionResponse | Promise<CustomerPortalSessionResponse>;
     createMembershipPlan(data: CreatePlanDto): MembershipPlan | Promise<MembershipPlan>;
     updateMembershipPlan(id: string, data: UpdatePlanDto): MembershipPlan | Promise<MembershipPlan>;
     deleteMembershipPlan(id: string): boolean | Promise<boolean>;
     createMembershipPrice(data: CreatePriceDto): MembershipPrice | Promise<MembershipPrice>;
     updateMembershipPrice(id: string, data: UpdatePriceDto): MembershipPrice | Promise<MembershipPrice>;
     deleteMembershipPrice(id: string): boolean | Promise<boolean>;
+    createMembershipSubscription(data: CreateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
+    updateMembershipSubscription(id: string, data: UpdateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
+    createDiscount(data: CreateDiscountDto): MembershipDiscount | Promise<MembershipDiscount>;
+    updateDiscount(id: string, data: UpdateDiscountDto): MembershipDiscount | Promise<MembershipDiscount>;
+    deleteDiscount(id: string): boolean | Promise<boolean>;
+    linkDiscountToPrice(discountId: string, priceId: string): boolean | Promise<boolean>;
+    unlinkDiscountFromPrice(discountId: string, priceId: string): boolean | Promise<boolean>;
+    createMetaMaskPaymentMethod(input: CreateMetaMaskPaymentMethodDto): boolean | Promise<boolean>;
+    createMetaMaskSubscriptionFromSession(input: CreateMetaMaskSubscriptionFromSessionDto): boolean | Promise<boolean>;
+    cancelPaddleSubscription(id: string): MembershipSubscription | Promise<MembershipSubscription>;
+    reactivatePaddleSubscription(id: string, handlePastDueTransactions?: Nullable<string>): MembershipSubscription | Promise<MembershipSubscription>;
+    createCustomerPortalSession(subscriptionIds?: Nullable<string[]>): CustomerPortalSessionResponse | Promise<CustomerPortalSessionResponse>;
+    createPaymentSession(data: CreatePaymentSessionDto): PaymentSession | Promise<PaymentSession>;
     createFeature(data: CreateFeatureDto): Feature | Promise<Feature>;
     updateFeature(id: number, data: UpdateFeatureDto): Feature | Promise<Feature>;
     deleteFeature(id: number): Feature | Promise<Feature>;
-    createMembershipSubscription(data: CreateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
-    updateMembershipSubscription(id: string, data: UpdateSubscriptionDto): MembershipSubscription | Promise<MembershipSubscription>;
 }
 
 export interface ISubscription {

@@ -1,20 +1,29 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka } from "@nestjs/microservices";
 import { Prisma } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import { PrismaService } from "nestjs-prisma";
 import { AssetPrice } from "src/entities/asset-price";
 import { HistoricalAssetProfit } from "src/entities/historical-asset-profit";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
-import { CEXExchanges, CreateExecutionStatus } from "../../../entities/prisma";
+import { Exchanges } from "../../../entities/prisma";
+import { KafkaTopic } from "../../../shared/constants/kafka";
 import { EncryptionService } from "../../../shared/encryption.service";
 import { PaginationInput } from "../../../shared/pagination/pagination.args";
+import {
+    isPassphraseRequired,
+    validatePassphraseRequirement,
+} from "../../../shared/utils/exchange-requirements.util";
 import { getTimeframeMaterializedViewName } from "../../../shared/utils/get-timeframe-materialized-view-name";
 import { DataInterval } from "../asset/enum/data-interval";
 import { CreateCryptoPortfolioInput } from "./dto/create-crypto-portfolio.input";
 import { AssetInfoOutput } from "./dto/get-asset-info.output";
 import { GetHistoricalAssetProfitInput } from "./dto/get-historical-asset-profit.input";
 import { GetHistoricalBalanceInput } from "./dto/get-historical-balance.input";
+import {
+    CreateSupportTicketArgs,
+    UpdateCredentialsInput,
+} from "./dto/portfolio-recovery.input";
 
 @Injectable()
 export class CryptoPortfolioService {
@@ -22,7 +31,7 @@ export class CryptoPortfolioService {
 
     constructor(
         private prisma: PrismaService,
-        @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
+        @Inject("KAFKA_SERVICE") private readonly kafkaClient: ClientKafka,
         private readonly encryptionService: EncryptionService,
     ) {}
 
@@ -30,22 +39,65 @@ export class CryptoPortfolioService {
         userId: number,
         createCryptoPortfolioInput: CreateCryptoPortfolioInput,
     ) {
+        // Validate passphrase requirement based on exchange
+        const isPassphraseValid = validatePassphraseRequirement(
+            createCryptoPortfolioInput.exchanges,
+            createCryptoPortfolioInput.passphrase,
+        );
+
+        if (!isPassphraseValid) {
+            throw new Error(
+                `Passphrase is required for ${createCryptoPortfolioInput.exchanges} exchange`,
+            );
+        }
+
+        this.logger.log(
+            `Creating portfolio for exchange: ${createCryptoPortfolioInput.exchanges}, passphrase required: ${isPassphraseRequired(createCryptoPortfolioInput.exchanges)}`,
+        );
+
+        // Encrypt credentials before storing
+        const encryptedApiKey = await this.encryptionService.encryptApiKey(
+            createCryptoPortfolioInput.apiKey,
+        );
+        const encryptedSecretKey = await this.encryptionService.encryptApiKey(
+            createCryptoPortfolioInput.secretKey,
+        );
+        const encryptedPassphrase = createCryptoPortfolioInput.passphrase
+            ? await this.encryptionService.encryptApiKey(
+                  createCryptoPortfolioInput.passphrase,
+              )
+            : undefined;
+
+        // Prepare execution context for future retry/update operations
+        const executionContext = {
+            name: createCryptoPortfolioInput.name,
+            exchanges: createCryptoPortfolioInput.exchanges,
+            apiKey: encryptedApiKey,
+            secretKey: encryptedSecretKey,
+            passphrase: encryptedPassphrase,
+        };
+
+        // Create execution record with context
         const execution = await this.prisma.createPortfolioExecution.create({
             data: {
                 userId,
+                executionContext: JSON.stringify(executionContext),
             },
         });
-        createCryptoPortfolioInput.secretKey = await this.encryptionService.encryptApiKey(createCryptoPortfolioInput.secretKey);
-        createCryptoPortfolioInput.apiKey = await this.encryptionService.encryptApiKey(createCryptoPortfolioInput.apiKey);
 
-        this.kafkaClient.emit('create-crypto-portfolio', {
+        // Emit Kafka message with encrypted credentials
+        this.kafkaClient.emit(KafkaTopic.CREATE_CRYPTO_PORTFOLIO, {
             userId,
-            ...createCryptoPortfolioInput,
             executionId: execution.id,
+            name: createCryptoPortfolioInput.name,
+            exchanges: createCryptoPortfolioInput.exchanges,
+            apiKey: encryptedApiKey,
+            secretKey: encryptedSecretKey,
+            passphrase: encryptedPassphrase,
         });
 
         this.logger.log(
-            `Portfolio creation message emitted for execution ${execution.id}`,
+            `Portfolio creation message emitted for execution ${execution.id} with stored context`,
         );
 
         return execution;
@@ -63,8 +115,8 @@ export class CryptoPortfolioService {
         });
     }
 
-    async findBalances(cryptoPortfolioId: string, exchange: CEXExchanges) {
-        if (exchange == CEXExchanges.ALL) {
+    async findBalances(cryptoPortfolioId: string, exchange: Exchanges) {
+        if (exchange == Exchanges.ALL) {
             const childPortfolios = await this.prisma.cryptoPortfolio.findMany({
                 where: { parentPortfolioId: cryptoPortfolioId },
                 select: {
@@ -239,5 +291,157 @@ export class CryptoPortfolioService {
         return this.prisma.createPortfolioExecution.findMany({
             where: { userId },
         });
+    }
+
+    // =============================================================================
+    // PORTFOLIO RECOVERY METHODS
+    // =============================================================================
+
+    /**
+     * Retry portfolio creation for a failed execution using pure event-driven approach
+     */
+    async retryPortfolioCreation(userId: number, executionId: number) {
+        this.logger.log(
+            `🔄 Initiating portfolio retry for execution ${executionId}`,
+        );
+
+        // Verify execution belongs to user and check retry limits
+        const execution = await this.prisma.createPortfolioExecution.findFirst({
+            where: { id: executionId, userId },
+        });
+
+        if (!execution) {
+            throw new Error("Execution not found or access denied");
+        }
+
+        if (execution.retryCount >= execution.maxRetries) {
+            throw new Error("Maximum retry attempts exceeded");
+        }
+
+        // Emit Kafka event for asynchronous retry processing (no status updates here)
+        this.kafkaClient.emit(KafkaTopic.RETRY_CRYPTO_PORTFOLIO, {
+            userId,
+            executionId,
+            currentRetryCount: execution.retryCount,
+            timestamp: new Date().toISOString(),
+        });
+
+        this.logger.log(
+            `✅ Portfolio retry event emitted for execution ${executionId}`,
+        );
+
+        // Return current execution state without modifications (like createPortfolio)
+        return execution;
+    }
+
+    /**
+     * Update credentials for a failed execution and retry using pure event-driven approach
+     */
+    async updateExecutionCredentials(
+        userId: number,
+        executionId: number,
+        credentials: UpdateCredentialsInput,
+    ) {
+        this.logger.log(
+            `🔑 Initiating credential update for execution ${executionId}`,
+        );
+
+        // Verify execution belongs to user
+        const execution = await this.prisma.createPortfolioExecution.findFirst({
+            where: { id: executionId, userId },
+        });
+
+        if (!execution) {
+            throw new Error("Execution not found or access denied");
+        }
+
+        // Encrypt new credentials
+        const encryptedCredentials = {
+            apiKey: await this.encryptionService.encryptApiKey(
+                credentials.apiKey,
+            ),
+            secretKey: await this.encryptionService.encryptApiKey(
+                credentials.secretKey,
+            ),
+            passphrase: credentials.passphrase
+                ? await this.encryptionService.encryptApiKey(
+                      credentials.passphrase,
+                  )
+                : undefined,
+        };
+
+        // Emit Kafka event for asynchronous credential update processing (no status updates here)
+        this.kafkaClient.emit(KafkaTopic.UPDATE_CRYPTO_PORTFOLIO_CREDENTIALS, {
+            userId,
+            executionId,
+            ...encryptedCredentials,
+            timestamp: new Date().toISOString(),
+        });
+
+        this.logger.log(
+            `✅ Credential update event emitted for execution ${executionId}`,
+        );
+
+        // Return current execution state without modifications (like createPortfolio)
+        return execution;
+    }
+
+    /**
+     * Create a support ticket for a failed execution
+     */
+    async createSupportTicket(
+        userId: number,
+        ticketData: CreateSupportTicketArgs,
+    ): Promise<boolean> {
+        this.logger.log(
+            `🎫 Creating support ticket for execution ${ticketData.data.executionId}`,
+        );
+
+        // Verify execution belongs to user
+        const execution = await this.prisma.createPortfolioExecution.findFirst({
+            where: { id: ticketData.data.executionId, userId },
+        });
+
+        if (!execution) {
+            throw new Error("Execution not found or access denied");
+        }
+
+        try {
+            // For now, create an internal support request
+            // In the future, this could integrate with Zendesk, Intercom, etc.
+            const supportTicket = {
+                userId,
+                executionId: ticketData.data.executionId,
+                subject:
+                    ticketData.data.subject ||
+                    `Portfolio Creation Failed - Execution ${ticketData.data.executionId}`,
+                description: `${ticketData.data.description}\n\nExecution Details:\n- ID: ${execution.id}\n- Current Step: ${execution.currentStep}\n- Error: ${execution.errorMessage}\n- Retry Count: ${execution.retryCount}`,
+                category: ticketData.data.category || "CRYPTO_PORTFOLIO",
+                priority: ticketData.data.priority || "HIGH",
+                status: "OPEN",
+                createdAt: new Date(),
+            };
+
+            // Log the support ticket (in production, this would create a real ticket)
+            this.logger.log(
+                `📧 Support ticket created: ${JSON.stringify(supportTicket)}`,
+            );
+
+            // TODO: Integrate with actual support system
+            // await this.supportService.createTicket(supportTicket);
+            // await this.notificationService.notifySupport(supportTicket);
+
+            this.logger.log(
+                `✅ Support ticket logged for execution ${ticketData.data.executionId}`,
+            );
+            return true;
+        } catch (error) {
+            this.logger.error(
+                `❌ Failed to create support ticket: ${error.message}`,
+            );
+            throw new Error(
+                `Failed to create support ticket: ${error.message}`,
+            );
+        }
     }
 }

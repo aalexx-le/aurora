@@ -58,21 +58,6 @@ export const CANCEL_SUBSCRIPTION = graphql(`
     }
 `);
 
-// Mutation to update a subscription
-export const UPDATE_SUBSCRIPTION = graphql(`
-    mutation UpdateMembershipSubscription(
-        $id: String!
-        $data: UpdateSubscriptionDto!
-    ) {
-        updateMembershipSubscription(id: $id, data: $data) {
-            id
-            status
-            planId
-            endDate
-        }
-    }
-`);
-
 // Add the reactivatePaddleSubscription mutation
 export const REACTIVATE_PADDLE_SUBSCRIPTION = graphql(`
     mutation ReactivatePaddleSubscription($id: String!) {

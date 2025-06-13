@@ -1,1 +1,1 @@
-export { ManageSubscriptionButton } from './ManageSubscriptionButton';
+export { ManageSubscriptionButton } from "./ManageSubscriptionButton";

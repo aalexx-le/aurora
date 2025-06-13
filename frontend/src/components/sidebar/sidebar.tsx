@@ -1,6 +1,6 @@
-import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
-import {Separator} from "@/components/ui/separator";
-import DashBoardSidebar from "@/app/(dashboard)/components/sidebar/dashboard-sidebar";
+import DashBoardSidebar from "@/components/sidebar/dashboard-sidebar";
+import { Separator } from "@/components/ui/separator";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import React from "react";
 
 export function Sidebar({
@@ -24,14 +24,6 @@ export function Sidebar({
                     </div>
                 </div>
             </SidebarInset>
-            {/*<div className="h-full grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">*/}
-            {/*    <div className="hidden border-r bg-muted/40 md:block">*/}
-            {/*        <div className="flex h-full max-h-screen flex-col gap-2">*/}
-            {/*            <DashboardSidebar/>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-
-            {/*</div>*/}
         </SidebarProvider>
     )
 }

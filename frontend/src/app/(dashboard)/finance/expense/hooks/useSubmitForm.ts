@@ -58,7 +58,7 @@ export const useSubmitExpenseForm = (
                             amount:
                                 input.amount *
                                 (reviewTransaction.amount /
-                                    Math.abs(reviewTransaction.amount))
+                                    Math.abs(reviewTransaction.amount)),
                         },
                     },
                 });

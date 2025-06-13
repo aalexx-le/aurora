@@ -21,6 +21,7 @@ import { PaymentModule } from "./modules/payment/payment.module";
 import { UserModule } from "./modules/user/user.module";
 import { WinstonLoggerModule } from "./shared/logger/winston-logger.module";
 import { LoggingInterceptor } from "./shared/logger/winston-logging.interceptor";
+import { RedisModule } from "@liaoliaots/nestjs-redis";
 
 @Module({
     imports: [
@@ -147,6 +148,18 @@ import { LoggingInterceptor } from "./shared/logger/winston-logging.interceptor"
                 },
                 explicitConnect: true,
             },
+        }),
+        RedisModule.forRootAsync({
+            useFactory: (configService: ConfigService) => ({
+                config: {
+                    url: configService.get<string>(
+                        "REDIS_URL",
+                        "redis://localhost:6379",
+                    ),
+                    password: configService.get<string>("REDIS_PASSWORD", ""),
+                },
+            }),
+            inject: [ConfigService],
         }),
         SentryModule.forRoot(),
         UserModule,

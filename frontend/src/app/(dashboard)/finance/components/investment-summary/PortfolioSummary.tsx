@@ -11,6 +11,7 @@ import { getAbbreviatedTimeFrame } from "@/lib/utils/date-time/get-currency-mont
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
 import { useSubscription } from "@apollo/client";
 import { useMemo } from "react";
+import { ExchangeLogo } from "../../investment/components/portfolio/ExchangeSelect";
 
 interface IProps {
     portfolio: GetCryptoPortfoliosQuery["getCryptoPortfolios"][number];
@@ -44,12 +45,7 @@ export default function PortfolioSummary({portfolio}: IProps) {
             <CardHeader className="pb-0">
                 <CardTitle className="text-xl font-bold text-muted-foreground tracking-wide">
                     {selectedExchanges && <div className="flex flex-row gap-2 items-center">
-                        <Avatar className="h-4 w-4 rounded-lg">
-                            <AvatarImage src={selectedExchanges.logo} alt={selectedExchanges.name}/>
-                            <AvatarFallback className="rounded-lg">
-                                {selectedExchanges.name}
-                            </AvatarFallback>
-                        </Avatar>
+                        <ExchangeLogo id={selectedExchanges.id} logo={selectedExchanges.logo} name={selectedExchanges.name} className="size-6" />
                         {selectedExchanges.name}
                     </div>}
                 </CardTitle>

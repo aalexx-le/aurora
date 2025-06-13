@@ -8,14 +8,6 @@ export const CREATE_CRYPTO_PORTFOLIO = graphql(`
     }
 `);
 
-export const CREATE_OKX_CRYPTO_PORTFOLIO = graphql(`
-    mutation CreateOKXCryptoPortfolio($data: CreateOKXCryptoPortfolioInput!) {
-        createOKXCryptoPortfolio(data: $data) {
-            userId
-        }
-    }
-`);
-
 export const GET_CRYPTO_PORTFOLIOS = graphql(`
     query GetCryptoPortfolios($timeFrame: String!) {
         getCryptoPortfolios {

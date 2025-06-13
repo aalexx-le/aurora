@@ -1,44 +1,50 @@
-import { Injectable } from '@nestjs/common';
-import * as puppeteer from 'puppeteer';
-import { ExportPortfolioInput } from '../dto/export.dto';
-import { PortfolioExportData } from '../interfaces/export-data.interface';
+import { Injectable } from "@nestjs/common";
+import * as puppeteer from "puppeteer";
+import { ExportPortfolioInput } from "../dto/export.dto";
+import { PortfolioExportData } from "../interfaces/export-data.interface";
 
 @Injectable()
 export class PdfExportService {
-  async generatePdf(data: PortfolioExportData, options: ExportPortfolioInput): Promise<Buffer> {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+    async generatePdf(
+        data: PortfolioExportData,
+        options: ExportPortfolioInput,
+    ): Promise<Buffer> {
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        });
 
-    try {
-      const page = await browser.newPage();
-      
-      // Generate HTML content
-      const htmlContent = this.generateHtmlContent(data, options);
-      
-      // Set content and generate PDF
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-      
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20mm',
-          right: '15mm',
-          bottom: '20mm',
-          left: '15mm'
+        try {
+            const page = await browser.newPage();
+
+            // Generate HTML content
+            const htmlContent = this.generateHtmlContent(data, options);
+
+            // Set content and generate PDF
+            await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+            const pdfBuffer = await page.pdf({
+                format: "A4",
+                printBackground: true,
+                margin: {
+                    top: "20mm",
+                    right: "15mm",
+                    bottom: "20mm",
+                    left: "15mm",
+                },
+            });
+
+            return Buffer.from(pdfBuffer);
+        } finally {
+            await browser.close();
         }
-      });
-
-      return Buffer.from(pdfBuffer);
-    } finally {
-      await browser.close();
     }
-  }
 
-  private generateHtmlContent(data: PortfolioExportData, options: ExportPortfolioInput): string {
-    return `
+    private generateHtmlContent(
+        data: PortfolioExportData,
+        options: ExportPortfolioInput,
+    ): string {
+        return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -148,7 +154,7 @@ export class PdfExportService {
           </div>
         </div>
 
-        ${options.includeSummary ? this.generateSummarySection(data) : ''}
+        ${options.includeSummary ? this.generateSummarySection(data) : ""}
         
         <div class="section-title">Assets Breakdown</div>
         ${this.generateAssetsTable(data.assets)}
@@ -165,10 +171,10 @@ export class PdfExportService {
       </body>
       </html>
     `;
-  }
+    }
 
-  private generateSummarySection(data: PortfolioExportData): string {
-    return `
+    private generateSummarySection(data: PortfolioExportData): string {
+        return `
       <div class="summary-section">
         <div class="summary-grid">
           <div class="summary-item">
@@ -181,41 +187,45 @@ export class PdfExportService {
           </div>
           <div class="summary-item">
             <div class="summary-label">Total Profit/Loss</div>
-            <div class="summary-value ${data.totalProfit >= 0 ? 'profit-positive' : 'profit-negative'}">
+            <div class="summary-value ${data.totalProfit >= 0 ? "profit-positive" : "profit-negative"}">
               ${this.formatCurrency(data.totalProfit)}
             </div>
           </div>
           <div class="summary-item">
             <div class="summary-label">Profit Percentage</div>
-            <div class="summary-value ${data.profitPercentage >= 0 ? 'profit-positive' : 'profit-negative'}">
+            <div class="summary-value ${data.profitPercentage >= 0 ? "profit-positive" : "profit-negative"}">
               ${this.formatPercentage(data.profitPercentage)}
             </div>
           </div>
         </div>
       </div>
     `;
-  }
+    }
 
-  private generateAssetsTable(assets: any[]): string {
-    const rows = assets.map(asset => `
+    private generateAssetsTable(assets: any[]): string {
+        const rows = assets
+            .map(
+                (asset) => `
       <tr>
         <td>${asset.symbol}</td>
         <td class="text-right">${this.formatCurrency(asset.investment)}</td>
         <td class="text-right">${this.formatCurrency(asset.currentPrice)}</td>
         <td class="text-right">${asset.quantity.toFixed(6)}</td>
         <td class="text-right">${this.formatCurrency(asset.currentValue)}</td>
-        <td class="text-right ${asset.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
+        <td class="text-right ${asset.profit >= 0 ? "profit-positive" : "profit-negative"}">
           ${this.formatCurrency(asset.profit)}
         </td>
-        <td class="text-right ${asset.profitPercentage >= 0 ? 'profit-positive' : 'profit-negative'}">
+        <td class="text-right ${asset.profitPercentage >= 0 ? "profit-positive" : "profit-negative"}">
           ${this.formatPercentage(asset.profitPercentage)}
         </td>
         <td class="text-center">${asset.tag}</td>
         <td class="text-center">${asset.exchange}</td>
       </tr>
-    `).join('');
+    `,
+            )
+            .join("");
 
-    return `
+        return `
       <table class="table">
         <thead>
           <tr>
@@ -235,26 +245,30 @@ export class PdfExportService {
         </tbody>
       </table>
     `;
-  }
+    }
 
-  private generateCategoriesTable(categories: any[]): string {
-    const rows = categories.map(category => `
+    private generateCategoriesTable(categories: any[]): string {
+        const rows = categories
+            .map(
+                (category) => `
       <tr>
         <td>${category.tag}</td>
         <td class="text-right">${this.formatCurrency(category.investment)}</td>
         <td class="text-right">${this.formatCurrency(category.currentValue)}</td>
-        <td class="text-right ${category.profit >= 0 ? 'profit-positive' : 'profit-negative'}">
+        <td class="text-right ${category.profit >= 0 ? "profit-positive" : "profit-negative"}">
           ${this.formatCurrency(category.profit)}
         </td>
-        <td class="text-right ${category.profitPercentage >= 0 ? 'profit-positive' : 'profit-negative'}">
+        <td class="text-right ${category.profitPercentage >= 0 ? "profit-positive" : "profit-negative"}">
           ${this.formatPercentage(category.profitPercentage)}
         </td>
         <td class="text-center">${category.assetCount}</td>
         <td class="text-right">${this.formatPercentage(category.allocationPercentage)}</td>
       </tr>
-    `).join('');
+    `,
+            )
+            .join("");
 
-    return `
+        return `
       <table class="table">
         <thead>
           <tr>
@@ -272,28 +286,28 @@ export class PdfExportService {
         </tbody>
       </table>
     `;
-  }
+    }
 
-  private formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount);
-  }
+    private formatCurrency(amount: number): string {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(amount);
+    }
 
-  private formatPercentage(percentage: number): string {
-    return `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
-  }
+    private formatPercentage(percentage: number): string {
+        return `${percentage >= 0 ? "+" : ""}${percentage.toFixed(2)}%`;
+    }
 
-  private formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-} 
+    private formatDate(date: Date): string {
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    }
+}

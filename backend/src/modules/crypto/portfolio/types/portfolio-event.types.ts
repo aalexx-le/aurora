@@ -1,8 +1,8 @@
 import {
-    CEXExchanges,
     ErrorRecoveryAction,
+    Exchanges,
     PortfolioCreationMilestone,
-    PortfolioCreationStep
+    PortfolioCreationStep,
 } from "../../../../entities/prisma";
 
 /**
@@ -11,32 +11,37 @@ import {
  */
 export interface PortfolioCreationEvent {
     // Core identification
-    executionId: number;
+    id: number;
     userId: number;
-    
+
     // Progress tracking with enums
     currentStep: PortfolioCreationStep;
     currentMilestone: PortfolioCreationMilestone;
     progressPercent: number;
-    
+
     // Error handling and recovery
     errorMessage?: string | null;
     recoveryAction?: ErrorRecoveryAction | null;
     retryCount: number;
     maxRetries: number;
-    
+
     // Portfolio context
-    exchangeType: CEXExchanges;
+    exchangeType: Exchanges;
     executionContext?: any | null; // JSON field for additional context
-    
+
     // Timestamps
     timestamp: Date;
     updatedAt: Date;
     completedAt?: Date | null;
-    
+
     // Event metadata
-    eventType: 'PROGRESS_UPDATE' | 'ERROR_OCCURRED' | 'RECOVERY_ATTEMPTED' | 'COMPLETED' | 'FAILED';
-    
+    eventType:
+        | "PROGRESS_UPDATE"
+        | "ERROR_OCCURRED"
+        | "RECOVERY_ATTEMPTED"
+        | "COMPLETED"
+        | "FAILED";
+
     // Kafka metadata
     offset?: string;
     partition?: number;
@@ -48,5 +53,5 @@ export interface PortfolioCreationEvent {
 export interface PortfolioCreationSubscriptionPayload {
     execution: PortfolioCreationEvent;
     isRealTimeUpdate: boolean;
-    source: 'KAFKA_EVENT' | 'DATABASE_QUERY';
-} 
+    source: "KAFKA_EVENT" | "DATABASE_QUERY";
+}

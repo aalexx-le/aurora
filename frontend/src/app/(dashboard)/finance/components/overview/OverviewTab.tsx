@@ -4,9 +4,8 @@ import InvestmentSummary from "@/app/(dashboard)/finance/components/investment-s
 import {
     ExpenseRatioBarChart
 } from "@/app/(dashboard)/finance/expense/components/income-expense-ratio-bar-chart/ExpenseRatioBarChart";
-import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/hooks/useCryptoPortfoliosQuery";
-import { CexExchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
+import { BankManager, Exchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { useQuery } from "@apollo/client";
 
@@ -22,7 +21,7 @@ export default function OverviewTab({bankManagers}: IProps) {
 
     const {loading, portfolios} = useCryptoPortfoliosQuery()
 
-    const aggregatedPortfolio = portfolios.find(p => p.exchanges == CexExchanges.All)
+    const aggregatedPortfolio = portfolios.find(p => p.exchanges == Exchanges.All)
 
     if (!aggregatedPortfolio) {
         return null

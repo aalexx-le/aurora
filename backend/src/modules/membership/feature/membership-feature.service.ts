@@ -6,7 +6,10 @@ import { MembershipSubscriptionService } from "../subscription/membership-subscr
 export class MembershipFeatureService {
     private readonly logger = new Logger(MembershipFeatureService.name);
 
-    constructor(private readonly prisma: PrismaService, private readonly membershipSubscriptionService: MembershipSubscriptionService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly membershipSubscriptionService: MembershipSubscriptionService,
+    ) {}
 
     /**
      * Find all membership features for a plan
@@ -25,15 +28,20 @@ export class MembershipFeatureService {
      * @returns Array of feature names the user has access to
      */
     async getMyMembershipFeatures(userId: number) {
-        const activeSubscriptions = await this.membershipSubscriptionService.findActivesByUser(userId);
+        const activeSubscriptions =
+            await this.membershipSubscriptionService.findActivesByUser(userId);
 
-        const membershipFeatures = await this.prisma.membershipFeature.findMany({
-            where: {
-                planId: {
-                    in: activeSubscriptions.map(subscription => subscription.planId),
+        const membershipFeatures = await this.prisma.membershipFeature.findMany(
+            {
+                where: {
+                    planId: {
+                        in: activeSubscriptions.map(
+                            (subscription) => subscription.planId,
+                        ),
+                    },
                 },
             },
-        });
+        );
 
         return membershipFeatures;
     }

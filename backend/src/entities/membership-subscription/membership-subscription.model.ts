@@ -5,6 +5,7 @@ import { MembershipSubscriptionStatus } from '../prisma/membership-subscription-
 import { User } from '../user/user.model';
 import { MembershipPlan } from '../membership-plan/membership-plan.model';
 import { PaymentTransaction } from '../payment-transaction/payment-transaction.model';
+import { MembershipDiscountUsage } from '../membership-discount-usage/membership-discount-usage.model';
 
 @ObjectType()
 export class MembershipSubscription {
@@ -41,4 +42,7 @@ export class MembershipSubscription {
 
     @Field(() => [PaymentTransaction], {nullable:true})
     paymentTransactions?: Array<PaymentTransaction>;
+
+    @Field(() => [MembershipDiscountUsage], {nullable:true})
+    discountUsages?: Array<MembershipDiscountUsage>;
 }

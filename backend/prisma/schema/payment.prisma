@@ -3,8 +3,9 @@ model PaymentMethod {
   userId   Int
   provider PaymentProvider
 
-  user                User                 @relation(fields: [userId], references: [id])
-  paddlePaymentMethod PaddlePaymentMethod?
+  user                 User                  @relation(fields: [userId], references: [id])
+  paddlePaymentMethod  PaddlePaymentMethod?
+  metaMaskPaymentMethod MetaMaskPaymentMethod?
 }
 
 model PaddlePaymentMethod {
@@ -14,6 +15,16 @@ model PaddlePaymentMethod {
   customerId String @unique
   addressId          String? @unique
   businessId         String? @unique
+
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+}
+
+model MetaMaskPaymentMethod {
+  id              Int @id @default(autoincrement())
+  paymentMethodId Int @unique
+
+  walletAddress String @unique
+  ensName       String?
 
   paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id])
 }
@@ -30,14 +41,30 @@ model PaymentTransaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  paddlePaymentTransaction PaddlePaymentTransaction?
-  membershipSubscription   MembershipSubscription    @relation(fields: [membershipSubscriptionId], references: [id])
+  paddlePaymentTransaction   PaddlePaymentTransaction?
+  metaMaskPaymentTransaction MetaMaskPaymentTransaction?
+  membershipSubscription     MembershipSubscription    @relation(fields: [membershipSubscriptionId], references: [id])
 }
 
 model PaddlePaymentTransaction {
   id Int @id @default(autoincrement())
 
   paymentTransactionId Int @unique
+
+  paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
+}
+
+model MetaMaskPaymentTransaction {
+  id Int @id @default(autoincrement())
+
+  paymentTransactionId Int @unique
+
+  transactionHash String @unique
+  tokenAddress    String?
+  tokenSymbol     String
+  blockNumber     Int?
+  gasUsed         String?
+  gasPrice        String?
 
   paymentTransaction PaymentTransaction @relation(fields: [paymentTransactionId], references: [id], onDelete: Cascade)
 }
@@ -57,4 +84,5 @@ enum PaymentStatus {
 
 enum PaymentProvider {
   PADDLE
+  METAMASK
 }

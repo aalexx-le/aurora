@@ -7,6 +7,7 @@ import { makeStore } from "@/state/store";
 import { ApolloProvider } from "@apollo/client";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Provider as ReduxProvider } from "react-redux";
+import { MetaMaskProvider } from "./MetaMaskProvider";
 import { PaddleProvider } from "./PaddleProvider";
 
 export default function Providers({children}: { children: React.ReactNode }) {
@@ -21,9 +22,7 @@ export default function Providers({children}: { children: React.ReactNode }) {
                         // disableTransitionOnChange
                     >
                         <TooltipProvider>
-                            <PaddleProvider>
-                                <NuqsAdapter>{children}</NuqsAdapter>
-                            </PaddleProvider>
+                            <NuqsAdapter>{children}</NuqsAdapter>
                         </TooltipProvider>
                     </ThemeProvider>
                 </ErrorProvider>

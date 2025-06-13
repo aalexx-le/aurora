@@ -62,7 +62,7 @@ Table CryptoPortfolio {
   userId Int [not null]
   name String [not null, default: '']
   status PortfolioStatus [not null, default: 'ACTIVE']
-  exchanges CEXExchanges [not null, default: 'BINANCE']
+  exchanges Exchanges [not null, default: 'BINANCE']
   tradingType TradingType [not null]
   apiKey String [not null]
   secretKey String [not null]
@@ -417,7 +417,7 @@ Enum TradingType {
   SPOT
 }
 
-Enum CEXExchanges {
+Enum Exchanges {
   BINANCE
   MEXC
   OKX

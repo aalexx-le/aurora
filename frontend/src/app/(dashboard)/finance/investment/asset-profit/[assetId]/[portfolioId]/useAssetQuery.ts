@@ -1,8 +1,5 @@
 import { SUBSCRIBE_HISTORICAL_ASSET_PROFIT } from "@/api/crypto/asset-profit";
-import {
-    GET_ASSET,
-    SUBSCRIBE_ASSET_PRICE,
-} from "@/api/crypto/crypto";
+import { GET_ASSET, SUBSCRIBE_ASSET_PRICE } from "@/api/crypto/crypto";
 import { AssetProfitPageParams } from "@/app/(dashboard)/finance/investment/asset-profit/[assetId]/[portfolioId]/page";
 import { GetAssetQuery, GetAssetQueryVariables } from "@/gql/graphql";
 import { TimeframeEnum } from "@/lib/utils/date-time/timeframe.enum";
@@ -17,9 +14,12 @@ export const useAssetQuery = (
     const { data: newPriceData } = useSubscription(SUBSCRIBE_ASSET_PRICE, {
         variables: { data: { assetInfoId, timeFrame } },
     });
-    const { data: newProfitData } = useSubscription(SUBSCRIBE_HISTORICAL_ASSET_PROFIT, {
-        variables: { data: { cryptoPortfolioId, assetInfoId, timeFrame } },
-    });
+    const { data: newProfitData } = useSubscription(
+        SUBSCRIBE_HISTORICAL_ASSET_PROFIT,
+        {
+            variables: { data: { cryptoPortfolioId, assetInfoId, timeFrame } },
+        },
+    );
 
     const { data, loading, fetchMore } = useQuery<
         GetAssetQuery,
@@ -48,7 +48,6 @@ export const useAssetQuery = (
         });
     };
 
-
     const priceData = useMemo(() => {
         if (!data || loading) {
             return [];
@@ -70,7 +69,10 @@ export const useAssetQuery = (
             return data.getHistoricalAssetProfits;
         }
 
-        return [...data.getHistoricalAssetProfits, newProfitData.newHistoricalAssetProfit];
+        return [
+            ...data.getHistoricalAssetProfits,
+            newProfitData.newHistoricalAssetProfit,
+        ];
     }, [data, newProfitData, loading]);
 
     return {

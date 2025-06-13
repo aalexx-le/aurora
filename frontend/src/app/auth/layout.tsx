@@ -1,5 +1,6 @@
-import AnimatedShinyText from "@/components/ui/animated-shiny-text";
-import Logo from "@/components/ui/logo";
+'use client'
+
+import AppBar from "@/components/appbar";
 
 export default function RootLayout({
     children,
@@ -7,16 +8,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <main>
-            <section className="w-min mx-auto my-auto mt-20">
-                <div className="space-y-10 flex flex-col">
-                    <AnimatedShinyText className="text-4xl inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-neutral-600 hover:duration-300 hover:dark:text-neutral-400 space-x-2">
-                        <Logo className="h-10 w-10" />
-                        <span>Aurora</span>
-                    </AnimatedShinyText>
-                    {children}
-                </div>
-            </section>
-        </main>
+        <div className="min-h-screen">
+            <AppBar />
+            <main className="w-screen px-4 py-8 flex justify-center items-center">
+                {children}
+            </main>
+        </div>
     );
 }

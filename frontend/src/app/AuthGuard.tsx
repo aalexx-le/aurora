@@ -1,3 +1,5 @@
+'use client'
+
 import { AuthParams } from "@/lib/constants/params";
 import AUTH_ROUTE from "@/lib/routes/auth.route";
 import { useAppDispatch, useAppSelector } from "@/state/hooks";

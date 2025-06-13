@@ -2,7 +2,6 @@ import MoneyWithCurrency from "@/components/money/money-with-currency";
 import React from "react";
 import {useConvertCurrencyContext} from "@/lib/context/convert-currency.context";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {BankManager} from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import {useTotalBankBalance} from "@/app/(dashboard)/finance/components/overview/useTotalBankBalance";
 import {useTotalInvestmentBalance} from "@/app/(dashboard)/finance/components/overview/useTotalInvestmentBalance";
 import {ChartContainer, ChartTooltip, ChartTooltipContent} from "@/components/ui/chart";
@@ -10,6 +9,7 @@ import {Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
 import {useChartConfig} from "@/app/(dashboard)/finance/components/overview/useChartConfig";
 import {useChartFormatter} from "@/app/(dashboard)/finance/components/overview/useChartFormatter";
 import {MoneyAnimated} from "@/components/money/money-animated";
+import { BankManager } from "@/gql/graphql";
 
 interface IProps {
     bankManagers: BankManager[];

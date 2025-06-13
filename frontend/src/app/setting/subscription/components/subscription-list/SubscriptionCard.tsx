@@ -1,6 +1,5 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,19 +7,12 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MembershipSubscriptionStatus } from "@/gql/graphql";
-import { Calendar, Clock, MoreHorizontal } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { useState } from "react";
 import { useCancelSubscriptionMutation } from "../../hooks/useCancelSubscriptionMutation";
 import { useReactivateSubscriptionMutation } from "../../hooks/useReactivateSubscriptionMutation";
+import { formatDate, getStatusColor } from "../../../../../lib/utils/subscription";
 import { MembershipSubscription } from "../../types";
-import { formatDate, getStatusColor } from "../../utils/subscription-helpers";
 
 type SubscriptionCardProps = {
   subscription: MembershipSubscription; 

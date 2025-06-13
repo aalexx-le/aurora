@@ -15,17 +15,23 @@ import { CryptoPortfolio } from "src/entities/crypto-portfolio";
 import { HistoricalCryptoBalance } from "src/entities/historical-crypto-balance";
 import { User } from "src/entities/user";
 import { HistoricalAssetProfit } from "../../../entities/historical-asset-profit";
-import { CEXExchanges } from "../../../entities/prisma";
+import { Exchanges } from "../../../entities/prisma";
 import { SubscriptionEvent } from "../../../shared/constants/subscription.event";
 import { AuthUser } from "../../../shared/decorators/auth-user.decorator";
 import { JwtGuard } from "../../auth/guards/jwt.guard";
 import {
     CreateCryptoPortfolioArgs,
     CreateCryptoRes,
-    CreateOKXCryptoPortfolioArgs,
 } from "./dto/create-crypto-portfolio.input";
+import {
+    CreateSupportTicketArgs,
+    RetryPortfolioCreationArgs,
+    UpdatePortfolioCredentialsArgs,
+} from "./dto/portfolio-recovery.input";
+import { PortfolioController } from "./portfolio.controller";
 import { CryptoPortfolioService } from "./portfolio.service";
 
+@UseGuards(JwtGuard)
 @Resolver(() => CryptoPortfolio)
 export class CryptoPortfolioResolver {
     constructor(
@@ -33,7 +39,6 @@ export class CryptoPortfolioResolver {
         @Inject("SUBSCRIPTION_PUB_SUB") private readonly pubSub: PubSub,
     ) {}
 
-    @UseGuards(JwtGuard)
     @Mutation(() => CreateCryptoRes, { name: "createCryptoPortfolio" })
     create(@AuthUser() user: User, @Args() args: CreateCryptoPortfolioArgs) {
         this.cryptoPortfolioService.createPortfolio(user.id, args.data);
@@ -42,32 +47,57 @@ export class CryptoPortfolioResolver {
         };
     }
 
-    @UseGuards(JwtGuard)
-    @Mutation(() => CreateCryptoRes, { name: "createOKXCryptoPortfolio" })
-    createOKX(
+    @Mutation(() => CreatePortfolioExecution, {
+        name: "retryPortfolioCreation",
+    })
+    async retryPortfolioCreation(
         @AuthUser() user: User,
-        @Args() args: CreateOKXCryptoPortfolioArgs,
-    ) {
-        this.cryptoPortfolioService.createPortfolio(user.id, args.data);
-        return {
-            userId: user.id,
-        };
+        @Args() args: RetryPortfolioCreationArgs,
+    ): Promise<CreatePortfolioExecution> {
+        return this.cryptoPortfolioService.retryPortfolioCreation(
+            user.id,
+            args.executionId,
+        );
     }
 
-    @UseGuards(JwtGuard)
+    @Mutation(() => CreatePortfolioExecution, {
+        name: "updatePortfolioCredentials",
+    })
+    async updatePortfolioCredentials(
+        @AuthUser() user: User,
+        @Args() args: UpdatePortfolioCredentialsArgs,
+    ): Promise<CreatePortfolioExecution> {
+        return this.cryptoPortfolioService.updateExecutionCredentials(
+            user.id,
+            args.executionId,
+            args.credentials,
+        );
+    }
+
+    @Mutation(() => Boolean, { name: "createSupportTicket" })
+    async createSupportTicket(
+        @AuthUser() user: User,
+        @Args() args: CreateSupportTicketArgs,
+    ): Promise<boolean> {
+        return this.cryptoPortfolioService.createSupportTicket(user.id, args);
+    }
+
     @Query(() => [CryptoPortfolio], { name: "getCryptoPortfolios" })
     async get(@AuthUser() user: User) {
         return this.cryptoPortfolioService.findPortfolios(user.id);
     }
 
     @Subscription(() => CreatePortfolioExecution, {
-        name: "onCreatePortfolioExecution",
+        name: PortfolioController.NEW_CREATE_PORTFOLIO_EXECUTION_PAYLOAD,
         filter: (payload, variables, context) => {
-            const execution =
-                payload[SubscriptionEvent.CRYPTO_PORTFOLIO_CREATION_STATUS];
+            const execution: CreatePortfolioExecution =
+                payload[
+                    PortfolioController.NEW_CREATE_PORTFOLIO_EXECUTION_PAYLOAD
+                ];
             console.log("User ID: ", context.req.user.id);
+            console.log("Execution ", execution);
             const userId = context.req.user.id;
-            return execution.userId === userId;
+            return execution.userId == userId;
         },
     })
     onPortfolioCreationStatus() {
@@ -80,7 +110,7 @@ export class CryptoPortfolioResolver {
     async getBalances(@Parent() cryptoPortfolio: CryptoPortfolio) {
         return this.cryptoPortfolioService.findBalances(
             cryptoPortfolio.id,
-            cryptoPortfolio.exchanges as CEXExchanges,
+            cryptoPortfolio.exchanges as Exchanges,
         );
     }
 
@@ -121,8 +151,10 @@ export class CryptoPortfolioResolver {
     @Query(() => [CreatePortfolioExecution], {
         name: "getCreatePortfolioExecutions",
     })
-    async getCreatePortfolioExecutions(@Args("userId") userId: number) {
-        return this.cryptoPortfolioService.getCreatePortfolioExecutions(userId);
+    async getCreatePortfolioExecutions(@AuthUser() user: User) {
+        return this.cryptoPortfolioService.getCreatePortfolioExecutions(
+            user.id,
+        );
     }
 
     // @Mutation(() => Crypto)

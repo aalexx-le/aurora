@@ -1,6 +1,7 @@
 import authReducer from "@/state/slices/auth.slice";
 import bankReducer from "@/state/slices/bank.slice";
 import cryptoReducer from "@/state/slices/crypto.slice";
+import paymentReducer from "@/state/slices/payment.slice";
 import {
     Action,
     combineSlices,
@@ -12,6 +13,7 @@ const rootReducer = combineSlices({
     auth: authReducer,
     crypto: cryptoReducer,
     bank: bankReducer,
+    payment: paymentReducer,
 });
 
 export const makeStore = () =>

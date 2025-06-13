@@ -1,28 +1,18 @@
-import type {Metadata} from "next";
-// import localFont from "next/font/local";
-// import Providers from "@/components/providers";
-// import Header from "@/app/home/components/header";
+"use client";
 
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
-
-export const metadata: Metadata = {
-    title: "XELA",
-    description: "Application",
-};
+import AppBar from "@/components/appbar";
 
 export default function HomeLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return children;
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <AppBar />
+            <main className="container mx-auto px-4 py-8">
+                {children}
+            </main>
+        </div>
+    );
 }

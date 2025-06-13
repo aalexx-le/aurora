@@ -4,7 +4,7 @@ import { Int } from '@nestjs/graphql';
 import { PortfolioCreationStep } from '../prisma/portfolio-creation-step.enum';
 import { PortfolioCreationMilestone } from '../prisma/portfolio-creation-milestone.enum';
 import { ErrorRecoveryAction } from '../prisma/error-recovery-action.enum';
-import { CEXExchanges } from '../prisma/cex-exchanges.enum';
+import { Exchanges } from '../prisma/exchanges.enum';
 import { GraphQLJSON } from 'graphql-type-json';
 import { User } from '../user/user.model';
 
@@ -38,8 +38,8 @@ export class CreatePortfolioExecution {
     @Field(() => Int, {defaultValue:3,nullable:false})
     maxRetries!: number;
 
-    @Field(() => CEXExchanges, {nullable:true})
-    exchangeType!: `${CEXExchanges}` | null;
+    @Field(() => Exchanges, {nullable:true})
+    exchangeType!: `${Exchanges}` | null;
 
     @Field(() => GraphQLJSON, {nullable:true})
     executionContext!: any | null;

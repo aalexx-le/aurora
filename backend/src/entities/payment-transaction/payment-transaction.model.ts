@@ -5,6 +5,7 @@ import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PaymentStatus } from '../prisma/payment-status.enum';
 import { PaddlePaymentTransaction } from '../paddle-payment-transaction/paddle-payment-transaction.model';
+import { MetaMaskPaymentTransaction } from '../meta-mask-payment-transaction/meta-mask-payment-transaction.model';
 import { MembershipSubscription } from '../membership-subscription/membership-subscription.model';
 
 @ObjectType()
@@ -36,6 +37,9 @@ export class PaymentTransaction {
 
     @Field(() => PaddlePaymentTransaction, {nullable:true})
     paddlePaymentTransaction?: PaddlePaymentTransaction | null;
+
+    @Field(() => MetaMaskPaymentTransaction, {nullable:true})
+    metaMaskPaymentTransaction?: MetaMaskPaymentTransaction | null;
 
     @Field(() => MembershipSubscription, {nullable:false})
     membershipSubscription?: MembershipSubscription;

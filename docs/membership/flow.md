@@ -1,171 +1,282 @@
-# Paddle Subscription Flow
+# Membership & Payment Flow
 
-This document outlines the flow of Paddle webhooks and how they're processed in our application to manage the subscription lifecycle.
+This document outlines the comprehensive flow of payment processing and subscription management using visual diagrams.
 
-## Webhook Processing Flow
+## System Overview
+
+```mermaid
+graph TB
+    subgraph "Payment Providers"
+        Paddle[🏦 Paddle<br/>Traditional Cards]
+        MetaMask[🦊 MetaMask<br/>Crypto Payments]
+    end
+    
+    subgraph "Core System"
+        API[🔗 GraphQL API]
+        DB[(🗄️ Database)]
+        Webhooks[📡 Webhooks]
+    end
+    
+    subgraph "Frontend"
+        React[⚛️ React App]
+        Forms[📝 Subscription Forms]
+        Wallet[👛 Wallet Connection]
+    end
+    
+    Paddle --> Webhooks
+    MetaMask --> API
+    Webhooks --> DB
+    API --> DB
+    React --> API
+    Forms --> Paddle
+    Wallet --> MetaMask
+```
+
+## Subscription Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending : User selects plan
+    Pending --> Trialing : Trial starts
+    Pending --> Active : Immediate payment
+    Pending --> Failed : Payment fails
+    
+    Trialing --> Active : Trial converts
+    Trialing --> Canceled : User cancels
+    Trialing --> Past_Due : Payment fails
+    
+    Active --> Past_Due : Payment fails
+    Active --> Canceled : User cancels
+    Active --> Paused : User pauses
+    
+    Past_Due --> Active : Payment recovered
+    Past_Due --> Canceled : Grace expires (7-14 days)
+    
+    Paused --> Active : User resumes
+    Paused --> Canceled : User cancels
+    
+    Canceled --> [*] : Subscription ends
+    Failed --> [*] : Cleanup
+```
+
+## Payment Processing Flows
+
+### Paddle Flow (Traditional)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant P as Paddle
+    participant W as Webhook
+    participant API as Backend API
+    participant DB as Database
+    
+    U->>F: Select plan & payment
+    F->>P: Initialize checkout
+    P->>U: Payment form
+    U->>P: Submit payment
+    P->>W: Transaction webhook
+    W->>API: Process event
+    API->>DB: Update subscription
+    API->>F: Notify via GraphQL
+    F->>U: Success confirmation
+```
+
+### MetaMask Flow (Crypto)
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant M as MetaMask
+    participant BC as Blockchain
+    participant API as Backend
+    participant DB as Database
+    
+    U->>F: Select crypto payment
+    F->>M: Request connection
+    M->>U: Approve connection
+    F->>API: Calculate crypto price
+    API->>F: Return amount
+    F->>M: Request transaction
+    M->>U: Confirm transaction
+    U->>BC: Sign & send
+    BC->>API: Transaction confirmed
+    API->>DB: Create subscription
+    API->>F: Success notification
+```
+
+## Webhook Event Processing
 
 ```mermaid
 flowchart TD
-    A[Paddle Webhook Event] --> B[Webhook Verification]
-    B -->|Valid Signature| C[Event Unmarshalling]
-    B -->|Invalid Signature| D[Return 400 Error]
-    C --> E[Extract User ID]
-    E -->|User ID Found| F[Process by Event Type]
-    E -->|User ID Missing| G[Log Error]
+    A[📨 Webhook Received] --> B{Valid Signature?}
+    B -->|❌| C[🚫 Return 400]
+    B -->|✅| D[📤 Extract Event Data]
     
-    F --> F1[TransactionCompleted]
-    F --> F2[SubscriptionCreated]
-    F --> F3[SubscriptionUpdated]
-    F --> F4[SubscriptionCanceled]
-    F --> F5[SubscriptionPastDue]
-    F --> F6[SubscriptionPaused]
-    F --> F7[SubscriptionResumed]
-    F --> F8[SubscriptionTrialing]
+    D --> E{User ID Present?}
+    E -->|❌| F[📝 Log & Return 200]
+    E -->|✅| G[🔄 Process Event Type]
     
-    F1 --> H1[Create/Update Payment Method]
-    H1 --> H1a[Store addressId and businessId]
-    H1a --> H2[Create Payment Transaction]
+    G --> H[💳 Transaction Completed]
+    G --> I[📅 Subscription Created]  
+    G --> J[📝 Subscription Updated]
+    G --> K[❌ Subscription Canceled]
+    G --> L[⏰ Subscription Past Due]
     
-    F2 --> I1[Find Membership Plan]
-    I1 --> I2[Create Subscription Record]
+    H --> M[💾 Store Payment Data]
+    I --> N[🎯 Activate Subscription]
+    J --> O[🔄 Update Details]
+    K --> P[🛑 Mark Canceled]
+    L --> Q[⚠️ Mark Past Due]
     
-    F3 --> J1[Update Subscription Details]
-    F3 --> J2[Handle Plan Changes]
-    
-    F4 --> K[Mark Subscription as Canceled]
-    F5 --> L[Mark Subscription as Past Due]
-    F6 --> M[Handle Subscription Pause]
-    F7 --> N[Reactivate Subscription]
-    F8 --> O[Handle Trial Period]
+    M --> R[🔔 Notify Frontend]
+    N --> R
+    O --> R
+    P --> R
+    Q --> R
 ```
 
-## Subscription State Machine
+## Error Handling Matrix
 
-
-
-## Webhook Event Handling
-
-### TransactionCompleted
-
-When a transaction is completed:
-
-1. Extract the Paddle customer ID and user ID from the webhook
-2. Check if a payment method already exists for this customer
-3. If not, create a new payment method record linking the user to Paddle
-4. Store additional customer information:
-   - `addressId`: The Paddle address ID (if available)
-   - `businessId`: The Paddle business ID (if available)
-5. Create a payment transaction record for the subscription
-
-### Storing Address and Business IDs
-
-The Paddle webhook events may include `addressId` and `businessId` fields that should be stored for future reference. To handle these:
-
-```typescript
-// In handleTransactionCompleted or other webhook handlers
-const data = event.data as any;
-const paddleCustomerId = data.customerId;
-const addressId = data.addressId;  // Extract from webhook data if available
-const businessId = data.businessId;  // Extract from webhook data if available
-
-// When creating or updating PaddlePaymentMethod
-await tx.paddlePaymentMethod.create({
-  data: {
-    providerCustomerId: paddleCustomerId,
-    addressId: addressId || null,  // Store if available
-    businessId: businessId || null,  // Store if available
-    // Link to the parent PaymentMethod record
-    paymentMethod: {
-      connect: { id: newPaymentMethod.id },
-    },
-  },
-});
+```mermaid
+graph TD
+    subgraph "Payment Errors"
+        PE1[Card Declined] --> R1[Retry Different Card]
+        PE2[Insufficient Funds] --> R2[Add Funds/Different Method]
+        PE3[Network Timeout] --> R3[Auto Retry]
+    end
+    
+    subgraph "MetaMask Errors"
+        ME1[Wallet Not Connected] --> R4[Request Connection]
+        ME2[Transaction Failed] --> R5[Check Gas/Balance]
+        ME3[User Rejected] --> R6[Show Cancellation]
+    end
+    
+    subgraph "System Errors"
+        SE1[Invalid Webhook] --> R7[Log & Return 400]
+        SE2[Database Error] --> R8[Retry Transaction]
+        SE3[Plan Not Found] --> R9[Sync Paddle Data]
+    end
 ```
 
-### SubscriptionCreated
+## State Transitions
 
-When a subscription is created:
+```mermaid
+graph LR
+    subgraph "Happy Path"
+        A[Pending] --> B[Active]
+        B --> C[Renewed]
+        A --> D[Trialing]
+        D --> B
+    end
+    
+    subgraph "Recovery Path"
+        E[Past Due] --> F[Grace Period]
+        F --> B
+        F --> G[Canceled]
+    end
+    
+    subgraph "User Actions"
+        B --> H[Paused]
+        H --> B
+        B --> I[Canceled]
+        I --> J[Expired]
+    end
+```
 
-1. Find the corresponding membership plan based on Paddle price ID
-2. Calculate subscription end date based on next billing date
-3. Create a subscription record with status `ACTIVE`
+## Payment Method Management
 
-### SubscriptionUpdated
+```mermaid
+graph TB
+    subgraph "Paddle Methods"
+        PM1[Credit Card] --> PM2[Customer ID]
+        PM2 --> PM3[Address Data]
+        PM2 --> PM4[Business Data]
+    end
+    
+    subgraph "MetaMask Methods"
+        MM1[Wallet Address] --> MM2[ENS Name]
+        MM1 --> MM3[Supported Tokens]
+        MM3 --> MM4[ETH]
+        MM3 --> MM5[USDC]
+        MM3 --> MM6[USDT]
+    end
+    
+    subgraph "Unified Storage"
+        US1[Payment Method Base]
+        PM4 --> US1
+        MM6 --> US1
+        US1 --> US2[Transaction History]
+    end
+```
 
-When a subscription is updated:
+## Real-time Updates
 
-1. Find the user's existing subscription
-2. Update plan ID if changed
-3. Update end date if billing date changed
-4. Update subscription status based on Paddle status
+```mermaid
+sequenceDiagram
+    participant DB as Database
+    participant API as GraphQL API
+    participant SUB as Subscription
+    participant UI as Frontend
+    
+    Note over DB,UI: Subscription Status Change
+    
+    DB->>API: Status updated
+    API->>SUB: Publish event
+    SUB->>UI: Real-time notification
+    UI->>UI: Update subscription state
+    UI->>UI: Refresh plan access
+```
 
-### SubscriptionCanceled
+## Security Flow
 
-When a subscription is canceled:
+```mermaid
+graph TD
+    subgraph "Webhook Security"
+        WS1[📨 Incoming Webhook] --> WS2{Signature Valid?}
+        WS2 -->|✅| WS3[Process Event]
+        WS2 -->|❌| WS4[🚫 Reject]
+    end
+    
+    subgraph "MetaMask Security"
+        MS1[💳 Payment Request] --> MS2[📝 Message Signing]
+        MS2 --> MS3{Signature Valid?}
+        MS3 -->|✅| MS4[🔗 Blockchain Transaction]
+        MS3 -->|❌| MS5[🚫 Reject Payment]
+    end
+    
+    subgraph "Data Protection"
+        DP1[🔐 API Keys in ENV]
+        DP2[🛡️ Minimal Data Storage]
+        DP3[📋 Audit Trail]
+    end
+```
 
-1. Find the user's existing subscription
-2. Mark the subscription as `CANCELED`
-3. Keep the existing end date (subscription remains active until the end of the billing period)
+## Monitoring Dashboard
 
-### SubscriptionPastDue
-
-When a subscription payment fails:
-
-1. Find the user's existing subscription
-2. Mark the subscription as `PAST_DUE`
-
-### SubscriptionPaused / SubscriptionResumed
-
-1. Find the user's existing subscription
-2. Update subscription status accordingly
-
-### SubscriptionTrialing
-
-When a subscription enters a trial period:
-
-1. Find the user's existing subscription (or create one)
-2. Ensure the subscription is marked as `ACTIVE`
-
-## Data Model
-
-The following database models are used to track subscriptions:
-
-- `MembershipSubscription`: Main subscription record
-- `MembershipPlan`: Product/plan details
-- `PaymentMethod`: User's payment method info
-- `PaddlePaymentMethod`: Paddle-specific payment method details including:
-  - `providerCustomerId`: Customer ID from Paddle
-  - `addressId`: Customer address ID from Paddle (optional)
-  - `businessId`: Customer business ID from Paddle (optional)
-- `PaymentTransaction`: Payment records for subscriptions
-
-## Subscription Lifecycle Example
-
-1. User subscribes to a plan:
-   - `SubscriptionCreated` webhook received
-   - New subscription created with `ACTIVE` status
-
-2. Recurring payment processed:
-   - `TransactionCompleted` webhook received
-   - New payment transaction record created
-
-3. User cancels subscription:
-   - `SubscriptionCanceled` webhook received
-   - Subscription marked as `CANCELED` but remains active until billing period ends
-
-4. Billing period ends:
-   - Subscription automatically transitions to `ENDED` status (internal logic, not webhook-driven)
-
-5. Payment fails:
-   - `SubscriptionPastDue` webhook received
-   - Subscription marked as `PAST_DUE`
-   - User may update payment method to fix
-
-## Error Handling
-
-All webhook event processing includes comprehensive error handling:
-
-- Each event type is processed in its own try/catch block
-- Errors are logged with detailed context
-- Database operations use transactions where appropriate to ensure data consistency
-- Missing user ID or subscription data is handled gracefully with appropriate logging
+```mermaid
+graph TB
+    subgraph "Business Metrics"
+        BM1[💰 MRR]
+        BM2[📉 Churn Rate]
+        BM3[📈 Conversion Rate]
+    end
+    
+    subgraph "Technical Metrics"
+        TM1[⚡ Webhook Processing Time]
+        TM2[🎯 Payment Success Rate]
+        TM3[🚨 Error Rate by Provider]
+    end
+    
+    subgraph "Alerts"
+        A1[🔴 Critical: Webhook Failures]
+        A2[🟡 Warning: High Error Rate]
+        A3[🔵 Info: Milestone Events]
+    end
+    
+    BM1 --> A3
+    TM3 --> A1
+    TM2 --> A2
+```

@@ -171,7 +171,7 @@ type HistoricalCryptoBalance {
   cryptoPortfolio: CryptoPortfolio!
 }
 
-type OKXCryptoPortfolio {
+type PassphraseCryptoPortfolio {
   id: String!
   cryptoPortfolioId: String!
   passphrase: String!
@@ -182,7 +182,7 @@ type CryptoPortfolio {
   userId: Int!
   name: String!
   status: PortfolioStatus!
-  exchanges: CEXExchanges!
+  exchanges: Exchanges!
   tradingType: TradingType!
   apiKey: String!
   secretKey: String!
@@ -195,7 +195,7 @@ type CryptoPortfolio {
   historicalAssetProfits: [HistoricalAssetProfit!]
   historicalBalances: [HistoricalCryptoBalance!]
   trades: [Trade!]
-  okxPortfolio: OKXCryptoPortfolio
+  passphrasePortfolio: PassphraseCryptoPortfolio
   parentPortfolio: CryptoPortfolio
   childPortfolios: [CryptoPortfolio!]
   latestHistoricalBalances(timeFrame: String!): HistoricalCryptoBalance!
@@ -207,11 +207,118 @@ enum PortfolioStatus {
   INACTIVE
 }
 
-enum CEXExchanges {
+enum Exchanges {
+  ALL
   BINANCE
   MEXC
   OKX
-  ALL
+  COINBASE
+  COINBASEEXCHANGE
+  COINBASEINTERNATIONAL
+  KRAKEN
+  KRAKENFUTURES
+  BYBIT
+  BITGET
+  GATE
+  HUOBI
+  HTX
+  KUCOIN
+  KUCOINFUTURES
+  CRYPTOCOM
+  BITFINEX
+  BITMEX
+  BITSTAMP
+  GEMINI
+  BITMART
+  BITRUE
+  ASCENDEX
+  PROBIT
+  POLONIEX
+  LBANK
+  PHEMEX
+  WOO
+  WOOFIPRO
+  DERIBIT
+  BINGX
+  HASHKEY
+  COINEX
+  WHITEBIT
+  XT
+  MEXC3
+  P2B
+  TRADEOGRE
+  NDAX
+  OXFUN
+  BLOFIN
+  COINCATCH
+  BINANCEUS
+  BINANCEUSDM
+  BINANCECOINM
+  OKCOIN
+  MYOKX
+  OKXUS
+  BITHUMB
+  UPBIT
+  COINONE
+  HUOBIJP
+  BITFLYER
+  COINCHECK
+  BITBANK
+  ZAIF
+  BTCBOX
+  INDODAX
+  TOKOCRYPTO
+  COINSPH
+  NOVADAX
+  MERCADO
+  BITSO
+  BTCTURK
+  BTCALPHA
+  EXMO
+  BITTEAM
+  KUNA
+  LATOKEN
+  HYPERLIQUID
+  VERTEX
+  PARADEX
+  DERIVE
+  APEX
+  DEFX
+  WOOFIPRO_DEX
+  IDEX
+  WAVESEXCHANGE
+  MODETRADE
+  ALPACA
+  BEQUANT
+  BIGONE
+  BIT2C
+  BITBNS
+  BITOPRO
+  BITVAVO
+  BL3P
+  BLOCKCHAINCOM
+  BTCMARKETS
+  CEX
+  COINLIST
+  COINMATE
+  COINMETRO
+  COINSPOT
+  CRYPTOMUS
+  DELTA
+  DIGIFINEX
+  ELLIPX
+  FMFWIO
+  HOLLAEX
+  INDEPENDENTRESERVE
+  LUNO
+  OCEANEX
+  ONETRADING
+  PAYMIUM
+  TIMEX
+  YOBIT
+  ZONDA
+  HITBTC
+  HUOBI_LEGACY
 }
 
 enum TradingType {
@@ -229,7 +336,7 @@ type CreatePortfolioExecution {
   recoveryAction: ErrorRecoveryAction
   retryCount: Int!
   maxRetries: Int!
-  exchangeType: CEXExchanges
+  exchangeType: Exchanges
   executionContext: JSON
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -240,12 +347,9 @@ type CreatePortfolioExecution {
 enum PortfolioCreationStep {
   VALIDATION
   AUTHENTICATION
-  CONNECTION
-  ACCOUNT_INFO
-  BALANCE_FETCH
-  DATA_PROCESSING
+  BALANCE_RETRIEVAL
   DATABASE_STORAGE
-  FINALIZATION
+  COMPLETION
 }
 
 enum PortfolioCreationMilestone {
@@ -356,6 +460,63 @@ type UnitPrice {
   prices: [MembershipPrice!]
 }
 
+type MembershipDiscountUsage {
+  discountId: String!
+  membershipSubscriptionId: String!
+  originalAmount: Decimal!
+  discountAmount: Decimal!
+  finalAmount: Decimal!
+  currencyCode: String!
+  usedAt: DateTime!
+  ipAddress: String
+  userAgent: String
+  discount: MembershipDiscount!
+  membershipSubscription: MembershipSubscription!
+}
+
+"""An arbitrary-precision Decimal type"""
+scalar Decimal
+
+type MembershipDiscount {
+  id: String!
+  name: String!
+  description: String
+  code: String
+  type: DiscountType!
+  value: Decimal!
+  currencyCode: String
+  maxAmount: Decimal
+  isActive: Boolean!
+  startDate: DateTime
+  endDate: DateTime
+  maxUses: Int
+  maxUsesPerUser: Int
+  currentUses: Int!
+  targetType: DiscountTargetType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  usageHistory: [MembershipDiscountUsage!]!
+  prices: [MembershipDiscountPrice!]!
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+  FREE_TRIAL
+}
+
+enum DiscountTargetType {
+  PRICE_SPECIFIC
+  FIRST_TIME_USER
+}
+
+type MembershipDiscountPrice {
+  discountId: String!
+  priceId: String!
+  discount: MembershipDiscount!
+  price: MembershipPrice!
+}
+
 type MembershipPrice {
   id: String!
   planId: String!
@@ -368,6 +529,7 @@ type MembershipPrice {
   trialPeriod: TimePeriod
   unitPrice: UnitPrice!
   plan: MembershipPlan!
+  discounts: [MembershipDiscountPrice!]
 }
 
 enum PriceStatus {
@@ -412,6 +574,18 @@ type PaddlePaymentTransaction {
   paymentTransaction: PaymentTransaction!
 }
 
+type MetaMaskPaymentTransaction {
+  id: Int!
+  paymentTransactionId: Int!
+  transactionHash: String!
+  tokenAddress: String
+  tokenSymbol: String!
+  blockNumber: Int
+  gasUsed: String
+  gasPrice: String
+  paymentTransaction: PaymentTransaction!
+}
+
 type PaymentTransaction {
   id: Int!
   membershipSubscriptionId: String!
@@ -422,11 +596,9 @@ type PaymentTransaction {
   createdAt: DateTime!
   updatedAt: DateTime!
   paddlePaymentTransaction: PaddlePaymentTransaction
+  metaMaskPaymentTransaction: MetaMaskPaymentTransaction
   membershipSubscription: MembershipSubscription!
 }
-
-"""An arbitrary-precision Decimal type"""
-scalar Decimal
 
 enum PaymentStatus {
   authorized
@@ -453,6 +625,7 @@ type MembershipSubscription {
   user: User!
   plan: MembershipPlan!
   paymentTransactions: [PaymentTransaction!]!
+  discountUsages: [MembershipDiscountUsage!]
 }
 
 enum MembershipSubscriptionStatus {
@@ -472,16 +645,26 @@ type PaddlePaymentMethod {
   paymentMethod: PaymentMethod!
 }
 
+type MetaMaskPaymentMethod {
+  id: Int!
+  paymentMethodId: Int!
+  walletAddress: String!
+  ensName: String
+  paymentMethod: PaymentMethod!
+}
+
 type PaymentMethod {
   id: Int!
   userId: Int!
   provider: PaymentProvider!
   user: User!
   paddlePaymentMethod: PaddlePaymentMethod
+  metaMaskPaymentMethod: MetaMaskPaymentMethod
 }
 
 enum PaymentProvider {
   PADDLE
+  METAMASK
 }
 
 type User {
@@ -556,6 +739,35 @@ type TotalSpentAmountOutput {
   year: Float!
 }
 
+type CryptoPriceResult {
+  tokenSymbol: String!
+  usdPrice: Float!
+  tokenAmount: String!
+}
+
+type DiscountValidationResult {
+  isValid: Boolean!
+  discount: MembershipDiscount
+  originalAmount: String
+  discountAmount: String
+  finalAmount: String
+  errorCode: DiscountErrorCode
+}
+
+enum DiscountErrorCode {
+  DISCOUNT_NOT_FOUND
+  DISCOUNT_INACTIVE
+  DISCOUNT_EXPIRED
+  DISCOUNT_EXHAUSTED
+  USER_LIMIT_EXCEEDED
+  USAGE_LIMIT_REACHED
+  USER_USAGE_LIMIT_REACHED
+  DISCOUNT_NOT_APPLICABLE
+  VALIDATION_ERROR
+  INVALID_CURRENCY
+  ALREADY_APPLIED
+}
+
 type GeneralUrl {
   overview: String!
 }
@@ -571,10 +783,22 @@ type CustomerPortalSessionResponse {
   createdAt: String!
 }
 
+type PaymentSession {
+  sessionId: String!
+  userId: Int!
+  planId: String!
+  priceId: String!
+  discountId: String
+  discountAmount: Float
+  finalAmount: Float!
+  expiresAt: DateTime!
+  createdAt: DateTime!
+}
+
 type Query {
   getMe: User!
   getCryptoPortfolios: [CryptoPortfolio!]!
-  getCreatePortfolioExecutions(userId: Float!): [CreatePortfolioExecution!]!
+  getCreatePortfolioExecutions: [CreatePortfolioExecution!]!
   getAssetInfo(data: GetAssetInfoInput!): AssetInfo!
   getAssetPrices(data: GetAssetPriceInput!, pagination: PaginationInput!): [AssetPrice!]!
   getHistoricalBalances(data: GetHistoricalBalanceInput!, pagination: PaginationInput!): [HistoricalCryptoBalance!]!
@@ -596,13 +820,19 @@ type Query {
   getMembershipPrices: [MembershipPrice!]!
   getMembershipPrice(id: String!): MembershipPrice!
   getMembershipPricesByPlan(planId: String!): [MembershipPrice!]!
-  myMembershipFeatures: [MembershipFeature!]!
-  getFeatures: [Feature!]!
-  getFeature(id: Int!): Feature!
   myActiveMembershipSubscriptions: [MembershipSubscription!]!
   myMembershipSubscriptions: [MembershipSubscription!]!
+  myMembershipFeatures: [MembershipFeature!]!
+  getDiscounts: [MembershipDiscount!]!
+  getDiscount(id: String!): MembershipDiscount!
+  validateDiscountCode(data: ValidateDiscountDto!): DiscountValidationResult!
+  getDiscountsForPrice(priceId: String!): [MembershipDiscount!]!
   getPaymentMethod(data: GetPaymentMethodDto!): PaymentMethod
   getPaymentMethods: [PaymentMethod!]!
+  getCryptoPrice(tokenSymbol: String!, usdAmount: Float!): CryptoPriceResult!
+  getPaymentSession(data: GetPaymentSessionDto!): PaymentSession!
+  getFeatures: [Feature!]!
+  getFeature(id: Int!): Feature!
 }
 
 input GetAssetInfoInput {
@@ -640,13 +870,26 @@ input SuggestExpenseInput {
   bankTransactionId: Int!
 }
 
+input ValidateDiscountDto {
+  code: String!
+  priceId: String
+  ipAddress: String
+  userAgent: String
+}
+
 input GetPaymentMethodDto {
   id: Int
 }
 
+input GetPaymentSessionDto {
+  sessionId: String!
+}
+
 type Mutation {
   createCryptoPortfolio(data: CreateCryptoPortfolioInput!): CreateCryptoRes!
-  createOKXCryptoPortfolio(data: CreateOKXCryptoPortfolioInput!): CreateCryptoRes!
+  retryPortfolioCreation(executionId: Int!): CreatePortfolioExecution!
+  updatePortfolioCredentials(executionId: Int!, credentials: UpdateCredentialsInput!): CreatePortfolioExecution!
+  createSupportTicket(data: CreateSupportTicketInput!): Boolean!
   exportPortfolio(input: ExportPortfolioInput!): ExportResult!
   login(data: LoginReqDto!): LoginResDto!
   signup(data: CreateUserInput!): SignupResDto!
@@ -674,6 +917,21 @@ type Mutation {
   removeEventCategory(id: Int!): EventCategory!
   updateRecurrenceTemplate(id: Int!, data: UpdateEventRecurrenceInput!): EventRecurrence!
   deleteRecurrenceTemplate(id: Int!): EventRecurrence!
+  createMembershipPlan(data: CreatePlanDto!): MembershipPlan!
+  updateMembershipPlan(id: String!, data: UpdatePlanDto!): MembershipPlan!
+  deleteMembershipPlan(id: String!): Boolean!
+  createMembershipPrice(data: CreatePriceDto!): MembershipPrice!
+  updateMembershipPrice(id: String!, data: UpdatePriceDto!): MembershipPrice!
+  deleteMembershipPrice(id: String!): Boolean!
+  createMembershipSubscription(data: CreateSubscriptionDto!): MembershipSubscription!
+  updateMembershipSubscription(id: String!, data: UpdateSubscriptionDto!): MembershipSubscription!
+  createDiscount(data: CreateDiscountDto!): MembershipDiscount!
+  updateDiscount(id: String!, data: UpdateDiscountDto!): MembershipDiscount!
+  deleteDiscount(id: String!): Boolean!
+  linkDiscountToPrice(discountId: String!, priceId: String!): Boolean!
+  unlinkDiscountFromPrice(discountId: String!, priceId: String!): Boolean!
+  createMetaMaskPaymentMethod(input: CreateMetaMaskPaymentMethodDto!): Boolean!
+  createMetaMaskSubscriptionFromSession(input: CreateMetaMaskSubscriptionFromSessionDto!): Boolean!
   cancelPaddleSubscription(id: String!): MembershipSubscription!
   reactivatePaddleSubscription(
     id: String!
@@ -682,32 +940,32 @@ type Mutation {
     handlePastDueTransactions: String
   ): MembershipSubscription!
   createCustomerPortalSession(subscriptionIds: [String!]): CustomerPortalSessionResponse!
-  createMembershipPlan(data: CreatePlanDto!): MembershipPlan!
-  updateMembershipPlan(id: String!, data: UpdatePlanDto!): MembershipPlan!
-  deleteMembershipPlan(id: String!): Boolean!
-  createMembershipPrice(data: CreatePriceDto!): MembershipPrice!
-  updateMembershipPrice(id: String!, data: UpdatePriceDto!): MembershipPrice!
-  deleteMembershipPrice(id: String!): Boolean!
+  createPaymentSession(data: CreatePaymentSessionDto!): PaymentSession!
   createFeature(data: CreateFeatureDto!): Feature!
   updateFeature(id: Int!, data: UpdateFeatureDto!): Feature!
   deleteFeature(id: Int!): Feature!
-  createMembershipSubscription(data: CreateSubscriptionDto!): MembershipSubscription!
-  updateMembershipSubscription(id: String!, data: UpdateSubscriptionDto!): MembershipSubscription!
 }
 
 input CreateCryptoPortfolioInput {
   name: String! = ""
-  exchanges: CEXExchanges! = BINANCE
+  exchanges: Exchanges! = BINANCE
   apiKey: String!
   secretKey: String!
+  passphrase: String
 }
 
-input CreateOKXCryptoPortfolioInput {
-  name: String! = ""
-  exchanges: CEXExchanges! = BINANCE
+input UpdateCredentialsInput {
   apiKey: String!
   secretKey: String!
-  passphrase: String!
+  passphrase: String
+}
+
+input CreateSupportTicketInput {
+  executionId: Int!
+  subject: String!
+  description: String!
+  category: String
+  priority: String
 }
 
 input ExportPortfolioInput {
@@ -909,14 +1167,6 @@ input UpdatePriceDto {
   status: String
 }
 
-input CreateFeatureDto {
-  type: FeatureType!
-}
-
-input UpdateFeatureDto {
-  type: FeatureType
-}
-
 input CreateSubscriptionDto {
   userId: Int!
   planId: String!
@@ -929,6 +1179,69 @@ input UpdateSubscriptionDto {
   planId: String
   status: String
   endDate: DateTime
+}
+
+input CreateDiscountDto {
+  name: String!
+  description: String
+  code: String
+  type: DiscountType!
+  value: String!
+  currencyCode: String
+  maxAmount: String
+  isActive: Boolean! = true
+  startDate: String
+  endDate: String
+  maxUses: Int
+  maxUsesPerUser: Int
+  isRecurring: Boolean! = false
+  targetType: DiscountTargetType! = FIRST_TIME_USER
+}
+
+input UpdateDiscountDto {
+  name: String
+  description: String
+  code: String
+  type: DiscountType
+  value: String
+  currencyCode: String
+  maxAmount: String
+  isActive: Boolean
+  startDate: String
+  endDate: String
+  maxUses: Int
+  maxUsesPerUser: Int
+  targetType: DiscountTargetType
+}
+
+input CreateMetaMaskPaymentMethodDto {
+  walletAddress: String!
+  ensName: String
+}
+
+input CreateMetaMaskSubscriptionFromSessionDto {
+  sessionId: String!
+  transactionHash: String!
+  tokenAddress: String
+  tokenSymbol: String!
+  blockNumber: Int
+  gasUsed: String
+  gasPrice: String
+}
+
+input CreatePaymentSessionDto {
+  planId: String!
+  priceId: String!
+  discountId: String
+}
+
+input CreateFeatureDto {
+  type: FeatureType!
+  name: String! = ""
+}
+
+input UpdateFeatureDto {
+  type: FeatureType
 }
 
 type Subscription {

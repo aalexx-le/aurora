@@ -1,0 +1,72 @@
+model MembershipDiscount {
+  id              String            @id
+  name            String            // "Summer Sale 2024"
+  description     String?           // Optional detailed description
+  code            String?           @unique // Optional promotional code (null for automatic discounts)
+  
+  // Discount Configuration
+  type            DiscountType      // PERCENTAGE, FIXED_AMOUNT, FREE_TRIAL
+  value           Decimal           @db.Decimal(10, 4) // 0.1000 for 10%, 5.0000 for $5
+  currencyCode    String?           // Required for FIXED_AMOUNT type
+  maxAmount       Decimal?          @db.Decimal(10, 2) // Maximum discount amount (for percentage caps)
+  
+  // Validity and Constraints
+  isActive        Boolean           @default(true)
+  startDate       DateTime?         // When discount becomes valid
+  endDate         DateTime?         // When discount expires
+  maxUses         Int?              // Total usage limit (null = unlimited)
+  maxUsesPerUser  Int?              @default(1) // Per-user usage limit
+  currentUses     Int               @default(0) // Current usage count
+  
+  targetType      DiscountTargetType @default(FIRST_TIME_USER)
+  
+  // Metadata
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  usageHistory    MembershipDiscountUsage[]
+  prices          MembershipDiscountPrice[]
+}
+
+model MembershipDiscountPrice {
+  discountId String
+  priceId String
+
+  discount MembershipDiscount @relation(fields: [discountId], references: [id])
+  price MembershipPrice @relation(fields: [priceId], references: [id])
+
+  @@unique([discountId, priceId])
+}
+
+model MembershipDiscountUsage {
+  discountId              String
+  membershipSubscriptionId String
+  
+  // Usage Details
+  originalAmount          Decimal                 @db.Decimal(10, 2)
+  discountAmount          Decimal                 @db.Decimal(10, 2)
+  finalAmount             Decimal                 @db.Decimal(10, 2)
+  currencyCode            String
+  
+  // Metadata
+  usedAt                  DateTime                @default(now())
+  ipAddress               String?                 // For fraud prevention
+  userAgent               String?                 // For analytics
+  
+  // Relations
+  discount                MembershipDiscount      @relation(fields: [discountId], references: [id])
+  membershipSubscription  MembershipSubscription  @relation(fields: [membershipSubscriptionId], references: [id])
+  
+  @@unique([discountId, membershipSubscriptionId])
+}
+
+enum DiscountType {
+  PERCENTAGE      // e.g., 10% off
+  FIXED_AMOUNT    // e.g., $5 off
+  FREE_TRIAL      // e.g., First month free
+}
+
+enum DiscountTargetType {
+  PRICE_SPECIFIC   // Only for specific prices of a plan
+  FIRST_TIME_USER // Only for users with no previous subscriptions
+} 

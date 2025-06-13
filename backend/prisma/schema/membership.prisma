@@ -13,6 +13,7 @@ model MembershipSubscription {
   user                  User                 @relation(fields: [userId], references: [id])
   plan                  MembershipPlan     @relation(fields: [planId], references: [id])
   paymentTransactions   PaymentTransaction[]
+  discountUsages        MembershipDiscountUsage[]      // Usage history for this subscription
 }
 
 model MembershipPlan {
@@ -44,6 +45,7 @@ model MembershipPrice {
   unitPrice      UnitPrice      @relation(fields: [unitPriceId], references: [id])
 
   plan           MembershipPlan   @relation(fields: [planId], references: [id])
+  discounts      MembershipDiscountPrice[]
 }
 
 model MembershipFeature {

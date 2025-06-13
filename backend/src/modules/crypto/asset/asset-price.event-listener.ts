@@ -42,7 +42,8 @@ export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
                 this.pubSub.publish(SubscriptionEvent.ASSET_PRICE_1m_INSERTED, {
                     [AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME]:
                         payload,
-                    [AssetPriceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.ONE_MINUTE
+                    [AssetPriceEventListener.TIME_FRAME]:
+                        AbbreviatedTimeFrameEnum.ONE_MINUTE,
                 });
             },
         );
@@ -57,7 +58,8 @@ export class AssetPriceEventListener implements OnModuleDestroy, OnModuleInit {
                 this.pubSub.publish(SubscriptionEvent.ASSET_PRICE_5m_INSERTED, {
                     [AssetPriceEventListener.NEW_ASSET_PRICE_PAYLOAD_NAME]:
                         payload,
-                    [AssetPriceEventListener.TIME_FRAME]: AbbreviatedTimeFrameEnum.FIVE_MINUTES
+                    [AssetPriceEventListener.TIME_FRAME]:
+                        AbbreviatedTimeFrameEnum.FIVE_MINUTES,
                 });
             },
         );
