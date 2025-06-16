@@ -151,7 +151,17 @@ export class PortfolioCreationService {
                 PortfolioCreationStep.BALANCE_RETRIEVAL,
             );
 
-            // Step 4: Symbol Discovery (New computation step)
+            // Create portfolio record after balance retrieval to get portfolioId for incremental storage
+            const portfolioId = await this.createPortfolioRecord({
+                userId,
+                exchanges: exchangeEnum,
+                name: name || `${exchanges} Portfolio`,
+                apiKey,
+                secretKey,
+            });
+            await this.storeAssetBalances(portfolioId, processedBalances);
+
+            // Step 4: Symbol Discovery (New computation step) - with immediate storage
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.SYMBOL_DISCOVERY,
@@ -162,12 +172,17 @@ export class PortfolioCreationService {
                 credentials,
                 balances,
             );
+            // Store symbol discovery data immediately
+            await this.portfolioProgressService.storeSymbolDiscoveryData(
+                portfolioId,
+                symbolDiscoveryResult,
+            );
             await this.portfolioProgressService.completeStep(
                 executionId,
                 PortfolioCreationStep.SYMBOL_DISCOVERY,
             );
 
-            // Step 5: Trade History Fetch (New computation step)
+            // Step 5: Trade History Fetch (New computation step) - with immediate storage
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.TRADE_HISTORY_FETCH,
@@ -178,12 +193,17 @@ export class PortfolioCreationService {
                 credentials,
                 symbolDiscoveryResult,
             );
+            // Store trade history data immediately
+            await this.portfolioProgressService.storeTradeHistoryData(
+                portfolioId,
+                tradeHistoryResult.trades,
+            );
             await this.portfolioProgressService.completeStep(
                 executionId,
                 PortfolioCreationStep.TRADE_HISTORY_FETCH,
             );
 
-            // Step 6: Price History Fetch (New computation step)
+            // Step 6: Price History Fetch (New computation step) - with immediate storage
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.PRICE_HISTORY_FETCH,
@@ -194,12 +214,17 @@ export class PortfolioCreationService {
                 credentials,
                 symbolDiscoveryResult.discoveredSymbols,
             );
+            // Store price history data immediately
+            await this.portfolioProgressService.storePriceHistoryData(
+                portfolioId,
+                priceHistoryResult.currentPrices,
+            );
             await this.portfolioProgressService.completeStep(
                 executionId,
                 PortfolioCreationStep.PRICE_HISTORY_FETCH,
             );
 
-            // Step 7: P&L Calculation (New computation step)
+            // Step 7: P&L Calculation (New computation step) - with immediate storage
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.PNL_CALCULATION,
@@ -209,12 +234,17 @@ export class PortfolioCreationService {
                 tradeHistoryResult.trades,
                 priceHistoryResult.currentPrices,
             );
+            // Store P&L calculation data immediately
+            await this.portfolioProgressService.storePnLCalculationData(
+                portfolioId,
+                pnlResult,
+            );
             await this.portfolioProgressService.completeStep(
                 executionId,
                 PortfolioCreationStep.PNL_CALCULATION,
             );
 
-            // Step 8: Analytics Calculation (New computation step)
+            // Step 8: Analytics Calculation (New computation step) - with immediate storage
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.ANALYTICS_CALCULATION,
@@ -223,40 +253,19 @@ export class PortfolioCreationService {
             const analyticsResult = await this.processAnalyticsCalculation(
                 pnlResult,
             );
+            // Store analytics data immediately
+            await this.portfolioProgressService.storeAnalyticsData(
+                portfolioId,
+                analyticsResult,
+                pnlResult,
+            );
             await this.portfolioProgressService.completeStep(
                 executionId,
                 PortfolioCreationStep.ANALYTICS_CALCULATION,
             );
 
-            // Step 9: Database Storage (Enhanced to include computed data)
-            await this.portfolioProgressService.startStep(
-                executionId,
-                PortfolioCreationStep.DATABASE_STORAGE,
-                exchangeEnum,
-            );
-            const portfolioId = await this.createPortfolioRecord({
-                userId,
-                exchanges: exchangeEnum,
-                name: name || `${exchanges} Portfolio`,
-                apiKey,
-                secretKey,
-            });
-            await this.storeAssetBalances(portfolioId, processedBalances);
-            
-            // Store computed data
-            await this.storeComputedData(portfolioId, {
-                pnlResult,
-                analyticsResult,
-                trades: tradeHistoryResult.trades,
-                symbols: symbolDiscoveryResult.discoveredSymbols,
-            });
-            
-            await this.portfolioProgressService.completeStep(
-                executionId,
-                PortfolioCreationStep.DATABASE_STORAGE,
-            );
 
-            // Step 10: Completion
+            // Step 9: Completion (final step in 9-step workflow)
             await this.portfolioProgressService.startStep(
                 executionId,
                 PortfolioCreationStep.COMPLETION,
@@ -915,43 +924,5 @@ export class PortfolioCreationService {
         }
     }
 
-    /**
-     * Store computed data to database
-     */
-    private async storeComputedData(
-        portfolioId: string,
-        data: {
-            pnlResult: PnLCalculationResult;
-            analyticsResult: PortfolioAnalyticsResult;
-            trades: EnhancedTrade[];
-            symbols: string[];
-        },
-    ): Promise<void> {
-        this.logger.log(`💾 Storing computed data for portfolio ${portfolioId}`);
-
-        try {
-            // Use the portfolio progress service to store computed data
-            await this.portfolioProgressService.storeComputedPortfolioData(portfolioId, {
-                trades: data.trades,
-                assetPnLData: data.pnlResult.assetPnL,
-                portfolioAnalytics: data.analyticsResult,
-                portfolioPnL: data.pnlResult,
-            });
-
-            // Log summary of stored data
-            this.logger.log(`📊 Computed data storage summary:`);
-            this.logger.log(`- Enhanced trades stored: ${data.trades.length}`);
-            this.logger.log(`- Asset P&L records: ${data.pnlResult.assetPnL.length}`);
-            this.logger.log(`- Portfolio analytics: 1 record`);
-            this.logger.log(`- Total P&L: ${data.pnlResult.portfolioTotalPnL.toFixed(2)}`);
-            this.logger.log(`- Total value: ${data.analyticsResult.totalValue.toFixed(2)}`);
-            this.logger.log(`- Asset count: ${data.analyticsResult.assetCount}`);
-            this.logger.log(`- Diversification score: ${data.analyticsResult.diversificationScore.toFixed(2)}`);
-
-            this.logger.log(`✅ Computed data storage completed for portfolio ${portfolioId}`);
-        } catch (error) {
-            this.logger.error(`❌ Failed to store computed data for portfolio ${portfolioId}:`, error);
-            throw new Error(`Database error during computed data storage: ${error.message}`);
-        }
-    }
+    // storeComputedData method removed - replaced with individual step-by-step storage methods
 }

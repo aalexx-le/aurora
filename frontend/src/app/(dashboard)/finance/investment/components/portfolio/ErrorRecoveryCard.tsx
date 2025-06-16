@@ -1,11 +1,11 @@
+import {
+  getMilestoneIcon,
+  getRecoveryActionIcon
+} from '@/app/(dashboard)/finance/investment/components/portfolio/PortfolioProgressIcon';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    getMilestoneIcon,
-    getRecoveryActionIcon
-} from '@/lib/icons/portfolio-progress-icons';
 import { cn } from '@/lib/utils';
 import React from 'react';
 

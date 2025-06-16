@@ -62,6 +62,5 @@ export declare class PortfolioCreationService {
     private processPriceHistoryFetch;
     private processPnLCalculation;
     private processAnalyticsCalculation;
-    private storeComputedData;
 }
 export {};

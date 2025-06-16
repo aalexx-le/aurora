@@ -47,22 +47,6 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
             const balances = await this.fetchAccountBalances(normalizedExchange, credentials);
             const processedBalances = await this.processBalances(balances);
             await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.BALANCE_RETRIEVAL);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY, exchangeEnum);
-            const symbolDiscoveryResult = await this.processSymbolDiscovery(normalizedExchange, credentials, balances);
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH, exchangeEnum);
-            const tradeHistoryResult = await this.processTradeHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult);
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH, exchangeEnum);
-            const priceHistoryResult = await this.processPriceHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult.discoveredSymbols);
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION, exchangeEnum);
-            const pnlResult = await this.processPnLCalculation(tradeHistoryResult.trades, priceHistoryResult.currentPrices);
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION, exchangeEnum);
-            const analyticsResult = await this.processAnalyticsCalculation(pnlResult);
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION);
-            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.DATABASE_STORAGE, exchangeEnum);
             const portfolioId = await this.createPortfolioRecord({
                 userId,
                 exchanges: exchangeEnum,
@@ -71,13 +55,26 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
                 secretKey,
             });
             await this.storeAssetBalances(portfolioId, processedBalances);
-            await this.storeComputedData(portfolioId, {
-                pnlResult,
-                analyticsResult,
-                trades: tradeHistoryResult.trades,
-                symbols: symbolDiscoveryResult.discoveredSymbols,
-            });
-            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.DATABASE_STORAGE);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY, exchangeEnum);
+            const symbolDiscoveryResult = await this.processSymbolDiscovery(normalizedExchange, credentials, balances);
+            await this.portfolioProgressService.storeSymbolDiscoveryData(portfolioId, symbolDiscoveryResult);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH, exchangeEnum);
+            const tradeHistoryResult = await this.processTradeHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult);
+            await this.portfolioProgressService.storeTradeHistoryData(portfolioId, tradeHistoryResult.trades);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH, exchangeEnum);
+            const priceHistoryResult = await this.processPriceHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult.discoveredSymbols);
+            await this.portfolioProgressService.storePriceHistoryData(portfolioId, priceHistoryResult.currentPrices);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION, exchangeEnum);
+            const pnlResult = await this.processPnLCalculation(tradeHistoryResult.trades, priceHistoryResult.currentPrices);
+            await this.portfolioProgressService.storePnLCalculationData(portfolioId, pnlResult);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION, exchangeEnum);
+            const analyticsResult = await this.processAnalyticsCalculation(pnlResult);
+            await this.portfolioProgressService.storeAnalyticsData(portfolioId, analyticsResult, pnlResult);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION);
             await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.COMPLETION, exchangeEnum);
             await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.COMPLETION);
             await this.portfolioProgressService.markSuccess(executionId, portfolioId, userId, normalizedExchange);
@@ -402,30 +399,6 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
         catch (error) {
             this.logger.error(`❌ Analytics calculation failed:`, error);
             throw error;
-        }
-    }
-    async storeComputedData(portfolioId, data) {
-        this.logger.log(`💾 Storing computed data for portfolio ${portfolioId}`);
-        try {
-            await this.portfolioProgressService.storeComputedPortfolioData(portfolioId, {
-                trades: data.trades,
-                assetPnLData: data.pnlResult.assetPnL,
-                portfolioAnalytics: data.analyticsResult,
-                portfolioPnL: data.pnlResult,
-            });
-            this.logger.log(`📊 Computed data storage summary:`);
-            this.logger.log(`- Enhanced trades stored: ${data.trades.length}`);
-            this.logger.log(`- Asset P&L records: ${data.pnlResult.assetPnL.length}`);
-            this.logger.log(`- Portfolio analytics: 1 record`);
-            this.logger.log(`- Total P&L: ${data.pnlResult.portfolioTotalPnL.toFixed(2)}`);
-            this.logger.log(`- Total value: ${data.analyticsResult.totalValue.toFixed(2)}`);
-            this.logger.log(`- Asset count: ${data.analyticsResult.assetCount}`);
-            this.logger.log(`- Diversification score: ${data.analyticsResult.diversificationScore.toFixed(2)}`);
-            this.logger.log(`✅ Computed data storage completed for portfolio ${portfolioId}`);
-        }
-        catch (error) {
-            this.logger.error(`❌ Failed to store computed data for portfolio ${portfolioId}:`, error);
-            throw new Error(`Database error during computed data storage: ${error.message}`);
         }
     }
 };

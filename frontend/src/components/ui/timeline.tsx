@@ -1,11 +1,11 @@
 import CategoryAvatar from "@/app/(dashboard)/finance/expense/components/category-list/CategoryAvatar";
-import { Progress } from '@/components/ui/progress';
 import {
-    getIconStyle,
-    getMilestoneIcon,
-    getStatusIcon,
-    getStepIcon
-} from '@/lib/icons/portfolio-progress-icons';
+  getIconStyle,
+  getMilestoneIcon,
+  getStatusIcon,
+  getStepIcon
+} from '@/app/(dashboard)/finance/investment/components/portfolio/PortfolioProgressIcon';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import moment from "moment/moment";
 import * as React from 'react';

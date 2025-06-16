@@ -2,29 +2,26 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { PortfolioCreationMilestone, PortfolioCreationStep } from '@/gql/graphql';
 import {
-  getMilestoneIcon
-} from '@/lib/icons/portfolio-progress-icons';
+  PORTFOLIO_STEPS,
+  getCompletedStorageStepsCount,
+  getStepIndex,
+  type ExecutionStep
+} from '@/lib/constants/portfolio-steps';
 import { cn } from '@/lib/utils';
-import { ChartBarIcon, CheckCircle, Clock, FolderPlusIcon, XCircle } from 'lucide-react';
+import { ChartBarIcon, CheckCircle, Clock, Database, FolderPlusIcon, Shield, XCircle } from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
-
-interface ExecutionStep {
-  step: string;
-  milestone: string;
-  progressPercent: number;
-  label: string;
-  description: string;
-  metric?: string;
-  estimatedTime?: string;
-}
+import {
+  getMilestoneIcon
+} from './PortfolioProgressIcon';
 
 interface PortfolioExecutionProgressProps {
   execution: {
     id: number;
-    currentStep?: string | null;
-    currentMilestone?: string | null;
+    currentStep?: PortfolioCreationStep | null;
+    currentMilestone?: PortfolioCreationMilestone | null;
     progressPercent?: number | null;
     errorMessage?: string | null;
     recoveryAction?: string | null;
@@ -36,103 +33,23 @@ interface PortfolioExecutionProgressProps {
     completedAt?: string | null;
   };
   className?: string;
+  showStorageStatus?: boolean;
+  enableFaultToleranceMessaging?: boolean;
 }
-
-// Sequential portfolio creation workflow (10 steps with integrated computation)
-const PORTFOLIO_STEPS: ExecutionStep[] = [
-  {
-    step: 'VALIDATION',
-    milestone: 'INITIALIZED',
-    progressPercent: 10,
-    label: 'Validating Exchange Connection',
-    description: 'Verifying API credentials and permissions',
-    estimatedTime: '10-15 seconds'
-  },
-  {
-    step: 'AUTHENTICATION',
-    milestone: 'CREDENTIALS_VERIFIED',
-    progressPercent: 20,
-    label: 'Authenticating with Exchange',
-    description: 'Establishing secure connection to your exchange',
-    estimatedTime: '15-30 seconds'
-  },
-  {
-    step: 'BALANCE_RETRIEVAL',
-    milestone: 'BALANCES_FETCHED',
-    progressPercent: 30,
-    label: 'Fetching Current Balances',
-    description: 'Retrieving your current cryptocurrency holdings',
-    estimatedTime: '15-30 seconds'
-  },
-  {
-    step: 'SYMBOL_DISCOVERY',
-    milestone: 'ACCOUNT_FETCHED',
-    progressPercent: 40,
-    label: 'Discovering Trading History',
-    description: 'Finding all cryptocurrencies you\'ve traded',
-    estimatedTime: '30-60 seconds'
-  },
-  {
-    step: 'TRADE_HISTORY_FETCH',
-    milestone: 'BALANCES_FETCHED',
-    progressPercent: 50,
-    label: 'Processing Trade Data',
-    description: 'Analyzing your complete trading history',
-    estimatedTime: '1-3 minutes'
-  },
-  {
-    step: 'PRICE_HISTORY_FETCH',
-    milestone: 'BALANCES_FETCHED',
-    progressPercent: 60,
-    label: 'Fetching Price History',
-    description: 'Gathering historical price data for accurate calculations',
-    estimatedTime: '2-5 minutes'
-  },
-  {
-    step: 'PNL_CALCULATION',
-    milestone: 'BALANCES_FETCHED',
-    progressPercent: 70,
-    label: 'Calculating Profit & Loss',
-    description: 'Computing your realized and unrealized gains',
-    estimatedTime: '30-60 seconds'
-  },
-  {
-    step: 'ANALYTICS_CALCULATION',
-    milestone: 'PORTFOLIO_STORED',
-    progressPercent: 80,
-    label: 'Computing Portfolio Analytics',
-    description: 'Generating risk metrics and performance insights',
-    estimatedTime: '30-60 seconds'
-  },
-  {
-    step: 'DATABASE_STORAGE',
-    milestone: 'PORTFOLIO_STORED',
-    progressPercent: 90,
-    label: 'Saving Portfolio Data',
-    description: 'Storing your portfolio and analytics securely',
-    estimatedTime: '5-10 seconds'
-  },
-  {
-    step: 'COMPLETION',
-    milestone: 'COMPLETED',
-    progressPercent: 100,
-    label: 'Portfolio Ready',
-    description: 'Portfolio creation with analytics completed successfully',
-    estimatedTime: ''
-  }
-];
 
 export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProps> = ({
   execution,
-  className
+  className,
+  showStorageStatus = true,
+  enableFaultToleranceMessaging = true
 }) => {
-  // Find current step index
+  // Find current step index using the helper function
   const currentStepIndex = execution.currentStep 
-    ? PORTFOLIO_STEPS.findIndex(step => step.step === execution.currentStep) 
+    ? getStepIndex(execution.currentStep)
     : -1;
 
   const hasError = Boolean(execution.errorMessage);
-  const isCompleted = execution.currentMilestone === 'COMPLETED';
+  const isCompleted = execution.currentMilestone === PortfolioCreationMilestone.Completed;
   const isProcessing = currentStepIndex >= 0 && !hasError && !isCompleted;
 
   // Get the status of each step
@@ -143,13 +60,21 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
     return 'pending';
   };
 
+  // Get storage status for steps with incremental storage
+  const getStorageStatus = (step: ExecutionStep, status: string) => {
+    if (!step.hasIncrementalStorage) return null;
+    if (status === 'completed') return 'stored';
+    if (status === 'active') return 'storing';
+    return 'pending';
+  };
+
   // Get step icon with appropriate styling
   const getStepIcon = (step: ExecutionStep, status: string) => {
     const IconComponent = getMilestoneIcon(step.milestone);
 
     switch (status) {
       case 'completed':
-        return <CheckCircle size={20} className="text-green-500" />;
+        return <CheckCircle size={20} className="text-emerald-600 dark:text-emerald-400" />;
       case 'error':
         return <XCircle size={20} className="text-destructive" />;
       case 'active':
@@ -163,8 +88,11 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
   const overallProgress = execution.progressPercent || 
     (currentStepIndex >= 0 ? PORTFOLIO_STEPS[currentStepIndex].progressPercent : 0);
 
-  // Determine if we're in the analytics phase (steps 4-8)
+  // Determine if we're in the analytics phase (steps 3-7 in 9-step workflow)
   const isAnalyticsPhase = currentStepIndex >= 3 && currentStepIndex <= 7;
+
+  // Count completed storage steps for fault tolerance messaging
+  const completedStorageSteps = getCompletedStorageStepsCount(currentStepIndex);
 
   return (
     <Card className={cn("", className)}>
@@ -172,11 +100,11 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             {isAnalyticsPhase ? (
-              <ChartBarIcon size={20} className="text-blue-500" />
+              <ChartBarIcon size={20} className="text-blue-600 dark:text-blue-400" />
             ) : (
               <FolderPlusIcon size={20} className="text-primary" />
             )}
-            {isAnalyticsPhase ? 'Creating Portfolio with Analytics' : 'Creating Portfolio'}
+            {isAnalyticsPhase ? 'Computing Advanced Analytics' : 'Creating Portfolio'}
           </CardTitle>
           <Badge variant="outline" className="text-xs">
             #{execution.id}
@@ -215,16 +143,22 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
             value={overallProgress}
             className={cn(
               "h-2",
-              hasError ? "progress-error" : isCompleted ? "progress-success" : ""
+              hasError ? "[&>div]:bg-destructive" : isCompleted ? "[&>div]:bg-emerald-600" : ""
             )}
           />
         </div>
 
-        {/* Error Message */}
+        {/* Enhanced Error Message with Recovery Context */}
         {hasError && execution.errorMessage && (
-          <div className="p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
             <p className="text-sm text-destructive font-medium">Error:</p>
             <p className="text-sm text-destructive/80 mt-1">{execution.errorMessage}</p>
+            {enableFaultToleranceMessaging && completedStorageSteps > 0 && (
+              <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-2 flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                Resuming from last saved step - no data loss
+              </p>
+            )}
           </div>
         )}
 
@@ -233,11 +167,12 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
         {/* Step-by-step Progress */}
         <div className="space-y-4">
           <h4 className="text-sm font-medium text-foreground">
-            Creation Steps
+            Creation Steps {enableFaultToleranceMessaging && <span className="text-xs text-muted-foreground">(9 steps with incremental storage)</span>}
           </h4>
           <div className="relative space-y-1">
             {PORTFOLIO_STEPS.map((step, index) => {
               const status = getStepStatus(index);
+              const storageStatus = getStorageStatus(step, status);
               const isCurrentStep = index === currentStepIndex;
 
               return (
@@ -246,20 +181,31 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                     className={cn(
                       "flex items-start gap-3 p-3 rounded-lg transition-colors relative",
                       isCurrentStep && !hasError ? "bg-primary/5 border border-primary/20" : "",
-                      status === 'completed' ? "bg-green-50 dark:bg-green-950/20" : "",
+                      status === 'completed' ? "bg-emerald-50 dark:bg-emerald-950/20" : "",
                       status === 'error' ? "bg-destructive/5 border border-destructive/20" : ""
                     )}
                   >
                     <div className="flex flex-col mt-0.5 relative z-10 items-center justify-between gap-2">
                       {/* Step Icon */}
-                      <div>
+                      <div className="relative">
                         {getStepIcon(step, status)}
+                        {/* Storage Indicator */}
+                        {showStorageStatus && step.hasIncrementalStorage && (
+                          <div className={cn(
+                            "absolute -top-1 -right-1 w-3 h-3 rounded-full border border-background flex items-center justify-center",
+                            storageStatus === 'stored' ? "bg-emerald-600" : 
+                            storageStatus === 'storing' ? "bg-blue-600 animate-pulse" : 
+                            "bg-muted"
+                          )}>
+                            {storageStatus === 'stored' && <Database className="w-2 h-2 text-white" />}
+                          </div>
+                        )}
                       </div>
                       {/* Connection Line to Next Step */}
                       {index < PORTFOLIO_STEPS.length - 1 && (
                         <div className={cn(
                           "w-[2px] h-4 transition-colors",
-                          status === 'completed' ? "bg-green-500 h-2" :
+                          status === 'completed' ? "bg-emerald-600 h-2" :
                             status === 'active' ? "bg-primary" : "bg-border"
                         )} />
                       )}
@@ -270,7 +216,7 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                       <div className="flex items-center justify-between">
                         <h5 className={cn(
                           "text-sm font-medium",
-                          status === 'completed' ? "text-green-700 dark:text-green-300" : "",
+                          status === 'completed' ? "text-emerald-700 dark:text-emerald-300" : "",
                           status === 'error' ? "text-destructive" : "",
                           status === 'active' ? "text-primary" : "",
                           status === 'pending' ? "text-muted-foreground" : ""
@@ -278,7 +224,7 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                           {step.label}
                         </h5>
                         {step.estimatedTime && !status.includes('completed') && (
-                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                             {step.estimatedTime}
                           </span>
                         )}
@@ -286,6 +232,24 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                       <p className="text-xs text-muted-foreground mt-1">
                         {step.description}
                       </p>
+
+                      {/* Storage Status Message */}
+                      {showStorageStatus && step.hasIncrementalStorage && storageStatus && (
+                        <div className="text-xs mt-1">
+                          {storageStatus === 'storing' && (
+                            <span className="text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                              <Database className="w-3 h-3" />
+                              Securing data...
+                            </span>
+                          )}
+                          {storageStatus === 'stored' && (
+                            <span className="text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
+                              <Database className="w-3 h-3" />
+                              Data secured
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       {/* Current step progress indicator */}
                       {isCurrentStep && !hasError && !isCompleted && (
