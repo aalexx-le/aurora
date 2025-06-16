@@ -26,9 +26,6 @@ export const metadata: Metadata = {
     //   { url: "/favicon.ico", type: "image/x-icon" },
       { url: "/logo/logo-white.svg", type: "image/svg+xml", sizes: "any" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180" },
-    ],
     other: [
       {
         rel: "android-chrome-192x192",

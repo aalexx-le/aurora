@@ -33,6 +33,9 @@ export declare class PortfolioExchangeService {
     private readonly saltLength;
     private readonly iterations;
     private readonly webCryptoPrefix;
+    private readonly marketCacheTimeout;
+    private readonly marketCache;
+    private readonly quoteCurrencyPriority;
     constructor(configService: ConfigService);
     getAllSupportedExchanges(): ExchangeInfo[];
     isExchangeSupported(exchangeId: string): boolean;
@@ -40,6 +43,10 @@ export declare class PortfolioExchangeService {
     fetchBalances(exchangeId: string, credentials: ExchangeCredentials): Promise<ExchangeBalance[]>;
     testExchangeConnection(exchangeId: string, credentials: ExchangeCredentials): Promise<boolean>;
     getExchangeInfo(exchangeId: string): ExchangeInfo | null;
+    discoverPortfolioSymbols(exchangeId: string, credentials: ExchangeCredentials, currentBalanceSymbols: string[]): Promise<string[]>;
+    fetchTradeHistory(exchangeId: string, credentials: ExchangeCredentials, tradingPairs: string[], limit?: number): Promise<ccxt.Trade[]>;
+    fetchPriceHistory(exchangeId: string, credentials: ExchangeCredentials, symbols: string[], timeframe?: string, limit?: number): Promise<Map<string, any[]>>;
+    fetchCurrentPrices(exchangeId: string, credentials: ExchangeCredentials, symbols: string[]): Promise<Map<string, number>>;
     encryptApiKey(apiKey: string): Promise<string>;
     decryptApiKey(encryptedApiKey: string): Promise<string>;
     encryptSecretKey(secretKey: string): Promise<string>;
@@ -55,11 +62,22 @@ export declare class PortfolioExchangeService {
         secretKey: string;
         passphrase?: string;
     }>;
-    testEncryption(testString?: string): Promise<boolean>;
     private retryWithBackoff;
     private decryptWebCrypto;
     private deriveKey;
     private arrayBufferToBase64;
     private base64ToArrayBuffer;
+    private classifyDiscoveredSymbols;
+    private isTradingPair;
+    private isValidAsset;
+    getExchangePairSeparator(exchangeId: string): string;
+    private generateOptimalTradingPairs;
+    private getCachedExchangeMarkets;
+    private fetchExchangeMarkets;
+    private validateAgainstExchangeMarkets;
+    private resolveFallbackPairs;
+    private extractBaseAsset;
+    private findBestAlternativePair;
+    convertSymbolsToTradingPairs(symbols: string[], exchangeId: string): Promise<string[]>;
 }
 export {};

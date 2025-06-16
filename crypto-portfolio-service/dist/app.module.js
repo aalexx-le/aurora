@@ -12,6 +12,8 @@ const config_1 = require("@nestjs/config");
 const microservices_1 = require("@nestjs/microservices");
 const nestjs_prisma_1 = require("nestjs-prisma");
 const app_controller_1 = require("./app.controller");
+const pnl_calculation_service_1 = require("./services/pnl-calculation.service");
+const portfolio_analytics_service_1 = require("./services/portfolio-analytics.service");
 const portfolio_creation_service_1 = require("./services/portfolio-creation.service");
 const portfolio_exchange_service_1 = require("./services/portfolio-exchange.service");
 const portfolio_progress_service_1 = require("./services/portfolio-progress.service");
@@ -28,26 +30,26 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 prismaServiceOptions: {
                     prismaOptions: {
-                        log: ['info', 'warn', 'error'],
+                        log: ["info", "warn", "error"],
                     },
                     explicitConnect: true,
                 },
             }),
             microservices_1.ClientsModule.registerAsync([
                 {
-                    name: 'KAFKA_SERVICE',
+                    name: "KAFKA_SERVICE",
                     inject: [config_1.ConfigService],
                     useFactory: async (configService) => {
-                        const broker = configService.get('MESSAGE_BROKER_URL');
+                        const broker = configService.get("MESSAGE_BROKER_URL");
                         return {
                             transport: microservices_1.Transport.KAFKA,
                             options: {
                                 client: {
-                                    clientId: 'crypto-portfolio-service',
+                                    clientId: "crypto-portfolio-service",
                                     brokers: [broker],
                                 },
                                 consumer: {
-                                    groupId: 'crypto-portfolio-consumer',
+                                    groupId: "crypto-portfolio-consumer",
                                     allowAutoTopicCreation: true,
                                 },
                                 producer: {
@@ -64,6 +66,8 @@ exports.AppModule = AppModule = __decorate([
             portfolio_creation_service_1.PortfolioCreationService,
             portfolio_exchange_service_1.PortfolioExchangeService,
             portfolio_progress_service_1.PortfolioProgressService,
+            pnl_calculation_service_1.PnLCalculationService,
+            portfolio_analytics_service_1.PortfolioAnalyticsService,
         ],
     })
 ], AppModule);

@@ -1,6 +1,7 @@
 import { registerEnumType } from '@nestjs/graphql';
 
 export enum TradeScalarFieldEnum {
+    id = "id",
     cryptoPortfolioId = "cryptoPortfolioId",
     assetInfoId = "assetInfoId",
     price = "price",
@@ -9,7 +10,13 @@ export enum TradeScalarFieldEnum {
     commission = "commission",
     commissionAsset = "commissionAsset",
     time = "time",
-    isBuyer = "isBuyer"
+    isBuyer = "isBuyer",
+    orderId = "orderId",
+    symbol = "symbol",
+    side = "side",
+    realizedPnl = "realizedPnl",
+    fees = "fees",
+    feeAsset = "feeAsset"
 }
 
 

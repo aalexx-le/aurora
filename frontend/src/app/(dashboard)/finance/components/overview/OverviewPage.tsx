@@ -5,15 +5,16 @@ import {
     ExpenseRatioBarChart
 } from "@/app/(dashboard)/finance/expense/components/income-expense-ratio-bar-chart/ExpenseRatioBarChart";
 import { useCryptoPortfoliosQuery } from "@/app/(dashboard)/finance/investment/hooks/useCryptoPortfoliosQuery";
-import { BankManager, Exchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
+import { Exchanges, GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables } from "@/gql/graphql";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { useQuery } from "@apollo/client";
+import { BankManager } from "../../types";
 
 interface IProps {
     bankManagers: BankManager[];
 }
 
-export default function OverviewTab({bankManagers}: IProps) {
+export default function OverviewPage({bankManagers}: IProps) {
     const {
         data,
     } = useQuery<GetExpenseCategoriesQuery, GetExpenseCategoriesQueryVariables>(GET_EXPENSE_CATEGORIES);

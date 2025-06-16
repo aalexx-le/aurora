@@ -77,7 +77,6 @@ type Documents = {
     "\n    mutation CreateMetaMaskPaymentMethod(\n        $input: CreateMetaMaskPaymentMethodDto!\n    ) {\n        createMetaMaskPaymentMethod(input: $input)\n    }\n": typeof types.CreateMetaMaskPaymentMethodDocument,
     "\n    mutation CreateMetaMaskSubscriptionFromSession(\n        $input: CreateMetaMaskSubscriptionFromSessionDto!\n    ) {\n        createMetaMaskSubscriptionFromSession(input: $input)\n    }\n": typeof types.CreateMetaMaskSubscriptionFromSessionDocument,
     "\n    query GetCryptoPrice($tokenSymbol: String!, $usdAmount: Float!) {\n        getCryptoPrice(tokenSymbol: $tokenSymbol, usdAmount: $usdAmount) {\n            tokenAmount\n            tokenSymbol\n            usdPrice\n        }\n    }\n": typeof types.GetCryptoPriceDocument,
-    "\n    query GetSupportedTokens {\n        getSupportedTokens\n    }\n": typeof types.GetSupportedTokensDocument,
     "\n    query GetEventCategories {\n        getEventCategories {\n            id\n            name\n            color\n        }\n    }\n": typeof types.GetEventCategoriesDocument,
     "\n    mutation CreateEventCategory($data: CreateEventCategoryInput!) {\n        createEventCategory(data: $data) {\n            id\n            name\n            color\n        }\n    }\n": typeof types.CreateEventCategoryDocument,
     "\n    mutation UpdateEventCategory($id: Int!, $data: UpdateEventCategoryInput!) {\n        updateEventCategory(id: $id, data: $data) {\n            id\n            name\n            color\n        }\n    }\n": typeof types.UpdateEventCategoryDocument,
@@ -155,7 +154,6 @@ const documents: Documents = {
     "\n    mutation CreateMetaMaskPaymentMethod(\n        $input: CreateMetaMaskPaymentMethodDto!\n    ) {\n        createMetaMaskPaymentMethod(input: $input)\n    }\n": types.CreateMetaMaskPaymentMethodDocument,
     "\n    mutation CreateMetaMaskSubscriptionFromSession(\n        $input: CreateMetaMaskSubscriptionFromSessionDto!\n    ) {\n        createMetaMaskSubscriptionFromSession(input: $input)\n    }\n": types.CreateMetaMaskSubscriptionFromSessionDocument,
     "\n    query GetCryptoPrice($tokenSymbol: String!, $usdAmount: Float!) {\n        getCryptoPrice(tokenSymbol: $tokenSymbol, usdAmount: $usdAmount) {\n            tokenAmount\n            tokenSymbol\n            usdPrice\n        }\n    }\n": types.GetCryptoPriceDocument,
-    "\n    query GetSupportedTokens {\n        getSupportedTokens\n    }\n": types.GetSupportedTokensDocument,
     "\n    query GetEventCategories {\n        getEventCategories {\n            id\n            name\n            color\n        }\n    }\n": types.GetEventCategoriesDocument,
     "\n    mutation CreateEventCategory($data: CreateEventCategoryInput!) {\n        createEventCategory(data: $data) {\n            id\n            name\n            color\n        }\n    }\n": types.CreateEventCategoryDocument,
     "\n    mutation UpdateEventCategory($id: Int!, $data: UpdateEventCategoryInput!) {\n        updateEventCategory(id: $id, data: $data) {\n            id\n            name\n            color\n        }\n    }\n": types.UpdateEventCategoryDocument,
@@ -436,10 +434,6 @@ export function graphql(source: "\n    mutation CreateMetaMaskSubscriptionFromSe
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query GetCryptoPrice($tokenSymbol: String!, $usdAmount: Float!) {\n        getCryptoPrice(tokenSymbol: $tokenSymbol, usdAmount: $usdAmount) {\n            tokenAmount\n            tokenSymbol\n            usdPrice\n        }\n    }\n"): (typeof documents)["\n    query GetCryptoPrice($tokenSymbol: String!, $usdAmount: Float!) {\n        getCryptoPrice(tokenSymbol: $tokenSymbol, usdAmount: $usdAmount) {\n            tokenAmount\n            tokenSymbol\n            usdPrice\n        }\n    }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n    query GetSupportedTokens {\n        getSupportedTokens\n    }\n"): (typeof documents)["\n    query GetSupportedTokens {\n        getSupportedTokens\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

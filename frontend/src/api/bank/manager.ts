@@ -1,6 +1,6 @@
-import gql from "graphql-tag";
+import { graphql } from "@/gql/gql";
 
-export const CREATE_BANK_MANAGER = gql`
+export const CREATE_BANK_MANAGER = graphql(`
     mutation CreateBankManager($data: CreateBankManagerInput!) {
         createBankManager(data: $data) {
             id
@@ -8,9 +8,9 @@ export const CREATE_BANK_MANAGER = gql`
             createdAt
         }
     }
-`;
+`);
 
-export const GET_BANK_MANAGERS = gql`
+export const GET_BANK_MANAGERS = graphql(`
     query GetBankManagers {
         getBankManagers {
             id
@@ -34,4 +34,4 @@ export const GET_BANK_MANAGERS = gql`
             }
         }
     }
-`;
+`);

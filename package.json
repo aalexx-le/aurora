@@ -12,6 +12,7 @@
     "prepare": "husky",
     "fe:dev": "cd frontend && yarn && yarn run dev && cd ..",
     "be:dev": "cd backend && yarn && yarn run start:dev && cd ..",
+    "crypto-portfolio-service:dev": "cd crypto-portfolio-service && yarn run start:dev && cd ..",
     "format": "cd backend && yarn format && cd .. && cd frontend && yarn format && cd ..",
     "fe:lint-staged": "cd frontend && yarn run lint-staged",
     "be:lint-staged": "cd backend && yarn run lint-staged"

@@ -1,6 +1,7 @@
 import { ClientKafka } from "@nestjs/microservices";
 import { PrismaService } from "nestjs-prisma";
 import { CreatePortfolioExecution, ErrorRecoveryAction, Exchanges, PortfolioCreationMilestone, PortfolioCreationStep } from "src/entities/prisma";
+import { AssetPnLData, EnhancedTrade, PnLCalculationResult, PortfolioAnalyticsResult } from "src/shared/interfaces/portfolio-types.interface";
 interface ProgressUpdate {
     executionId: number;
     currentStep?: PortfolioCreationStep;
@@ -36,7 +37,7 @@ export declare class PortfolioProgressService {
     startStep(executionId: number, step: PortfolioCreationStep, exchangeType?: Exchanges): Promise<void>;
     completeStep(executionId: number, step: PortfolioCreationStep): Promise<void>;
     failStep(executionId: number, step: PortfolioCreationStep, error: Error): Promise<void>;
-    markSuccess(executionId: number): Promise<void>;
+    markSuccess(executionId: number, portfolioId?: string, userId?: number, exchangeId?: string): Promise<void>;
     getProgress(executionId: number): Promise<{
         executionId: number;
         currentStep: import(".prisma/client").$Enums.PortfolioCreationStep;
@@ -68,12 +69,13 @@ export declare class PortfolioProgressService {
     }>;
     createPortfolio(portfolioData: PortfolioData): Promise<string>;
     upsertAssetBalances(portfolioId: string, balances: AssetBalanceData[]): Promise<void>;
-    findOrCreateAssetInfo(symbol: string, assetData?: {
-        name?: string;
-        category?: string;
-        desc?: string;
-        logo?: string;
-    }): Promise<string>;
+    findOrCreateAssetInfo(symbol: string): Promise<string>;
+    storeComputedPortfolioData(portfolioId: string, data: {
+        trades: EnhancedTrade[];
+        assetPnLData: AssetPnLData[];
+        portfolioAnalytics: PortfolioAnalyticsResult;
+        portfolioPnL: PnLCalculationResult;
+    }): Promise<void>;
     private analyzeError;
     private publishProgressEvent;
 }

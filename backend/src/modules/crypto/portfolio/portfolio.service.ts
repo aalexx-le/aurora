@@ -151,7 +151,8 @@ export class CryptoPortfolioService {
             return { ...assetInfo, lastPrice: 1 };
         }
 
-        const { openPrice } = await this.findLatestPrice(id);
+        const assetPrice = await this.findLatestPrice(id);
+        const openPrice = assetPrice?.openPrice ?? 0;
         return { ...assetInfo, lastPrice: openPrice };
     }
 

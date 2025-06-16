@@ -6,7 +6,7 @@ import {
   getMilestoneIcon
 } from '@/lib/icons/portfolio-progress-icons';
 import { cn } from '@/lib/utils';
-import { CheckCircle, Clock, XCircle } from 'lucide-react';
+import { ChartBarIcon, CheckCircle, Clock, FolderPlusIcon, XCircle } from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
 
@@ -16,6 +16,8 @@ interface ExecutionStep {
   progressPercent: number;
   label: string;
   description: string;
+  metric?: string;
+  estimatedTime?: string;
 }
 
 interface PortfolioExecutionProgressProps {
@@ -36,42 +38,87 @@ interface PortfolioExecutionProgressProps {
   className?: string;
 }
 
-// Optimized portfolio creation workflow with streamlined 5-step flow
-const EXECUTION_STEPS: ExecutionStep[] = [
+// Sequential portfolio creation workflow (10 steps with integrated computation)
+const PORTFOLIO_STEPS: ExecutionStep[] = [
   {
     step: 'VALIDATION',
     milestone: 'INITIALIZED',
-    progressPercent: 20,
-    label: 'Exchange Validation',
-    description: 'Validating exchange support and API configuration'
+    progressPercent: 10,
+    label: 'Validating Exchange Connection',
+    description: 'Verifying API credentials and permissions',
+    estimatedTime: '10-15 seconds'
   },
   {
     step: 'AUTHENTICATION',
     milestone: 'CREDENTIALS_VERIFIED',
-    progressPercent: 40,
-    label: 'Credential Verification',
-    description: 'Decrypting API credentials and testing exchange connection'
+    progressPercent: 20,
+    label: 'Authenticating with Exchange',
+    description: 'Establishing secure connection to your exchange',
+    estimatedTime: '15-30 seconds'
   },
   {
     step: 'BALANCE_RETRIEVAL',
     milestone: 'BALANCES_FETCHED',
+    progressPercent: 30,
+    label: 'Fetching Current Balances',
+    description: 'Retrieving your current cryptocurrency holdings',
+    estimatedTime: '15-30 seconds'
+  },
+  {
+    step: 'SYMBOL_DISCOVERY',
+    milestone: 'ACCOUNT_FETCHED',
+    progressPercent: 40,
+    label: 'Discovering Trading History',
+    description: 'Finding all cryptocurrencies you\'ve traded',
+    estimatedTime: '30-60 seconds'
+  },
+  {
+    step: 'TRADE_HISTORY_FETCH',
+    milestone: 'BALANCES_FETCHED',
+    progressPercent: 50,
+    label: 'Processing Trade Data',
+    description: 'Analyzing your complete trading history',
+    estimatedTime: '1-3 minutes'
+  },
+  {
+    step: 'PRICE_HISTORY_FETCH',
+    milestone: 'BALANCES_FETCHED',
+    progressPercent: 60,
+    label: 'Fetching Price History',
+    description: 'Gathering historical price data for accurate calculations',
+    estimatedTime: '2-5 minutes'
+  },
+  {
+    step: 'PNL_CALCULATION',
+    milestone: 'BALANCES_FETCHED',
     progressPercent: 70,
-    label: 'Balance Processing',
-    description: 'Retrieving and processing account balances'
+    label: 'Calculating Profit & Loss',
+    description: 'Computing your realized and unrealized gains',
+    estimatedTime: '30-60 seconds'
+  },
+  {
+    step: 'ANALYTICS_CALCULATION',
+    milestone: 'PORTFOLIO_STORED',
+    progressPercent: 80,
+    label: 'Computing Portfolio Analytics',
+    description: 'Generating risk metrics and performance insights',
+    estimatedTime: '30-60 seconds'
   },
   {
     step: 'DATABASE_STORAGE',
     milestone: 'PORTFOLIO_STORED',
     progressPercent: 90,
-    label: 'Data Storage',
-    description: 'Storing portfolio and balance information'
+    label: 'Saving Portfolio Data',
+    description: 'Storing your portfolio and analytics securely',
+    estimatedTime: '5-10 seconds'
   },
   {
     step: 'COMPLETION',
     milestone: 'COMPLETED',
     progressPercent: 100,
-    label: 'Completion',
-    description: 'Portfolio creation completed successfully'
+    label: 'Portfolio Ready',
+    description: 'Portfolio creation with analytics completed successfully',
+    estimatedTime: ''
   }
 ];
 
@@ -79,8 +126,9 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
   execution,
   className
 }) => {
-  const currentStepIndex = execution.currentStep
-    ? EXECUTION_STEPS.findIndex(step => step.step === execution.currentStep)
+  // Find current step index
+  const currentStepIndex = execution.currentStep 
+    ? PORTFOLIO_STEPS.findIndex(step => step.step === execution.currentStep) 
     : -1;
 
   const hasError = Boolean(execution.errorMessage);
@@ -112,26 +160,36 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
   };
 
   // Calculate overall progress
-  const overallProgress = execution.progressPercent ||
-    (currentStepIndex >= 0 ? EXECUTION_STEPS[currentStepIndex].progressPercent : 0);
+  const overallProgress = execution.progressPercent || 
+    (currentStepIndex >= 0 ? PORTFOLIO_STEPS[currentStepIndex].progressPercent : 0);
+
+  // Determine if we're in the analytics phase (steps 4-8)
+  const isAnalyticsPhase = currentStepIndex >= 3 && currentStepIndex <= 7;
 
   return (
     <Card className={cn("", className)}>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            {isCompleted ? (
-              <CheckCircle size={20} className="text-green-500" />
-            ) : hasError ? (
-              <XCircle size={20} className="text-destructive" />
+            {isAnalyticsPhase ? (
+              <ChartBarIcon size={20} className="text-blue-500" />
             ) : (
-              <Clock size={20} className="text-primary" />
+              <FolderPlusIcon size={20} className="text-primary" />
             )}
-            Portfolio Creation Progress
+            {isAnalyticsPhase ? 'Creating Portfolio with Analytics' : 'Creating Portfolio'}
           </CardTitle>
           <Badge variant="outline" className="text-xs">
             #{execution.id}
           </Badge>
+        </div>
+
+        {/* Description */}
+        <div className="text-sm text-muted-foreground">
+          {isAnalyticsPhase ? (
+            "Computing advanced analytics and performance insights for your portfolio"
+          ) : (
+            "Setting up your portfolio with current exchange data and comprehensive analytics"
+          )}
         </div>
 
         {execution.exchangeType && (
@@ -148,7 +206,9 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
         {/* Overall Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Overall Progress</span>
+            <span className="text-sm font-medium">
+              Portfolio Creation Progress
+            </span>
             <span className="text-sm text-muted-foreground">{overallProgress}%</span>
           </div>
           <Progress
@@ -172,9 +232,11 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
 
         {/* Step-by-step Progress */}
         <div className="space-y-4">
-          <h4 className="text-sm font-medium text-foreground">Execution Steps</h4>
+          <h4 className="text-sm font-medium text-foreground">
+            Creation Steps
+          </h4>
           <div className="relative space-y-1">
-            {EXECUTION_STEPS.map((step, index) => {
+            {PORTFOLIO_STEPS.map((step, index) => {
               const status = getStepStatus(index);
               const isCurrentStep = index === currentStepIndex;
 
@@ -194,7 +256,7 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                         {getStepIcon(step, status)}
                       </div>
                       {/* Connection Line to Next Step */}
-                      {index < EXECUTION_STEPS.length - 1 && (
+                      {index < PORTFOLIO_STEPS.length - 1 && (
                         <div className={cn(
                           "w-[2px] h-4 transition-colors",
                           status === 'completed' ? "bg-green-500 h-2" :
@@ -202,7 +264,6 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                         )} />
                       )}
                     </div>
-
 
                     {/* Step Content */}
                     <div className="flex-grow min-w-0">
@@ -216,9 +277,11 @@ export const PortfolioExecutionProgress: React.FC<PortfolioExecutionProgressProp
                         )}>
                           {step.label}
                         </h5>
-                        <span className="text-xs text-muted-foreground">
-                          {step.progressPercent}%
-                        </span>
+                        {step.estimatedTime && !status.includes('completed') && (
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            {step.estimatedTime}
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         {step.description}

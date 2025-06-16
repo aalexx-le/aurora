@@ -5,7 +5,14 @@ export enum HistoricalCryptoBalanceScalarFieldEnum {
     estimatedBalance = "estimatedBalance",
     changePercent = "changePercent",
     changeBalance = "changeBalance",
-    cryptoPortfolioId = "cryptoPortfolioId"
+    cryptoPortfolioId = "cryptoPortfolioId",
+    totalValue = "totalValue",
+    totalPnl = "totalPnl",
+    totalRealizedPnl = "totalRealizedPnl",
+    totalUnrealizedPnl = "totalUnrealizedPnl",
+    assetCount = "assetCount",
+    diversificationScore = "diversificationScore",
+    riskScore = "riskScore"
 }
 
 

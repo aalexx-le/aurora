@@ -24,6 +24,9 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
         this.saltLength = 32;
         this.iterations = 100000;
         this.webCryptoPrefix = "WC1";
+        this.marketCacheTimeout = 5 * 60 * 1000;
+        this.marketCache = new Map();
+        this.quoteCurrencyPriority = ['USDT', 'USDC', 'BTC', 'ETH', 'BNB', 'BUSD'];
         this.timeout = this.configService.get("EXCHANGE_TIMEOUT", 30000);
         this.maxRetries = this.configService.get("MAX_RETRIES", 3);
         const masterKey = this.configService.get("CRYPTO_PORTFOLIO_MASTER_KEY", "default-master-key-change-in-production");
@@ -32,7 +35,7 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
             this.logger.warn("⚠️ Using default encryption key - change this in production!");
         }
         this.masterSecret = masterKey;
-        this.logger.log("🔌 Portfolio Exchange Service initialized with CCXT exchange support and Web Crypto API encryption");
+        this.logger.log("🔌 Portfolio Exchange Service initialized with CCXT exchange support, Web Crypto API encryption, and intelligent symbol-to-trading-pair conversion");
     }
     getAllSupportedExchanges() {
         try {
@@ -180,6 +183,9 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
                 return null;
             }
             const ExchangeClass = ccxt[normalizedExchangeId];
+            if (!ExchangeClass) {
+                return null;
+            }
             const exchangeInstance = new ExchangeClass();
             return {
                 id: normalizedExchangeId,
@@ -195,6 +201,197 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
         catch (error) {
             this.logger.error(`❌ Failed to get exchange info for ${exchangeId}:`, error);
             return null;
+        }
+    }
+    async discoverPortfolioSymbols(exchangeId, credentials, currentBalanceSymbols) {
+        let exchange = null;
+        try {
+            exchange = this.createExchangeInstance(exchangeId, credentials);
+            this.logger.log(`🔍 Discovering symbols for ${exchangeId}...`);
+            const discoveredSymbols = new Set(currentBalanceSymbols);
+            if (exchange.has.fetchMyTrades) {
+                try {
+                    const recentTrades = await this.retryWithBackoff(() => exchange.fetchMyTrades(undefined, undefined, 1000), this.maxRetries, `fetchMyTrades for symbol discovery on ${exchangeId}`);
+                    for (const trade of recentTrades) {
+                        if (trade.symbol) {
+                            discoveredSymbols.add(trade.symbol);
+                        }
+                    }
+                }
+                catch (error) {
+                    this.logger.warn(`⚠️ Could not fetch trades for symbol discovery: ${error.message}`);
+                }
+            }
+            const symbolArray = Array.from(discoveredSymbols);
+            this.logger.log(`✅ Discovered ${symbolArray.length} symbols for ${exchangeId}`);
+            return symbolArray;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to discover symbols for ${exchangeId}:`, error);
+            return currentBalanceSymbols;
+        }
+        finally {
+            if (exchange && typeof exchange.close === "function") {
+                try {
+                    await exchange.close();
+                }
+                catch (closeError) {
+                    this.logger.warn(`⚠️ Failed to close ${exchangeId} connection:`, closeError);
+                }
+            }
+        }
+    }
+    async fetchTradeHistory(exchangeId, credentials, tradingPairs, limit = 1000) {
+        let exchange = null;
+        try {
+            exchange = this.createExchangeInstance(exchangeId, credentials);
+            this.logger.log(`📊 Fetching trade history for ${tradingPairs.length} symbols from ${exchangeId}...`);
+            if (!exchange.has.fetchMyTrades) {
+                throw new Error(`Exchange '${exchangeId}' does not support trade history fetching`);
+            }
+            const allTrades = [];
+            const batchSize = 5;
+            for (let i = 0; i < tradingPairs.length; i += batchSize) {
+                const batch = tradingPairs.slice(i, i + batchSize);
+                for (const symbol of batch) {
+                    try {
+                        this.logger.debug(`📈 Fetching trades for ${symbol}...`);
+                        const trades = await this.retryWithBackoff(() => exchange.fetchMyTrades(symbol, undefined, limit), this.maxRetries, `fetchMyTrades for ${symbol} on ${exchangeId}`);
+                        allTrades.push(...(trades));
+                        await new Promise((resolve) => setTimeout(resolve, 100));
+                    }
+                    catch (error) {
+                        this.logger.warn(`⚠️ Failed to fetch trades for ${symbol}: ${error.message}`);
+                        continue;
+                    }
+                }
+                if (i + batchSize < tradingPairs.length) {
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                }
+            }
+            this.logger.log(`✅ Fetched ${allTrades.length} trades from ${exchangeId}`);
+            return allTrades;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to fetch trade history from ${exchangeId}:`, error);
+            throw error;
+        }
+        finally {
+            if (exchange && typeof exchange.close === "function") {
+                try {
+                    await exchange.close();
+                }
+                catch (closeError) {
+                    this.logger.warn(`⚠️ Failed to close ${exchangeId} connection:`, closeError);
+                }
+            }
+        }
+    }
+    async fetchPriceHistory(exchangeId, credentials, symbols, timeframe = "1d", limit = 100) {
+        let exchange = null;
+        try {
+            exchange = this.createExchangeInstance(exchangeId, credentials);
+            this.logger.log(`📈 Fetching price history for ${symbols.length} symbols from ${exchangeId}...`);
+            if (!exchange.has.fetchOHLCV) {
+                this.logger.warn(`⚠️ Exchange '${exchangeId}' does not support OHLCV data fetching`);
+                return new Map();
+            }
+            const priceHistory = new Map();
+            const batchSize = 3;
+            for (let i = 0; i < symbols.length; i += batchSize) {
+                const batch = symbols.slice(i, i + batchSize);
+                for (const symbol of batch) {
+                    try {
+                        this.logger.debug(`📊 Fetching OHLCV for ${symbol}...`);
+                        const ohlcv = await this.retryWithBackoff(() => exchange.fetchOHLCV(symbol, timeframe, undefined, limit), this.maxRetries, `fetchOHLCV for ${symbol} on ${exchangeId}`);
+                        const ohlcvData = ohlcv;
+                        if (ohlcvData && ohlcvData.length > 0) {
+                            priceHistory.set(symbol, ohlcvData);
+                        }
+                        await new Promise((resolve) => setTimeout(resolve, 200));
+                    }
+                    catch (error) {
+                        this.logger.warn(`⚠️ Failed to fetch OHLCV for ${symbol}: ${error.message}`);
+                        continue;
+                    }
+                }
+                if (i + batchSize < symbols.length) {
+                    await new Promise((resolve) => setTimeout(resolve, 1500));
+                }
+            }
+            this.logger.log(`✅ Fetched price history for ${priceHistory.size} symbols from ${exchangeId}`);
+            return priceHistory;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to fetch price history from ${exchangeId}:`, error);
+            throw error;
+        }
+        finally {
+            if (exchange && typeof exchange.close === "function") {
+                try {
+                    await exchange.close();
+                }
+                catch (closeError) {
+                    this.logger.warn(`⚠️ Failed to close ${exchangeId} connection:`, closeError);
+                }
+            }
+        }
+    }
+    async fetchCurrentPrices(exchangeId, credentials, symbols) {
+        let exchange = null;
+        try {
+            exchange = this.createExchangeInstance(exchangeId, credentials);
+            this.logger.log(`💰 Fetching current prices for ${symbols.length} symbols from ${exchangeId}...`);
+            const currentPrices = new Map();
+            if (exchange.has.fetchTickers) {
+                try {
+                    const tickers = await this.retryWithBackoff(() => exchange.fetchTickers(symbols), this.maxRetries, `fetchTickers for ${exchangeId}`);
+                    for (const [symbol, ticker] of Object.entries(tickers)) {
+                        if (ticker &&
+                            typeof ticker === "object" &&
+                            "last" in ticker) {
+                            currentPrices.set(symbol, ticker.last || 0);
+                        }
+                    }
+                }
+                catch (error) {
+                    this.logger.warn(`⚠️ Batch ticker fetch failed, falling back to individual requests: ${error.message}`);
+                }
+            }
+            if (exchange.has.fetchTicker) {
+                for (const symbol of symbols) {
+                    if (!currentPrices.has(symbol)) {
+                        try {
+                            const ticker = await this.retryWithBackoff(() => exchange.fetchTicker(symbol), this.maxRetries, `fetchTicker for ${symbol} on ${exchangeId}`);
+                            const tickerData = ticker;
+                            if (tickerData && tickerData.last) {
+                                currentPrices.set(symbol, tickerData.last);
+                            }
+                            await new Promise((resolve) => setTimeout(resolve, 100));
+                        }
+                        catch (error) {
+                            this.logger.warn(`⚠️ Failed to fetch ticker for ${symbol}: ${error.message}`);
+                            continue;
+                        }
+                    }
+                }
+            }
+            this.logger.log(`✅ Fetched current prices for ${currentPrices.size} symbols from ${exchangeId}`);
+            return currentPrices;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to fetch current prices from ${exchangeId}:`, error);
+            throw error;
+        }
+        finally {
+            if (exchange && typeof exchange.close === "function") {
+                try {
+                    await exchange.close();
+                }
+                catch (closeError) {
+                    this.logger.warn(`⚠️ Failed to close ${exchangeId} connection:`, closeError);
+                }
+            }
         }
     }
     async encryptApiKey(apiKey) {
@@ -271,25 +468,6 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
             throw new Error("Invalid or corrupted exchange credentials");
         }
     }
-    async testEncryption(testString = "test-encryption-key") {
-        try {
-            this.logger.debug("🧪 Testing encryption/decryption functionality...");
-            const encrypted = await this.encryptApiKey(testString);
-            const decrypted = await this.decryptApiKey(encrypted);
-            const isWorking = decrypted === testString;
-            if (isWorking) {
-                this.logger.debug("✅ Encryption test passed");
-            }
-            else {
-                this.logger.error("❌ Encryption test failed: decrypted value does not match original");
-            }
-            return isWorking;
-        }
-        catch (error) {
-            this.logger.error("❌ Encryption test failed:", error);
-            return false;
-        }
-    }
     async retryWithBackoff(operation, maxRetries, operationName, baseDelay = 1000) {
         let lastError;
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -363,6 +541,232 @@ let PortfolioExchangeService = PortfolioExchangeService_1 = class PortfolioExcha
             bytes[i] = binary.charCodeAt(i);
         }
         return bytes;
+    }
+    classifyDiscoveredSymbols(symbols) {
+        const tradingPairs = [];
+        const individualAssets = [];
+        const invalidSymbols = [];
+        this.logger.debug(`🔍 Classifying ${symbols.length} discovered symbols...`);
+        for (const symbol of symbols) {
+            if (!symbol || typeof symbol !== 'string') {
+                invalidSymbols.push(symbol);
+                continue;
+            }
+            const cleanSymbol = symbol.trim();
+            if (!cleanSymbol) {
+                invalidSymbols.push(symbol);
+                continue;
+            }
+            if (this.isTradingPair(cleanSymbol)) {
+                tradingPairs.push(cleanSymbol);
+            }
+            else if (this.isValidAsset(cleanSymbol)) {
+                individualAssets.push(cleanSymbol);
+            }
+            else {
+                invalidSymbols.push(cleanSymbol);
+            }
+        }
+        this.logger.debug(`✅ Symbol classification complete: ${tradingPairs.length} pairs, ${individualAssets.length} assets, ${invalidSymbols.length} invalid`);
+        return { tradingPairs, individualAssets, invalidSymbols };
+    }
+    isTradingPair(symbol) {
+        const separators = ['/', '-', '_', ':'];
+        return separators.some(sep => symbol.includes(sep));
+    }
+    isValidAsset(symbol) {
+        if (symbol.length < 2 || symbol.length > 10) {
+            return false;
+        }
+        if (!/^[A-Z0-9]+$/i.test(symbol)) {
+            return false;
+        }
+        const invalidPatterns = ['USD', 'EUR', 'GBP', 'JPY', 'CNY'];
+        if (invalidPatterns.some(pattern => symbol.endsWith(pattern) && symbol.length > pattern.length)) {
+            return false;
+        }
+        return true;
+    }
+    getExchangePairSeparator(exchangeId) {
+        const separatorMap = {
+            'binance': '/',
+            'mexc': '/',
+            'okx': '-',
+            'kucoin': '-',
+            'gate': '_',
+            'huobi': '/',
+            'htx': '/',
+            'bybit': '/',
+            'bitget': '/',
+            'coinbase': '-',
+            'coinbaseexchange': '-',
+            'kraken': '/',
+            'bitfinex': '/',
+        };
+        return separatorMap[exchangeId.toLowerCase()] || '/';
+    }
+    generateOptimalTradingPairs(assets, exchangeId) {
+        const separator = this.getExchangePairSeparator(exchangeId);
+        const generatedPairs = [];
+        this.logger.debug(`🔧 Generating trading pairs for ${assets.length} assets using separator '${separator}'`);
+        for (const asset of assets) {
+            if (this.quoteCurrencyPriority.includes(asset.toUpperCase())) {
+                continue;
+            }
+            for (const quote of this.quoteCurrencyPriority) {
+                if (asset.toUpperCase() !== quote) {
+                    const pair = `${asset.toUpperCase()}${separator}${quote}`;
+                    generatedPairs.push(pair);
+                }
+            }
+        }
+        this.logger.debug(`✅ Generated ${generatedPairs.length} trading pairs`);
+        return generatedPairs;
+    }
+    async getCachedExchangeMarkets(exchangeId) {
+        const cacheKey = exchangeId.toLowerCase();
+        const cached = this.marketCache.get(cacheKey);
+        if (cached && (Date.now() - cached.lastUpdated.getTime()) < this.marketCacheTimeout) {
+            this.logger.debug(`📋 Using cached markets for ${exchangeId} (${cached.markets.size} markets)`);
+            return cached.markets;
+        }
+        this.logger.debug(`🔄 Fetching fresh market data for ${exchangeId}...`);
+        const markets = await this.fetchExchangeMarkets(exchangeId);
+        this.marketCache.set(cacheKey, {
+            markets,
+            lastUpdated: new Date(),
+            exchangeId: cacheKey,
+        });
+        this.logger.debug(`✅ Cached ${markets.size} markets for ${exchangeId}`);
+        return markets;
+    }
+    async fetchExchangeMarkets(exchangeId) {
+        let exchange = null;
+        try {
+            const ExchangeClass = ccxt[exchangeId.toLowerCase()];
+            if (!ExchangeClass) {
+                throw new Error(`Exchange class for '${exchangeId}' not found`);
+            }
+            exchange = new ExchangeClass({
+                timeout: this.timeout,
+                enableRateLimit: true,
+            });
+            if (!exchange.has.fetchMarkets) {
+                this.logger.warn(`⚠️ Exchange '${exchangeId}' does not support market fetching`);
+                return new Map();
+            }
+            const markets = await this.retryWithBackoff(() => exchange.loadMarkets(), this.maxRetries, `fetchMarkets for ${exchangeId}`);
+            const marketMap = new Map();
+            for (const [symbol, market] of Object.entries(markets)) {
+                marketMap.set(symbol, market);
+            }
+            return marketMap;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to fetch markets for ${exchangeId}:`, error);
+            return new Map();
+        }
+        finally {
+            if (exchange && typeof exchange.close === "function") {
+                try {
+                    await exchange.close();
+                }
+                catch (closeError) {
+                    this.logger.warn(`⚠️ Failed to close ${exchangeId} connection:`, closeError);
+                }
+            }
+        }
+    }
+    async validateAgainstExchangeMarkets(pairs, exchangeId) {
+        this.logger.debug(`🔍 Validating ${pairs.length} trading pairs against ${exchangeId} markets...`);
+        const markets = await this.getCachedExchangeMarkets(exchangeId);
+        const validPairs = [];
+        const invalidPairs = [];
+        for (const pair of pairs) {
+            const market = markets.get(pair);
+            if (market && market.active !== false) {
+                validPairs.push(pair);
+            }
+            else {
+                invalidPairs.push(pair);
+            }
+        }
+        this.logger.debug(`✅ Validation complete: ${validPairs.length} valid, ${invalidPairs.length} invalid pairs`);
+        return {
+            validPairs,
+            invalidPairs,
+            fallbackPairs: new Map(),
+        };
+    }
+    resolveFallbackPairs(invalidPairs, markets, exchangeId) {
+        const fallbacks = new Map();
+        const separator = this.getExchangePairSeparator(exchangeId);
+        this.logger.debug(`🔄 Resolving fallbacks for ${invalidPairs.length} invalid pairs...`);
+        for (const invalidPair of invalidPairs) {
+            const baseAsset = this.extractBaseAsset(invalidPair, separator);
+            if (!baseAsset)
+                continue;
+            const fallbackPair = this.findBestAlternativePair(baseAsset, markets, separator);
+            if (fallbackPair) {
+                fallbacks.set(baseAsset, fallbackPair);
+                this.logger.debug(`🔄 Fallback for ${baseAsset}: ${fallbackPair}`);
+            }
+        }
+        this.logger.debug(`✅ Resolved ${fallbacks.size} fallback pairs`);
+        return fallbacks;
+    }
+    extractBaseAsset(pair, separator) {
+        const parts = pair.split(separator);
+        return parts.length >= 2 ? parts[0] : null;
+    }
+    findBestAlternativePair(asset, markets, separator) {
+        for (const quote of this.quoteCurrencyPriority) {
+            if (asset.toUpperCase() === quote)
+                continue;
+            const candidatePair = `${asset.toUpperCase()}${separator}${quote}`;
+            const market = markets.get(candidatePair);
+            if (market && market.active !== false) {
+                return candidatePair;
+            }
+        }
+        return null;
+    }
+    async convertSymbolsToTradingPairs(symbols, exchangeId) {
+        this.logger.log(`🔄 Converting ${symbols.length} symbols to trading pairs for ${exchangeId}...`);
+        try {
+            const classification = this.classifyDiscoveredSymbols(symbols);
+            const generatedPairs = this.generateOptimalTradingPairs(classification.individualAssets, exchangeId);
+            const allCandidatePairs = [
+                ...classification.tradingPairs,
+                ...generatedPairs,
+            ];
+            const uniquePairs = Array.from(new Set(allCandidatePairs));
+            const validationResult = await this.validateAgainstExchangeMarkets(uniquePairs, exchangeId);
+            const markets = await this.getCachedExchangeMarkets(exchangeId);
+            const fallbackPairs = this.resolveFallbackPairs(validationResult.invalidPairs, markets, exchangeId);
+            const finalPairs = [
+                ...validationResult.validPairs,
+                ...Array.from(fallbackPairs.values()),
+            ];
+            const uniqueFinalPairs = Array.from(new Set(finalPairs));
+            this.logger.log(`✅ Symbol conversion complete for ${exchangeId}:`);
+            this.logger.log(`   📊 Input: ${symbols.length} symbols`);
+            this.logger.log(`   🔍 Classification: ${classification.tradingPairs.length} pairs, ${classification.individualAssets.length} assets, ${classification.invalidSymbols.length} invalid`);
+            this.logger.log(`   🔧 Generated: ${generatedPairs.length} pairs`);
+            this.logger.log(`   ✅ Valid: ${validationResult.validPairs.length} pairs`);
+            this.logger.log(`   🔄 Fallbacks: ${fallbackPairs.size} pairs`);
+            this.logger.log(`   🎯 Final: ${uniqueFinalPairs.length} trading pairs`);
+            if (classification.invalidSymbols.length > 0) {
+                this.logger.debug(`⚠️ Invalid symbols skipped: ${classification.invalidSymbols.join(', ')}`);
+            }
+            return uniqueFinalPairs;
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to convert symbols to trading pairs for ${exchangeId}:`, error);
+            const fallbackPairs = symbols.filter(symbol => this.isTradingPair(symbol));
+            this.logger.warn(`🔄 Using fallback: ${fallbackPairs.length} trading pairs from original symbols`);
+            return fallbackPairs;
+        }
     }
 };
 exports.PortfolioExchangeService = PortfolioExchangeService;

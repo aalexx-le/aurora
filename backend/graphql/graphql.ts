@@ -140,6 +140,11 @@ export enum PortfolioCreationStep {
     VALIDATION = "VALIDATION",
     AUTHENTICATION = "AUTHENTICATION",
     BALANCE_RETRIEVAL = "BALANCE_RETRIEVAL",
+    SYMBOL_DISCOVERY = "SYMBOL_DISCOVERY",
+    TRADE_HISTORY_FETCH = "TRADE_HISTORY_FETCH",
+    PRICE_HISTORY_FETCH = "PRICE_HISTORY_FETCH",
+    PNL_CALCULATION = "PNL_CALCULATION",
+    ANALYTICS_CALCULATION = "ANALYTICS_CALCULATION",
     DATABASE_STORAGE = "DATABASE_STORAGE",
     COMPLETION = "COMPLETION"
 }
@@ -714,11 +719,19 @@ export interface HistoricalAssetProfit {
     remainingQty: number;
     assetInfoId: string;
     cryptoPortfolioId: string;
+    realizedPnl?: Nullable<number>;
+    unrealizedPnl?: Nullable<number>;
+    totalPnl?: Nullable<number>;
+    averageCostBasis?: Nullable<number>;
+    currentPrice?: Nullable<number>;
+    percentageGain?: Nullable<number>;
+    holdingPeriodDays?: Nullable<number>;
     assetInfo: AssetInfoOutput;
     cryptoPortfolio: CryptoPortfolio;
 }
 
 export interface Trade {
+    id: number;
     cryptoPortfolioId: string;
     assetInfoId: string;
     price: number;
@@ -728,6 +741,12 @@ export interface Trade {
     commissionAsset: string;
     time: DateTime;
     isBuyer: boolean;
+    orderId?: Nullable<string>;
+    symbol?: Nullable<string>;
+    side?: Nullable<string>;
+    realizedPnl?: Nullable<number>;
+    fees?: Nullable<number>;
+    feeAsset?: Nullable<string>;
     cryptoPortfolio: CryptoPortfolio;
     assetInfo: AssetInfo;
 }
@@ -762,6 +781,13 @@ export interface HistoricalCryptoBalance {
     changePercent: number;
     changeBalance: number;
     cryptoPortfolioId: string;
+    totalValue?: Nullable<number>;
+    totalPnl?: Nullable<number>;
+    totalRealizedPnl?: Nullable<number>;
+    totalUnrealizedPnl?: Nullable<number>;
+    assetCount?: Nullable<number>;
+    diversificationScore?: Nullable<number>;
+    riskScore?: Nullable<number>;
     cryptoPortfolio: CryptoPortfolio;
 }
 

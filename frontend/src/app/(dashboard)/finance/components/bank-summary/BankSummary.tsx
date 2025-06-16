@@ -9,7 +9,7 @@ import {Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
 import {useChartConfig} from "@/app/(dashboard)/finance/components/overview/useChartConfig";
 import {useChartFormatter} from "@/app/(dashboard)/finance/components/overview/useChartFormatter";
 import {MoneyAnimated} from "@/components/money/money-animated";
-import { BankManager } from "@/gql/graphql";
+import { BankManager } from "../../types";
 
 interface IProps {
     bankManagers: BankManager[];

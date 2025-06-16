@@ -1,0 +1,838 @@
+[
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "2913170709",
+            "orderId": "19796081997",
+            "orderListId": "-1",
+            "price": "19660.15000000",
+            "qty": "0.00254000",
+            "quoteQty": "49.93678100",
+            "commission": "0.00000000",
+            "commissionAsset": "BNB",
+            "time": "1678446102906",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1678446102906,
+        "datetime": "2023-03-10T11:01:42.906Z",
+        "symbol": "BTC/USDT",
+        "id": "2913170709",
+        "order": "19796081997",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 19660.15,
+        "amount": 0.00254,
+        "cost": 49.936781,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.0
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.0
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "2950516458",
+            "orderId": "19994521984",
+            "orderListId": "-1",
+            "price": "24159.58000000",
+            "qty": "0.00263000",
+            "quoteQty": "63.53969540",
+            "commission": "0.00000000",
+            "commissionAsset": "BNB",
+            "time": "1678722141377",
+            "isBuyer": false,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1678722141377,
+        "datetime": "2023-03-13T15:42:21.377Z",
+        "symbol": "BTC/USDT",
+        "id": "2950516458",
+        "order": "19994521984",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "taker",
+        "price": 24159.58,
+        "amount": 0.00263,
+        "cost": 63.5396954,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.0
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.0
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3065215258",
+            "orderId": "20668035129",
+            "orderListId": "-1",
+            "price": "27964.22000000",
+            "qty": "0.00035000",
+            "quoteQty": "9.78747700",
+            "commission": "0.00002324",
+            "commissionAsset": "BNB",
+            "time": "1680222026515",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1680222026515,
+        "datetime": "2023-03-31T00:20:26.515Z",
+        "symbol": "BTC/USDT",
+        "id": "3065215258",
+        "order": "20668035129",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 27964.22,
+        "amount": 0.00035,
+        "cost": 9.787477,
+        "fee": {
+            "currency": "BNB",
+            "cost": 2.324e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 2.324e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3068417329",
+            "orderId": "20696781214",
+            "orderListId": "-1",
+            "price": "27925.20000000",
+            "qty": "0.00035000",
+            "quoteQty": "9.77382000",
+            "commission": "0.00002349",
+            "commissionAsset": "BNB",
+            "time": "1680473846088",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1680473846088,
+        "datetime": "2023-04-02T22:17:26.088Z",
+        "symbol": "BTC/USDT",
+        "id": "3068417329",
+        "order": "20696781214",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 27925.2,
+        "amount": 0.00035,
+        "cost": 9.77382,
+        "fee": {
+            "currency": "BNB",
+            "cost": 2.349e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 2.349e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3400546864",
+            "orderId": "24672704337",
+            "orderListId": "-1",
+            "price": "42920.00000000",
+            "qty": "0.00070000",
+            "quoteQty": "30.04400000",
+            "commission": "0.00007510",
+            "commissionAsset": "BNB",
+            "time": "1707027293582",
+            "isBuyer": false,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1707027293582,
+        "datetime": "2024-02-04T06:14:53.582Z",
+        "symbol": "BTC/USDT",
+        "id": "3400546864",
+        "order": "24672704337",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "taker",
+        "price": 42920.0,
+        "amount": 0.0007,
+        "cost": 30.044,
+        "fee": {
+            "currency": "BNB",
+            "cost": 7.51e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 7.51e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3717963290",
+            "orderId": "29200560001",
+            "orderListId": "-1",
+            "price": "60744.56000000",
+            "qty": "0.00063000",
+            "quoteQty": "38.26907280",
+            "commission": "0.00005429",
+            "commissionAsset": "BNB",
+            "time": "1722742240627",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1722742240627,
+        "datetime": "2024-08-04T03:30:40.627Z",
+        "symbol": "BTC/USDT",
+        "id": "3717963290",
+        "order": "29200560001",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 60744.56,
+        "amount": 0.00063,
+        "cost": 38.2690728,
+        "fee": {
+            "currency": "BNB",
+            "cost": 5.429e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 5.429e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3719900203",
+            "orderId": "29228685273",
+            "orderListId": "-1",
+            "price": "56958.01000000",
+            "qty": "0.00049000",
+            "quoteQty": "27.90942490",
+            "commission": "0.00004324",
+            "commissionAsset": "BNB",
+            "time": "1722818995157",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1722818995157,
+        "datetime": "2024-08-05T00:49:55.157Z",
+        "symbol": "BTC/USDT",
+        "id": "3719900203",
+        "order": "29228685273",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 56958.01,
+        "amount": 0.00049,
+        "cost": 27.9094249,
+        "fee": {
+            "currency": "BNB",
+            "cost": 4.324e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 4.324e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3735470232",
+            "orderId": "29433700296",
+            "orderListId": "-1",
+            "price": "62000.00000000",
+            "qty": "0.00056000",
+            "quoteQty": "34.72000000",
+            "commission": "0.00005026",
+            "commissionAsset": "BNB",
+            "time": "1723157716193",
+            "isBuyer": false,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1723157716193,
+        "datetime": "2024-08-08T22:55:16.193Z",
+        "symbol": "BTC/USDT",
+        "id": "3735470232",
+        "order": "29433700296",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "maker",
+        "price": 62000.0,
+        "amount": 0.00056,
+        "cost": 34.72,
+        "fee": {
+            "currency": "BNB",
+            "cost": 5.026e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 5.026e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3735933922",
+            "orderId": "29447138102",
+            "orderListId": "-1",
+            "price": "61323.42000000",
+            "qty": "0.00157000",
+            "quoteQty": "96.27776940",
+            "commission": "0.00014061",
+            "commissionAsset": "BNB",
+            "time": "1723172876055",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1723172876055,
+        "datetime": "2024-08-09T03:07:56.055Z",
+        "symbol": "BTC/USDT",
+        "id": "3735933922",
+        "order": "29447138102",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 61323.42,
+        "amount": 0.00157,
+        "cost": 96.2777694,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00014061
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00014061
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3735937113",
+            "orderId": "29447208922",
+            "orderListId": "-1",
+            "price": "61336.15000000",
+            "qty": "0.00275000",
+            "quoteQty": "168.67441250",
+            "commission": "0.00024623",
+            "commissionAsset": "BNB",
+            "time": "1723173307967",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1723173307967,
+        "datetime": "2024-08-09T03:15:07.967Z",
+        "symbol": "BTC/USDT",
+        "id": "3735937113",
+        "order": "29447208922",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 61336.15,
+        "amount": 0.00275,
+        "cost": 168.6744125,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00024623
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00024623
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3739279618",
+            "orderId": "29499864824",
+            "orderListId": "-1",
+            "price": "59000.00000000",
+            "qty": "0.00194000",
+            "quoteQty": "114.46000000",
+            "commission": "0.00016914",
+            "commissionAsset": "BNB",
+            "time": "1723406882164",
+            "isBuyer": true,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1723406882164,
+        "datetime": "2024-08-11T20:08:02.164Z",
+        "symbol": "BTC/USDT",
+        "id": "3739279618",
+        "order": "29499864824",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "maker",
+        "price": 59000.0,
+        "amount": 0.00194,
+        "cost": 114.46,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00016914
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00016914
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3741462173",
+            "orderId": "29542115829",
+            "orderListId": "-1",
+            "price": "59168.76000000",
+            "qty": "0.00038000",
+            "quoteQty": "22.48412880",
+            "commission": "0.00003285",
+            "commissionAsset": "BNB",
+            "time": "1723485664181",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1723485664181,
+        "datetime": "2024-08-12T18:01:04.181Z",
+        "symbol": "BTC/USDT",
+        "id": "3741462173",
+        "order": "29542115829",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 59168.76,
+        "amount": 0.00038,
+        "cost": 22.4841288,
+        "fee": {
+            "currency": "BNB",
+            "cost": 3.285e-05
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 3.285e-05
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3752382716",
+            "orderId": "29708271867",
+            "orderListId": "-1",
+            "price": "58062.56000000",
+            "qty": "0.00003000",
+            "quoteQty": "1.74187680",
+            "commission": "0.00000244",
+            "commissionAsset": "BNB",
+            "time": "1724061690889",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1724061690889,
+        "datetime": "2024-08-19T10:01:30.889Z",
+        "symbol": "BTC/USDT",
+        "id": "3752382716",
+        "order": "29708271867",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 58062.56,
+        "amount": 3e-05,
+        "cost": 1.7418768,
+        "fee": {
+            "currency": "BNB",
+            "cost": 2.44e-06
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 2.44e-06
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3752382717",
+            "orderId": "29708271867",
+            "orderListId": "-1",
+            "price": "58062.56000000",
+            "qty": "0.00156000",
+            "quoteQty": "90.57759360",
+            "commission": "0.00012736",
+            "commissionAsset": "BNB",
+            "time": "1724061690889",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1724061690889,
+        "datetime": "2024-08-19T10:01:30.889Z",
+        "symbol": "BTC/USDT",
+        "id": "3752382717",
+        "order": "29708271867",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 58062.56,
+        "amount": 0.00156,
+        "cost": 90.5775936,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00012736
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00012736
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3756991729",
+            "orderId": "29732992500",
+            "orderListId": "-1",
+            "price": "61700.00000000",
+            "qty": "0.00439000",
+            "quoteQty": "270.86300000",
+            "commission": "0.00035490",
+            "commissionAsset": "BNB",
+            "time": "1724270492531",
+            "isBuyer": false,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1724270492531,
+        "datetime": "2024-08-21T20:01:32.531Z",
+        "symbol": "BTC/USDT",
+        "id": "3756991729",
+        "order": "29732992500",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "maker",
+        "price": 61700.0,
+        "amount": 0.00439,
+        "cost": 270.863,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.0003549
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.0003549
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3761232693",
+            "orderId": "29824816509",
+            "orderListId": "-1",
+            "price": "64500.00000000",
+            "qty": "0.00177000",
+            "quoteQty": "114.16500000",
+            "commission": "0.00014544",
+            "commissionAsset": "BNB",
+            "time": "1724448017308",
+            "isBuyer": false,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1724448017308,
+        "datetime": "2024-08-23T21:20:17.308Z",
+        "symbol": "BTC/USDT",
+        "id": "3761232693",
+        "order": "29824816509",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "maker",
+        "price": 64500.0,
+        "amount": 0.00177,
+        "cost": 114.165,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00014544
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00014544
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3761232694",
+            "orderId": "29824816509",
+            "orderListId": "-1",
+            "price": "64500.00000000",
+            "qty": "0.00263000",
+            "quoteQty": "169.63500000",
+            "commission": "0.00021611",
+            "commissionAsset": "BNB",
+            "time": "1724448017309",
+            "isBuyer": false,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1724448017309,
+        "datetime": "2024-08-23T21:20:17.309Z",
+        "symbol": "BTC/USDT",
+        "id": "3761232694",
+        "order": "29824816509",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "maker",
+        "price": 64500.0,
+        "amount": 0.00263,
+        "cost": 169.635,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00021611
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00021611
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3773452233",
+            "orderId": "29954504548",
+            "orderListId": "-1",
+            "price": "59158.99000000",
+            "qty": "0.00305000",
+            "quoteQty": "180.43491950",
+            "commission": "0.00025010",
+            "commissionAsset": "BNB",
+            "time": "1724904393791",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1724904393791,
+        "datetime": "2024-08-29T04:06:33.791Z",
+        "symbol": "BTC/USDT",
+        "id": "3773452233",
+        "order": "29954504548",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 59158.99,
+        "amount": 0.00305,
+        "cost": 180.4349195,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.0002501
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.0002501
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3780436715",
+            "orderId": "30032406642",
+            "orderListId": "-1",
+            "price": "58024.94000000",
+            "qty": "0.00175000",
+            "quoteQty": "101.54364500",
+            "commission": "0.00014725",
+            "commissionAsset": "BNB",
+            "time": "1725190545661",
+            "isBuyer": true,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1725190545661,
+        "datetime": "2024-09-01T11:35:45.661Z",
+        "symbol": "BTC/USDT",
+        "id": "3780436715",
+        "order": "30032406642",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "taker",
+        "price": 58024.94,
+        "amount": 0.00175,
+        "cost": 101.543645,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00014725
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00014725
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "3790006852",
+            "orderId": "30136362869",
+            "orderListId": "-1",
+            "price": "57173.99000000",
+            "qty": "0.00480000",
+            "quoteQty": "274.43515200",
+            "commission": "0.00040605",
+            "commissionAsset": "BNB",
+            "time": "1725520986531",
+            "isBuyer": false,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1725520986531,
+        "datetime": "2024-09-05T07:23:06.531Z",
+        "symbol": "BTC/USDT",
+        "id": "3790006852",
+        "order": "30136362869",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "taker",
+        "price": 57173.99,
+        "amount": 0.0048,
+        "cost": 274.435152,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00040605
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00040605
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "4177438613",
+            "orderId": "33172786119",
+            "orderListId": "-1",
+            "price": "96739.99000000",
+            "qty": "0.00489000",
+            "quoteQty": "473.05855110",
+            "commission": "0.00054124",
+            "commissionAsset": "BNB",
+            "time": "1732943092436",
+            "isBuyer": true,
+            "isMaker": true,
+            "isBestMatch": true
+        },
+        "timestamp": 1732943092436,
+        "datetime": "2024-11-30T05:04:52.436Z",
+        "symbol": "BTC/USDT",
+        "id": "4177438613",
+        "order": "33172786119",
+        "type": null,
+        "side": "buy",
+        "takerOrMaker": "maker",
+        "price": 96739.99,
+        "amount": 0.00489,
+        "cost": 473.0585511,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00054124
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00054124
+            }
+        ]
+    },
+    {
+        "info": {
+            "symbol": "BTCUSDT",
+            "id": "4178185785",
+            "orderId": "33178277346",
+            "orderListId": "-1",
+            "price": "96559.60000000",
+            "qty": "0.00489000",
+            "quoteQty": "472.17644400",
+            "commission": "0.00052949",
+            "commissionAsset": "BNB",
+            "time": "1732961923170",
+            "isBuyer": false,
+            "isMaker": false,
+            "isBestMatch": true
+        },
+        "timestamp": 1732961923170,
+        "datetime": "2024-11-30T10:18:43.170Z",
+        "symbol": "BTC/USDT",
+        "id": "4178185785",
+        "order": "33178277346",
+        "type": null,
+        "side": "sell",
+        "takerOrMaker": "taker",
+        "price": 96559.6,
+        "amount": 0.00489,
+        "cost": 472.176444,
+        "fee": {
+            "currency": "BNB",
+            "cost": 0.00052949
+        },
+        "fees": [
+            {
+                "currency": "BNB",
+                "cost": 0.00052949
+            }
+        ]
+    }
+]

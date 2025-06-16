@@ -1,16 +1,11 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 import { PrismaService } from "nestjs-prisma";
-import {
-    CreatePortfolioExecution,
-    ErrorRecoveryAction,
-    Exchanges,
-    PortfolioCreationMilestone,
-    PortfolioCreationStep,
-    TradingType,
-} from "src/entities/prisma";
-import { KafkaTopic } from "src/shared/constants/kafka";
+import { CreatePortfolioExecution, ErrorRecoveryAction, Exchanges, PortfolioCreationMilestone, PortfolioCreationStep, TradingType } from "src/entities/prisma";
+import { KafkaTopic } from "../shared/constants/kafka";
+
 import { isPassphraseRequired } from "../shared/utils/exchange-requirements.util";
+import { AssetPnLData, EnhancedTrade, PnLCalculationResult, PortfolioAnalyticsResult } from "src/shared/interfaces/portfolio-types.interface";
 
 interface ProgressUpdate {
     executionId: number;
@@ -60,7 +55,7 @@ interface AssetBalanceData {
 export class PortfolioProgressService {
     private readonly logger = new Logger(PortfolioProgressService.name);
 
-    // Optimized milestone progression mapping for streamlined 5-step flow
+    // Optimized milestone progression mapping for streamlined 10-step flow with integrated computation
     private readonly milestoneMap: Record<
         PortfolioCreationStep,
         MilestoneConfig
@@ -68,21 +63,56 @@ export class PortfolioProgressService {
         [PortfolioCreationStep.VALIDATION]: {
             step: PortfolioCreationStep.VALIDATION,
             milestone: PortfolioCreationMilestone.INITIALIZED,
-            progressPercent: 20,
+            progressPercent: 10,
             successMilestone: PortfolioCreationMilestone.CREDENTIALS_VERIFIED,
             failureMilestone: PortfolioCreationMilestone.VALIDATION_FAILED,
         },
         [PortfolioCreationStep.AUTHENTICATION]: {
             step: PortfolioCreationStep.AUTHENTICATION,
             milestone: PortfolioCreationMilestone.CREDENTIALS_VERIFIED,
-            progressPercent: 40,
-            successMilestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            progressPercent: 20,
+            successMilestone: PortfolioCreationMilestone.EXCHANGE_CONNECTED,
             failureMilestone: PortfolioCreationMilestone.CREDENTIALS_FAILED,
         },
         [PortfolioCreationStep.BALANCE_RETRIEVAL]: {
             step: PortfolioCreationStep.BALANCE_RETRIEVAL,
             milestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            progressPercent: 30,
+            successMilestone: PortfolioCreationMilestone.ACCOUNT_FETCHED,
+            failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
+        },
+        [PortfolioCreationStep.SYMBOL_DISCOVERY]: {
+            step: PortfolioCreationStep.SYMBOL_DISCOVERY,
+            milestone: PortfolioCreationMilestone.ACCOUNT_FETCHED,
+            progressPercent: 40,
+            successMilestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
+        },
+        [PortfolioCreationStep.TRADE_HISTORY_FETCH]: {
+            step: PortfolioCreationStep.TRADE_HISTORY_FETCH,
+            milestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            progressPercent: 50,
+            successMilestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
+        },
+        [PortfolioCreationStep.PRICE_HISTORY_FETCH]: {
+            step: PortfolioCreationStep.PRICE_HISTORY_FETCH,
+            milestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            progressPercent: 60,
+            successMilestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
+        },
+        [PortfolioCreationStep.PNL_CALCULATION]: {
+            step: PortfolioCreationStep.PNL_CALCULATION,
+            milestone: PortfolioCreationMilestone.BALANCES_FETCHED,
             progressPercent: 70,
+            successMilestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
+        },
+        [PortfolioCreationStep.ANALYTICS_CALCULATION]: {
+            step: PortfolioCreationStep.ANALYTICS_CALCULATION,
+            milestone: PortfolioCreationMilestone.BALANCES_FETCHED,
+            progressPercent: 80,
             successMilestone: PortfolioCreationMilestone.PORTFOLIO_STORED,
             failureMilestone: PortfolioCreationMilestone.FETCH_FAILED,
         },
@@ -222,9 +252,14 @@ export class PortfolioProgressService {
     }
 
     /**
-     * Mark entire execution as successful
+     * Mark entire execution as successful and trigger portfolio precomputation
      */
-    async markSuccess(executionId: number): Promise<void> {
+    async markSuccess(
+        executionId: number,
+        portfolioId?: string,
+        userId?: number,
+        exchangeId?: string
+    ): Promise<void> {
         this.logger.log(`🎉 Marking execution ${executionId} as successful`);
 
         const execution = await this.updateProgress({
@@ -359,29 +394,34 @@ export class PortfolioProgressService {
             let parentPortfolio = await this.prisma.cryptoPortfolio.findFirst({
                 where: {
                     userId: portfolioData.userId,
-                    exchanges: Exchanges.ALL
+                    exchanges: Exchanges.ALL,
                 },
             });
 
             if (!parentPortfolio) {
-                const createdParentPortfolio = await this.prisma.cryptoPortfolio.create({
-                    data: {
-                        parentPortfolioId: parentPortfolio.id,
-                        userId: portfolioData.userId,
-                        name: Exchanges.ALL,
-                        exchanges: Exchanges.ALL,
-                        tradingType: TradingType.SPOT,
-                        apiKey: "",
-                        secretKey: "",
-                    },
-                });
+                const createdParentPortfolio =
+                    await this.prisma.cryptoPortfolio.create({
+                        data: {
+                            parentPortfolioId: null,
+                            userId: portfolioData.userId,
+                            name: Exchanges.ALL,
+                            exchanges: Exchanges.ALL,
+                            tradingType: TradingType.SPOT,
+                            apiKey: "",
+                            secretKey: "",
+                        },
+                    });
 
                 parentPortfolio = createdParentPortfolio;
 
-                this.logger.debug(`✅ Parent portfolio created with ID: ${createdParentPortfolio.id}`);
+                this.logger.debug(
+                    `✅ Parent portfolio created with ID: ${createdParentPortfolio.id}`,
+                );
             }
 
-            this.logger.debug(`🔍 Found parent portfolio ${parentPortfolio.id}`);
+            this.logger.debug(
+                `🔍 Found parent portfolio ${parentPortfolio.id}`,
+            );
 
             const portfolio = await this.prisma.cryptoPortfolio.create({
                 data: {
@@ -398,7 +438,10 @@ export class PortfolioProgressService {
             this.logger.debug(`✅ Portfolio created with ID: ${portfolio.id}`);
 
             // Create PassphraseCryptoPortfolio if exchange requires passphrase
-            if (portfolioData.passphrase && isPassphraseRequired(portfolioData.exchanges)) {
+            if (
+                portfolioData.passphrase &&
+                isPassphraseRequired(portfolioData.exchanges)
+            ) {
                 await this.prisma.passphraseCryptoPortfolio.create({
                     data: {
                         cryptoPortfolioId: portfolio.id,
@@ -406,7 +449,9 @@ export class PortfolioProgressService {
                     },
                 });
 
-                this.logger.debug(`✅ PassphraseCryptoPortfolio created for portfolio ${portfolio.id} (${portfolioData.exchanges})`);
+                this.logger.debug(
+                    `✅ PassphraseCryptoPortfolio created for portfolio ${portfolio.id} (${portfolioData.exchanges})`,
+                );
             }
 
             return portfolio.id;
@@ -474,14 +519,9 @@ export class PortfolioProgressService {
     /**
      * Find or create asset info record
      */
+    // TODO: FETCH FROM EXCHANGE
     async findOrCreateAssetInfo(
         symbol: string,
-        assetData?: {
-            name?: string;
-            category?: string;
-            desc?: string;
-            logo?: string;
-        },
     ): Promise<string> {
         try {
             const existingAsset = await this.prisma.assetInfo.findFirst({
@@ -491,28 +531,129 @@ export class PortfolioProgressService {
             if (existingAsset) {
                 return existingAsset.id;
             }
-
-            // Create new asset info
-            const newAsset = await this.prisma.assetInfo.create({
-                data: {
-                    symbol,
-                    name: assetData?.name || symbol,
-                    category: assetData?.category || "Cryptocurrency",
-                    desc: assetData?.desc || `${symbol} cryptocurrency`,
-                    logo: assetData?.logo || "",
-                },
-            });
-
-            this.logger.debug(
-                `✅ Created new asset info for ${symbol}: ${newAsset.id}`,
-            );
-            return newAsset.id;
         } catch (error) {
             this.logger.error(
                 `❌ Failed to find or create asset info for ${symbol}:`,
                 error,
             );
             throw error;
+        }
+    }
+
+    /**
+     * Store computed portfolio data (trades, P&L, analytics) in database
+     */
+    async storeComputedPortfolioData(
+        portfolioId: string,
+        data: {
+            trades: EnhancedTrade[];
+            assetPnLData: AssetPnLData[];
+            portfolioAnalytics: PortfolioAnalyticsResult;
+            portfolioPnL: PnLCalculationResult;
+        },
+    ): Promise<void> {
+        this.logger.debug(`💾 Storing computed data for portfolio ${portfolioId}`);
+
+        try {
+            // Use transaction to ensure all computed data is stored atomically
+            await this.prisma.$transaction(async (tx) => {
+                const currentTime = new Date();
+
+                // 1. Store enhanced trades with P&L data
+                this.logger.debug(`📊 Storing ${data.trades.length} enhanced trades...`);
+                for (const trade of data.trades) {
+                    await tx.trade.create({
+                        data: {
+                            cryptoPortfolioId: portfolioId,
+                            assetInfoId: trade.assetInfoId,
+                            price: trade.price,
+                            qty: trade.qty,
+                            quoteQty: trade.quoteQty,
+                            commission: trade.commission,
+                            commissionAsset: trade.commissionAsset,
+                            time: trade.time,
+                            isBuyer: trade.isBuyer,
+                            // Enhanced fields for precomputation
+                            orderId: trade.orderId,
+                            symbol: trade.symbol,
+                            side: trade.side,
+                            realizedPnl: 0, // Will be calculated separately
+                            fees: trade.fees,
+                            feeAsset: trade.feeAsset,
+                        },
+                    });
+                }
+
+                // 2. Store P&L results in HistoricalAssetProfit table
+                this.logger.debug(`💰 Storing P&L data for ${data.assetPnLData.length} assets...`);
+                for (const assetPnL of data.assetPnLData) {
+                    await tx.historicalAssetProfit.upsert({
+                        where: {
+                            cryptoPortfolioId_assetInfoId_time: {
+                                cryptoPortfolioId: portfolioId,
+                                assetInfoId: assetPnL.assetInfoId,
+                                time: currentTime,
+                            },
+                        },
+                        update: {
+                            estimatedProfit: assetPnL.totalPnL,
+                            totalCostInQuoteQty: assetPnL.totalQuantity * assetPnL.averageCostBasis,
+                            remainingQty: assetPnL.totalQuantity,
+                            // Enhanced fields for precomputation
+                            realizedPnl: assetPnL.realizedPnL,
+                            unrealizedPnl: assetPnL.unrealizedPnL,
+                            totalPnl: assetPnL.totalPnL,
+                            averageCostBasis: assetPnL.averageCostBasis,
+                            currentPrice: assetPnL.currentPrice,
+                            percentageGain: assetPnL.percentageGain,
+                            holdingPeriodDays: assetPnL.holdingPeriodDays,
+                        },
+                        create: {
+                            cryptoPortfolioId: portfolioId,
+                            assetInfoId: assetPnL.assetInfoId,
+                            time: currentTime,
+                            estimatedProfit: assetPnL.totalPnL,
+                            totalCostInQuoteQty: assetPnL.totalQuantity * assetPnL.averageCostBasis,
+                            remainingQty: assetPnL.totalQuantity,
+                            // Enhanced fields for precomputation
+                            realizedPnl: assetPnL.realizedPnL,
+                            unrealizedPnl: assetPnL.unrealizedPnL,
+                            totalPnl: assetPnL.totalPnL,
+                            averageCostBasis: assetPnL.averageCostBasis,
+                            currentPrice: assetPnL.currentPrice,
+                            percentageGain: assetPnL.percentageGain,
+                            holdingPeriodDays: assetPnL.holdingPeriodDays,
+                        },
+                    });
+                }
+
+                // 3. Store portfolio analytics in HistoricalCryptoBalance table
+                this.logger.debug(`📈 Storing portfolio analytics...`);
+                await tx.historicalCryptoBalance.create({
+                    data: {
+                        cryptoPortfolioId: portfolioId,
+                        time: currentTime,
+                        estimatedBalance: data.portfolioAnalytics.totalValue,
+                        changePercent: data.portfolioAnalytics.totalReturn,
+                        changeBalance: data.portfolioPnL.portfolioTotalPnL,
+                        // Enhanced fields for precomputation
+                        totalValue: data.portfolioAnalytics.totalValue,
+                        totalPnl: data.portfolioPnL.portfolioTotalPnL,
+                        totalRealizedPnl: data.portfolioPnL.totalRealizedPnL,
+                        totalUnrealizedPnl: data.portfolioPnL.totalUnrealizedPnL,
+                        assetCount: data.portfolioAnalytics.assetCount,
+                        diversificationScore: data.portfolioAnalytics.diversificationScore,
+                        riskScore: data.portfolioAnalytics.riskScore,
+                    },
+                });
+
+                this.logger.debug(`✅ All computed data stored successfully in transaction`);
+            });
+
+            this.logger.debug(`✅ Computed data storage completed for portfolio ${portfolioId}`);
+        } catch (error) {
+            this.logger.error(`❌ Failed to store computed data for portfolio ${portfolioId}:`, error);
+            throw new Error(`Database error during computed data storage: ${error.message}`);
         }
     }
 
@@ -592,7 +733,9 @@ export class PortfolioProgressService {
     /**
      * Publish progress event to Kafka for real-time updates
      */
-    private async publishProgressEvent(execution: CreatePortfolioExecution): Promise<void> {
+    private async publishProgressEvent(
+        execution: CreatePortfolioExecution,
+    ): Promise<void> {
         try {
             await this.kafkaClient.emit(
                 KafkaTopic.CRYPTO_PORTFOLIO_CREATION_STATUS,
@@ -606,4 +749,6 @@ export class PortfolioProgressService {
             // Don't throw here to avoid breaking the main flow
         }
     }
+
+
 }

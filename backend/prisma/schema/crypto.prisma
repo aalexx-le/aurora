@@ -2,7 +2,7 @@ model CryptoPortfolio {
   userId                 Int
   name                   String                    @default("")
   status                 PortfolioStatus           @default(ACTIVE)
-  exchanges              Exchanges              @default(BINANCE)
+  exchanges              Exchanges                 @default(BINANCE)
   tradingType            TradingType
   apiKey                 String
   secretKey              String
@@ -31,31 +31,31 @@ model PassphraseCryptoPortfolio {
 }
 
 model CreatePortfolioExecution {
-  id                Int                       @id @default(autoincrement())
-  userId            Int
-  currentStep       PortfolioCreationStep?
-  currentMilestone  PortfolioCreationMilestone?
-  
+  id               Int                         @id @default(autoincrement())
+  userId           Int
+  currentStep      PortfolioCreationStep?
+  currentMilestone PortfolioCreationMilestone?
+
   // Progress tracking
-  progressPercent   Int                       @default(0) @db.SmallInt
-  
+  progressPercent Int @default(0) @db.SmallInt
+
   // Error handling
-  errorMessage      String?                   
-  recoveryAction    ErrorRecoveryAction?
-  retryCount        Int                       @default(0) @db.SmallInt
-  maxRetries        Int                       @default(3) @db.SmallInt
-  
+  errorMessage   String?
+  recoveryAction ErrorRecoveryAction?
+  retryCount     Int                  @default(0) @db.SmallInt
+  maxRetries     Int                  @default(3) @db.SmallInt
+
   // Context data
-  exchangeType      Exchanges?
-  executionContext  Json?                     // Minimal context only
-  
+  exchangeType     Exchanges?
+  executionContext Json? // Minimal context only
+
   // Timestamps
-  createdAt         DateTime                  @default(now())
-  updatedAt         DateTime                  @updatedAt
-  completedAt       DateTime?
-  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+
   // Relations
-  user              User                      @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model AssetBalance {
@@ -69,6 +69,7 @@ model AssetBalance {
 }
 
 model Trade {
+  id                Int          @id @default(autoincrement())
   cryptoPortfolioId String
   assetInfoId       String
 
@@ -80,10 +81,17 @@ model Trade {
   time            DateTime
   isBuyer         Boolean
 
+  // Enhanced fields for precomputation
+  orderId         String?         // Exchange-specific order ID
+  symbol          String?         // Trading pair symbol (e.g., "BTCUSDT")
+  side            String?         // "BUY" or "SELL"
+  realizedPnl     Float?          // Realized P&L for this trade
+  fees            Float?          // Total fees in base currency
+  feeAsset        String?         // Asset used for fees
+
   cryptoPortfolio CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
   assetInfo       AssetInfo       @relation(fields: [assetInfoId], references: [id])
 
-  @@unique([cryptoPortfolioId, assetInfoId, price, qty, time])
 }
 
 model AssetInfo {
@@ -121,7 +129,17 @@ model HistoricalCryptoBalance {
   changePercent     Float
   changeBalance     Float
   cryptoPortfolioId String
-  cryptoPortfolio   CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
+
+  // Enhanced fields for precomputation
+  totalValue           Float? // Total portfolio value in base currency
+  totalPnl             Float? // Total portfolio P&L
+  totalRealizedPnl     Float? // Total realized P&L
+  totalUnrealizedPnl   Float? // Total unrealized P&L
+  assetCount           Int? // Number of different assets
+  diversificationScore Float? // Portfolio diversification metric
+  riskScore            Float? // Portfolio risk score
+
+  cryptoPortfolio CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
 
   @@unique([cryptoPortfolioId, time])
 }
@@ -133,8 +151,18 @@ model HistoricalAssetProfit {
   remainingQty        Float
   assetInfoId         String
   cryptoPortfolioId   String
-  assetInfo           AssetInfo       @relation(fields: [assetInfoId], references: [id])
-  cryptoPortfolio     CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
+
+  // Enhanced fields for precomputation
+  realizedPnl       Float? // Realized profit/loss
+  unrealizedPnl     Float? // Unrealized profit/loss
+  totalPnl          Float? // Total P&L (realized + unrealized)
+  averageCostBasis  Float? // Average cost basis per unit
+  currentPrice      Float? // Current market price
+  percentageGain    Float? // Percentage gain/loss
+  holdingPeriodDays Int? // Days held
+
+  assetInfo       AssetInfo       @relation(fields: [assetInfoId], references: [id])
+  cryptoPortfolio CryptoPortfolio @relation(fields: [cryptoPortfolioId], references: [id])
 
   @@unique([cryptoPortfolioId, assetInfoId, time])
 }
@@ -152,7 +180,7 @@ enum ErrorRecoveryAction {
   CHECK_PERMISSIONS
   CONTACT_SUPPORT
   ABORT
-} 
+}
 
 enum PortfolioCreationMilestone {
   // Success milestones
@@ -163,7 +191,7 @@ enum PortfolioCreationMilestone {
   BALANCES_FETCHED
   PORTFOLIO_STORED
   COMPLETED
-  
+
   // Error milestones
   VALIDATION_FAILED
   CREDENTIALS_FAILED
@@ -174,15 +202,20 @@ enum PortfolioCreationMilestone {
   RATE_LIMITED
   INSUFFICIENT_PERMISSIONS
   FAILED
-} 
+}
 
 enum PortfolioCreationStep {
   VALIDATION
   AUTHENTICATION
   BALANCE_RETRIEVAL
+  SYMBOL_DISCOVERY
+  TRADE_HISTORY_FETCH
+  PRICE_HISTORY_FETCH
+  PNL_CALCULATION
+  ANALYTICS_CALCULATION
   DATABASE_STORAGE
   COMPLETION
-} 
+}
 
 enum TradingType {
   FUTURES
@@ -204,7 +237,7 @@ enum Exchanges {
   BYBIT
   BITGET
   GATE
-  HUOBI  // HTX
+  HUOBI // HTX
   HTX
   KUCOIN
   KUCOINFUTURES
@@ -213,7 +246,7 @@ enum Exchanges {
   BITMEX
   BITSTAMP
   GEMINI
-  
+
   // Tier 2 Popular Exchanges
   BITMART
   BITRUE
@@ -230,14 +263,14 @@ enum Exchanges {
   COINEX
   WHITEBIT
   XT
-  MEXC3  // Alternative naming
+  MEXC3 // Alternative naming
   P2B
   TRADEOGRE
   NDAX
   OXFUN
   BLOFIN
   COINCATCH
-  
+
   // Regional/Country-Specific Exchanges
   BINANCEUS
   BINANCEUSDM
@@ -266,7 +299,7 @@ enum Exchanges {
   BITTEAM
   KUNA
   LATOKEN
-  
+
   // DEX and Layer 2 Exchanges
   HYPERLIQUID
   VERTEX
@@ -278,7 +311,7 @@ enum Exchanges {
   IDEX
   WAVESEXCHANGE
   MODETRADE
-  
+
   // Smaller/Niche Exchanges
   ALPACA
   BEQUANT
@@ -310,7 +343,7 @@ enum Exchanges {
   YOBIT
   ZONDA
   HITBTC
-  
+
   // Legacy/Historical (maintained for compatibility)
-  HUOBI_LEGACY  // For old Huobi references
+  HUOBI_LEGACY // For old Huobi references
 }

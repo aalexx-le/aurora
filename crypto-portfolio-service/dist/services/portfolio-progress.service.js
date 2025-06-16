@@ -29,21 +29,56 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
             [prisma_1.PortfolioCreationStep.VALIDATION]: {
                 step: prisma_1.PortfolioCreationStep.VALIDATION,
                 milestone: prisma_1.PortfolioCreationMilestone.INITIALIZED,
-                progressPercent: 20,
+                progressPercent: 10,
                 successMilestone: prisma_1.PortfolioCreationMilestone.CREDENTIALS_VERIFIED,
                 failureMilestone: prisma_1.PortfolioCreationMilestone.VALIDATION_FAILED,
             },
             [prisma_1.PortfolioCreationStep.AUTHENTICATION]: {
                 step: prisma_1.PortfolioCreationStep.AUTHENTICATION,
                 milestone: prisma_1.PortfolioCreationMilestone.CREDENTIALS_VERIFIED,
-                progressPercent: 40,
-                successMilestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                progressPercent: 20,
+                successMilestone: prisma_1.PortfolioCreationMilestone.EXCHANGE_CONNECTED,
                 failureMilestone: prisma_1.PortfolioCreationMilestone.CREDENTIALS_FAILED,
             },
             [prisma_1.PortfolioCreationStep.BALANCE_RETRIEVAL]: {
                 step: prisma_1.PortfolioCreationStep.BALANCE_RETRIEVAL,
                 milestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                progressPercent: 30,
+                successMilestone: prisma_1.PortfolioCreationMilestone.ACCOUNT_FETCHED,
+                failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
+            },
+            [prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY]: {
+                step: prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY,
+                milestone: prisma_1.PortfolioCreationMilestone.ACCOUNT_FETCHED,
+                progressPercent: 40,
+                successMilestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
+            },
+            [prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH]: {
+                step: prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH,
+                milestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                progressPercent: 50,
+                successMilestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
+            },
+            [prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH]: {
+                step: prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH,
+                milestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                progressPercent: 60,
+                successMilestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
+            },
+            [prisma_1.PortfolioCreationStep.PNL_CALCULATION]: {
+                step: prisma_1.PortfolioCreationStep.PNL_CALCULATION,
+                milestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
                 progressPercent: 70,
+                successMilestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
+            },
+            [prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION]: {
+                step: prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION,
+                milestone: prisma_1.PortfolioCreationMilestone.BALANCES_FETCHED,
+                progressPercent: 80,
                 successMilestone: prisma_1.PortfolioCreationMilestone.PORTFOLIO_STORED,
                 failureMilestone: prisma_1.PortfolioCreationMilestone.FETCH_FAILED,
             },
@@ -112,7 +147,7 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
             this.logger.error(`💀 Execution ${executionId} permanently failed after ${execution.retryCount} retries`);
         }
     }
-    async markSuccess(executionId) {
+    async markSuccess(executionId, portfolioId, userId, exchangeId) {
         this.logger.log(`🎉 Marking execution ${executionId} as successful`);
         const execution = await this.updateProgress({
             executionId,
@@ -191,13 +226,13 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
             let parentPortfolio = await this.prisma.cryptoPortfolio.findFirst({
                 where: {
                     userId: portfolioData.userId,
-                    exchanges: prisma_1.Exchanges.ALL
+                    exchanges: prisma_1.Exchanges.ALL,
                 },
             });
             if (!parentPortfolio) {
                 const createdParentPortfolio = await this.prisma.cryptoPortfolio.create({
                     data: {
-                        parentPortfolioId: parentPortfolio.id,
+                        parentPortfolioId: null,
                         userId: portfolioData.userId,
                         name: prisma_1.Exchanges.ALL,
                         exchanges: prisma_1.Exchanges.ALL,
@@ -222,7 +257,8 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
                 },
             });
             this.logger.debug(`✅ Portfolio created with ID: ${portfolio.id}`);
-            if (portfolioData.passphrase && (0, exchange_requirements_util_1.isPassphraseRequired)(portfolioData.exchanges)) {
+            if (portfolioData.passphrase &&
+                (0, exchange_requirements_util_1.isPassphraseRequired)(portfolioData.exchanges)) {
                 await this.prisma.passphraseCryptoPortfolio.create({
                     data: {
                         cryptoPortfolioId: portfolio.id,
@@ -277,7 +313,7 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
             throw error;
         }
     }
-    async findOrCreateAssetInfo(symbol, assetData) {
+    async findOrCreateAssetInfo(symbol) {
         try {
             const existingAsset = await this.prisma.assetInfo.findFirst({
                 where: { symbol },
@@ -285,21 +321,102 @@ let PortfolioProgressService = PortfolioProgressService_1 = class PortfolioProgr
             if (existingAsset) {
                 return existingAsset.id;
             }
-            const newAsset = await this.prisma.assetInfo.create({
-                data: {
-                    symbol,
-                    name: assetData?.name || symbol,
-                    category: assetData?.category || "Cryptocurrency",
-                    desc: assetData?.desc || `${symbol} cryptocurrency`,
-                    logo: assetData?.logo || "",
-                },
-            });
-            this.logger.debug(`✅ Created new asset info for ${symbol}: ${newAsset.id}`);
-            return newAsset.id;
         }
         catch (error) {
             this.logger.error(`❌ Failed to find or create asset info for ${symbol}:`, error);
             throw error;
+        }
+    }
+    async storeComputedPortfolioData(portfolioId, data) {
+        this.logger.debug(`💾 Storing computed data for portfolio ${portfolioId}`);
+        try {
+            await this.prisma.$transaction(async (tx) => {
+                const currentTime = new Date();
+                this.logger.debug(`📊 Storing ${data.trades.length} enhanced trades...`);
+                for (const trade of data.trades) {
+                    await tx.trade.create({
+                        data: {
+                            cryptoPortfolioId: portfolioId,
+                            assetInfoId: trade.assetInfoId,
+                            price: trade.price,
+                            qty: trade.qty,
+                            quoteQty: trade.quoteQty,
+                            commission: trade.commission,
+                            commissionAsset: trade.commissionAsset,
+                            time: trade.time,
+                            isBuyer: trade.isBuyer,
+                            orderId: trade.orderId,
+                            symbol: trade.symbol,
+                            side: trade.side,
+                            realizedPnl: 0,
+                            fees: trade.fees,
+                            feeAsset: trade.feeAsset,
+                        },
+                    });
+                }
+                this.logger.debug(`💰 Storing P&L data for ${data.assetPnLData.length} assets...`);
+                for (const assetPnL of data.assetPnLData) {
+                    await tx.historicalAssetProfit.upsert({
+                        where: {
+                            cryptoPortfolioId_assetInfoId_time: {
+                                cryptoPortfolioId: portfolioId,
+                                assetInfoId: assetPnL.assetInfoId,
+                                time: currentTime,
+                            },
+                        },
+                        update: {
+                            estimatedProfit: assetPnL.totalPnL,
+                            totalCostInQuoteQty: assetPnL.totalQuantity * assetPnL.averageCostBasis,
+                            remainingQty: assetPnL.totalQuantity,
+                            realizedPnl: assetPnL.realizedPnL,
+                            unrealizedPnl: assetPnL.unrealizedPnL,
+                            totalPnl: assetPnL.totalPnL,
+                            averageCostBasis: assetPnL.averageCostBasis,
+                            currentPrice: assetPnL.currentPrice,
+                            percentageGain: assetPnL.percentageGain,
+                            holdingPeriodDays: assetPnL.holdingPeriodDays,
+                        },
+                        create: {
+                            cryptoPortfolioId: portfolioId,
+                            assetInfoId: assetPnL.assetInfoId,
+                            time: currentTime,
+                            estimatedProfit: assetPnL.totalPnL,
+                            totalCostInQuoteQty: assetPnL.totalQuantity * assetPnL.averageCostBasis,
+                            remainingQty: assetPnL.totalQuantity,
+                            realizedPnl: assetPnL.realizedPnL,
+                            unrealizedPnl: assetPnL.unrealizedPnL,
+                            totalPnl: assetPnL.totalPnL,
+                            averageCostBasis: assetPnL.averageCostBasis,
+                            currentPrice: assetPnL.currentPrice,
+                            percentageGain: assetPnL.percentageGain,
+                            holdingPeriodDays: assetPnL.holdingPeriodDays,
+                        },
+                    });
+                }
+                this.logger.debug(`📈 Storing portfolio analytics...`);
+                await tx.historicalCryptoBalance.create({
+                    data: {
+                        cryptoPortfolioId: portfolioId,
+                        time: currentTime,
+                        estimatedBalance: data.portfolioAnalytics.totalValue,
+                        changePercent: data.portfolioAnalytics.totalReturn,
+                        changeBalance: data.portfolioPnL.portfolioTotalPnL,
+                        totalValue: data.portfolioAnalytics.totalValue,
+                        totalPnl: data.portfolioPnL.portfolioTotalPnL,
+                        totalRealizedPnl: data.portfolioPnL.totalRealizedPnL,
+                        totalUnrealizedPnl: data.portfolioPnL.totalUnrealizedPnL,
+                        assetCount: data.portfolioAnalytics.assetCount,
+                        diversificationScore: data.portfolioAnalytics.diversificationScore,
+                        riskScore: data.portfolioAnalytics.riskScore,
+                    },
+                });
+                this.logger.debug(`✅ All computed data stored successfully in transaction`);
+            });
+            this.logger.debug(`✅ Computed data storage completed for portfolio ${portfolioId}`);
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to store computed data for portfolio ${portfolioId}:`, error);
+            throw new Error(`Database error during computed data storage: ${error.message}`);
         }
     }
     analyzeError(error, step) {

@@ -1,4 +1,4 @@
-import { Exchanges } from '../../entities/prisma';
+import { Exchanges } from "../../entities/prisma";
 
 /**
  * List of exchanges that require passphrase authentication
@@ -25,7 +25,7 @@ export const PASSPHRASE_REQUIRED_EXCHANGES: Exchanges[] = [
  * @returns true if the exchange requires passphrase
  */
 export function isPassphraseRequired(exchange: string): boolean {
-  return PASSPHRASE_REQUIRED_EXCHANGES.includes(exchange as Exchanges);
+    return PASSPHRASE_REQUIRED_EXCHANGES.includes(exchange as Exchanges);
 }
 
 /**
@@ -33,5 +33,5 @@ export function isPassphraseRequired(exchange: string): boolean {
  * @returns Array of exchanges that require passphrase
  */
 export function getPassphraseRequiredExchanges(): Exchanges[] {
-  return PASSPHRASE_REQUIRED_EXCHANGES;
-} 
+    return PASSPHRASE_REQUIRED_EXCHANGES;
+}

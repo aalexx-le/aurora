@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { HistoricalBankBalances } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
+import { HistoricalBalances } from "../../types";
 
-export const useChartConfig = (historicalData: HistoricalBankBalances) => {
+export const useChartConfig = (historicalData: HistoricalBalances) => {
     return useMemo(
         () => ({
             trend:

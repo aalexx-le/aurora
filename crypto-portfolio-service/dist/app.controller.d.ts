@@ -1,6 +1,6 @@
-import { ClientKafka, KafkaContext } from '@nestjs/microservices';
-import { PrismaService } from 'nestjs-prisma';
-import { PortfolioCreationService } from './services/portfolio-creation.service';
+import { ClientKafka, KafkaContext } from "@nestjs/microservices";
+import { PrismaService } from "nestjs-prisma";
+import { PortfolioCreationService } from "./services/portfolio-creation.service";
 interface CreatePortfolioPayload {
     userId: number;
     executionId: number;

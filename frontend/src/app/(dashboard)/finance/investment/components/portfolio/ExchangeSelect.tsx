@@ -46,7 +46,10 @@ export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps
                     aria-expanded={open}
                 >
                     {selected ?
-                        <ExchangeLogo id={selected.id} logo={selected.logo} name={selected.name} className="size-4" />
+                        <div className="flex flex-row gap-2 items-center">
+                            <ExchangeLogo id={selected.id} logo={selected.logo} name={selected.name} className="size-4" />
+                            {selected.name}
+                        </div>
                         :
                         <p className="text-muted-foreground">Select exchanges...</p>
                     }
@@ -65,7 +68,10 @@ export function ExchangeSelect({selectedExchanges, setSelectedExchanges}: IProps
                                     value={e.id}
                                     onSelect={onSelect}
                                 >
-                                    <ExchangeLogo id={e.id} logo={e.logo} name={e.name} className="size-4" />
+                                    <div className="flex flex-row gap-2 items-center">
+                                        <ExchangeLogo id={e.id} logo={e.logo} name={e.name} className="size-4" />
+                                        {e.name}
+                                    </div>
                                 </CommandItem>
                             ))}
                         </CommandGroup>

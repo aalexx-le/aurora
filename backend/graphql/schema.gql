@@ -120,11 +120,19 @@ type HistoricalAssetProfit {
   remainingQty: Float!
   assetInfoId: String!
   cryptoPortfolioId: String!
+  realizedPnl: Float
+  unrealizedPnl: Float
+  totalPnl: Float
+  averageCostBasis: Float
+  currentPrice: Float
+  percentageGain: Float
+  holdingPeriodDays: Int
   assetInfo: AssetInfoOutput!
   cryptoPortfolio: CryptoPortfolio!
 }
 
 type Trade {
+  id: Int!
   cryptoPortfolioId: String!
   assetInfoId: String!
   price: Float!
@@ -134,6 +142,12 @@ type Trade {
   commissionAsset: String!
   time: DateTime!
   isBuyer: Boolean!
+  orderId: String
+  symbol: String
+  side: String
+  realizedPnl: Float
+  fees: Float
+  feeAsset: String
   cryptoPortfolio: CryptoPortfolio!
   assetInfo: AssetInfo!
 }
@@ -168,6 +182,13 @@ type HistoricalCryptoBalance {
   changePercent: Float!
   changeBalance: Float!
   cryptoPortfolioId: String!
+  totalValue: Float
+  totalPnl: Float
+  totalRealizedPnl: Float
+  totalUnrealizedPnl: Float
+  assetCount: Int
+  diversificationScore: Float
+  riskScore: Float
   cryptoPortfolio: CryptoPortfolio!
 }
 
@@ -348,6 +369,11 @@ enum PortfolioCreationStep {
   VALIDATION
   AUTHENTICATION
   BALANCE_RETRIEVAL
+  SYMBOL_DISCOVERY
+  TRADE_HISTORY_FETCH
+  PRICE_HISTORY_FETCH
+  PNL_CALCULATION
+  ANALYTICS_CALCULATION
   DATABASE_STORAGE
   COMPLETION
 }

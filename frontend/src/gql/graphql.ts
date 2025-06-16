@@ -701,12 +701,19 @@ export type HistoricalAssetProfit = {
   __typename?: 'HistoricalAssetProfit';
   assetInfo: AssetInfoOutput;
   assetInfoId: Scalars['String']['output'];
+  averageCostBasis?: Maybe<Scalars['Float']['output']>;
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  currentPrice?: Maybe<Scalars['Float']['output']>;
   estimatedProfit: Scalars['Float']['output'];
+  holdingPeriodDays?: Maybe<Scalars['Int']['output']>;
+  percentageGain?: Maybe<Scalars['Float']['output']>;
+  realizedPnl?: Maybe<Scalars['Float']['output']>;
   remainingQty: Scalars['Float']['output'];
   time: Scalars['DateTime']['output'];
   totalCostInQuoteQty: Scalars['Float']['output'];
+  totalPnl?: Maybe<Scalars['Float']['output']>;
+  unrealizedPnl?: Maybe<Scalars['Float']['output']>;
 };
 
 export type HistoricalBankBalance = {
@@ -719,12 +726,19 @@ export type HistoricalBankBalance = {
 
 export type HistoricalCryptoBalance = {
   __typename?: 'HistoricalCryptoBalance';
+  assetCount?: Maybe<Scalars['Int']['output']>;
   changeBalance: Scalars['Float']['output'];
   changePercent: Scalars['Float']['output'];
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  diversificationScore?: Maybe<Scalars['Float']['output']>;
   estimatedBalance: Scalars['Float']['output'];
+  riskScore?: Maybe<Scalars['Float']['output']>;
   time: Scalars['DateTime']['output'];
+  totalPnl?: Maybe<Scalars['Float']['output']>;
+  totalRealizedPnl?: Maybe<Scalars['Float']['output']>;
+  totalUnrealizedPnl?: Maybe<Scalars['Float']['output']>;
+  totalValue?: Maybe<Scalars['Float']['output']>;
 };
 
 export enum Interval {
@@ -1328,10 +1342,15 @@ export enum PortfolioCreationMilestone {
 }
 
 export enum PortfolioCreationStep {
+  AnalyticsCalculation = 'ANALYTICS_CALCULATION',
   Authentication = 'AUTHENTICATION',
   BalanceRetrieval = 'BALANCE_RETRIEVAL',
   Completion = 'COMPLETION',
   DatabaseStorage = 'DATABASE_STORAGE',
+  PnlCalculation = 'PNL_CALCULATION',
+  PriceHistoryFetch = 'PRICE_HISTORY_FETCH',
+  SymbolDiscovery = 'SYMBOL_DISCOVERY',
+  TradeHistoryFetch = 'TRADE_HISTORY_FETCH',
   Validation = 'VALIDATION'
 }
 
@@ -1379,7 +1398,6 @@ export type Query = {
   getRecurrenceTemplate: EventRecurrence;
   getRecurrenceTemplates: Array<EventRecurrence>;
   getSuggestedExpenses: Array<Expense>;
-  getSupportedTokens: Array<Scalars['String']['output']>;
   getTrades: Array<Trade>;
   myActiveMembershipSubscriptions: Array<MembershipSubscription>;
   myMembershipFeatures: Array<MembershipFeature>;
@@ -1583,10 +1601,17 @@ export type Trade = {
   commissionAsset: Scalars['String']['output'];
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  feeAsset?: Maybe<Scalars['String']['output']>;
+  fees?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['Int']['output'];
   isBuyer: Scalars['Boolean']['output'];
+  orderId?: Maybe<Scalars['String']['output']>;
   price: Scalars['Float']['output'];
   qty: Scalars['Float']['output'];
   quoteQty: Scalars['Float']['output'];
+  realizedPnl?: Maybe<Scalars['Float']['output']>;
+  side?: Maybe<Scalars['String']['output']>;
+  symbol?: Maybe<Scalars['String']['output']>;
   time: Scalars['DateTime']['output'];
 };
 
@@ -2164,11 +2189,6 @@ export type GetCryptoPriceQueryVariables = Exact<{
 
 export type GetCryptoPriceQuery = { __typename?: 'Query', getCryptoPrice: { __typename?: 'CryptoPriceResult', tokenAmount: string, tokenSymbol: string, usdPrice: number } };
 
-export type GetSupportedTokensQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetSupportedTokensQuery = { __typename?: 'Query', getSupportedTokens: Array<string> };
-
 export type GetEventCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2317,7 +2337,6 @@ export const GetPaymentMethodsDocument = {"kind":"Document","definitions":[{"kin
 export const CreateMetaMaskPaymentMethodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMetaMaskPaymentMethod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMetaMaskPaymentMethodDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMetaMaskPaymentMethod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<CreateMetaMaskPaymentMethodMutation, CreateMetaMaskPaymentMethodMutationVariables>;
 export const CreateMetaMaskSubscriptionFromSessionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateMetaMaskSubscriptionFromSession"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateMetaMaskSubscriptionFromSessionDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createMetaMaskSubscriptionFromSession"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<CreateMetaMaskSubscriptionFromSessionMutation, CreateMetaMaskSubscriptionFromSessionMutationVariables>;
 export const GetCryptoPriceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCryptoPrice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenSymbol"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"usdAmount"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getCryptoPrice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tokenSymbol"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenSymbol"}}},{"kind":"Argument","name":{"kind":"Name","value":"usdAmount"},"value":{"kind":"Variable","name":{"kind":"Name","value":"usdAmount"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenAmount"}},{"kind":"Field","name":{"kind":"Name","value":"tokenSymbol"}},{"kind":"Field","name":{"kind":"Name","value":"usdPrice"}}]}}]}}]} as unknown as DocumentNode<GetCryptoPriceQuery, GetCryptoPriceQueryVariables>;
-export const GetSupportedTokensDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSupportedTokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getSupportedTokens"}}]}}]} as unknown as DocumentNode<GetSupportedTokensQuery, GetSupportedTokensQueryVariables>;
 export const GetEventCategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEventCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getEventCategories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<GetEventCategoriesQuery, GetEventCategoriesQueryVariables>;
 export const CreateEventCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateEventCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateEventCategoryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createEventCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<CreateEventCategoryMutation, CreateEventCategoryMutationVariables>;
 export const UpdateEventCategoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateEventCategory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"data"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateEventCategoryInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateEventCategory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"data"},"value":{"kind":"Variable","name":{"kind":"Name","value":"data"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<UpdateEventCategoryMutation, UpdateEventCategoryMutationVariables>;
@@ -3024,12 +3043,19 @@ export type HistoricalAssetProfit = {
   __typename?: 'HistoricalAssetProfit';
   assetInfo: AssetInfoOutput;
   assetInfoId: Scalars['String']['output'];
+  averageCostBasis?: Maybe<Scalars['Float']['output']>;
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  currentPrice?: Maybe<Scalars['Float']['output']>;
   estimatedProfit: Scalars['Float']['output'];
+  holdingPeriodDays?: Maybe<Scalars['Int']['output']>;
+  percentageGain?: Maybe<Scalars['Float']['output']>;
+  realizedPnl?: Maybe<Scalars['Float']['output']>;
   remainingQty: Scalars['Float']['output'];
   time: Scalars['DateTime']['output'];
   totalCostInQuoteQty: Scalars['Float']['output'];
+  totalPnl?: Maybe<Scalars['Float']['output']>;
+  unrealizedPnl?: Maybe<Scalars['Float']['output']>;
 };
 
 export type HistoricalBankBalance = {
@@ -3042,12 +3068,19 @@ export type HistoricalBankBalance = {
 
 export type HistoricalCryptoBalance = {
   __typename?: 'HistoricalCryptoBalance';
+  assetCount?: Maybe<Scalars['Int']['output']>;
   changeBalance: Scalars['Float']['output'];
   changePercent: Scalars['Float']['output'];
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  diversificationScore?: Maybe<Scalars['Float']['output']>;
   estimatedBalance: Scalars['Float']['output'];
+  riskScore?: Maybe<Scalars['Float']['output']>;
   time: Scalars['DateTime']['output'];
+  totalPnl?: Maybe<Scalars['Float']['output']>;
+  totalRealizedPnl?: Maybe<Scalars['Float']['output']>;
+  totalUnrealizedPnl?: Maybe<Scalars['Float']['output']>;
+  totalValue?: Maybe<Scalars['Float']['output']>;
 };
 
 export enum Interval {
@@ -3651,10 +3684,15 @@ export enum PortfolioCreationMilestone {
 }
 
 export enum PortfolioCreationStep {
+  AnalyticsCalculation = 'ANALYTICS_CALCULATION',
   Authentication = 'AUTHENTICATION',
   BalanceRetrieval = 'BALANCE_RETRIEVAL',
   Completion = 'COMPLETION',
   DatabaseStorage = 'DATABASE_STORAGE',
+  PnlCalculation = 'PNL_CALCULATION',
+  PriceHistoryFetch = 'PRICE_HISTORY_FETCH',
+  SymbolDiscovery = 'SYMBOL_DISCOVERY',
+  TradeHistoryFetch = 'TRADE_HISTORY_FETCH',
   Validation = 'VALIDATION'
 }
 
@@ -3702,7 +3740,6 @@ export type Query = {
   getRecurrenceTemplate: EventRecurrence;
   getRecurrenceTemplates: Array<EventRecurrence>;
   getSuggestedExpenses: Array<Expense>;
-  getSupportedTokens: Array<Scalars['String']['output']>;
   getTrades: Array<Trade>;
   myActiveMembershipSubscriptions: Array<MembershipSubscription>;
   myMembershipFeatures: Array<MembershipFeature>;
@@ -3906,10 +3943,17 @@ export type Trade = {
   commissionAsset: Scalars['String']['output'];
   cryptoPortfolio: CryptoPortfolio;
   cryptoPortfolioId: Scalars['String']['output'];
+  feeAsset?: Maybe<Scalars['String']['output']>;
+  fees?: Maybe<Scalars['Float']['output']>;
+  id: Scalars['Int']['output'];
   isBuyer: Scalars['Boolean']['output'];
+  orderId?: Maybe<Scalars['String']['output']>;
   price: Scalars['Float']['output'];
   qty: Scalars['Float']['output'];
   quoteQty: Scalars['Float']['output'];
+  realizedPnl?: Maybe<Scalars['Float']['output']>;
+  side?: Maybe<Scalars['String']['output']>;
+  symbol?: Maybe<Scalars['String']['output']>;
   time: Scalars['DateTime']['output'];
 };
 

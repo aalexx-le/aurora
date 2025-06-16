@@ -17,9 +17,9 @@ exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const nestjs_prisma_1 = require("nestjs-prisma");
-const kafka_1 = require("./shared/constants/kafka");
 const prisma_1 = require("./entities/prisma");
 const portfolio_creation_service_1 = require("./services/portfolio-creation.service");
+const kafka_1 = require("./shared/constants/kafka");
 let AppController = AppController_1 = class AppController {
     constructor(kafkaClient, prisma, portfolioCreationService) {
         this.kafkaClient = kafkaClient;

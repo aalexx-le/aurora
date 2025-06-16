@@ -6,7 +6,14 @@ export enum HistoricalAssetProfitScalarFieldEnum {
     totalCostInQuoteQty = "totalCostInQuoteQty",
     remainingQty = "remainingQty",
     assetInfoId = "assetInfoId",
-    cryptoPortfolioId = "cryptoPortfolioId"
+    cryptoPortfolioId = "cryptoPortfolioId",
+    realizedPnl = "realizedPnl",
+    unrealizedPnl = "unrealizedPnl",
+    totalPnl = "totalPnl",
+    averageCostBasis = "averageCostBasis",
+    currentPrice = "currentPrice",
+    percentageGain = "percentageGain",
+    holdingPeriodDays = "holdingPeriodDays"
 }
 
 

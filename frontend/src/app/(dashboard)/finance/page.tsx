@@ -2,21 +2,21 @@
 
 import { GetExpensesQuery, QueryGetExpensesArgs } from "@/gql/graphql";
 import { useQuery } from "@apollo/client";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 
 import { GET_EXPENSES } from "@/api/expense/expense";
 import { useBankManagersQuery } from "@/app/(dashboard)/finance/components/bank-manager-select/useBankManagersQuery";
+import OverviewPage from "@/app/(dashboard)/finance/components/overview/OverviewPage";
 import {
     FinancePageSkeleton
 } from "@/app/(dashboard)/finance/components/skeletons";
-import { BankManager } from "@/app/(dashboard)/finance/expense/components/transaction-table/types";
 import { useFilteredExpenses } from "@/app/(dashboard)/finance/expense/hooks/useFilteredExpenses";
 import { ConvertCurrencyProvider } from "@/lib/context/convert-currency.context";
 import { DateFilterProvider, } from "@/lib/context/date-range.context";
 import { Expense } from "./expense/components/expense-table/types";
-
+import { BankManager } from "./types";
 // Lazy load the OverviewTab component
-const OverviewTab = lazy(() => import("@/app/(dashboard)/finance/components/overview/OverviewTab"));
+
 
 interface IProps {
     bankManagers: BankManager[];
@@ -26,7 +26,7 @@ interface IProps {
 function FinancePage({bankManagers, expenses}: IProps) {
     return (
         <Suspense fallback={<FinancePageSkeleton />}>
-            <OverviewTab bankManagers={bankManagers}/>
+            <OverviewPage bankManagers={bankManagers}/>
         </Suspense>
     );
 }

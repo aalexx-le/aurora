@@ -13,20 +13,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PortfolioCreationService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_1 = require("../entities/prisma");
+const pnl_calculation_service_1 = require("./pnl-calculation.service");
+const portfolio_analytics_service_1 = require("./portfolio-analytics.service");
 const portfolio_exchange_service_1 = require("./portfolio-exchange.service");
 const portfolio_progress_service_1 = require("./portfolio-progress.service");
 let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreationService {
-    constructor(portfolioExchangeService, portfolioProgressService) {
+    constructor(portfolioExchangeService, portfolioProgressService, pnlCalculationService, portfolioAnalyticsService) {
         this.portfolioExchangeService = portfolioExchangeService;
         this.portfolioProgressService = portfolioProgressService;
+        this.pnlCalculationService = pnlCalculationService;
+        this.portfolioAnalyticsService = portfolioAnalyticsService;
         this.logger = new common_1.Logger(PortfolioCreationService_1.name);
-        this.logger.log("🏗️ Portfolio Creation Service initialized with integrated services and enum-based progress tracking");
+        this.logger.log("🏗️ Portfolio Creation Service initialized with integrated computation services and sequential workflow");
     }
     async createPortfolio(payload) {
         const { userId, executionId, name, exchanges, apiKey, secretKey, passphrase, } = payload;
         const normalizedExchange = exchanges.toLowerCase();
         const exchangeEnum = exchanges;
-        this.logger.log(`🚀 Creating portfolio for user ${userId}, execution ${executionId}, exchange ${normalizedExchange} (original: ${exchanges})`);
+        this.logger.log(`🚀 Creating portfolio with integrated analytics for user ${userId}, execution ${executionId}, exchange ${normalizedExchange}`);
         try {
             await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.VALIDATION, exchangeEnum);
             await this.validateExchange(normalizedExchange);
@@ -43,6 +47,21 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
             const balances = await this.fetchAccountBalances(normalizedExchange, credentials);
             const processedBalances = await this.processBalances(balances);
             await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.BALANCE_RETRIEVAL);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY, exchangeEnum);
+            const symbolDiscoveryResult = await this.processSymbolDiscovery(normalizedExchange, credentials, balances);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.SYMBOL_DISCOVERY);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH, exchangeEnum);
+            const tradeHistoryResult = await this.processTradeHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.TRADE_HISTORY_FETCH);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH, exchangeEnum);
+            const priceHistoryResult = await this.processPriceHistoryFetch(normalizedExchange, credentials, symbolDiscoveryResult.discoveredSymbols);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PRICE_HISTORY_FETCH);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION, exchangeEnum);
+            const pnlResult = await this.processPnLCalculation(tradeHistoryResult.trades, priceHistoryResult.currentPrices);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.PNL_CALCULATION);
+            await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION, exchangeEnum);
+            const analyticsResult = await this.processAnalyticsCalculation(pnlResult);
+            await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.ANALYTICS_CALCULATION);
             await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.DATABASE_STORAGE, exchangeEnum);
             const portfolioId = await this.createPortfolioRecord({
                 userId,
@@ -52,15 +71,21 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
                 secretKey,
             });
             await this.storeAssetBalances(portfolioId, processedBalances);
+            await this.storeComputedData(portfolioId, {
+                pnlResult,
+                analyticsResult,
+                trades: tradeHistoryResult.trades,
+                symbols: symbolDiscoveryResult.discoveredSymbols,
+            });
             await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.DATABASE_STORAGE);
             await this.portfolioProgressService.startStep(executionId, prisma_1.PortfolioCreationStep.COMPLETION, exchangeEnum);
             await this.portfolioProgressService.completeStep(executionId, prisma_1.PortfolioCreationStep.COMPLETION);
-            await this.portfolioProgressService.markSuccess(executionId);
-            this.logger.log(`✅ Portfolio creation successful: ${portfolioId}`);
+            await this.portfolioProgressService.markSuccess(executionId, portfolioId, userId, normalizedExchange);
+            this.logger.log(`✅ Portfolio creation with analytics successful: ${portfolioId}`);
             return {
                 portfolioId,
                 balances,
-                assets: balances,
+                assets: await this.transformBalancesToAssets(balances, normalizedExchange),
                 exchangeInfo: this.portfolioExchangeService.getExchangeInfo(normalizedExchange),
             };
         }
@@ -92,7 +117,6 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
                 passphrase: encryptedCredentials.passphrase
                     ? await this.portfolioExchangeService.decryptPassphrase(encryptedCredentials.passphrase)
                     : undefined,
-                sandbox: encryptedCredentials.sandbox || false,
             };
             this.logger.debug("✅ Credentials decrypted successfully");
             return credentials;
@@ -134,11 +158,7 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
         const processedBalances = [];
         for (const balance of balances) {
             try {
-                const assetInfoId = await this.portfolioProgressService.findOrCreateAssetInfo(balance.symbol, {
-                    name: balance.symbol,
-                    category: "Cryptocurrency",
-                    desc: `${balance.symbol} cryptocurrency`,
-                });
+                const assetInfoId = await this.portfolioProgressService.findOrCreateAssetInfo(balance.symbol);
                 processedBalances.push({
                     assetInfoId,
                     balance: balance.free,
@@ -221,7 +241,11 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
         if (execution.executionContext) {
             try {
                 storedContext = JSON.parse(execution.executionContext);
-                this.logger.debug(`📋 Retrieved stored context for execution ${executionId}:`, { ...storedContext, apiKey: '[HIDDEN]', secretKey: '[HIDDEN]' });
+                this.logger.debug(`📋 Retrieved stored context for execution ${executionId}:`, {
+                    ...storedContext,
+                    apiKey: "[HIDDEN]",
+                    secretKey: "[HIDDEN]",
+                });
             }
             catch (error) {
                 this.logger.warn(`⚠️ Failed to parse execution context for ${executionId}, continuing with overrides only`);
@@ -230,7 +254,9 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
         const mergedPayload = {
             userId: execution.userId,
             executionId: executionId,
-            name: overrides.name || storedContext.name || `${overrides.exchanges || storedContext.exchanges} Portfolio`,
+            name: overrides.name ||
+                storedContext.name ||
+                `${overrides.exchanges || storedContext.exchanges} Portfolio`,
             exchanges: overrides.exchanges || storedContext.exchanges,
             apiKey: overrides.apiKey || storedContext.apiKey,
             secretKey: overrides.secretKey || storedContext.secretKey,
@@ -245,14 +271,170 @@ let PortfolioCreationService = PortfolioCreationService_1 = class PortfolioCreat
         if (!mergedPayload.secretKey) {
             throw new Error(`Missing secret key for execution ${executionId}. Cannot proceed with retry.`);
         }
-        this.logger.debug(`✅ Complete payload built for execution ${executionId}:`, { ...mergedPayload, apiKey: '[HIDDEN]', secretKey: '[HIDDEN]' });
+        this.logger.debug(`✅ Complete payload built for execution ${executionId}:`, { ...mergedPayload, apiKey: "[HIDDEN]", secretKey: "[HIDDEN]" });
         return mergedPayload;
+    }
+    async transformBalancesToAssets(balances, exchangeId) {
+        this.logger.debug(`🔄 Transforming ${balances.length} balances to assets...`);
+        const assets = [];
+        for (const balance of balances) {
+            try {
+                const assetInfoId = await this.portfolioProgressService.findOrCreateAssetInfo(balance.symbol);
+                const assetInfo = {
+                    id: assetInfoId,
+                    symbol: balance.symbol,
+                    name: balance.symbol,
+                    category: "Cryptocurrency",
+                    desc: `${balance.symbol} cryptocurrency`,
+                };
+                assets.push({
+                    assetInfo,
+                    balance: balance.free,
+                    locked: balance.used,
+                    usdValue: balance.usdValue,
+                    percentage: undefined,
+                });
+            }
+            catch (error) {
+                this.logger.warn(`⚠️ Failed to transform balance for ${balance.symbol}, skipping:`, error);
+            }
+        }
+        this.logger.debug(`✅ Transformed ${assets.length} balances to assets`);
+        return assets;
+    }
+    async processSymbolDiscovery(exchangeId, credentials, balances) {
+        this.logger.log(`🔍 Starting symbol discovery for exchange ${exchangeId}`);
+        try {
+            const currentBalanceSymbols = balances.map(b => b.symbol);
+            const discoveredSymbols = await this.portfolioExchangeService.discoverPortfolioSymbols(exchangeId, credentials, currentBalanceSymbols);
+            const result = {
+                discoveredSymbols,
+                currentBalanceSymbols,
+                historicalSymbols: discoveredSymbols.filter((s) => !currentBalanceSymbols.includes(s)),
+                totalSymbols: discoveredSymbols.length,
+            };
+            this.logger.log(`✅ Symbol discovery completed: ${result.totalSymbols} symbols found`);
+            return result;
+        }
+        catch (error) {
+            this.logger.error(`❌ Symbol discovery failed:`, error);
+            throw error;
+        }
+    }
+    async processTradeHistoryFetch(exchangeId, credentials, symbolDiscoveryResult) {
+        try {
+            const tradingPairs = await this.portfolioExchangeService.convertSymbolsToTradingPairs(symbolDiscoveryResult.discoveredSymbols, exchangeId);
+            const separator = this.portfolioExchangeService.getExchangePairSeparator(exchangeId);
+            const rawTrades = await this.portfolioExchangeService.fetchTradeHistory(exchangeId, credentials, tradingPairs, 1000);
+            const enhancedTrades = [];
+            for (const trade of rawTrades) {
+                const symbol = trade.symbol.split(separator)[0];
+                const assetInfoId = await this.portfolioProgressService.findOrCreateAssetInfo(symbol);
+                enhancedTrades.push({
+                    cryptoPortfolioId: "",
+                    assetInfoId: assetInfoId,
+                    price: trade.price || 0,
+                    qty: trade.amount || 0,
+                    quoteQty: trade.cost || 0,
+                    commission: trade.fee?.cost || 0,
+                    commissionAsset: trade.fee?.currency || "",
+                    time: new Date(trade.timestamp || Date.now()),
+                    isBuyer: trade.side === "buy",
+                    tradeId: trade.id,
+                    orderId: trade.order,
+                    symbol: trade.symbol,
+                    side: trade.side?.toUpperCase(),
+                    fees: trade.fee?.cost || 0,
+                    feeAsset: trade.fee?.currency || "",
+                });
+            }
+            const result = {
+                trades: enhancedTrades,
+                totalTrades: enhancedTrades.length,
+                processedSymbols: tradingPairs,
+                failedSymbols: [],
+            };
+            this.logger.log(`✅ Trade history fetch completed: ${result.totalTrades} trades processed`);
+            return result;
+        }
+        catch (error) {
+            this.logger.error(`❌ Trade history fetch failed:`, error);
+            throw error;
+        }
+    }
+    async processPriceHistoryFetch(exchangeId, credentials, symbols) {
+        this.logger.log(`💰 Starting price history fetch for exchange ${exchangeId}`);
+        try {
+            const tradingPairs = await this.portfolioExchangeService.convertSymbolsToTradingPairs(symbols, exchangeId);
+            if (tradingPairs.length === 0) {
+                this.logger.warn(`⚠️ No valid trading pairs found for ${symbols.length} symbols on ${exchangeId}`);
+                return { currentPrices: new Map() };
+            }
+            this.logger.log(`🔄 Using ${tradingPairs.length} validated trading pairs for price fetching`);
+            const currentPrices = await this.portfolioExchangeService.fetchCurrentPrices(exchangeId, credentials, tradingPairs);
+            this.logger.log(`✅ Price history fetch completed: ${currentPrices.size} current prices fetched`);
+            return { currentPrices };
+        }
+        catch (error) {
+            this.logger.error(`❌ Price history fetch failed:`, error);
+            throw error;
+        }
+    }
+    async processPnLCalculation(trades, currentPrices) {
+        this.logger.log(`🧮 Starting P&L calculation for ${trades.length} trades`);
+        try {
+            const pnlResult = await this.pnlCalculationService.calculatePortfolioPnL(trades, currentPrices);
+            this.logger.log(`✅ P&L calculation completed: Total P&L ${pnlResult.portfolioTotalPnL.toFixed(2)}`);
+            return pnlResult;
+        }
+        catch (error) {
+            this.logger.error(`❌ P&L calculation failed:`, error);
+            throw error;
+        }
+    }
+    async processAnalyticsCalculation(pnlResult) {
+        this.logger.log(`📊 Starting analytics calculation`);
+        try {
+            const analyticsResult = await this.portfolioAnalyticsService.calculatePortfolioAnalytics(pnlResult.assetPnL);
+            this.logger.log(`✅ Analytics calculation completed: Total value ${analyticsResult.totalValue.toFixed(2)}`);
+            return analyticsResult;
+        }
+        catch (error) {
+            this.logger.error(`❌ Analytics calculation failed:`, error);
+            throw error;
+        }
+    }
+    async storeComputedData(portfolioId, data) {
+        this.logger.log(`💾 Storing computed data for portfolio ${portfolioId}`);
+        try {
+            await this.portfolioProgressService.storeComputedPortfolioData(portfolioId, {
+                trades: data.trades,
+                assetPnLData: data.pnlResult.assetPnL,
+                portfolioAnalytics: data.analyticsResult,
+                portfolioPnL: data.pnlResult,
+            });
+            this.logger.log(`📊 Computed data storage summary:`);
+            this.logger.log(`- Enhanced trades stored: ${data.trades.length}`);
+            this.logger.log(`- Asset P&L records: ${data.pnlResult.assetPnL.length}`);
+            this.logger.log(`- Portfolio analytics: 1 record`);
+            this.logger.log(`- Total P&L: ${data.pnlResult.portfolioTotalPnL.toFixed(2)}`);
+            this.logger.log(`- Total value: ${data.analyticsResult.totalValue.toFixed(2)}`);
+            this.logger.log(`- Asset count: ${data.analyticsResult.assetCount}`);
+            this.logger.log(`- Diversification score: ${data.analyticsResult.diversificationScore.toFixed(2)}`);
+            this.logger.log(`✅ Computed data storage completed for portfolio ${portfolioId}`);
+        }
+        catch (error) {
+            this.logger.error(`❌ Failed to store computed data for portfolio ${portfolioId}:`, error);
+            throw new Error(`Database error during computed data storage: ${error.message}`);
+        }
     }
 };
 exports.PortfolioCreationService = PortfolioCreationService;
 exports.PortfolioCreationService = PortfolioCreationService = PortfolioCreationService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [portfolio_exchange_service_1.PortfolioExchangeService,
-        portfolio_progress_service_1.PortfolioProgressService])
+        portfolio_progress_service_1.PortfolioProgressService,
+        pnl_calculation_service_1.PnLCalculationService,
+        portfolio_analytics_service_1.PortfolioAnalyticsService])
 ], PortfolioCreationService);
 //# sourceMappingURL=portfolio-creation.service.js.map

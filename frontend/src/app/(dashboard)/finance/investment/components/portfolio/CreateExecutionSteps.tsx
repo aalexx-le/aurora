@@ -48,9 +48,8 @@ export function CreateExecutionSteps() {
         {
             onData: (options) => {
                 const isCompleted = options.data.data?.onCreatePortfolioExecution.currentMilestone === PortfolioCreationMilestone.Completed;
-                if (isCompleted) {
-                    refetch();
-                }
+
+                console.log(options.data.data?.onCreatePortfolioExecution)
                 // Refetch executions when we receive updates
                 refetch();
             },
